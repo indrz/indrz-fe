@@ -5,12 +5,13 @@
     flat
     width="100%"
     img="https://cdn.vuetifyjs.com/images/toolbar/map.jpg"
+    style="border-radius: 0"
   >
     <v-navigation-drawer
       v-model="drawer"
-      :mini-variant="miniVariant"
-      :clipped="clipped"
-      fixed
+      absolute
+      bottom
+      temporary
       app
     >
       <sidebar :menuItems="items" />
@@ -18,20 +19,18 @@
     <v-toolbar
       dense
       floating
-      class="ma-4"
+      class="ma-2"
       max-width="320px"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-text-field
         hide-details
-        prepend-icon="mdi-magnify"
+        append-icon="mdi-magnify"
         single-line
         solo
+        flat
         label="Search our campus"
       />
-      <v-btn icon>
-        <v-icon>mdi-dots-vertical</v-icon>
-      </v-btn>
     </v-toolbar>
   </v-card>
 
