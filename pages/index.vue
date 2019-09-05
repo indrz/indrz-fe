@@ -1,5 +1,5 @@
 <template>
-    <v-card
+  <v-card
     class="fill-height"
     fluid
     flat
@@ -14,7 +14,7 @@
       temporary
       app
     >
-      <sidebar :menuItems="items" />
+      <sidebar :menu-items="items" />
     </v-navigation-drawer>
     <v-toolbar
       dense
@@ -33,7 +33,6 @@
       />
     </v-toolbar>
   </v-card>
-
 </template>
 
 <script>
