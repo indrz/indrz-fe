@@ -1,18 +1,68 @@
 <template>
-  <div class="Content">
-    <div class="container">
-      <h1 class="Content__Title">
-        {{ $t('home.title') }}
-      </h1>
-      <p>{{ $t('home.introduction') }}</p>
-    </div>
-  </div>
+  <v-card
+    class="fill-height"
+    fluid
+    flat
+    width="100%"
+    img="https://cdn.vuetifyjs.com/images/toolbar/map.jpg"
+    style="border-radius: 0"
+  >
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      bottom
+      temporary
+      app
+    >
+      <sidebar :menu-items="items" />
+    </v-navigation-drawer>
+    <v-toolbar
+      dense
+      floating
+      class="ma-2"
+      max-width="320px"
+    >
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-text-field
+        hide-details
+        append-icon="mdi-magnify"
+        single-line
+        solo
+        flat
+        :label="searchLabel"
+      />
+    </v-toolbar>
+  </v-card>
 </template>
 
 <script>
+import Sidebar from '../../components/Sidebar'
+
 export default {
-  head () {
-    return { title: this.$t('home.title') }
+  components: {
+    Sidebar
+  },
+  data () {
+    return {
+      clipped: false,
+      drawer: false,
+      fixed: false,
+      items: [
+        {
+          icon: 'mdi-apps',
+          title: 'Home',
+          to: '/'
+        }
+      ],
+      picker: new Date().toISOString().substr(0, 10),
+      searchLabel: this.$t('search.label'),
+      miniVariant: false
+    }
+  },
+  methods: {
+    onDrawerClick () {
+      this.$emit('onDrawerClick')
+    }
   }
 }
 </script>
