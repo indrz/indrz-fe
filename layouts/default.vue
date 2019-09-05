@@ -2,8 +2,8 @@
   <v-app dark>
     <v-content>
       <v-container
-      class="fill-height pa-0"
-      fluid
+        class="fill-height pa-0"
+        fluid
       >
         <nuxt />
       </v-container>
