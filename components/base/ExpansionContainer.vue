@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="ma-2">
-      <v-toolbar dark dense color="grey darken-1" @click="show = !show">
+      <v-toolbar dark dense color="blue-grey" height="40" @click="show = !show">
         <v-toolbar-title>{{ title }}</v-toolbar-title>
         <div class="flex-grow-1" />
         <v-btn icon small>

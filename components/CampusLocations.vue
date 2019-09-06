@@ -33,7 +33,7 @@ export default {
   }),
   computed: {
     getTitle () {
-      return this.$t('title.campus_locations');
+      return this.$t('campus_locations');
     }
   }
 };

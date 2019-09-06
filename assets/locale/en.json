@@ -1,9 +1,9 @@
 {
-    "search": {
-        "label": "Search our campus"
-    },
-    "title": {
-        "campus_locations": "Campus Locations"
-    }
-  }
-  
+  "search_our_campus": "Search our campus",
+  "campus_locations": "Campus Locations",
+  "route": "Route",
+  "start_route": "Start Route",
+  "end_route": "End Route",
+  "barrier_free_route": "Barrier Free Route",
+  "go": "Go"
+}
