@@ -1,25 +1,17 @@
 <template>
-  <v-list>
-    <v-list-item
-      v-for="(item, i) in menuItems"
-      :key="i"
-      :to="item.to"
-      router
-      exact
-    >
-      <v-list-item-action>
-        <v-icon>{{ item.icon }}</v-icon>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title v-text="item.title" />
-      </v-list-item-content>
-    </v-list-item>
-  </v-list>
+  <div>
+    <campus-locations />
+  </div>
 </template>
 
 <script>
+import CampusLocations from './CampusLocations';
+
 export default {
   name: 'SideBar',
+  components: {
+    CampusLocations
+  },
   props: {
     'menuItems': {
       type: Array,

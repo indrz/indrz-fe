@@ -1,5 +1,9 @@
 {
     "search": {
-        "label": "Search our campus de"
+        "label": "Durchsuchen Sie unseren Campus"
+    },
+    "title": {
+        "campus_locations": "Campus-Standorte"
     }
   }
+  

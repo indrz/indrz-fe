@@ -1,6 +1,9 @@
 {
     "search": {
         "label": "Search our campus"
+    },
+    "title": {
+        "campus_locations": "Campus Locations"
     }
   }
   
