@@ -1,5 +1,9 @@
 {
-    "search": {
-        "label": "Search our campus de"
-    }
-  }
+  "search_our_campus": "Durchsuchen Sie unseren Campus",
+  "campus_locations": "Campus-Standorte",
+  "route": "Route",
+  "start_route": "Route starten",
+  "end_route": "Route beenden",
+  "barrier_free_route": "Barrierefreier Weg",
+  "go": "Gehen"
+}

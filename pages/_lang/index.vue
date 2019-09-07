@@ -55,7 +55,7 @@ export default {
         }
       ],
       picker: new Date().toISOString().substr(0, 10),
-      searchLabel: this.$t('search.label'),
+      searchLabel: this.$t('search_our_campus'),
       miniVariant: false
     }
   },
