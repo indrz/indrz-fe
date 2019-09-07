@@ -1,22 +1,16 @@
 <template>
-  <div>
-    <v-card class="ma-2">
-      <v-toolbar dark dense color="blue-grey" height="40" @click="show = !show">
-        <v-toolbar-title>{{ title }}</v-toolbar-title>
-        <div class="flex-grow-1" />
-        <v-btn icon small>
-          <v-icon>mdi-chevron-{{ show ? 'up' : 'down' }}</v-icon>
-        </v-btn>
-      </v-toolbar>
-      <v-expand-transition>
-        <div v-show="show">
-          <v-card-text>
-            <slot />
-          </v-card-text>
-        </div>
-      </v-expand-transition>
-    </v-card>
-  </div>
+  <v-expansion-panels>
+
+     <v-expansion-panel>
+       <v-expansion-panel-header>{{title}}</v-expansion-panel-header>
+
+        <v-expansion-panel-content>
+          <slot />
+        </v-expansion-panel-content>
+
+     </v-expansion-panel>
+
+</v-expansion-panels>
 </template>
 
 <script>
