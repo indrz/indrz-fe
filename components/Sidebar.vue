@@ -14,18 +14,21 @@
 <script>
 import CampusLocations from './CampusLocations';
 import Route from './Route';
+import PointsOfInterest from './poi/PointsOfInterest';
 
 export default {
   name: 'SideBar',
   components: {
     CampusLocations,
-    Route
+    Route,
+    PointsOfInterest
   },
   data () {
     return {
       title: {
         campus_locations: this.$t('campus_locations'),
-        route: this.$t('route')
+        route: this.$t('route'),
+        pointsOfInterest: this.$t('points_of_interest')
       }
     }
   },
@@ -39,6 +42,10 @@ export default {
         {
           type: 'Route',
           title: this.title.route
+        },
+        {
+          type: 'PointsOfInterest',
+          title: this.title.pointsOfInterest
         }
       ]
     }
