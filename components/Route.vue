@@ -4,17 +4,13 @@
         hide-details
         prepend-icon="mdi-flag"
         single-line
-        solo
-        flat
         :label="startRouteLabel"
       />
       <v-text-field
         hide-details
         prepend-icon="mdi-flag-checkered"
         single-line
-        solo
-        flat
-        :label="startRouteLabel"
+        :label="endRouteLabel"
       />
       <v-checkbox v-model="barrierFree" :label="barrierFreeLabel"></v-checkbox>
       <v-btn
