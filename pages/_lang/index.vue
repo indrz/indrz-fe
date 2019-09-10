@@ -3,9 +3,12 @@
     class="fill-height"
     fluid
     flat
+    :name="mapElName"
     width="100%"
     img="https://cdn.vuetifyjs.com/images/toolbar/map.jpg"
     style="border-radius: 0"
+    @click.stop="onMapClick($event)"
+    :ripple="false"
   >
     <v-navigation-drawer
       v-model="drawer"
@@ -56,12 +59,19 @@ export default {
       ],
       picker: new Date().toISOString().substr(0, 10),
       searchLabel: this.$t('search_our_campus'),
-      miniVariant: false
+      miniVariant: false,
+      mapElName: 'mapCard'
     }
   },
   methods: {
     onDrawerClick () {
       this.$emit('onDrawerClick')
+    },
+    onMapClick (e) {
+      if (e.target.getAttribute('name') !== this.mapElName) {
+        return;
+      }
+      console.log('Map Event');
     }
   }
 }

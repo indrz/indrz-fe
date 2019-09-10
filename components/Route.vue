@@ -4,16 +4,12 @@
       hide-details
       prepend-icon="mdi-flag"
       single-line
-      solo
-      flat
       :label="startRouteLabel"
     />
     <v-text-field
       hide-details
       prepend-icon="mdi-flag-checkered"
       single-line
-      solo
-      flat
       :label="startRouteLabel"
     />
     <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" />
@@ -34,6 +30,7 @@ export default {
   name: 'Route',
   data () {
     return {
+      barrierFree: false,
       startRouteLabel: this.$t('start_route'),
       endRouteLabel: this.$t('end_route'),
       barrierFreeLabel: this.$t('barrier_free_route'),
