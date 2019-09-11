@@ -55,6 +55,7 @@ import { defaults as defaultInteraction } from 'ol/interaction';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom'
 import PinchZoom from 'ol/interaction/PinchZoom'
 import Sidebar from '../../components/Sidebar'
+import 'ol/ol.css';
 
 export default {
   components: {
