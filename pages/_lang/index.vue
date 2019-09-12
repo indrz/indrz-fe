@@ -34,6 +34,7 @@
         :label="searchLabel"
       />
     </v-toolbar>
+    <toolbar-buttons />
     <indrz-map />
   </v-card>
 </template>
@@ -41,11 +42,13 @@
 <script>
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
+import ToolbarButtons from '../../components/ToolbarButtons';
 
 export default {
   components: {
     Sidebar,
-    IndrzMap
+    IndrzMap,
+    ToolbarButtons
   },
   data () {
     return {
