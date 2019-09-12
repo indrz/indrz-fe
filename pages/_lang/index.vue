@@ -4,7 +4,6 @@
     fluid
     flat
     width="100%"
-    img="https://cdn.vuetifyjs.com/images/toolbar/map.jpg"
     style="border-radius: 0"
   >
     <v-navigation-drawer
@@ -32,15 +31,18 @@
         :label="searchLabel"
       />
     </v-toolbar>
+    <indrz-map />
   </v-card>
 </template>
 
 <script>
-import Sidebar from '../../components/Sidebar'
+import IndrzMap from '../../components/IndrzMap';
+import Sidebar from '../../components/Sidebar';
 
 export default {
   components: {
-    Sidebar
+    Sidebar,
+    IndrzMap
   },
   data () {
     return {
@@ -56,7 +58,9 @@ export default {
       ],
       picker: new Date().toISOString().substr(0, 10),
       searchLabel: this.$t('search_our_campus'),
-      miniVariant: false
+      miniVariant: false,
+      mapId: 'mapContainer',
+      map: null
     }
   },
   methods: {
@@ -66,3 +70,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  header {
+    position: absolute;
+    z-index: 100;
+  }
+  nav {
+    z-index: 101
+  }
+</style>
