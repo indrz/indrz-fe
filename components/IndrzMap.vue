@@ -5,9 +5,11 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        color="primary"
+        color="rgba(0,60,136,0.5)"
         min-width="95px"
+        class="pa-2"
         small
+        dark
         @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
@@ -89,10 +91,7 @@ export default {
 }
 #id-map-switcher-widget {
   position: absolute;
-  top: 0.5em;
-  right: 0.7em;
-
-  left: auto;
-  bottom: auto;
+  right: 45px !important;
+  bottom: 37px !important;
 }
 </style>
