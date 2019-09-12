@@ -32,6 +32,7 @@
         :label="searchLabel"
       />
     </v-toolbar>
+    <div id="zoom-control" class="indrz-zoom-control"/>
   </v-card>
 </template>
 
@@ -40,7 +41,8 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import TileLayer from 'ol/layer/Tile.js';
 import Group from 'ol/layer/Group';
-import { defaults as defaultControls, Attribution, ScaleLine } from 'ol/control.js';
+// import { defaults as defaultControls, Zoom, Attribution, ScaleLine } from 'ol/control.js';
+import { Zoom, Attribution, ScaleLine } from 'ol/control.js';
 import { get as getProjection } from 'ol/proj.js';
 import ImageLayer from 'ol/layer/Image'
 import ImageWMS from 'ol/source/ImageWMS'
@@ -86,6 +88,7 @@ export default {
     });
 
     const scaleLineControl = new ScaleLine();
+    const zoomControl = new Zoom({ target: 'zoom-control' })
     const greyBmapat = this.createWmtsLayer('bmapgrau', '.png', true, 'basemap.at');
     const ortho30cmBmapat = this.createWmtsLayer('bmaporthofoto30cm', '.jpg', false, 'basemap.at');
 
@@ -101,7 +104,7 @@ export default {
     const campusLocationsGroup = new Group({ layers: [], id: 900, name: 'campus locations' });
 
     // eslint-disable-next-line no-new
-    new Map({
+    this.map = new Map({
       interactions: defaultInteraction().extend([
         new DragRotateAndZoom(),
         new PinchZoom({
@@ -109,7 +112,8 @@ export default {
         })
       ]),
       target: this.mapId,
-      controls: defaultControls({ attribution: false }).extend([attribution, scaleLineControl]),
+      // controls: defaultControls({ attribution: false }).extend([zoomControl, attribution, scaleLineControl]),
+      controls: [zoomControl, attribution, scaleLineControl],
       view: new View({
         center: [1587942.2647, 5879651.6586],
         zoom: 17,
@@ -228,9 +232,15 @@ export default {
 <style scoped>
   header {
     position: absolute;
-    z-index: 100
+    z-index: 100;
   }
   nav {
     z-index: 101
+  }
+  .indrz-zoom-control {
+    right: 50px !important;
+    bottom: 90px !important;
+    position: absolute;
+    z-index: 102;
   }
 </style>
