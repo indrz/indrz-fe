@@ -3,8 +3,11 @@
     class="fill-height"
     fluid
     flat
+    :name="mapElName"
     width="100%"
     style="border-radius: 0"
+    @click.stop="onMapClick($event)"
+    :ripple="false"
   >
     <v-navigation-drawer
       v-model="drawer"
@@ -60,12 +63,19 @@ export default {
       searchLabel: this.$t('search_our_campus'),
       miniVariant: false,
       mapId: 'mapContainer',
-      map: null
+      map: null,
+      mapElName: 'mapCard'
     }
   },
   methods: {
     onDrawerClick () {
       this.$emit('onDrawerClick')
+    },
+    onMapClick (e) {
+      if (e.target.getAttribute('name') !== this.mapElName) {
+        return;
+      }
+      console.log('Map Event');
     }
   }
 }

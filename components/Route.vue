@@ -32,6 +32,7 @@ export default {
   name: 'Route',
   data () {
     return {
+      barrierFree: false,
       startRouteLabel: this.$t('start_route'),
       endRouteLabel: this.$t('end_route'),
       barrierFreeLabel: this.$t('barrier_free_route'),
