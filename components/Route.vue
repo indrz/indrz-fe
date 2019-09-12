@@ -4,7 +4,6 @@
       hide-details
       prepend-icon="mdi-flag"
       single-line
-      solo
       flat
       :label="startRouteLabel"
     />
@@ -12,9 +11,8 @@
       hide-details
       prepend-icon="mdi-flag-checkered"
       single-line
-      solo
       flat
-      :label="startRouteLabel"
+      :label="endRouteLabel"
     />
     <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" />
     <v-btn
