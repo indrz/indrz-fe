@@ -171,11 +171,17 @@ export default {
       name: 'campus locations'
     });
 
-    return [
-      backgroundLayerGroup,
-      wmsfloorLayerGroup,
-      poiLayerGroup,
-      campusLocationsGroup
-    ]
+    return {
+      baseLayers: {
+        ortho30cmBmapat,
+        greyBmapat
+      },
+      layerGroups: [
+        backgroundLayerGroup,
+        wmsfloorLayerGroup,
+        poiLayerGroup,
+        campusLocationsGroup
+      ]
+    }
   }
 };

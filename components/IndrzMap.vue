@@ -1,7 +1,18 @@
 <template>
-  <div>
+  <div class="fill-height">
     <div :id="mapId" class="fill-height fluid flat width='100%' style='border-radius: 0" />
     <div id="zoom-control" class="indrz-zoom-control" />
+    <div id="id-map-switcher-widget">
+      <v-btn
+        id="id-map-switcher"
+        color="primary"
+        min-width="95px"
+        small
+        @click="onMapSwitchClick"
+      >
+        {{ isSatelliteMap ? "Satellite" : "Map" }}
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -18,11 +29,16 @@ export default {
   data () {
     return {
       mapId: 'mapContainer',
-      map: null
+      map: null,
+      isSatelliteMap: true,
+      layers: []
     };
   },
+
   mounted () {
     // eslint-disable-next-line no-new
+    this.layers = MapUtil.getLayers();
+
     this.map = new Map({
       interactions: defaultInteraction().extend([
         new DragRotateAndZoom(),
@@ -37,8 +53,29 @@ export default {
         zoom: 17,
         maxZoom: 23
       }),
-      layers: MapUtil.getLayers()
+      layers: this.layers.layerGroups
     });
+    window.onresize = () => {
+      setTimeout(() => {
+        this.map.updateSize();
+      }, 500);
+    }
+  },
+
+  methods: {
+    onMapSwitchClick () {
+      const { baseLayers } = this.layers;
+
+      this.isSatelliteMap = !this.isSatelliteMap;
+
+      if (this.isSatelliteMap) {
+        baseLayers.ortho30cmBmapat.setVisible(false);
+        baseLayers.greyBmapat.setVisible(true);
+        return;
+      }
+      baseLayers.ortho30cmBmapat.setVisible(true);
+      baseLayers.greyBmapat.setVisible(false);
+    }
   }
 };
 </script>
@@ -46,8 +83,16 @@ export default {
 <style scoped>
 .indrz-zoom-control {
   right: 50px !important;
-  bottom: 90px !important;
+  bottom: 100px !important;
   position: absolute;
   z-index: 102;
+}
+#id-map-switcher-widget {
+  position: absolute;
+  top: 0.5em;
+  right: 0.7em;
+
+  left: auto;
+  bottom: auto;
 }
 </style>
