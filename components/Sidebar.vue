@@ -18,6 +18,7 @@
         <v-list-item
           v-for="(item, i) in menuButtons"
           :key="i"
+          @click.stop="onMenuBUttonClick(item)"
         >
           <v-list-item-icon>
             <v-icon>mdi-{{ item.icon }}</v-icon>
@@ -57,6 +58,7 @@ export default {
       }
     }
   },
+
   computed: {
     menuItems () {
       return [
@@ -78,21 +80,31 @@ export default {
       return [
         {
           icon: 'home',
+          type: 'zoom-home',
           text: this.locale.zooToHome
         },
         {
           icon: 'share',
+          type: 'share-map',
           text: this.locale.shareMap
         },
         {
           icon: 'download',
+          type: 'download',
           text: this.locale.download
         },
         {
           icon: 'file-pdf-outline',
+          type: 'pdf',
           text: this.locale.pdf
         }
       ]
+    }
+  },
+
+  methods: {
+    onMenuBUttonClick (item) {
+      this.$emit('menuButtonClick', item.type);
     }
   }
 }

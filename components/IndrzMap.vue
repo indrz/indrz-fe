@@ -32,6 +32,7 @@ export default {
     return {
       mapId: 'mapContainer',
       map: null,
+      view: null,
       isSatelliteMap: true,
       layers: []
     };
@@ -40,7 +41,11 @@ export default {
   mounted () {
     // eslint-disable-next-line no-new
     this.layers = MapUtil.getLayers();
-
+    this.view = new View({
+      center: MapUtil.getStartCenter(),
+      zoom: 17,
+      maxZoom: 23
+    });
     this.map = new Map({
       interactions: defaultInteraction().extend([
         new DragRotateAndZoom(),
@@ -50,11 +55,7 @@ export default {
       ]),
       target: this.mapId,
       controls: MapUtil.getMapControls(),
-      view: new View({
-        center: [1587942.2647, 5879651.6586],
-        zoom: 17,
-        maxZoom: 23
-      }),
+      view: this.view,
       layers: this.layers.layerGroups
     });
     window.onresize = () => {
@@ -77,6 +78,20 @@ export default {
       }
       baseLayers.ortho30cmBmapat.setVisible(true);
       baseLayers.greyBmapat.setVisible(false);
+    },
+    onMenuButtonClick (type) {
+      switch (type) {
+        case 'zoom-home':
+          this.view.animate({
+            center: MapUtil.getStartCenter(),
+            duration: 2000,
+            zoom: 17
+          });
+          break;
+
+        default:
+          break;
+      }
     }
   }
 };
