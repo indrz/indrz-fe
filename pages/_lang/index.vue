@@ -35,17 +35,20 @@
       />
     </v-toolbar>
     <indrz-map />
+    <floor-changer />
   </v-card>
 </template>
 
 <script>
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
+import FloorChanger from '../../components/FloorChanger';
 
 export default {
   components: {
     Sidebar,
-    IndrzMap
+    IndrzMap,
+    FloorChanger
   },
   data () {
     return {
