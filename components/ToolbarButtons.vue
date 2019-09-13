@@ -1,28 +1,36 @@
 <template>
-    <v-toolbar
-      dense
-      collapse
-      flat
-      floating
-      class="ma-2"
-      :class="toolbarClass"
-      color="transparent"
-    >
-        <template>
-          <v-btn :color="btnColor" dark class="ma-1">
-            <v-icon dark>mdi-home</v-icon>
-          </v-btn>
-          <v-btn :color="btnColor" dark class="ma-1">
-            <v-icon dark>mdi-share</v-icon>
-          </v-btn>
-          <v-btn :color="btnColor" dark class="ma-1">
-            <v-icon dark>mdi-download</v-icon>
-          </v-btn>
-          <v-btn :color="btnColor" class="ma-1">
-            <v-icon>mdi-file-pdf-outline</v-icon>
-          </v-btn>
-        </template>
-      </v-toolbar>
+  <v-toolbar
+    dense
+    collapse
+    flat
+    floating
+    class="ma-2"
+    :class="toolbarClass"
+    color="transparent"
+  >
+    <template>
+      <v-btn :color="btnColor" dark class="ma-1">
+        <v-icon dark>
+          mdi-home
+        </v-icon>
+      </v-btn>
+      <v-btn :color="btnColor" dark class="ma-1">
+        <v-icon dark>
+          mdi-share
+        </v-icon>
+      </v-btn>
+      <v-btn :color="btnColor" dark class="ma-1">
+        <v-icon dark>
+          mdi-download
+        </v-icon>
+      </v-btn>
+      <v-btn :color="btnColor" class="ma-1">
+        <v-icon>
+          mdi-file-pdf-outline
+        </v-icon>
+      </v-btn>
+    </template>
+  </v-toolbar>
 </template>
 
 <script>

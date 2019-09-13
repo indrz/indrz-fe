@@ -8,6 +8,27 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
+
+    <v-list
+      class="mt-5"
+      nav
+      dense
+    >
+      <v-list-item-group color="primary">
+        <v-list-item
+          v-for="(item, i) in menuButtons"
+          :key="i"
+        >
+          <v-list-item-icon>
+            <v-icon>mdi-{{ item.icon }}</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title v-text="item.text" />
+          </v-list-item-content>
+        </v-list-item>
+      </v-list-item-group>
+    </v-list>
   </div>
 </template>
 
@@ -25,10 +46,14 @@ export default {
   },
   data () {
     return {
-      title: {
-        campus_locations: this.$t('campus_locations'),
+      locale: {
+        campusLocations: this.$t('campus_locations'),
         route: this.$t('route'),
-        pointsOfInterest: this.$t('points_of_interest')
+        pointsOfInterest: this.$t('points_of_interest'),
+        zooToHome: this.$t('zoom_to_home'),
+        shareMap: this.$t('share_map'),
+        download: this.$t('download'),
+        pdf: this.$t('pdf')
       }
     }
   },
@@ -37,15 +62,35 @@ export default {
       return [
         {
           type: 'CampusLocations',
-          title: this.title.campus_locations
+          title: this.locale.campusLocations
         },
         {
           type: 'Route',
-          title: this.title.route
+          title: this.locale.route
         },
         {
           type: 'PointsOfInterest',
-          title: this.title.pointsOfInterest
+          title: this.locale.pointsOfInterest
+        }
+      ]
+    },
+    menuButtons () {
+      return [
+        {
+          icon: 'home',
+          text: this.locale.zooToHome
+        },
+        {
+          icon: 'share',
+          text: this.locale.shareMap
+        },
+        {
+          icon: 'download',
+          text: this.locale.download
+        },
+        {
+          icon: 'file-pdf-outline',
+          text: this.locale.pdf
         }
       ]
     }
