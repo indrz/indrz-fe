@@ -6,8 +6,8 @@
     :name="mapElName"
     width="100%"
     style="border-radius: 0"
-    @click.stop="onMapClick($event)"
     :ripple="false"
+    @click.stop="onMapClick($event)"
   >
     <v-navigation-drawer
       v-model="drawer"
@@ -34,7 +34,6 @@
         :label="searchLabel"
       />
     </v-toolbar>
-    <toolbar-buttons />
     <indrz-map />
   </v-card>
 </template>
@@ -42,13 +41,11 @@
 <script>
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
-import ToolbarButtons from '../../components/ToolbarButtons';
 
 export default {
   components: {
     Sidebar,
-    IndrzMap,
-    ToolbarButtons
+    IndrzMap
   },
   data () {
     return {
