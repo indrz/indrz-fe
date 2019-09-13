@@ -1,6 +1,7 @@
 <template>
   <v-card
-    class="mx-auto position"
+    class="mx-auto floor-changer"
+    max-height="200px"
   >
     <v-list dense>
       <v-list-item-group v-model="model" mandatory color="primary">
@@ -31,6 +32,24 @@ export default {
         },
         {
           text: '3'
+        },
+        {
+          text: '4'
+        },
+        {
+          text: '5'
+        },
+        {
+          text: '6'
+        },
+        {
+          text: '7'
+        },
+        {
+          text: '8'
+        },
+        {
+          text: '9'
         }
       ]
     }
@@ -39,9 +58,10 @@ export default {
 </script>
 
 <style scoped>
-  .position {
+  .floor-changer {
     position: absolute;
     right: 10px;
     top: 70px;
+    overflow-y: auto;
   }
 </style>
