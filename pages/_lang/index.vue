@@ -16,7 +16,7 @@
       temporary
       app
     >
-      <sidebar :menu-items="items" />
+      <sidebar :menu-items="items" @menuButtonClick="onMenuButtonClick" />
     </v-navigation-drawer>
     <v-toolbar
       dense
@@ -34,7 +34,7 @@
         :label="searchLabel"
       />
     </v-toolbar>
-    <indrz-map />
+    <indrz-map ref="map" />
     <floor-changer />
   </v-card>
 </template>
@@ -79,6 +79,9 @@ export default {
         return;
       }
       console.log('Map Event');
+    },
+    onMenuButtonClick (type) {
+      this.$refs.map.onMenuButtonClick(type);
     }
   }
 }

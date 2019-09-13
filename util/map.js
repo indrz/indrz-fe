@@ -117,6 +117,9 @@ const createWmtsLayer = function (layerSrcName, type, isVisible, sourceName) {
 }
 
 export default {
+
+  getStartCenter: () => [1587942.2647, 5879651.6586],
+
   getMapControls: () => {
     // controls
     const attributionControl = new Attribution({
