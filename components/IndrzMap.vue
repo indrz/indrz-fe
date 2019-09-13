@@ -87,7 +87,6 @@ export default {
   right: 50px !important;
   bottom: 100px !important;
   position: absolute;
-  z-index: 102;
 }
 #id-map-switcher-widget {
   position: absolute;
