@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import { saveAs } from 'file-saver';
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import { defaults as defaultInteraction } from 'ol/interaction';
@@ -62,7 +63,7 @@ export default {
       setTimeout(() => {
         this.map.updateSize();
       }, 500);
-    }
+    };
   },
 
   methods: {
@@ -88,7 +89,19 @@ export default {
             zoom: 17
           });
           break;
+        case 'download':
+          this.map.once('postcompose', function (event) {
+            const canvas = event.context.canvas;
+            const curDate = new Date();
 
+            if (canvas.toBlob) {
+              canvas.toBlob(function (blob) {
+                saveAs(blob, curDate.toLocaleDateString() + '_map.png')
+              }, 'image/png');
+            }
+          });
+          this.map.renderSync();
+          break;
         default:
           break;
       }
