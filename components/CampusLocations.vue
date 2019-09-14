@@ -4,9 +4,10 @@
       <v-list-item
         v-for="(item, i) in items"
         :key="i"
+        @click.stop="onLocationClick(item)"
       >
         <v-list-item-content>
-          <v-list-item-title v-text="item.text" />
+          <v-list-item-title v-text="item.name" />
         </v-list-item-content>
       </v-list-item>
     </v-list-item-group>
@@ -20,10 +21,16 @@ export default {
   data: () => ({
     item: 1,
     items: [
-      { text: 'Real-Time', icon: 'mdi-clock' },
-      { text: 'Audience', icon: 'mdi-account' },
-      { text: 'Conversions', icon: 'mdi-flag' }
+      { name: 'AAU Campus', value: 1 },
+      { name: 'Robert Musil InstitutBahnhofstraße', value: 2 },
+      { name: 'IFF-Klagenfurt Sterneckstraße', value: 3 }
     ]
-  })
+  }),
+
+  methods: {
+    onLocationClick (item) {
+      this.$emit('locationClick', item.value);
+    }
+  }
 };
 </script>
