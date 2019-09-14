@@ -97,10 +97,6 @@ export default {
             if (canvas.toBlob) {
               canvas.toBlob(function (blob) {
                 saveAs(blob, curDate.toLocaleDateString() + '_map.png')
-                // window.saveAs(blob, curDate.toLocaleDateString() + '_map.png');
-                // const link = window.URL.createObjectURL(blob);
-                // window.location = link;
-                // window.open(link, '_blank');
               }, 'image/png');
             }
           });
