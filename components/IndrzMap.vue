@@ -107,8 +107,8 @@ export default {
       }
     },
     onLocationClick (value) {
-      //After getting clearance we can use the following code for the zoom to location
-      
+      // After getting clearance we can use the following code for the zoom to location
+
       // const locationsUrl = baseApiUrl + 'campus/locations/?format=json'
 
       // indrzApiCall(locationsUrl).then(function (response) {
