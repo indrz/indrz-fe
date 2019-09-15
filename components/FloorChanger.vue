@@ -51,7 +51,31 @@ export default {
         {
           text: '9'
         }
-      ]
+      ],
+      floors: []
+    }
+  },
+
+  async mounted () {
+    this.floors = await this.fetchFloors();
+    console.log(this.locations);
+  },
+
+  methods: {
+    async fetchLocations () {
+      try {
+        return await axios({
+          url: 'https://campusplan.aau.at/en/indrz/api/v1/floors/',
+          method: 'GET',
+          headers: {
+            'Authorization': 'Token 3d673589ecc8128d7a16286c5f20bdbb5f768381',
+            'Content-Type': 'application/json'
+          }
+        })
+      } catch (err) {
+        console.log(err);
+        return [];
+      }
     }
   }
 }
