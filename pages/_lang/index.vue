@@ -16,7 +16,11 @@
       temporary
       app
     >
-      <sidebar :menu-items="items" @menuButtonClick="onMenuButtonClick" />
+      <sidebar
+        :menu-items="items"
+        @menuButtonClick="onMenuButtonClick"
+        @locationClick="onLocationClick"
+      />
     </v-navigation-drawer>
     <v-toolbar
       dense
@@ -82,6 +86,9 @@ export default {
     },
     onMenuButtonClick (type) {
       this.$refs.map.onMenuButtonClick(type);
+    },
+    onLocationClick (value) {
+      this.$refs.map.onLocationClick(value);
     }
   }
 }
