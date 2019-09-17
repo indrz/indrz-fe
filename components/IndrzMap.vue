@@ -112,6 +112,9 @@ export default {
         duration: 2000,
         zoom: 17
       });
+    },
+    onFloorClick (floor) {
+      MapUtil.activateLayer(floor.floor_num, this.layers.switchableLayers);
     }
   }
 };
