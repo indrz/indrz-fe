@@ -5,15 +5,15 @@
         v-if="loading"
         indeterminate
         color="primary"
-      ></v-progress-circular>
+      />
     </div>
 
     <v-list v-if="!loading" dense nav>
       <v-list-item-group color="primary">
         <v-list-item
-                v-for="(location, i) in locations"
-                :key="i"
-                @click.stop="onLocationClick(location)"
+          v-for="(location, i) in locations"
+          :key="i"
+          @click.stop="onLocationClick(location)"
         >
           <v-list-item-content>
             <v-list-item-title v-text="location.campus_name" />
@@ -36,8 +36,9 @@ export default {
 
   async mounted () {
     const locationsData = await this.fetchLocations();
-    if (locationsData && locationsData.data) {
-      this.locations = locationsData.data;
+
+    if (locationsData && locationsData.data && locationsData.data.results) {
+      this.locations = locationsData.data.results;
     }
     this.loading = false;
   },

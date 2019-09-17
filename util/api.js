@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseApiUrl = 'https://campusplan.aau.at/en/indrz/api/v1/';
+const baseApiUrl = 'https://campusplan.aau.at/api/v1/';
 
 const request = async function (requestObj) {
   try {
