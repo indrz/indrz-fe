@@ -39,7 +39,7 @@
       />
     </v-toolbar>
     <indrz-map ref="map" />
-    <floor-changer />
+    <floor-changer @floorClick="onFloorClick" />
   </v-card>
 </template>
 
@@ -89,6 +89,9 @@ export default {
     },
     onLocationClick (value) {
       this.$refs.map.onLocationClick(value);
+    },
+    onFloorClick (floor) {
+      this.$refs.map.onFloorClick(floor);
     }
   }
 }

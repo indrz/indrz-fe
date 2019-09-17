@@ -8,6 +8,7 @@
         <v-list-item
           v-for="(floor, i) in floors"
           :key="i"
+          @click.stop="onFloorClick(floor)"
         >
           <v-list-item-content>
             <v-list-item-title v-text="floor.short_name" />
@@ -43,6 +44,9 @@ export default {
       return api.request({
         endPoint: 'floor'
       });
+    },
+    onFloorClick (floor) {
+      this.$emit('floorClick', floor);
     }
   }
 }
