@@ -19,6 +19,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   data () {
     return {
@@ -58,11 +59,11 @@ export default {
 
   async mounted () {
     this.floors = await this.fetchFloors();
-    console.log(this.locations);
+    console.log(this.floorss);
   },
 
   methods: {
-    async fetchLocations () {
+    async fetchFloors () {
       try {
         return await axios({
           url: 'https://campusplan.aau.at/en/indrz/api/v1/floors/',

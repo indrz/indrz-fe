@@ -106,30 +106,12 @@ export default {
           break;
       }
     },
-    onLocationClick (value) {
-      // After getting clearance we can use the following code for the zoom to location
-
-      // const locationsUrl = baseApiUrl + 'campus/locations/?format=json'
-
-      // indrzApiCall(locationsUrl).then(function (response) {
-
-      //   response.features.forEach(function (feature) {
-
-      //     if (parseInt(campusId) === feature.properties.id) {
-
-      //       view.animate({
-      //         center: feature.geometry.coordinates,
-      //         duration: 2000,
-      //         zoom: 17
-      //       })
-
-      //       open_popup(feature.properties, feature.geometry.coordinates, feature)
-
-      //     }
-
-      //   })
-
-      // })
+    onLocationClick (centroid) {
+      this.view.animate({
+        center: centroid.coordinates,
+        duration: 2000,
+        zoom: 17
+      });
     }
   }
 };
