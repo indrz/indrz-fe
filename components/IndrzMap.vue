@@ -15,7 +15,7 @@
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
-    <info-overlay />
+    <info-overlay @closeClick="onPopupCloseClick" />
   </div>
 </template>
 
@@ -86,6 +86,9 @@ export default {
   },
 
   methods: {
+    onPopupCloseClick () {
+      this.popup.setPosition(undefined);
+    },
     onMapClick (evt) {
       const { pixel } = evt;
       const coordinate = this.map.getCoordinateFromPixel(pixel);

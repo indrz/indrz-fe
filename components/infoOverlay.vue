@@ -1,6 +1,6 @@
 <template>
   <div id="indrz-popup" title="indrz info" class="ol-popup indrz-popup">
-    <a id="popup-closer" href="#" class="ol-popup-closer" />
+    <a id="popup-closer" href="#" class="ol-popup-closer" @click.stop="onPopupCloseClick" />
     <div id="popup-content" />
     <div id="popup-links">
       <a id="routeFromHere" style="color:#5bc0de; cursor:pointer;"><i class="fas fa-map-marker fa-fw" />Route
@@ -24,7 +24,12 @@
 
 <script>
 export default {
-  name: 'InfoOverlay'
+  name: 'InfoOverlay',
+  methods: {
+    onPopupCloseClick () {
+      this.$emit('closeClick');
+    }
+  }
 }
 </script>
 
