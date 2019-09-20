@@ -15,27 +15,50 @@
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
+    <info-overlay @closeClick="closeIndrzPopup" />
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import { saveAs } from 'file-saver';
+import Overlay from 'ol/Overlay';
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import { defaults as defaultInteraction } from 'ol/interaction';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
+import Vector from 'ol/source/Vector';
+import GeoJSON from 'ol/format/GeoJSON';
+import { getCenter } from 'ol/extent';
+// import {toStringHDMS} from 'ol/coordinate';
+// import {transform} from 'ol/proj'
 import MapUtil from '../util/map';
+import MapHandler from '../util/mapHandler';
+import InfoOverlay from '../components/infoOverlay'
 import 'ol/ol.css';
 
 export default {
+  components: {
+    InfoOverlay
+  },
   data () {
     return {
       mapId: 'mapContainer',
       map: null,
       view: null,
       isSatelliteMap: true,
-      layers: []
+      layers: [],
+      popup: null,
+      activeFloorNum: 0,
+      globalPopupInfo: {},
+      objCenterCoords: '',
+      popUpHomePage: '',
+      currentPOIID: 0,
+      currentLocale: 'en',
+      routeToValTemp: '',
+      routeFromValTemp: '',
+      hostUrl: window.location.href
     };
   },
 
@@ -59,6 +82,18 @@ export default {
       view: this.view,
       layers: this.layers.layerGroups
     });
+    this.popup = new Overlay({
+      element: document.getElementById('indrz-popup'),
+      autoPan: true,
+      autoPanAnimation: {
+        duration: 250
+      },
+      zIndex: 5,
+      name: 'indrzPopup'
+    });
+    this.map.addOverlay(this.popup);
+
+    this.map.on('singleclick', this.onMapClick, this);
     window.onresize = () => {
       setTimeout(() => {
         this.map.updateSize();
@@ -67,6 +102,86 @@ export default {
   },
 
   methods: {
+    openIndrzPopup (properties, coordinate, feature) {
+      MapHandler.openIndrzPopup(
+        this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
+        this.currentLocale, this.objCenterCoords, this.routeToValTemp,
+        this.routeFromValTemp, this.activeFloorNum, this.popup,
+        properties, coordinate, feature
+      );
+    },
+    closeIndrzPopup () {
+      MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
+    },
+    onMapClick (evt) {
+      const pixel = evt.pixel;
+      let feature = this.map.getFeaturesAtPixel(pixel);
+      const features = [];
+
+      this.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+        features.push(feature);
+      });
+      feature = features[0];
+      let coordinate = this.map.getCoordinateFromPixel(pixel);
+      const properties = feature ? feature.getProperties() : null;
+
+      if (feature) {
+        const featureType = feature.getGeometry().getType().toString();
+
+        if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
+          MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
+          if (featureType === 'MultiPoint') {
+            properties.poiId = feature.getId();
+            properties.src = 'poi';
+          }
+          this.openIndrzPopup(properties, coordinate, feature);
+          MapHandler.activateFloor(feature, this.layers);
+        } else if (featureType === 'Point') {
+          MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
+          coordinate = this.map.getCoordinateFromPixel(pixel);
+          properties.src = 'poi';
+          if (feature.getProperties().hasOwnProperty('poi_id')) {
+            properties.poiId = feature.properties.poi_id;
+          }
+          this.openIndrzPopup(properties, coordinate, feature);
+          MapHandler.activateFloor(feature, this.layers);
+        }
+      } else {
+        const featuresWms = this.map.getFeaturesAtPixel(pixel);
+        const v = this.map.getView();
+        const viewResolution = /** @type {number} */ (v.getResolution());
+        const wmsSource2 = MapHandler.getRoomInfo(this.activeFloorNum, this.layers);
+        const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
+          'INFO_FORMAT': 'application/json',
+          'FEATURE_COUNT': 50
+        });
+
+        if (url) {
+          axios.get(url).then((response) => {
+            this.globalPopupInfo.src = 'wms';
+            const listFeatures = response.data.features
+            const dataProperties = {};
+
+            if (listFeatures.length > 0) {
+              listFeatures.forEach(function (feature) {
+                if (feature.properties.hasOwnProperty('space_type_id')) {
+                  if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
+                    const centroidSource = new Vector({
+                      features: (new GeoJSON()).readFeatures(feature)
+                    });
+                    const centroidCoords = getCenter(centroidSource.getExtent());
+                    dataProperties.properties = feature.properties;
+                    dataProperties.centroid = centroidCoords;
+                  }
+                }
+              });
+              dataProperties.properties.src = 'wms';
+              this.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
+            }
+          });
+        }
+      }
+    },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
 
@@ -114,6 +229,7 @@ export default {
       });
     },
     onFloorClick (floor) {
+      this.activeFloorNum = floor.floor_num;
       MapUtil.activateLayer(floor.floor_num, this.layers.switchableLayers);
     }
   }
