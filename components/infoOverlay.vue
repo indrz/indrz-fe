@@ -3,11 +3,32 @@
     <a id="popup-closer" href="#" class="ol-popup-closer" @click.stop="onPopupCloseClick" />
     <div id="popup-content" />
     <div id="popup-links">
-      <a id="routeFromHere" style="color:#5bc0de; cursor:pointer;"><i class="fas fa-map-marker fa-fw" />Route
-        from here</a><br>
-      <a id="routeToHere" style="color:#5bc0de; cursor:pointer;"><i class="fas fa-map-marker fa-fw" />Route to
-        here</a><br><br>
-      <a
+      <v-btn text color="primary" small>
+        <v-icon left>
+          mdi-map-marker
+        </v-icon> Route from here
+      </v-btn>
+      <!--<a id="routeFromHere" style="color:#5bc0de; cursor:pointer;"><i class="mdi-map-marker" />Route
+        from here</a>
+      <br>-->
+      <v-btn text color="primary" small>
+        <v-icon left>
+          mdi-map-marker
+        </v-icon> Route to here
+      </v-btn>
+      <!--<a id="routeToHere" style="color:#5bc0de; cursor:pointer;"><i class="mdi-map-marker" />Route to
+        here
+      </a>-->
+      <br>
+      <v-tooltip top>
+        <template v-slot:activator="{ on }">
+          <v-btn icon color="primary" v-on="on">
+            <v-icon>mdi-share-variant</v-icon>
+          </v-btn>
+        </template>
+        <span>Share</span>
+      </v-tooltip>
+      <!--<a
         id="shareSearchPopup"
         href="#ShareModal"
         class="btn btn-primary"
@@ -17,7 +38,7 @@
         title="Share"
       >
         <i class="fas fa-share fa-fw" />
-      </a>
+      </a>-->
     </div>
   </div>
 </template>

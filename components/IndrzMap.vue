@@ -103,6 +103,17 @@ export default {
   methods: {
     closeIndrzPopup () {
       this.popup.setPosition(undefined);
+      for (const member in this.globalPopupInfo) {
+        this.globalPopupInfo[member] = null;
+      }
+      this.popup.setPosition(undefined);
+      this.globalPopupInfo.poiId = 'noid';
+      this.globalPopupInfo.poiCatId = 'noid';
+      this.globalPopupInfo.bookId = false;
+      this.globalPopupInfo.bookCoords = false;
+      this.globalPopupInfo.name = false;
+
+      return false;
     },
     openIndrzPopup (properties, coordinate, feature, offsetArray) {
       const popupContent = document.getElementById('popup-content');
@@ -220,16 +231,12 @@ export default {
       }
       titlePopup = this.getTitle(properties);
       this.routeToValTemp = titlePopup;
-      // TODO fix this property
       if (properties.hasOwnProperty('centroid') === true) {
         this.routeToValTemp = properties.centroid;
       }
-      // const hdms = toStringHDMS(transform(coordinate, 'EPSG:3857', 'EPSG:4326'));
       if (typeof properties.label !== 'undefined') {
-        this.activeFloorNum = properties.floor_num;
         roomCode = properties.roomcode;
       } else {
-        this.activeFloorNum = properties.floor_num;
         roomCode = properties.roomcode;
       }
       const tb = '<table id="popupTable" style="user-select: text;"></table>';
@@ -408,11 +415,6 @@ export default {
       }
     },
     onMapClick (evt) {
-      /*
-      const { pixel } = evt;
-      const coordinate = this.map.getCoordinateFromPixel(pixel);
-      this.popup.setPosition(coordinate);
-      */
       const pixel = evt.pixel;
       let feature = this.map.getFeaturesAtPixel(pixel);
       const features = [];
@@ -475,7 +477,6 @@ export default {
                 }
               });
               dataProperties.properties.src = 'wms';
-              debugger;
               this.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
             }
           });
