@@ -116,7 +116,20 @@ const createWmtsLayer = function (layerSrcName, type, isVisible, sourceName) {
   return wmtsLayer;
 }
 
+const hideLayers = (layers) => {
+  layers.forEach(layer => layer.setVisible(false));
+};
+
+const setLayerVisible = (layerNum, switchableLayers) => {
+  if (switchableLayers.length > 0) {
+    switchableLayers[layerNum].setVisible(true);
+  }
+};
+
 export default {
+
+  getStartCenter: () => [1587942.2647, 5879651.6586],
+
   getMapControls: () => {
     // controls
     const attributionControl = new Attribution({
@@ -176,6 +189,7 @@ export default {
         ortho30cmBmapat,
         greyBmapat
       },
+      switchableLayers: [wmsE00, wmsE01, wmsE02, wmsE03],
       layerGroups: [
         backgroundLayerGroup,
         wmsfloorLayerGroup,
@@ -183,5 +197,18 @@ export default {
         campusLocationsGroup
       ]
     }
+  },
+
+  hideLayers,
+  setLayerVisible,
+  activateLayer: (layerNum, switchableLayers) => {
+    hideLayers(switchableLayers);
+    setLayerVisible(layerNum, switchableLayers);
+    // if (typeof update_url == undefined) {
+    // safe to use the function
+    // do we need to use that
+    // update_url('map');
+    // } else {
+    // }
   }
 };

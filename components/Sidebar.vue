@@ -4,7 +4,7 @@
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
         <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
         <v-expansion-panel-content>
-          <component :is="menuItem.type" />
+          <component :is="menuItem.type" @locationClick="onLocationClick" />
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -18,6 +18,7 @@
         <v-list-item
           v-for="(item, i) in menuButtons"
           :key="i"
+          @click.stop="onMenuBUttonClick(item)"
         >
           <v-list-item-icon>
             <v-icon>mdi-{{ item.icon }}</v-icon>
@@ -57,6 +58,7 @@ export default {
       }
     }
   },
+
   computed: {
     menuItems () {
       return [
@@ -78,21 +80,34 @@ export default {
       return [
         {
           icon: 'home',
+          type: 'zoom-home',
           text: this.locale.zooToHome
         },
         {
           icon: 'share',
+          type: 'share-map',
           text: this.locale.shareMap
         },
         {
           icon: 'download',
+          type: 'download',
           text: this.locale.download
         },
         {
           icon: 'file-pdf-outline',
+          type: 'pdf',
           text: this.locale.pdf
         }
       ]
+    }
+  },
+
+  methods: {
+    onMenuBUttonClick (item) {
+      this.$emit('menuButtonClick', item.type);
+    },
+    onLocationClick (value) {
+      this.$emit('locationClick', value);
     }
   }
 }
