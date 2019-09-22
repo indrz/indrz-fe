@@ -28,17 +28,6 @@
         </template>
         <span>Share</span>
       </v-tooltip>
-      <!--<a
-        id="shareSearchPopup"
-        href="#ShareModal"
-        class="btn btn-primary"
-        data-toggle="modal"
-        data-target="#ShareSearchModal"
-        data-placement="top"
-        title="Share"
-      >
-        <i class="fas fa-share fa-fw" />
-      </a>-->
     </div>
   </div>
 </template>

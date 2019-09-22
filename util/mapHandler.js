@@ -344,11 +344,10 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     // udpateUrl('wmsInfo');
     param = 'wmsInfo';
   }
-  updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
+  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
 };
 
 const createPopupData = (globalPopupInfo, poiId) => {
-  debugger;
   const $ = document.getElementById;
   const popupBuilding = $('#popupBuilding').text();
   const popupRoomCode = $('#popupRoomCode').text();
@@ -375,14 +374,13 @@ const createPopupData = (globalPopupInfo, poiId) => {
 };
 
 const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
-  debugger;
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
   const currentZoom2 = map.getView().getZoom();
   const centerCrd = map.getView().getCenter();
   const centerX2 = centerCrd[0];
   const centerY2 = centerCrd[1];
   const buildingId = 1;
-  const $ = document.getElementsByClassName;
+  // const $ = document.getElementsByClassName;
 
   let url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 +
     '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
@@ -428,23 +426,27 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
   } else if (mode === 'bookId') {
     url = hostUrl + globalRouteInfo.routeUrl;
+    /*
     $('share-link').val(url);
     $('share-link').focus();
     $('share-link').select();
+    */
   } else if (mode === 'poiCatId') {
     url = hostUrl + globalPopupInfo.poiCatShareUrl;
-    const urlSinglePoi = hostUrl + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
-
+    // const urlSinglePoi = hostUrl + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
+    /*
     $('share-link').val(url);
     $('share-link-single-poi').val(urlSinglePoi);
-
     $('share-link').focus();
     $('share-link').select();
+    */
   } else if (mode === 'wmsInfo') {
     url = hostUrl + '?campus=1&q=' + globalPopupInfo.wmsInfo;
+    /*
     $('share-link').val(url);
     $('share-link').focus();
     $('share-link').select();
+    */
   } else {
     url = 'woops';
   }
@@ -452,6 +454,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   data.extent = currentExtent2;
   data.zoom = currentZoom2;
   history.pushState(data, 'live_url_update', url);
+  return url;
 };
 
 export default {
