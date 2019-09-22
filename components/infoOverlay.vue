@@ -22,7 +22,7 @@
       <br>
       <v-tooltip top>
         <template v-slot:activator="{ on }">
-          <v-btn icon color="primary" v-on="on">
+          <v-btn icon color="primary" v-on="on" @click.stop="onShareButtonClick">
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
         </template>
@@ -49,6 +49,9 @@ export default {
   methods: {
     onPopupCloseClick () {
       this.$emit('closeClick');
+    },
+    onShareButtonClick () {
+      this.$emit('shareClick');
     }
   }
 }

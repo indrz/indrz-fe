@@ -15,7 +15,7 @@
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
-    <info-overlay @closeClick="closeIndrzPopup" />
+    <info-overlay @closeClick="closeIndrzPopup" @shareClick="onShareButtonClick" />
   </div>
 </template>
 
@@ -52,6 +52,8 @@ export default {
       popup: null,
       activeFloorNum: 0,
       globalPopupInfo: {},
+      globalSearchInfo: {},
+      globalRouteInfo: {},
       objCenterCoords: '',
       popUpHomePage: '',
       currentPOIID: 0,
@@ -112,6 +114,9 @@ export default {
     },
     closeIndrzPopup () {
       MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
+    },
+    onShareButtonClick () {
+      MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum);
     },
     onMapClick (evt) {
       const pixel = evt.pixel;
