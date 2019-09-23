@@ -7,7 +7,7 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col cols="12" sm="8" md="8">
+            <v-col cols="12" sm="12" md="12">
               <v-text-field ref="linkField" :value="link" />
             </v-col>
           </v-row>
@@ -20,7 +20,10 @@
       </v-card-text>
       <v-card-actions>
         <div class="flex-grow-1" />
-        <v-btn color="blue darken-1" text @click="onCopyButtonClick">
+        <v-btn color="blue darken-1" dark @click="onCopyButtonClick">
+          <v-icon dark>
+            mdi-content-copy
+          </v-icon>
           Copy
         </v-btn>
         <v-btn color="blue darken-1" text @click="dialog = false">
@@ -41,6 +44,11 @@ export default {
       copyConfirmation: ''
     }
   },
+  watch: {
+    dialog () {
+      this.copyConfirmation = '';
+    }
+  },
   methods: {
     show () {
       this.dialog = true;
@@ -57,7 +65,7 @@ export default {
       inputField.select();
       inputField.setSelectionRange(0, 99999);
       document.execCommand('copy');
-      this.copyConfirmation = 'Url succuessfully copied!';
+      this.copyConfirmation = 'Url successfully copied in to clipboard!';
     }
   }
 }
