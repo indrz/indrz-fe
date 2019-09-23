@@ -324,6 +324,139 @@ const activateFloor = (feature, layers) => {
   }
 };
 
+const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+  let param = '';
+
+  if (globalPopupInfo.bookId) {
+    param = 'bookId';
+    // $('#ShareBookModal').modal('show');
+    // udpateUrl('bookId');
+  } else if (globalSearchInfo.searchText) {
+    // $('#ShareSearchModal').modal('show');
+    // udpateUrl('search');
+    param = 'search';
+  } else if (globalPopupInfo.poiCatId) {
+    // $('#SharePoiModal').modal('show');
+    // udpateUrl('poiCatId');
+    param = 'poiCatId';
+  } else if (globalPopupInfo.src === 'wms') {
+    // $('#ShareSearchModal').modal('show');
+    // udpateUrl('wmsInfo');
+    param = 'wmsInfo';
+  }
+  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
+};
+
+const createPopupData = (globalPopupInfo, poiId) => {
+  const $ = document.getElementById;
+  const popupBuilding = $('#popupBuilding').text();
+  const popupRoomCode = $('#popupRoomCode').text();
+  const popupFloorNumber = $('#popupFloorNumber').text();
+  const popupRoomCat = $('#popupRoomCat').text();
+  let popupPoiId = '';
+
+  if (globalPopupInfo.poiId !== -1 || globalPopupInfo.poiId !== '-1') {
+    popupPoiId = globalPopupInfo.poiId;
+  } else if (poiId !== '' && poiId !== 0 && poiId !== '0') {
+    popupPoiId = poiId;
+  }
+
+  const pData = {
+    'poiId': popupPoiId,
+    'building': popupBuilding,
+    'roomcode': popupRoomCode,
+    'floor_num': popupFloorNumber,
+    'category': popupRoomCat,
+    'coords': globalPopupInfo.coords
+  };
+
+  return pData;
+};
+
+const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+  const currentExtent2 = map.getView().calculateExtent(map.getSize());
+  const currentZoom2 = map.getView().getZoom();
+  const centerCrd = map.getView().getCenter();
+  const centerX2 = centerCrd[0];
+  const centerY2 = centerCrd[1];
+  const buildingId = 1;
+  // const $ = document.getElementsByClassName;
+
+  let url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 +
+    '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
+
+  const data = {};
+
+  if (mode === 'route') {
+    if (globalRouteInfo.routeUrl) {
+      url = globalRouteInfo.routeUrl;
+      // eslint-disable-next-line brace-style
+    } /*
+    else if (route_from_xyz !== '') {
+      url = hostUrl + req_locale + '/?start-xyz=' + route_from_xyz + '&end-xyz=' + route_to_xyz;
+    }
+    */
+    else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
+      url = globalRouteInfo.routeUrl;
+    } else if (globalPopupInfo.poiId === 'undefined' && globalPopupInfo.poiId === '' && globalPopupInfo.poiId !== 'noid') {
+      url = '/?campus=' + buildingId + '&startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
+    } else {
+      url = '/?campus=' + buildingId + '&startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
+    }
+  } else if (mode === 'search') {
+    const popupData = createPopupData();
+
+    if (globalPopupInfo.hasOwnProperty('external_id')) {
+      if (globalPopupInfo.external_id === globalPopupInfo.name) {
+        url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.external_id;
+      } else {
+        url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.name;
+      }
+    }
+    if (globalSearchInfo.searchText) {
+      url = '/?campus=' + buildingId + '&q=' + globalSearchInfo.searchText;
+    } else {
+      url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.name;
+    }
+
+    if (popupData.poiId) {
+      url = '/?poi-id=' + popupData.poiId + '&floor=' + popupData.floor_num;
+    }
+  } else if (mode === 'map') {
+    url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
+  } else if (mode === 'bookId') {
+    url = hostUrl + globalRouteInfo.routeUrl;
+    /*
+    $('share-link').val(url);
+    $('share-link').focus();
+    $('share-link').select();
+    */
+  } else if (mode === 'poiCatId') {
+    url = hostUrl + globalPopupInfo.poiCatShareUrl;
+    // const urlSinglePoi = hostUrl + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
+    /*
+    $('share-link').val(url);
+    $('share-link-single-poi').val(urlSinglePoi);
+    $('share-link').focus();
+    $('share-link').select();
+    */
+  } else if (mode === 'wmsInfo') {
+    url = hostUrl + '?campus=1&q=' + globalPopupInfo.wmsInfo;
+    /*
+    $('share-link').val(url);
+    $('share-link').focus();
+    $('share-link').select();
+    */
+  } else {
+    url = 'woops';
+  }
+
+  data.extent = currentExtent2;
+  data.zoom = currentZoom2;
+  history.pushState(data, 'live_url_update', url);
+  return url;
+};
+
 export default {
   closeIndrzPopup,
   openIndrzPopup,
@@ -331,5 +464,6 @@ export default {
   getBuildingLetter,
   addPoiTableRow,
   getRoomInfo,
-  activateFloor
+  activateFloor,
+  handleShareClick
 };

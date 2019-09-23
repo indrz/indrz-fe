@@ -15,7 +15,8 @@
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
-    <info-overlay @closeClick="closeIndrzPopup" />
+    <info-overlay @closeClick="closeIndrzPopup" @shareClick="onShareButtonClick" />
+    <share-overlay ref="shareOverlay" />
   </div>
 </template>
 
@@ -36,11 +37,13 @@ import { getCenter } from 'ol/extent';
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
 import InfoOverlay from '../components/infoOverlay'
+import ShareOverlay from '../components/shareOverlay'
 import 'ol/ol.css';
 
 export default {
   components: {
-    InfoOverlay
+    InfoOverlay,
+    ShareOverlay
   },
   data () {
     return {
@@ -52,6 +55,8 @@ export default {
       popup: null,
       activeFloorNum: 0,
       globalPopupInfo: {},
+      globalSearchInfo: {},
+      globalRouteInfo: {},
       objCenterCoords: '',
       popUpHomePage: '',
       currentPOIID: 0,
@@ -112,6 +117,12 @@ export default {
     },
     closeIndrzPopup () {
       MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
+    },
+    onShareButtonClick () {
+      const shareOverlay = this.$refs.shareOverlay;
+      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum);
+      shareOverlay.setShareLink(url);
+      shareOverlay.show();
     },
     onMapClick (evt) {
       const pixel = evt.pixel;
