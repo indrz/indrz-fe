@@ -6,6 +6,7 @@ import { get as getProjection } from 'ol/proj.js';
 import TileLayer from 'ol/layer/Tile.js';
 import WMTS from 'ol/source/WMTS.js';
 import TileGrid from 'ol/tilegrid/WMTS';
+import Vector from 'ol/source/Vector';
 
 const createWmsLayer = function (
   layerName,
@@ -124,6 +125,155 @@ const setLayerVisible = (layerNum, switchableLayers) => {
   if (switchableLayers.length > 0) {
     switchableLayers[layerNum].setVisible(true);
   }
+};
+
+const searchIndrz = (map, searchLayer, campusId, searchString, zoomLevel) => {
+  debugger;
+  const searchUrl = 'https://campusplan.aau.at/' + 'en' + '/search/' + searchString + '?format=json';
+
+  if (searchLayer) {
+    map.removeLayer(searchLayer);
+    clearSearchResults();
+  }
+
+  const searchSource = new Vector();
+
+  indrzApiCall(searchUrl).then(function (response) {
+    var geojsonFormat3 = new ol.format.GeoJSON();
+    var featuresSearch = geojsonFormat3.readFeatures(response,
+      {featureProjection: 'EPSG:4326'});
+    searchSource.addFeatures(featuresSearch);
+
+    searchSource.forEachFeature(function(feature) {
+
+      var f_name = feature.get("name");
+
+      var f_extent = feature.getGeometry().getExtent();
+      var f_center = ol.extent.getCenter(f_extent);
+      var zoom_coord = [f_center];
+
+      var att = searchString;
+
+      if (searchString === f_name){
+        att = searchString;
+      }else{
+        att = f_name
+      }
+
+      var full_name = att;
+
+      var featureNameGet = "category_"+ req_locale;
+
+      var floor = feature.get("floor_num");
+      var roomcat = feature.get(featureNameGet);
+      var roomcode = feature.get('roomcode');
+      var somethin = "";
+
+      if(att !== roomcode){
+        somethin = " (" + roomcode + ")"
+      }else{
+        somethin = ""
+
+      }
+
+      var f_id = "";
+      var poiIconPath = "";
+
+
+      if(feature.getProperties().hasOwnProperty('poi_id')){
+
+        f_id = feature.get("poi_id");
+        poiIconPath = feature.get("icon");
+        globalPopupInfo.poiId = feature.get("poi_id");
+        globalPopupInfo.src = feature.get("src")
+
+      }else{
+        globalPopupInfo.poiId = "noid";
+        globalPopupInfo.src = feature.get("src")
+      }
+
+
+      var infoo = "'" + att + "'";
+      var f_info = "'"+ feature + "'";
+
+      if (roomcat !== "" && typeof roomcat !== 'undefined'){
+
+        var resultListName = full_name + ' ('+ roomcat + ')';
+        var htmlInsert = generateResultLinks(att, infoo, f_center, resultListName, floor, f_id, poiIconPath)
+
+      }
+      else if (roomcode !== "" && typeof roomcode !== 'undefined'){
+
+        var className = full_name + somethin;
+        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath)
+
+      }
+      else{
+        var className = full_name;
+        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath)
+
+
+      }
+
+      $("#search-results-list").append(htmlInsert);
+
+
+    });
+
+
+    var centerCoord = ol.extent.getCenter(searchSource.getExtent());
+
+    if (featuresSearch.length === 1){
+
+      open_popup(featuresSearch[0].getProperties(), centerCoord);
+      zoomer(centerCoord, zoomLevel);
+
+      space_id = response.features[0].properties.space_id;
+      poi_id = response.features[0].properties.poi_id;
+      debugger;
+      search_text = searchString;
+
+      // active the floor of the start point
+      activateFloor(featuresSearch[0]);
+
+    }else if (featuresSearch.length === 0){
+
+      var htmlInsert = '<p href="#" class="list-group-item indrz-search-res" > ' + gettext("Sorry nothing found")  +'</p>';
+      $("#search-results-list").append(htmlInsert);
+
+
+    }else{
+
+      var resExtent = searchSource.getExtent();
+      map.getView().fit(resExtent);
+      map.getView().setZoom(zoomLevel);
+
+    }
+    fixContentHeight();
+  } );
+
+
+  searchLayer = new ol.layer.Vector({
+    source: searchSource,
+    style: styleFunction,
+    title: "SearchLayer",
+    name: "SearchLayer",
+    zIndex: 999
+  });
+
+  map.getLayers().push(searchLayer);
+  window.location.href="#map";
+
+
+  $('html,body').animate({
+      scrollTop: $("#map").offset().top},
+    'slow');
+
+  $("#search-res").removeClass("hide");
+  $("#clearSearch").removeClass("hide");
+  $("#shareSearch").removeClass("hide");
+  $("#searchTools").toggle(true); // show div tag
+
 };
 
 export default {
