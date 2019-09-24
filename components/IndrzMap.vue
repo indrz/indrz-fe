@@ -228,6 +228,11 @@ export default {
           });
           this.map.renderSync();
           break;
+        case 'share-map':
+          const shareOverlay = this.$refs.shareOverlay;
+          shareOverlay.setShareLink(location.href);
+          shareOverlay.show();
+          break;
         default:
           break;
       }
