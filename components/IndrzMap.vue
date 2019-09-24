@@ -229,6 +229,7 @@ export default {
           this.map.renderSync();
           break;
         case 'share-map':
+          MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum);
           const shareOverlay = this.$refs.shareOverlay;
           shareOverlay.setShareLink(location.href);
           shareOverlay.show();
