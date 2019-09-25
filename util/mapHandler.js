@@ -465,5 +465,6 @@ export default {
   addPoiTableRow,
   getRoomInfo,
   activateFloor,
-  handleShareClick
+  handleShareClick,
+  updateUrl
 };
