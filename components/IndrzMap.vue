@@ -117,6 +117,10 @@ export default {
         const zoomLevel = query.zlevel || 15;
         view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
       }
+      if (query.floor) {
+        this.activeFloorNum = Number.parseFloat(query.floor);
+        MapUtil.activateLayer(this.activeFloorNum, this.layers.switchableLayers);
+      }
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
