@@ -6,7 +6,11 @@ import { get as getProjection } from 'ol/proj.js';
 import TileLayer from 'ol/layer/Tile.js';
 import WMTS from 'ol/source/WMTS.js';
 import TileGrid from 'ol/tilegrid/WMTS';
+/*
 import Vector from 'ol/source/Vector';
+import GeoJSON from 'ol/format/GeoJSON';
+import { getCenter } from 'ol/extent';
+*/
 
 const createWmsLayer = function (
   layerName,
@@ -127,153 +131,175 @@ const setLayerVisible = (layerNum, switchableLayers) => {
   }
 };
 
-const searchIndrz = (map, searchLayer, campusId, searchString, zoomLevel) => {
+const activateFloor = (feature, layers) => {
+  let floor = feature.getProperties().floor_num;
+  for (let i = 0; i < layers.switchableLayers.length; i++) {
+    if (typeof floor === 'number') {
+      floor = floor.toString();
+    }
+    if (floor === layers.switchableLayers[i].getProperties().floor_num) {
+      this.activateLayer(i);
+    }
+  }
+};
+/*
+const generateResultLinks = (att, searchString, featureCenter, className, floor, fid, poiIcon) => {
+  fid = fid || 0;
+  poiIcon = poiIcon || 0;
+  let poiIconHtml = '';
+  let elId = '';
+  let htmlInsert = '';
+
+  const poiId = fid;
+  if (fid === 0) {
+    elId = 'searchResListItem_' + att
+  } else {
+    elId = 'searchResListItem_' + att + '-' + poiId;
+    poiIconHtml = '<img src="' + poiIcon + '" alt="POI" style="height: 25px; padding-right:5px;">';
+  }
+
+  htmlInsert = '<a href="#" onclick="showRes(' + searchString + ',' + featureCenter + ',' + poiId + ')" id="' + elId +
+    '" class="list-group-item indrz-search-res" >' + className + ' <span class="badge">' + 'Floor ' + floor + '</span> </a>';
+
+  if (poiIcon !== '') {
+    htmlInsert = '<a href="#" onclick="showRes(' + searchString + ',' + featureCenter + ',' + poiId + ')" id="' + elId + '" class="list-group-item indrz-search-res" >  ' + poiIconHtml + className + ' <span class="badge">' + 'Floor ' + floor + '</span> </a>';
+  }
+  return htmlInsert;
+};
+
+const clearSearchResults = (map, searchLayer) => {
+  search_text = "";
+  if (searchLayer) {
+    map.removeLayer(searchLayer);
+  }
+  closeIndrzPopup();
+  $("#search-results-list").empty();
+  $("#search-res").addClass("hide");
+  $("#clearSearch").addClass("hide");
+  $("#shareSearch").addClass("hide");
+  $("#search-input").val('');
+  $("#search-input-kiosk").val('');
+  $("#searchTools").hide(); // hide div tag
+
+  fixContentHeight();
+
+};
+*/
+const searchIndrz = (map, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel) => {
+  /*
   debugger;
   const searchUrl = 'https://campusplan.aau.at/' + 'en' + '/search/' + searchString + '?format=json';
 
   if (searchLayer) {
     map.removeLayer(searchLayer);
-    clearSearchResults();
+    clearSearchResults(map, searchLayer);
   }
 
   const searchSource = new Vector();
 
   indrzApiCall(searchUrl).then(function (response) {
-    var geojsonFormat3 = new ol.format.GeoJSON();
-    var featuresSearch = geojsonFormat3.readFeatures(response,
-      {featureProjection: 'EPSG:4326'});
+    const geojsonFormat3 = new GeoJSON();
+    const featuresSearch = geojsonFormat3.readFeatures(response, { featureProjection: 'EPSG:4326' });
     searchSource.addFeatures(featuresSearch);
 
-    searchSource.forEachFeature(function(feature) {
-
-      var f_name = feature.get("name");
-
-      var f_extent = feature.getGeometry().getExtent();
-      var f_center = ol.extent.getCenter(f_extent);
-      var zoom_coord = [f_center];
-
-      var att = searchString;
-
-      if (searchString === f_name){
+    searchSource.forEachFeature(function (feature) {
+      const requestedLocale = 'en';
+      const featureName = feature.get('name');
+      const featureExtent = feature.getGeometry().getExtent();
+      const featureCenter = getCenter(featureExtent);
+      let att = searchString;
+      if (searchString === featureName) {
         att = searchString;
-      }else{
-        att = f_name
+      } else {
+        att = featureName;
       }
+      const fullName = att;
+      const featureNameGet = 'category_' + requestedLocale;
+      const floor = feature.get('floor_num');
+      const roomCat = feature.get(featureNameGet);
+      const roomCode = feature.get('roomcode');
+      let someThing = '';
 
-      var full_name = att;
-
-      var featureNameGet = "category_"+ req_locale;
-
-      var floor = feature.get("floor_num");
-      var roomcat = feature.get(featureNameGet);
-      var roomcode = feature.get('roomcode');
-      var somethin = "";
-
-      if(att !== roomcode){
-        somethin = " (" + roomcode + ")"
-      }else{
-        somethin = ""
-
+      if (att !== roomCode) {
+        someThing = ' (' + roomCode + ')'
+      } else {
+        someThing = ''
       }
+      let featureId = '';
+      let poiIconPath = '';
 
-      var f_id = "";
-      var poiIconPath = "";
-
-
-      if(feature.getProperties().hasOwnProperty('poi_id')){
-
-        f_id = feature.get("poi_id");
-        poiIconPath = feature.get("icon");
-        globalPopupInfo.poiId = feature.get("poi_id");
-        globalPopupInfo.src = feature.get("src")
-
-      }else{
-        globalPopupInfo.poiId = "noid";
-        globalPopupInfo.src = feature.get("src")
+      if (feature.getProperties().hasOwnProperty('poi_id')) {
+        featureId = feature.get('poi_id');
+        poiIconPath = feature.get('icon');
+        globalPopupInfo.poiId = feature.get('poi_id');
+        globalPopupInfo.src = feature.get('src')
+      } else {
+        globalPopupInfo.poiId = 'noid';
+        globalPopupInfo.src = feature.get('src')
       }
+      const attributeInfo = '"' + att + '"';
+      let htmlInsert = '';
 
-
-      var infoo = "'" + att + "'";
-      var f_info = "'"+ feature + "'";
-
-      if (roomcat !== "" && typeof roomcat !== 'undefined'){
-
-        var resultListName = full_name + ' ('+ roomcat + ')';
-        var htmlInsert = generateResultLinks(att, infoo, f_center, resultListName, floor, f_id, poiIconPath)
-
+      if (roomCat !== '' && typeof roomCat !== 'undefined') {
+        const resultListName = fullName + ' (' + roomCat + ')';
+        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, resultListName, floor, featureId, poiIconPath)
+      } else if (roomCode !== '' && typeof roomCode !== 'undefined') {
+        const className = fullName + someThing;
+        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
+      } else {
+        const className = fullName;
+        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
       }
-      else if (roomcode !== "" && typeof roomcode !== 'undefined'){
-
-        var className = full_name + somethin;
-        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath)
-
-      }
-      else{
-        var className = full_name;
-        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath)
-
-
-      }
-
-      $("#search-results-list").append(htmlInsert);
-
-
+      // todo: handle such jquery things
+      // $('#search-results-list').append(htmlInsert);
     });
 
+    const centerCoOrd = getCenter(searchSource.getExtent());
 
-    var centerCoord = ol.extent.getCenter(searchSource.getExtent());
-
-    if (featuresSearch.length === 1){
-
-      open_popup(featuresSearch[0].getProperties(), centerCoord);
-      zoomer(centerCoord, zoomLevel);
-
-      space_id = response.features[0].properties.space_id;
-      poi_id = response.features[0].properties.poi_id;
-      debugger;
-      search_text = searchString;
-
+    if (featuresSearch.length === 1) {
+      open_popup(featuresSearch[0].getProperties(), centerCoOrd);
+      zoomer(centerCoOrd, zoomLevel);
+      /!*
+       // the following code may need later use for space
+        space_id = response.features[0].properties.space_id;
+        poi_id = response.features[0].properties.poi_id;
+        search_text = searchString;
+       *!/
       // active the floor of the start point
-      activateFloor(featuresSearch[0]);
-
-    }else if (featuresSearch.length === 0){
-
-      var htmlInsert = '<p href="#" class="list-group-item indrz-search-res" > ' + gettext("Sorry nothing found")  +'</p>';
-      $("#search-results-list").append(htmlInsert);
-
-
-    }else{
-
-      var resExtent = searchSource.getExtent();
+      this.activateFloor(featuresSearch[0]);
+    } else if (featuresSearch.length === 0) {
+      const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
+      // todo: handle such jquery things
+      // $('#search-results-list').append(htmlInsert);
+    } else {
+      const resExtent = searchSource.getExtent();
       map.getView().fit(resExtent);
       map.getView().setZoom(zoomLevel);
-
     }
     fixContentHeight();
-  } );
+  });
 
-
-  searchLayer = new ol.layer.Vector({
+  searchLayer = new Vector({
     source: searchSource,
     style: styleFunction,
-    title: "SearchLayer",
-    name: "SearchLayer",
+    title: 'SearchLayer',
+    name: 'SearchLayer',
     zIndex: 999
   });
 
   map.getLayers().push(searchLayer);
-  window.location.href="#map";
-
+  window.location.href = '#map';
 
   $('html,body').animate({
-      scrollTop: $("#map").offset().top},
-    'slow');
+    scrollTop: $('#map').offset().top
+  }, 'slow');
 
-  $("#search-res").removeClass("hide");
-  $("#clearSearch").removeClass("hide");
-  $("#shareSearch").removeClass("hide");
-  $("#searchTools").toggle(true); // show div tag
-
+  $('#search-res').removeClass('hide');
+  $('#clearSearch').removeClass('hide');
+  $('#shareSearch').removeClass('hide');
+  $('#searchTools').toggle(true); // show div tag
+  return searchLayer;
+  */
 };
 
 export default {
@@ -351,6 +377,7 @@ export default {
 
   hideLayers,
   setLayerVisible,
+  activateFloor,
   activateLayer: (layerNum, switchableLayers) => {
     hideLayers(switchableLayers);
     setLayerVisible(layerNum, switchableLayers);
@@ -360,5 +387,6 @@ export default {
     // update_url('map');
     // } else {
     // }
-  }
+  },
+  searchIndrz
 };
