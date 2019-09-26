@@ -112,7 +112,7 @@ export default {
     loadMapWithParams () {
       const query = queryString.parse(location.search);
       const campusId = query.campus || 1;
-      const zoomLevel = query.zlevel || 15;
+      const zoomLevel = query.zlevel || 18;
 
       if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
         const view = this.map.getView();
@@ -124,7 +124,9 @@ export default {
         this.$emit('selectFloor', this.activeFloorNum);
       }
       if (query.q && query.q.length > 3) {
-        this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel);
+        this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
+          this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
+          this.routeFromValTemp, this.activeFloorNum, this.popup);
       }
     },
     openIndrzPopup (properties, coordinate, feature) {
@@ -274,14 +276,14 @@ export default {
 </script>
 
 <style scoped>
-.indrz-zoom-control {
-  right: 50px !important;
-  bottom: 100px !important;
-  position: absolute;
-}
-#id-map-switcher-widget {
-  position: absolute;
-  right: 45px !important;
-  bottom: 37px !important;
-}
+  .indrz-zoom-control {
+    right: 50px !important;
+    bottom: 100px !important;
+    position: absolute;
+  }
+  #id-map-switcher-widget {
+    position: absolute;
+    right: 45px !important;
+    bottom: 37px !important;
+  }
 </style>
