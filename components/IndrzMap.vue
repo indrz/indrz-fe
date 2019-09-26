@@ -120,6 +120,7 @@ export default {
       if (query.floor) {
         this.activeFloorNum = Number.parseFloat(query.floor);
         MapUtil.activateLayer(this.activeFloorNum, this.layers.switchableLayers);
+        this.$emit('selectFloor', this.activeFloorNum);
       }
     },
     openIndrzPopup (properties, coordinate, feature) {
