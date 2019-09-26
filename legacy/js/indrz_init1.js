@@ -40,6 +40,7 @@ return retStr;
 }
 
 function indrzApiCall(url, callback) {
+    debugger;
 
 var respObj = $.ajax({
     url: url,

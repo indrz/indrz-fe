@@ -404,6 +404,7 @@ function generateResultLinks(att, searchString, f_center, className, floor, fid,
 
 function searchIndrz(campusId, searchString, zoomLevel) {
 
+  debugger;
     var searchUrl = hostUrl + req_locale + '/search/' + searchString + '?format=json';
 
     if (searchLayer) {

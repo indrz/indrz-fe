@@ -10,6 +10,7 @@ function update_url(mode) {
     var centerx2 = center_crd[0];
     var centery2 = center_crd[1];
 
+    debugger;
     var url = "/?campus=" + building_id + "&centerx=" + centerx2 + "&centery=" + centery2 +
         "&zlevel=" + current_zoom2 + "&floor=" + active_floor_num;
 
