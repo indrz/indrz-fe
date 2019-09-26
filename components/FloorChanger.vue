@@ -35,7 +35,7 @@ export default {
 
     if (floorData && floorData.data && floorData.data.results) {
       this.floors = floorData.data.results;
-      this.floors.sort((a, b) => (Number(a.floor_num) > Number(b.floor_num)) ? 1 : -1);
+      // this.floors.sort((a, b) => (Number(a.floor_num) > Number(b.floor_num)) ? 1 : -1);
     }
     this.loading = false;
 
