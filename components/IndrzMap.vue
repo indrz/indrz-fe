@@ -32,6 +32,7 @@ import PinchZoom from 'ol/interaction/PinchZoom';
 import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getCenter } from 'ol/extent';
+import queryString from 'query-string';
 // import {toStringHDMS} from 'ol/coordinate';
 // import {transform} from 'ol/proj'
 import MapUtil from '../util/map';
@@ -104,9 +105,24 @@ export default {
         this.map.updateSize();
       }, 500);
     };
+    this.loadMapWithParams();
   },
 
   methods: {
+    loadMapWithParams () {
+      const query = queryString.parse(location.search);
+
+      if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
+        const view = this.map.getView();
+        const zoomLevel = query.zlevel || 15;
+        view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
+      }
+      if (query.floor) {
+        this.activeFloorNum = Number.parseFloat(query.floor);
+        MapUtil.activateLayer(this.activeFloorNum, this.layers.switchableLayers);
+        this.$emit('selectFloor', this.activeFloorNum);
+      }
+    },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
@@ -146,7 +162,7 @@ export default {
             properties.src = 'poi';
           }
           this.openIndrzPopup(properties, coordinate, feature);
-          MapHandler.activateFloor(feature, this.layers);
+          MapUtil.activateFloor(feature, this.layers);
         } else if (featureType === 'Point') {
           MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
           coordinate = this.map.getCoordinateFromPixel(pixel);
@@ -155,7 +171,7 @@ export default {
             properties.poiId = feature.properties.poi_id;
           }
           this.openIndrzPopup(properties, coordinate, feature);
-          MapHandler.activateFloor(feature, this.layers);
+          MapUtil.activateFloor(feature, this.layers);
         }
       } else {
         const featuresWms = this.map.getFeaturesAtPixel(pixel);

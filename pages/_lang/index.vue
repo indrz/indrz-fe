@@ -38,8 +38,8 @@
         :label="searchLabel"
       />
     </v-toolbar>
-    <indrz-map ref="map" />
-    <floor-changer @floorClick="onFloorClick" />
+    <indrz-map ref="map" @selectFloor="onFloorSelect" />
+    <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
   </v-card>
 </template>
 
@@ -92,6 +92,9 @@ export default {
     },
     onFloorClick (floor) {
       this.$refs.map.onFloorClick(floor);
+    },
+    onFloorSelect (floor) {
+      this.$refs.floorChanger.setSelection = floor;
     }
   }
 }

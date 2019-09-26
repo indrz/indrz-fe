@@ -25,7 +25,8 @@ export default {
   data () {
     return {
       loading: true,
-      floors: []
+      floors: [],
+      setSelection: null
     }
   },
 
@@ -37,6 +38,10 @@ export default {
       this.floors.sort((a, b) => (Number(a.floor_num) > Number(b.floor_num)) ? 1 : -1);
     }
     this.loading = false;
+
+    if (this.setSelection) {
+      this.selectFloorWithCss(this.setSelection);
+    }
   },
 
   methods: {
@@ -47,6 +52,17 @@ export default {
     },
     onFloorClick (floor) {
       this.$emit('floorClick', floor);
+    },
+    selectFloorWithCss (floorNumber) {
+      setTimeout(() => {
+        const activeClass = 'v-list-item--active';
+        const linkClass = 'v-list-item--link';
+        const listItems = this.$el.querySelectorAll('[role=listitem]');
+        listItems.forEach((item) => {
+          item.classList.remove(activeClass, linkClass);
+        });
+        listItems[floorNumber].classList.add(activeClass, linkClass);
+      }, 500);
     }
   }
 }

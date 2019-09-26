@@ -6,6 +6,11 @@ import { get as getProjection } from 'ol/proj.js';
 import TileLayer from 'ol/layer/Tile.js';
 import WMTS from 'ol/source/WMTS.js';
 import TileGrid from 'ol/tilegrid/WMTS';
+/*
+import Vector from 'ol/source/Vector';
+import GeoJSON from 'ol/format/GeoJSON';
+import { getCenter } from 'ol/extent';
+*/
 
 const createWmsLayer = function (
   layerName,
@@ -126,6 +131,177 @@ const setLayerVisible = (layerNum, switchableLayers) => {
   }
 };
 
+const activateFloor = (feature, layers) => {
+  let floor = feature.getProperties().floor_num;
+  for (let i = 0; i < layers.switchableLayers.length; i++) {
+    if (typeof floor === 'number') {
+      floor = floor.toString();
+    }
+    if (floor === layers.switchableLayers[i].getProperties().floor_num) {
+      this.activateLayer(i);
+    }
+  }
+};
+/*
+const generateResultLinks = (att, searchString, featureCenter, className, floor, fid, poiIcon) => {
+  fid = fid || 0;
+  poiIcon = poiIcon || 0;
+  let poiIconHtml = '';
+  let elId = '';
+  let htmlInsert = '';
+
+  const poiId = fid;
+  if (fid === 0) {
+    elId = 'searchResListItem_' + att
+  } else {
+    elId = 'searchResListItem_' + att + '-' + poiId;
+    poiIconHtml = '<img src="' + poiIcon + '" alt="POI" style="height: 25px; padding-right:5px;">';
+  }
+
+  htmlInsert = '<a href="#" onclick="showRes(' + searchString + ',' + featureCenter + ',' + poiId + ')" id="' + elId +
+    '" class="list-group-item indrz-search-res" >' + className + ' <span class="badge">' + 'Floor ' + floor + '</span> </a>';
+
+  if (poiIcon !== '') {
+    htmlInsert = '<a href="#" onclick="showRes(' + searchString + ',' + featureCenter + ',' + poiId + ')" id="' + elId + '" class="list-group-item indrz-search-res" >  ' + poiIconHtml + className + ' <span class="badge">' + 'Floor ' + floor + '</span> </a>';
+  }
+  return htmlInsert;
+};
+
+const clearSearchResults = (map, searchLayer) => {
+  search_text = "";
+  if (searchLayer) {
+    map.removeLayer(searchLayer);
+  }
+  closeIndrzPopup();
+  $("#search-results-list").empty();
+  $("#search-res").addClass("hide");
+  $("#clearSearch").addClass("hide");
+  $("#shareSearch").addClass("hide");
+  $("#search-input").val('');
+  $("#search-input-kiosk").val('');
+  $("#searchTools").hide(); // hide div tag
+
+  fixContentHeight();
+
+};
+*/
+const searchIndrz = (map, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel) => {
+  /*
+  debugger;
+  const searchUrl = 'https://campusplan.aau.at/' + 'en' + '/search/' + searchString + '?format=json';
+
+  if (searchLayer) {
+    map.removeLayer(searchLayer);
+    clearSearchResults(map, searchLayer);
+  }
+
+  const searchSource = new Vector();
+
+  indrzApiCall(searchUrl).then(function (response) {
+    const geojsonFormat3 = new GeoJSON();
+    const featuresSearch = geojsonFormat3.readFeatures(response, { featureProjection: 'EPSG:4326' });
+    searchSource.addFeatures(featuresSearch);
+
+    searchSource.forEachFeature(function (feature) {
+      const requestedLocale = 'en';
+      const featureName = feature.get('name');
+      const featureExtent = feature.getGeometry().getExtent();
+      const featureCenter = getCenter(featureExtent);
+      let att = searchString;
+      if (searchString === featureName) {
+        att = searchString;
+      } else {
+        att = featureName;
+      }
+      const fullName = att;
+      const featureNameGet = 'category_' + requestedLocale;
+      const floor = feature.get('floor_num');
+      const roomCat = feature.get(featureNameGet);
+      const roomCode = feature.get('roomcode');
+      let someThing = '';
+
+      if (att !== roomCode) {
+        someThing = ' (' + roomCode + ')'
+      } else {
+        someThing = ''
+      }
+      let featureId = '';
+      let poiIconPath = '';
+
+      if (feature.getProperties().hasOwnProperty('poi_id')) {
+        featureId = feature.get('poi_id');
+        poiIconPath = feature.get('icon');
+        globalPopupInfo.poiId = feature.get('poi_id');
+        globalPopupInfo.src = feature.get('src')
+      } else {
+        globalPopupInfo.poiId = 'noid';
+        globalPopupInfo.src = feature.get('src')
+      }
+      const attributeInfo = '"' + att + '"';
+      let htmlInsert = '';
+
+      if (roomCat !== '' && typeof roomCat !== 'undefined') {
+        const resultListName = fullName + ' (' + roomCat + ')';
+        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, resultListName, floor, featureId, poiIconPath)
+      } else if (roomCode !== '' && typeof roomCode !== 'undefined') {
+        const className = fullName + someThing;
+        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
+      } else {
+        const className = fullName;
+        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
+      }
+      // todo: handle such jquery things
+      // $('#search-results-list').append(htmlInsert);
+    });
+
+    const centerCoOrd = getCenter(searchSource.getExtent());
+
+    if (featuresSearch.length === 1) {
+      open_popup(featuresSearch[0].getProperties(), centerCoOrd);
+      zoomer(centerCoOrd, zoomLevel);
+      /!*
+       // the following code may need later use for space
+        space_id = response.features[0].properties.space_id;
+        poi_id = response.features[0].properties.poi_id;
+        search_text = searchString;
+       *!/
+      // active the floor of the start point
+      this.activateFloor(featuresSearch[0]);
+    } else if (featuresSearch.length === 0) {
+      const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
+      // todo: handle such jquery things
+      // $('#search-results-list').append(htmlInsert);
+    } else {
+      const resExtent = searchSource.getExtent();
+      map.getView().fit(resExtent);
+      map.getView().setZoom(zoomLevel);
+    }
+    fixContentHeight();
+  });
+
+  searchLayer = new Vector({
+    source: searchSource,
+    style: styleFunction,
+    title: 'SearchLayer',
+    name: 'SearchLayer',
+    zIndex: 999
+  });
+
+  map.getLayers().push(searchLayer);
+  window.location.href = '#map';
+
+  $('html,body').animate({
+    scrollTop: $('#map').offset().top
+  }, 'slow');
+
+  $('#search-res').removeClass('hide');
+  $('#clearSearch').removeClass('hide');
+  $('#shareSearch').removeClass('hide');
+  $('#searchTools').toggle(true); // show div tag
+  return searchLayer;
+  */
+};
+
 export default {
 
   getStartCenter: () => [1587942.2647, 5879651.6586],
@@ -201,6 +377,7 @@ export default {
 
   hideLayers,
   setLayerVisible,
+  activateFloor,
   activateLayer: (layerNum, switchableLayers) => {
     hideLayers(switchableLayers);
     setLayerVisible(layerNum, switchableLayers);
@@ -210,5 +387,6 @@ export default {
     // update_url('map');
     // } else {
     // }
-  }
+  },
+  searchIndrz
 };
