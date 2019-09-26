@@ -1,6 +1,7 @@
 import axios from 'axios';
+import indrzConfig from '~/util/indrzConfig'
 
-const baseApiUrl = 'https://campusplan.aau.at/api/v1/';
+const baseApiUrl = indrzConfig.indrz.baseApiUrl;
 
 const request = async function (requestObj) {
   try {
@@ -8,7 +9,7 @@ const request = async function (requestObj) {
       url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'GET',
       headers: {
-        'Authorization': 'Token 3d673589ecc8128d7a16286c5f20bdbb5f768381',
+        'Authorization': indrzConfig.indrz.token,
         'Content-Type': 'application/json'
       }
     })

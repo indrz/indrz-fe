@@ -17,6 +17,7 @@ import Circle from 'ol/style/Circle';
 import { getCenter } from 'ol/extent';
 import MapHandler from './mapHandler';
 import api from './api';
+import indrzConfig from '~/util/indrzConfig'
 
 const createWmsLayer = function (
   layerName,
@@ -27,7 +28,7 @@ const createWmsLayer = function (
 ) {
   return new ImageLayer({
     source: new ImageWMS({
-      url: 'https://campusplan.aau.at/geoserver/indrz/wms',
+      url: indrzConfig.indrz.baseWmsUrl,
       params: { LAYERS: geoserverLayer, TILED: true },
       serverType: 'geoserver',
       crossOrigin: ''
@@ -284,7 +285,7 @@ const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, search
   popUpHomePage, currentPOIID,
   currentLocale, objCenterCoords, routeToValTemp,
   routeFromValTemp, activeFloorNum, popup) => {
-  const searchUrl = 'https://campusplan.aau.at/' + 'en' + '/search/' + searchString + '?format=json';
+  const searchUrl = indrzConfig.indrz.searchUrl + searchString + '?format=json';
 
   if (searchLayer) {
     map.removeLayer(searchLayer);
@@ -427,7 +428,7 @@ const activateLayer = (layerNum, switchableLayers) => {
 
 export default {
 
-  getStartCenter: () => [1587942.2647, 5879651.6586],
+  getStartCenter: () => indrzConfig.indrz.defaultCenterXY,
 
   getMapControls: () => {
     // controls
@@ -458,10 +459,10 @@ export default {
       false,
       'basemap.at'
     );
-    const wmsE00 = createWmsLayer('e00', 'indrz:e00', '0', 'true', 3);
-    const wmsE01 = createWmsLayer('e01', 'indrz:e01', '1', 'false', 3);
-    const wmsE02 = createWmsLayer('e02', 'indrz:e02', '2', 'false', 3);
-    const wmsE03 = createWmsLayer('e03', 'indrz:e03', '3', 'false', 3);
+    const wmsE00 = createWmsLayer('floor_eg', 'indrztu:floor_eg', '0', 'true', 3);
+    const wmsE01 = createWmsLayer('floor_01', 'indrztu:floor_01', '1', 'false', 3);
+    const wmsE02 = createWmsLayer('floor_02', 'indrztu:floor_02', '2', 'false', 3);
+    const wmsE03 = createWmsLayer('floor_03', 'indrztu:floor_03', '3', 'false', 3);
 
     // layer group
     const backgroundLayerGroup = new Group({
