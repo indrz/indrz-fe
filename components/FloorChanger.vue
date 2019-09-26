@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="mx-auto floor-changer"
-    max-height="200px"
+    max-height="400px"
   >
     <v-list dense>
       <v-list-item-group mandatory color="primary">

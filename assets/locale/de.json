@@ -8,7 +8,7 @@
   "go": "Gehen",
   "points_of_interest": "Punkte von Interessen",
   "zoom_to_home": "Zoom to Home",
-  "share_map": "Share Map",
-  "download": "Download",
-  "pdf": "PDF"
+  "share_map": "Karte Teilen",
+  "download": "Karte als Bild Herunterladen",
+  "pdf": "Karte als PDF Herunterladen"
 }
