@@ -111,16 +111,20 @@ export default {
   methods: {
     loadMapWithParams () {
       const query = queryString.parse(location.search);
+      const campusId = query.campus || 1;
+      const zoomLevel = query.zlevel || 15;
 
       if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
         const view = this.map.getView();
-        const zoomLevel = query.zlevel || 15;
         view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
       }
       if (query.floor) {
         this.activeFloorNum = Number.parseFloat(query.floor);
         MapUtil.activateLayer(this.activeFloorNum, this.layers.switchableLayers);
         this.$emit('selectFloor', this.activeFloorNum);
+      }
+      if (query.q && query.q.length > 3) {
+        this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel);
       }
     },
     openIndrzPopup (properties, coordinate, feature) {

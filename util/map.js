@@ -6,11 +6,16 @@ import { get as getProjection } from 'ol/proj.js';
 import TileLayer from 'ol/layer/Tile.js';
 import WMTS from 'ol/source/WMTS.js';
 import TileGrid from 'ol/tilegrid/WMTS';
-/*
-import Vector from 'ol/source/Vector';
+import SourceVector from 'ol/source/Vector';
+import LayerVector from 'ol/layer/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
+import Style from 'ol/style/Style';
+import Stroke from 'ol/style/Stroke';
+import Icon from 'ol/style/Icon';
+import Fill from 'ol/style/Fill';
+import Circle from 'ol/style/Circle';
 import { getCenter } from 'ol/extent';
-*/
+import api from './api';
 
 const createWmsLayer = function (
   layerName,
@@ -138,11 +143,10 @@ const activateFloor = (feature, layers) => {
       floor = floor.toString();
     }
     if (floor === layers.switchableLayers[i].getProperties().floor_num) {
-      this.activateLayer(i);
+      activateLayer(i, layers.switchableLayers);
     }
   }
 };
-/*
 const generateResultLinks = (att, searchString, featureCenter, className, floor, fid, poiIcon) => {
   fid = fid || 0;
   poiIcon = poiIcon || 0;
@@ -168,6 +172,7 @@ const generateResultLinks = (att, searchString, featureCenter, className, floor,
 };
 
 const clearSearchResults = (map, searchLayer) => {
+  /*
   search_text = "";
   if (searchLayer) {
     map.removeLayer(searchLayer);
@@ -182,12 +187,99 @@ const clearSearchResults = (map, searchLayer) => {
   $("#searchTools").hide(); // hide div tag
 
   fixContentHeight();
-
+  */
 };
-*/
-const searchIndrz = (map, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel) => {
-  /*
-  debugger;
+
+const image = new Icon(/** @type {olx.style.IconOptions} */ ({
+  anchor: [0.5, 46],
+  anchorXUnits: 'fraction',
+  anchorYUnits: 'pixels',
+  src: '/static/homepage/img/other.png'
+}));
+const styles = {
+  'Point': [new Style({
+    image: image
+  })],
+  'LineString': [new Style({
+    stroke: new Stroke({
+      color: '#68ff5b',
+      width: 1
+    })
+  })],
+  'MultiLineString': [new Style({
+    stroke: new Stroke({
+      color: '#68ff5b',
+      width: 1
+    })
+  })],
+  'MultiPoint': [new Style({
+    image: image
+  })],
+  'MultiPolygon': [new Style({
+    stroke: new Stroke({
+      color: '#4ff0ff',
+      width: 3
+    }),
+    fill: new Fill({
+      color: 'rgba(38, 215, 255, 0.4)'
+    })
+  })],
+  'Polygon': [new Style({
+    stroke: new Stroke({
+      color: '#4ff0ff',
+      width: 3
+    }),
+    fill: new Fill({
+      color: 'rgba(38, 215, 255, 0.4)'
+    })
+  })],
+  'GeometryCollection': [new Style({
+    stroke: new Stroke({
+      color: 'magenta',
+      width: 2
+    }),
+    fill: new Fill({
+      color: 'magenta'
+    }),
+    image: new Circle({
+      radius: 10,
+      fill: null,
+      stroke: new Stroke({
+        color: 'magenta'
+      })
+    })
+  })],
+  'Circle': [new Style({
+    stroke: new Stroke({
+      color: 'red',
+      width: 2
+    }),
+    fill: new Fill({
+      color: 'rgba(255,0,0,0.2)'
+    })
+  })]
+};
+
+const styleFunction = (feature, resolution) => {
+  const fType = feature.getGeometry().getType();
+  if (fType === 'MultiPolygon') {
+    return styles[feature.getGeometry().getType()];
+  } else if (fType === 'MultiPoint') {
+    const poiImage = new Icon(/** @type {olx.style.IconOptions} */ ({
+      anchor: [0.5, 46],
+      anchorXUnits: 'fraction',
+      anchorYUnits: 'pixels',
+      src: feature.get('icon'),
+      opacity: 1
+    }));
+    const stylesPoi = new Style({
+      image: poiImage
+    });
+    return stylesPoi;
+  }
+};
+
+const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel) => {
   const searchUrl = 'https://campusplan.aau.at/' + 'en' + '/search/' + searchString + '?format=json';
 
   if (searchLayer) {
@@ -195,11 +287,13 @@ const searchIndrz = (map, globalPopupInfo, searchLayer, campusId, searchString, 
     clearSearchResults(map, searchLayer);
   }
 
-  const searchSource = new Vector();
+  const searchSource = new SourceVector();
 
-  indrzApiCall(searchUrl).then(function (response) {
+  api.request({
+    url: searchUrl
+  }).then(function (response) {
     const geojsonFormat3 = new GeoJSON();
-    const featuresSearch = geojsonFormat3.readFeatures(response, { featureProjection: 'EPSG:4326' });
+    const featuresSearch = geojsonFormat3.readFeatures(response.data, { featureProjection: 'EPSG:4326' });
     searchSource.addFeatures(featuresSearch);
 
     searchSource.forEachFeature(function (feature) {
@@ -250,25 +344,27 @@ const searchIndrz = (map, globalPopupInfo, searchLayer, campusId, searchString, 
         const className = fullName;
         htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
       }
+      console.log(htmlInsert)
       // todo: handle such jquery things
       // $('#search-results-list').append(htmlInsert);
     });
 
-    const centerCoOrd = getCenter(searchSource.getExtent());
+    // const centerCoOrd = getCenter(searchSource.getExtent());
 
     if (featuresSearch.length === 1) {
-      open_popup(featuresSearch[0].getProperties(), centerCoOrd);
-      zoomer(centerCoOrd, zoomLevel);
-      /!*
+      // open_popup(featuresSearch[0].getProperties(), centerCoOrd);
+      // zoomer(centerCoOrd, zoomLevel);
+      /*
        // the following code may need later use for space
         space_id = response.features[0].properties.space_id;
         poi_id = response.features[0].properties.poi_id;
         search_text = searchString;
-       *!/
+       */
       // active the floor of the start point
-      this.activateFloor(featuresSearch[0]);
+      activateFloor(featuresSearch[0], layers);
     } else if (featuresSearch.length === 0) {
       const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
+      console.log(htmlInsert);
       // todo: handle such jquery things
       // $('#search-results-list').append(htmlInsert);
     } else {
@@ -276,20 +372,19 @@ const searchIndrz = (map, globalPopupInfo, searchLayer, campusId, searchString, 
       map.getView().fit(resExtent);
       map.getView().setZoom(zoomLevel);
     }
-    fixContentHeight();
+    // fixContentHeight();
   });
-
-  searchLayer = new Vector({
+  searchLayer = new LayerVector({
     source: searchSource,
     style: styleFunction,
     title: 'SearchLayer',
     name: 'SearchLayer',
     zIndex: 999
   });
-
   map.getLayers().push(searchLayer);
   window.location.href = '#map';
 
+  /*
   $('html,body').animate({
     scrollTop: $('#map').offset().top
   }, 'slow');
@@ -298,8 +393,19 @@ const searchIndrz = (map, globalPopupInfo, searchLayer, campusId, searchString, 
   $('#clearSearch').removeClass('hide');
   $('#shareSearch').removeClass('hide');
   $('#searchTools').toggle(true); // show div tag
-  return searchLayer;
   */
+  return searchLayer;
+};
+
+const activateLayer = (layerNum, switchableLayers) => {
+  hideLayers(switchableLayers);
+  setLayerVisible(layerNum, switchableLayers);
+  // if (typeof update_url == undefined) {
+  // safe to use the function
+  // do we need to use that
+  // update_url('map');
+  // } else {
+  // }
 };
 
 export default {
@@ -378,15 +484,6 @@ export default {
   hideLayers,
   setLayerVisible,
   activateFloor,
-  activateLayer: (layerNum, switchableLayers) => {
-    hideLayers(switchableLayers);
-    setLayerVisible(layerNum, switchableLayers);
-    // if (typeof update_url == undefined) {
-    // safe to use the function
-    // do we need to use that
-    // update_url('map');
-    // } else {
-    // }
-  },
+  activateLayer,
   searchIndrz
 };
