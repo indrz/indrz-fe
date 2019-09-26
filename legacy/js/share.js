@@ -1,5 +1,4 @@
 $('#ShareMapModal').on('shown.bs.modal', function () {
-  debugger;
   update_url('map')
   $('.share-link').val(location.href)
   $('.share-link').focus()

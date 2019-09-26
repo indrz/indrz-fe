@@ -43,7 +43,7 @@ function getResultFromURL(url) {
 }
 
 function indrzApiCall(url, callback) {
-    debugger;
+
     var respObj = $.ajax({
         url: url,
         beforeSend: function (xhr) {

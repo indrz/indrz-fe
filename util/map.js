@@ -15,7 +15,6 @@ import Icon from 'ol/style/Icon';
 import Fill from 'ol/style/Fill';
 import Circle from 'ol/style/Circle';
 import { getCenter } from 'ol/extent';
-import MapHandler from './mapHandler';
 import api from './api';
 
 const createWmsLayer = function (
@@ -280,10 +279,7 @@ const styleFunction = (feature, resolution) => {
   }
 };
 
-const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
-  popUpHomePage, currentPOIID,
-  currentLocale, objCenterCoords, routeToValTemp,
-  routeFromValTemp, activeFloorNum, popup) => {
+const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel) => {
   const searchUrl = 'https://campusplan.aau.at/' + 'en' + '/search/' + searchString + '?format=json';
 
   if (searchLayer) {
@@ -353,16 +349,11 @@ const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, search
       // $('#search-results-list').append(htmlInsert);
     });
 
-    const centerCoOrd = getCenter(searchSource.getExtent());
+    // const centerCoOrd = getCenter(searchSource.getExtent());
 
     if (featuresSearch.length === 1) {
-      MapHandler.openIndrzPopup(
-        globalPopupInfo, popUpHomePage, currentPOIID,
-        currentLocale, objCenterCoords, routeToValTemp,
-        routeFromValTemp, activeFloorNum, popup,
-        featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
-      );
-      zoomer(map.getView(), centerCoOrd, zoomLevel);
+      // open_popup(featuresSearch[0].getProperties(), centerCoOrd);
+      // zoomer(centerCoOrd, zoomLevel);
       /*
        // the following code may need later use for space
         space_id = response.features[0].properties.space_id;
@@ -404,14 +395,6 @@ const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, search
   $('#searchTools').toggle(true); // show div tag
   */
   return searchLayer;
-};
-
-const zoomer = (view, coord, zoomLevel) => {
-  view.animate({
-    center: coord,
-    duration: 2000,
-    zoom: zoomLevel
-  });
 };
 
 const activateLayer = (layerNum, switchableLayers) => {

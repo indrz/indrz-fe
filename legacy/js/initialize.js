@@ -133,7 +133,6 @@ $(document).ready(function () {
 
 
     function loadShare(){
-      debugger;
         if(search_text !== '' && search_text.length > 3){
             searchIndrz(1, search_text, zoom_level)
 

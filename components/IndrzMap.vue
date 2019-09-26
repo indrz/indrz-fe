@@ -112,7 +112,7 @@ export default {
     loadMapWithParams () {
       const query = queryString.parse(location.search);
       const campusId = query.campus || 1;
-      const zoomLevel = query.zlevel || 18;
+      const zoomLevel = query.zlevel || 15;
 
       if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
         const view = this.map.getView();
@@ -124,9 +124,7 @@ export default {
         this.$emit('selectFloor', this.activeFloorNum);
       }
       if (query.q && query.q.length > 3) {
-        this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
-          this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-          this.routeFromValTemp, this.activeFloorNum, this.popup);
+        this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel);
       }
     },
     openIndrzPopup (properties, coordinate, feature) {
