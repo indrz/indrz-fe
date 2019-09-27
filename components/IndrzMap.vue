@@ -54,7 +54,7 @@ export default {
       isSatelliteMap: true,
       layers: [],
       popup: null,
-      activeFloorNum: 0,
+      activeFloorName: '',
       globalPopupInfo: {},
       globalSearchInfo: {},
       globalRouteInfo: {},
@@ -119,21 +119,21 @@ export default {
         view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
       }
       if (query.floor) {
-        this.activeFloorNum = Number.parseFloat(query.floor);
-        MapUtil.activateLayer(this.activeFloorNum, this.layers.switchableLayers);
-        this.$emit('selectFloor', this.activeFloorNum);
+        this.activeFloorName = query.floor;
+        MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers);
+        this.$emit('selectFloor', this.activeFloorName);
       }
       if (query.q && query.q.length > 3) {
         this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
           this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-          this.routeFromValTemp, this.activeFloorNum, this.popup);
+          this.routeFromValTemp, this.activeFloorName, this.popup);
       }
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-        this.routeFromValTemp, this.activeFloorNum, this.popup,
+        this.routeFromValTemp, this.activeFloorName, this.popup,
         properties, coordinate, feature
       );
     },
@@ -142,7 +142,7 @@ export default {
     },
     onShareButtonClick () {
       const shareOverlay = this.$refs.shareOverlay;
-      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum);
+      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
       shareOverlay.setShareLink(url);
       shareOverlay.show();
     },
@@ -167,6 +167,7 @@ export default {
             properties.poiId = feature.getId();
             properties.src = 'poi';
           }
+
           this.openIndrzPopup(properties, coordinate, feature);
           MapUtil.activateFloor(feature, this.layers);
         } else if (featureType === 'Point') {
@@ -176,6 +177,7 @@ export default {
           if (feature.getProperties().hasOwnProperty('poi_id')) {
             properties.poiId = feature.properties.poi_id;
           }
+
           this.openIndrzPopup(properties, coordinate, feature);
           MapUtil.activateFloor(feature, this.layers);
         }
@@ -183,7 +185,7 @@ export default {
         const featuresWms = this.map.getFeaturesAtPixel(pixel);
         const v = this.map.getView();
         const viewResolution = /** @type {number} */ (v.getResolution());
-        const wmsSource2 = MapHandler.getRoomInfo(this.activeFloorNum, this.layers);
+        const wmsSource2 = MapHandler.getRoomInfo(this.activeFloorName, this.layers);
         const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
           'INFO_FORMAT': 'application/json',
           'FEATURE_COUNT': 50
@@ -192,7 +194,7 @@ export default {
         if (url) {
           axios.get(url).then((response) => {
             this.globalPopupInfo.src = 'wms';
-            const listFeatures = response.data.features
+            const listFeatures = response.data && response.data.features ? response.data.features : [];
             const dataProperties = {};
 
             if (listFeatures.length > 0) {
@@ -251,7 +253,7 @@ export default {
           this.map.renderSync();
           break;
         case 'share-map':
-          MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum);
+          MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
           const shareOverlay = this.$refs.shareOverlay;
           shareOverlay.setShareLink(location.href);
           shareOverlay.show();
@@ -267,9 +269,9 @@ export default {
         zoom: 17
       });
     },
-    onFloorClick (floor) {
-      this.activeFloorNum = floor.floor_num;
-      MapUtil.activateLayer(floor.floor_num, this.layers.switchableLayers);
+    onFloorClick (floorName) {
+      this.activeFloorName = floorName;
+      MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers);
     }
   }
 };
