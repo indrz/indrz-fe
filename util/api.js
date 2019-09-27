@@ -9,7 +9,7 @@ const request = async function (requestObj) {
       url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'GET',
       headers: {
-        'Authorization': indrzConfig.indrz.token,
+        'Authorization': indrzConfig.token,
         'Content-Type': 'application/json'
       }
     })
