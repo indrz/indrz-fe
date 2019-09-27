@@ -434,7 +434,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     $('share-link').select();
     */
   } else {
-    url = 'woops';
+    url = location.href;
   }
 
   data.extent = currentExtent2;
