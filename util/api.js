@@ -1,7 +1,7 @@
 import axios from 'axios';
 import indrzConfig from '~/util/indrzConfig'
 
-const baseApiUrl = indrzConfig.indrz.baseApiUrl;
+const baseApiUrl = indrzConfig.baseApiUrl;
 
 const request = async function (requestObj) {
   try {
