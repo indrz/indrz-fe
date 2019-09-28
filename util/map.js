@@ -464,11 +464,10 @@ export default {
       false,
       'basemap.at'
     );
-    const wmsE00 = createWmsLayer(indrzConfig.layerNamePrefix + 'e00', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + 'e00'), '0', 'true', 3);
-    const wmsE01 = createWmsLayer(indrzConfig.layerNamePrefix + 'e01', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + 'e01'), '1', 'false', 3);
-    const wmsE02 = createWmsLayer(indrzConfig.layerNamePrefix + 'e02', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + 'e02'), '2', 'false', 3);
-    const wmsE03 = createWmsLayer(indrzConfig.layerNamePrefix + 'e03', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + 'e03'), '3', 'false', 3);
-
+    const wmsE00 = createWmsLayer(indrzConfig.layerNamePrefix + 'e00', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '00'), '0', 'true', 3);
+    const wmsE01 = createWmsLayer(indrzConfig.layerNamePrefix + 'e01', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '01'), '1', 'false', 3);
+    const wmsE02 = createWmsLayer(indrzConfig.layerNamePrefix + 'e02', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '02'), '2', 'false', 3);
+    const wmsE03 = createWmsLayer(indrzConfig.layerNamePrefix + 'e03', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '03'), '3', 'false', 3);
     // layer group
     const backgroundLayerGroup = new Group({
       layers: [greyBmapat, ortho30cmBmapat],
