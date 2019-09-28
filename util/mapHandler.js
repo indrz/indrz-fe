@@ -16,7 +16,7 @@ const closeIndrzPopup = (popup, globalPopupInfo) => {
 const openIndrzPopup = (
   globalPopupInfo, popUpHomePage, currentPOIID, currentLocale,
   objCenterCoords, routeToValTemp, routeFromValTemp,
-  activeFloorNum, popup, properties, coordinate, feature, offsetArray) => {
+  activeFloorName, popup, properties, coordinate, feature, offsetArray) => {
   const popupContent = document.getElementById('popup-content');
 
   for (const member in globalPopupInfo) {
@@ -165,7 +165,7 @@ const openIndrzPopup = (
     if (properties.room_external_id) {
       addPoiTableRow('Room Code', properties.room_external_id, 'popupSpaceAks');
     }
-    addPoiTableRow(titleFloorNumber, activeFloorNum, 'popupFloorNumber');
+    addPoiTableRow(titleFloorNumber, activeFloorName, 'popupFloorNumber');
   }
   if (globalPopupInfo.roomcode) {
     routeFromValTemp = globalPopupInfo.roomcode;
@@ -179,7 +179,7 @@ const openIndrzPopup = (
   popupContent.innerHTML += '</p></div>';
   globalPopupInfo.name = titlePopup;
   globalPopupInfo.coords = objCenterCoords;
-  globalPopupInfo.floor = activeFloorNum;
+  globalPopupInfo.floor = activeFloorName;
   globalPopupInfo.roomcode = roomCode;
   popup.setPosition(coordinate);
   popup.setOffset(offsetArray);
@@ -303,14 +303,14 @@ const getRoomInfo = (floor, layers) => {
   let newel;
 
   availableWmsLayers.forEach(function (element) {
-    if (floor === Number(element.getProperties().floor_num)) {
+    if (floor === element.getProperties().floorName) {
       newel = element.getSource();
     }
   });
   return newel;
 };
 
-const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName) => {
   let param = '';
 
   if (globalPopupInfo.bookId) {
@@ -330,7 +330,7 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     // udpateUrl('wmsInfo');
     param = 'wmsInfo';
   }
-  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
+  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName);
 };
 
 const createPopupData = (globalPopupInfo, poiId) => {
@@ -359,7 +359,7 @@ const createPopupData = (globalPopupInfo, poiId) => {
   return pData;
 };
 
-const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName) => {
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
   const currentZoom2 = map.getView().getZoom();
   const centerCrd = map.getView().getCenter();
@@ -369,7 +369,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   // const $ = document.getElementsByClassName;
 
   let url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 +
-    '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
+    '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
 
   const data = {};
 
@@ -409,7 +409,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       url = '/?poi-id=' + popupData.poiId + '&floor=' + popupData.floor_num;
     }
   } else if (mode === 'map') {
-    url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
+    url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
   } else if (mode === 'bookId') {
     url = hostUrl + globalRouteInfo.routeUrl;
     /*

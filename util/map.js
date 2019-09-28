@@ -28,14 +28,15 @@ const createWmsLayer = function (
 ) {
   return new ImageLayer({
     source: new ImageWMS({
-      url: indrzConfig.indrz.baseWmsUrl,
+      url: indrzConfig.baseWmsUrl,
       params: { LAYERS: geoserverLayer, TILED: true },
       serverType: 'geoserver',
       crossOrigin: ''
     }),
     visible: isVisible,
     name: layerName,
-    floor_num: floorNumber,
+    floorNumber: floorNumber,
+    floorName: layerName.split(indrzConfig.layerNamePrefix)[1],
     type: 'floor',
     zIndex: zIndexValue,
     crossOrigin: 'anonymous'
@@ -132,21 +133,22 @@ const hideLayers = (layers) => {
   layers.forEach(layer => layer.setVisible(false));
 };
 
-const setLayerVisible = (layerNum, switchableLayers) => {
+const setLayerVisible = (layerName, switchableLayers) => {
   if (switchableLayers.length > 0) {
-    switchableLayers[layerNum].setVisible(true);
+    const foundLayer = switchableLayers
+      .find(layer => layer.getProperties().name.toLowerCase() === layerName.toLowerCase());
+
+    if (foundLayer) {
+      foundLayer.setVisible(true);
+    }
   }
 };
 
 const activateFloor = (feature, layers) => {
-  let floor = feature.getProperties().floor_num;
-  for (let i = 0; i < layers.switchableLayers.length; i++) {
-    if (typeof floor === 'number') {
-      floor = floor.toString();
-    }
-    if (floor === layers.switchableLayers[i].getProperties().floor_num) {
-      activateLayer(i, layers.switchableLayers);
-    }
+  const floorName = feature.getProperties().floorName;
+  const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
+  if (layerToActive) {
+    activateLayer(layerToActive.getProperties().name, layers.switchableLayers);
   }
 };
 const generateResultLinks = (att, searchString, featureCenter, className, floor, fid, poiIcon) => {
@@ -284,8 +286,8 @@ const styleFunction = (feature, resolution) => {
 const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
   popUpHomePage, currentPOIID,
   currentLocale, objCenterCoords, routeToValTemp,
-  routeFromValTemp, activeFloorNum, popup) => {
-  const searchUrl = indrzConfig.indrz.searchUrl + searchString + '?format=json';
+  routeFromValTemp, activeFloorName, popup) => {
+  const searchUrl = indrzConfig.searchUrl + searchString + '?format=json';
 
   if (searchLayer) {
     map.removeLayer(searchLayer);
@@ -314,7 +316,7 @@ const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, search
       }
       const fullName = att;
       const featureNameGet = 'category_' + requestedLocale;
-      const floor = feature.get('floor_num');
+      const floor = feature.get('floorName');
       const roomCat = feature.get(featureNameGet);
       const roomCode = feature.get('roomcode');
       let someThing = '';
@@ -360,7 +362,7 @@ const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, search
       MapHandler.openIndrzPopup(
         globalPopupInfo, popUpHomePage, currentPOIID,
         currentLocale, objCenterCoords, routeToValTemp,
-        routeFromValTemp, activeFloorNum, popup,
+        routeFromValTemp, activeFloorName, popup,
         featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
       );
       zoomer(map.getView(), centerCoOrd, zoomLevel);
@@ -371,7 +373,10 @@ const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, search
         search_text = searchString;
        */
       // active the floor of the start point
-      activateFloor(featuresSearch[0], layers);
+      const floorNumber = featuresSearch[0].getProperties().floor_num;
+      const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorNumber === floorNumber);
+
+      activateFloor(layerToActive, layers);
     } else if (featuresSearch.length === 0) {
       const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
       console.log(htmlInsert);
@@ -415,9 +420,9 @@ const zoomer = (view, coord, zoomLevel) => {
   });
 };
 
-const activateLayer = (layerNum, switchableLayers) => {
+const activateLayer = (layerName, switchableLayers) => {
   hideLayers(switchableLayers);
-  setLayerVisible(layerNum, switchableLayers);
+  setLayerVisible(layerName, switchableLayers);
   // if (typeof update_url == undefined) {
   // safe to use the function
   // do we need to use that
@@ -428,7 +433,7 @@ const activateLayer = (layerNum, switchableLayers) => {
 
 export default {
 
-  getStartCenter: () => indrzConfig.indrz.defaultCenterXY,
+  getStartCenter: () => indrzConfig.defaultCenterXY,
 
   getMapControls: () => {
     // controls
@@ -445,7 +450,7 @@ export default {
     ];
   },
 
-  getLayers: () => {
+  getLayers: (floors) => {
     // layers
     const greyBmapat = createWmtsLayer(
       'bmapgrau',
@@ -459,18 +464,28 @@ export default {
       false,
       'basemap.at'
     );
-    const wmsE00 = createWmsLayer('floor_eg', 'indrztu:floor_eg', '0', 'true', 3);
-    const wmsE01 = createWmsLayer('floor_01', 'indrztu:floor_01', '1', 'false', 3);
-    const wmsE02 = createWmsLayer('floor_02', 'indrztu:floor_02', '2', 'false', 3);
-    const wmsE03 = createWmsLayer('floor_03', 'indrztu:floor_03', '3', 'false', 3);
-
+    const wmsLayers = [];
+    floors.forEach((floor, index) => {
+      let floorNumString = floor.floor_num.toString();
+      if (floorNumString.length < 2) {
+        floorNumString = '0' + floorNumString;
+      }
+      const layer = createWmsLayer(
+        indrzConfig.layerNamePrefix + floor.short_name.toLowerCase(),
+        indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + floorNumString,
+        floor.floor_num,
+        index === 0,
+        3
+      );
+      wmsLayers.push(layer);
+    });
     // layer group
     const backgroundLayerGroup = new Group({
       layers: [greyBmapat, ortho30cmBmapat],
       name: 'background maps'
     });
     const wmsfloorLayerGroup = new Group({
-      layers: [wmsE00, wmsE01, wmsE02, wmsE03],
+      layers: wmsLayers,
       name: 'wms floor maps'
     });
     const poiLayerGroup = new Group({
@@ -489,7 +504,7 @@ export default {
         ortho30cmBmapat,
         greyBmapat
       },
-      switchableLayers: [wmsE00, wmsE01, wmsE02, wmsE03],
+      switchableLayers: wmsLayers,
       layerGroups: [
         backgroundLayerGroup,
         wmsfloorLayerGroup,
