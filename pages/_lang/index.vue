@@ -39,7 +39,7 @@
       />
     </v-toolbar>
     <indrz-map ref="map" @selectFloor="onFloorSelect" />
-    <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
+    <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
   </v-card>
 </template>
 
@@ -47,6 +47,7 @@
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
 import FloorChanger from '../../components/FloorChanger';
+import api from '../../util/api';
 
 export default {
   components: {
@@ -59,6 +60,8 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
+      floors: [],
+      loading: true,
       items: [
         {
           icon: 'mdi-apps',
@@ -74,7 +77,25 @@ export default {
       mapElName: 'mapCard'
     }
   },
+
+  async mounted () {
+    const floorData = await this.fetchFloors();
+
+    if (floorData && floorData.data && floorData.data.results) {
+      this.floors = floorData.data.results;
+    }
+    this.loading = false;
+
+    if (this.setSelection) {
+      this.selectFloorWithCss(this.setSelection);
+    }
+  },
   methods: {
+    fetchFloors () {
+      return api.request({
+        endPoint: 'floor'
+      });
+    },
     onDrawerClick () {
       this.$emit('onDrawerClick')
     },

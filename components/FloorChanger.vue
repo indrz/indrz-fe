@@ -24,25 +24,25 @@ import api from '../util/api';
 import indrzConfig from '../util/indrzConfig';
 
 export default {
+  props: {
+    floors: {
+      type: Array,
+      default: function () {
+        return [];
+      }
+    }
+  },
   data () {
     return {
-      loading: true,
-      floors: [],
       setSelection: null
     }
   },
 
-  async mounted () {
-    const floorData = await this.fetchFloors();
-
-    if (floorData && floorData.data && floorData.data.results) {
-      this.floors = floorData.data.results;
-      // this.floors.sort((a, b) => (Number(a.floor_num) > Number(b.floor_num)) ? 1 : -1);
-    }
-    this.loading = false;
-
-    if (this.setSelection) {
-      this.selectFloorWithCss(this.setSelection);
+  watch: {
+    floors () {
+      if (this.setSelection) {
+        this.selectFloorWithCss(this.setSelection);
+      }
     }
   },
 
