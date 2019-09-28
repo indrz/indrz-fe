@@ -1,5 +1,3 @@
-import MapUtil from './map.js'
-
 const hostUrl = window.location.href;
 const closeIndrzPopup = (popup, globalPopupInfo) => {
   popup.setPosition(undefined);
@@ -312,18 +310,6 @@ const getRoomInfo = (floor, layers) => {
   return newel;
 };
 
-const activateFloor = (feature, layers) => {
-  let floor = feature.getProperties().floor_num;
-  for (let i = 0; i < layers.switchableLayers.length; i++) {
-    if (typeof floor === 'number') {
-      floor = floor.toString();
-    }
-    if (floor === layers.switchableLayers[i].getProperties().floor_num) {
-      MapUtil.activateLayer(i);
-    }
-  }
-};
-
 const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
   let param = '';
 
@@ -448,7 +434,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     $('share-link').select();
     */
   } else {
-    url = 'woops';
+    url = location.href;
   }
 
   data.extent = currentExtent2;
@@ -464,7 +450,6 @@ export default {
   getBuildingLetter,
   addPoiTableRow,
   getRoomInfo,
-  activateFloor,
   handleShareClick,
   updateUrl
 };
