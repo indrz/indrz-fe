@@ -46,6 +46,14 @@ export default {
     InfoOverlay,
     ShareOverlay
   },
+  props: {
+    floors: {
+      type: Array,
+      default: function () {
+        return [];
+      }
+    }
+  },
   data () {
     return {
       mapId: 'mapContainer',
@@ -68,47 +76,50 @@ export default {
     };
   },
 
-  mounted () {
-    // eslint-disable-next-line no-new
-    this.layers = MapUtil.getLayers();
-    this.view = new View({
-      center: MapUtil.getStartCenter(),
-      zoom: 17,
-      maxZoom: 23
-    });
-    this.map = new Map({
-      interactions: defaultInteraction().extend([
-        new DragRotateAndZoom(),
-        new PinchZoom({
-          constrainResolution: true
-        })
-      ]),
-      target: this.mapId,
-      controls: MapUtil.getMapControls(),
-      view: this.view,
-      layers: this.layers.layerGroups
-    });
-    this.popup = new Overlay({
-      element: document.getElementById('indrz-popup'),
-      autoPan: true,
-      autoPanAnimation: {
-        duration: 250
-      },
-      zIndex: 5,
-      name: 'indrzPopup'
-    });
-    this.map.addOverlay(this.popup);
-
-    this.map.on('singleclick', this.onMapClick, this);
-    window.onresize = () => {
-      setTimeout(() => {
-        this.map.updateSize();
-      }, 500);
-    };
-    this.loadMapWithParams();
+  watch: {
+    floors () {
+      this.load();
+    }
   },
-
   methods: {
+    load () {
+      this.layers = MapUtil.getLayers(this.floors);
+      this.view = new View({
+        center: MapUtil.getStartCenter(),
+        zoom: 17,
+        maxZoom: 23
+      });
+      this.map = new Map({
+        interactions: defaultInteraction().extend([
+          new DragRotateAndZoom(),
+          new PinchZoom({
+            constrainResolution: true
+          })
+        ]),
+        target: this.mapId,
+        controls: MapUtil.getMapControls(),
+        view: this.view,
+        layers: this.layers.layerGroups
+      });
+      this.popup = new Overlay({
+        element: document.getElementById('indrz-popup'),
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250
+        },
+        zIndex: 5,
+        name: 'indrzPopup'
+      });
+      this.map.addOverlay(this.popup);
+
+      this.map.on('singleclick', this.onMapClick, this);
+      window.onresize = () => {
+        setTimeout(() => {
+          this.map.updateSize();
+        }, 500);
+      };
+      this.loadMapWithParams();
+    },
     loadMapWithParams () {
       const query = queryString.parse(location.search);
       const campusId = query.campus || 1;

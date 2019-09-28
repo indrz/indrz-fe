@@ -450,7 +450,7 @@ export default {
     ];
   },
 
-  getLayers: () => {
+  getLayers: (floors) => {
     // layers
     const greyBmapat = createWmtsLayer(
       'bmapgrau',
@@ -464,17 +464,28 @@ export default {
       false,
       'basemap.at'
     );
-    const wmsE00 = createWmsLayer(indrzConfig.layerNamePrefix + 'e00', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '00'), '0', 'true', 3);
-    const wmsE01 = createWmsLayer(indrzConfig.layerNamePrefix + 'e01', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '01'), '1', 'false', 3);
-    const wmsE02 = createWmsLayer(indrzConfig.layerNamePrefix + 'e02', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '02'), '2', 'false', 3);
-    const wmsE03 = createWmsLayer(indrzConfig.layerNamePrefix + 'e03', (indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + '03'), '3', 'false', 3);
+    const wmsLayers = [];
+    floors.forEach((floor, index) => {
+      let floorNumString = floor.floor_num.toString();
+      if (floorNumString.length < 2) {
+        floorNumString = '0' + floorNumString;
+      }
+      const layer = createWmsLayer(
+        indrzConfig.layerNamePrefix + floor.short_name.toLowerCase(),
+        indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + floorNumString,
+        floor.floor_num,
+        index === 0,
+        3
+      );
+      wmsLayers.push(layer);
+    });
     // layer group
     const backgroundLayerGroup = new Group({
       layers: [greyBmapat, ortho30cmBmapat],
       name: 'background maps'
     });
     const wmsfloorLayerGroup = new Group({
-      layers: [wmsE00, wmsE01, wmsE02, wmsE03],
+      layers: wmsLayers,
       name: 'wms floor maps'
     });
     const poiLayerGroup = new Group({
@@ -493,7 +504,7 @@ export default {
         ortho30cmBmapat,
         greyBmapat
       },
-      switchableLayers: [wmsE00, wmsE01, wmsE02, wmsE03],
+      switchableLayers: wmsLayers,
       layerGroups: [
         backgroundLayerGroup,
         wmsfloorLayerGroup,

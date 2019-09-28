@@ -38,7 +38,7 @@
         :label="searchLabel"
       />
     </v-toolbar>
-    <indrz-map ref="map" @selectFloor="onFloorSelect" />
+    <indrz-map ref="map" :floors="floors" @selectFloor="onFloorSelect" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
   </v-card>
 </template>
