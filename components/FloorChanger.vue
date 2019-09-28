@@ -58,6 +58,9 @@ export default {
       this.selectFloorWithCss(floor.short_name.toLowerCase());
     },
     selectFloorWithCss (floorName) {
+      if (floorName.includes(indrzConfig.layerNamePrefix)) {
+        floorName = floorName.split(indrzConfig.layerNamePrefix)[1];
+      }
       setTimeout(() => {
         const activeClass = 'v-list-item--active';
         const linkClass = 'v-list-item--link';
