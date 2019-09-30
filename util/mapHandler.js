@@ -19,6 +19,7 @@ const openIndrzPopup = (
   globalPopupInfo, popUpHomePage, currentPOIID, currentLocale,
   objCenterCoords, routeToValTemp, routeFromValTemp,
   activeFloorName, popup, properties, coordinate, feature, offsetArray) => {
+  const floorName = activeFloorName.split(indrzConfig.layerNamePrefix)[1].toUpperCase();
   const popupContent = document.getElementById('popup-content');
 
   for (const member in globalPopupInfo) {
@@ -110,7 +111,7 @@ const openIndrzPopup = (
   }
   let titlePopup = '';
   const titleBuildingName = 'Building: ';
-  const titleFloorNumber = 'Floor Number: ';
+  const titleFloorNumber = 'Floor Name: ';
   const titleRoomcode = 'Room Number: ';
   const titleRoomCat = 'Category: ';
   const buildingName = getBuildingLetter(properties);
@@ -167,7 +168,7 @@ const openIndrzPopup = (
     if (properties.room_external_id) {
       addPoiTableRow('Room Code', properties.room_external_id, 'popupSpaceAks');
     }
-    addPoiTableRow(titleFloorNumber, activeFloorName, 'popupFloorNumber');
+    addPoiTableRow(titleFloorNumber, floorName, 'popupFloorNumber');
   }
   if (globalPopupInfo.roomcode) {
     routeFromValTemp = globalPopupInfo.roomcode;
