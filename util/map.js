@@ -450,7 +450,32 @@ export default {
     ];
   },
 
-  getLayers: (floors) => {
+  getWmsLayers: (floors) => {
+    const wmsLayers = [];
+
+    floors.forEach((floor, index) => {
+      const floorName = floor.short_name.toLowerCase();
+      const layerName = indrzConfig.layerNamePrefix + floorName;
+      const layer = createWmsLayer(
+        layerName,
+        indrzConfig.geoServerLayerPrefix + layerName,
+        floor.floor_num,
+        index === 0,
+        3
+      );
+      wmsLayers.push(layer);
+    });
+    const wmsFloorLayerGroup = new Group({
+      layers: wmsLayers,
+      name: 'wms floor maps'
+    });
+    return {
+      layers: wmsLayers,
+      layerGroup: wmsFloorLayerGroup
+    }
+  },
+
+  getLayers: () => {
     // layers
     const greyBmapat = createWmtsLayer(
       'bmapgrau',
@@ -464,27 +489,10 @@ export default {
       false,
       'basemap.at'
     );
-    const wmsLayers = [];
-    floors.forEach((floor, index) => {
-      const floorName = floor.short_name.toLowerCase();
-      const layerName = indrzConfig.layerNamePrefix + floorName;
-      const layer = createWmsLayer(
-        layerName,
-        indrzConfig.geoServerLayerPrefix + layerName,
-        floor.floor_num,
-        index === 0,
-        3
-      );
-      wmsLayers.push(layer);
-    });
     // layer group
     const backgroundLayerGroup = new Group({
       layers: [greyBmapat, ortho30cmBmapat],
       name: 'background maps'
-    });
-    const wmsfloorLayerGroup = new Group({
-      layers: wmsLayers,
-      name: 'wms floor maps'
     });
     const poiLayerGroup = new Group({
       layers: [],
@@ -502,10 +510,9 @@ export default {
         ortho30cmBmapat,
         greyBmapat
       },
-      switchableLayers: wmsLayers,
+      switchableLayers: [],
       layerGroups: [
         backgroundLayerGroup,
-        wmsfloorLayerGroup,
         poiLayerGroup,
         campusLocationsGroup
       ]

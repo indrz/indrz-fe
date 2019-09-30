@@ -38,7 +38,7 @@
         :label="searchLabel"
       />
     </v-toolbar>
-    <indrz-map ref="map" :floors="floors" @selectFloor="onFloorSelect" />
+    <indrz-map ref="map" @selectFloor="onFloorSelect" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
   </v-card>
 </template>
@@ -80,12 +80,11 @@ export default {
 
   async mounted () {
     const floorData = await this.fetchFloors();
-
     if (floorData && floorData.data && floorData.data.results) {
       this.floors = floorData.data.results;
+      this.$refs.map.loadLayers(this.floors);
     }
     this.loading = false;
-
     if (this.setSelection) {
       this.selectFloorWithCss(this.setSelection);
     }
