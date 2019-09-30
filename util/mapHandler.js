@@ -1,3 +1,5 @@
+import indrzConfig from '~/util/indrzConfig';
+
 const hostUrl = window.location.href;
 const closeIndrzPopup = (popup, globalPopupInfo) => {
   popup.setPosition(undefined);
@@ -303,7 +305,7 @@ const getRoomInfo = (floor, layers) => {
   let newel;
 
   availableWmsLayers.forEach(function (element) {
-    if (floor === element.getProperties().floorName) {
+    if (floor === (indrzConfig.layerNamePrefix + element.getProperties().floorName)) {
       newel = element.getSource();
     }
   });
