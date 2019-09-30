@@ -40,6 +40,7 @@ import MapHandler from '../util/mapHandler';
 import InfoOverlay from '../components/infoOverlay'
 import ShareOverlay from '../components/shareOverlay'
 import 'ol/ol.css';
+import indrzConfig from '../util/indrzConfig';
 
 export default {
   components: {
@@ -83,6 +84,9 @@ export default {
   },
   methods: {
     load () {
+      if (this.floors && this.floors.length) {
+        this.activeFloorName = indrzConfig.layerNamePrefix + this.floors[0].short_name.toLowerCase();
+      }
       this.layers = MapUtil.getLayers(this.floors);
       this.view = new View({
         center: MapUtil.getStartCenter(),
