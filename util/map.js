@@ -466,13 +466,11 @@ export default {
     );
     const wmsLayers = [];
     floors.forEach((floor, index) => {
-      let floorNumString = floor.floor_num.toString();
-      if (floorNumString.length < 2) {
-        floorNumString = '0' + floorNumString;
-      }
+      const floorName = floor.short_name.toLowerCase();
+      const layerName = indrzConfig.layerNamePrefix + floorName;
       const layer = createWmsLayer(
-        indrzConfig.layerNamePrefix + floor.short_name.toLowerCase(),
-        indrzConfig.geoServerLayerPrefix + indrzConfig.layerNamePrefix + floorNumString,
+        layerName,
+        indrzConfig.geoServerLayerPrefix + layerName,
         floor.floor_num,
         index === 0,
         3
