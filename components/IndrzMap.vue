@@ -47,14 +47,6 @@ export default {
     InfoOverlay,
     ShareOverlay
   },
-  props: {
-    floors: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    }
-  },
   data () {
     return {
       mapId: 'mapContainer',
@@ -77,51 +69,56 @@ export default {
     };
   },
 
-  watch: {
-    floors () {
-      this.load();
-    }
+  mounted () {
+    this.view = new View({
+      center: MapUtil.getStartCenter(),
+      zoom: 17,
+      maxZoom: 23
+    });
+
+    this.layers = MapUtil.getLayers();
+
+    this.map = new Map({
+      interactions: defaultInteraction().extend([
+        new DragRotateAndZoom(),
+        new PinchZoom({
+          constrainResolution: true
+        })
+      ]),
+      target: this.mapId,
+      controls: MapUtil.getMapControls(),
+      view: this.view,
+      layers: this.layers.layerGroups
+    });
+    this.popup = new Overlay({
+      element: document.getElementById('indrz-popup'),
+      autoPan: true,
+      autoPanAnimation: {
+        duration: 250
+      },
+      zIndex: 5,
+      name: 'indrzPopup'
+    });
+    this.map.addOverlay(this.popup);
+
+    this.map.on('singleclick', this.onMapClick, this);
+    window.onresize = () => {
+      setTimeout(() => {
+        this.map.updateSize();
+      }, 500);
+    };
   },
+
   methods: {
-    load () {
+    loadLayers (floors) {
+      this.floors = floors;
       if (this.floors && this.floors.length) {
         this.activeFloorName = indrzConfig.layerNamePrefix + this.floors[0].short_name.toLowerCase();
       }
-      this.layers = MapUtil.getLayers(this.floors);
-      this.view = new View({
-        center: MapUtil.getStartCenter(),
-        zoom: 17,
-        maxZoom: 23
-      });
-      this.map = new Map({
-        interactions: defaultInteraction().extend([
-          new DragRotateAndZoom(),
-          new PinchZoom({
-            constrainResolution: true
-          })
-        ]),
-        target: this.mapId,
-        controls: MapUtil.getMapControls(),
-        view: this.view,
-        layers: this.layers.layerGroups
-      });
-      this.popup = new Overlay({
-        element: document.getElementById('indrz-popup'),
-        autoPan: true,
-        autoPanAnimation: {
-          duration: 250
-        },
-        zIndex: 5,
-        name: 'indrzPopup'
-      });
-      this.map.addOverlay(this.popup);
-
-      this.map.on('singleclick', this.onMapClick, this);
-      window.onresize = () => {
-        setTimeout(() => {
-          this.map.updateSize();
-        }, 500);
-      };
+      this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+      this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
+      this.layers.switchableLayers = this.wmsLayerInfo.layers;
+      this.map.addLayer(this.wmsLayerInfo.layerGroup);
       this.loadMapWithParams();
     },
     loadMapWithParams () {
