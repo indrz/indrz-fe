@@ -29,12 +29,22 @@
       max-width="320px"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-text-field
-        hide-details
+      <v-autocomplete
+        v-model="model"
+        :items="searchResult"
+        :loading="isLoading"
+        :search-input.sync="search"
+        item-text="properties.name"
+        item-value="properties.spaceid"
         append-icon="mdi-magnify"
+        :no-data-text="noResultText"
         single-line
+        return-object
         solo
         flat
+        hide-selected
+        hide-details
+        hide-no-data
         :label="searchLabel"
       />
     </v-toolbar>
@@ -74,7 +84,38 @@ export default {
       miniVariant: false,
       mapId: 'mapContainer',
       map: null,
-      mapElName: 'mapCard'
+      mapElName: 'mapCard',
+      noResultText: 'No result found',
+      serachItemLimit: 100,
+      searchResult: [],
+      isLoading: false,
+      model: null,
+      search: null
+    }
+  },
+  watch: {
+    search (val) {
+      if (val.length < 3) {
+        return;
+      }
+      if (this.isLoading) {
+        return
+      }
+      this.isLoading = true;
+
+      api.request({
+        endPoint: 'search/' + val
+      })
+        .then((response) => {
+          this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
+          if (this.searchResult.length > 100) {
+            this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => (this.isLoading = false));
     }
   },
 
