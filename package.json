@@ -19,6 +19,8 @@
     "nuxt": "^2.0.0",
     "ol": "^5.3.3",
     "query-string": "^6.8.3",
+    "rxjs": "^6.5.3",
+    "rxjs-compat": "^6.5.3",
     "vue-i18n": "^8.14.0"
   },
   "devDependencies": {

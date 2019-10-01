@@ -54,6 +54,10 @@
 </template>
 
 <script>
+import { Subject } from 'rxjs';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/debounceTime';
+import 'rxjs/add/operator/distinctUntilChanged';
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
 import FloorChanger from '../../components/FloorChanger';
@@ -72,6 +76,7 @@ export default {
       fixed: false,
       floors: [],
       loading: true,
+      term$: new Subject(),
       items: [
         {
           icon: 'mdi-apps',
@@ -94,32 +99,21 @@ export default {
     }
   },
   watch: {
-    search (val) {
-      if (val.length < 3) {
+    search (text) {
+      if (text.length < 3) {
         return;
       }
-      if (this.isLoading) {
-        return
-      }
-      this.isLoading = true;
-
-      api.request({
-        endPoint: 'search/' + val
-      })
-        .then((response) => {
-          this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
-          if (this.searchResult.length > 100) {
-            this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-        .finally(() => (this.isLoading = false));
+      this.term$.next(text);
     }
   },
 
   async mounted () {
+    this
+      .term$
+      .debounceTime(500)
+      .distinctUntilChanged()
+      .subscribe(term => this.apiSearch(term));
+
     const floorData = await this.fetchFloors();
     if (floorData && floorData.data && floorData.data.results) {
       this.floors = floorData.data.results;
@@ -156,6 +150,23 @@ export default {
     },
     onFloorSelect (floor) {
       this.$refs.floorChanger.setSelection = floor;
+    },
+    apiSearch (term) {
+      this.isLoading = true;
+
+      api.request({
+        endPoint: 'search/' + term
+      })
+        .then((response) => {
+          this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
+          if (this.searchResult.length > 100) {
+            this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+        .finally(() => (this.isLoading = false));
     }
   }
 }
