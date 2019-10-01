@@ -29,14 +29,7 @@
       max-width="320px"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-text-field
-        hide-details
-        append-icon="mdi-magnify"
-        single-line
-        solo
-        flat
-        :label="searchLabel"
-      />
+      <campus-search />
     </v-toolbar>
     <indrz-map ref="map" @selectFloor="onFloorSelect" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
@@ -47,13 +40,15 @@
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
 import FloorChanger from '../../components/FloorChanger';
+import CampusSearch from '../../components/CampusSearch';
 import api from '../../util/api';
 
 export default {
   components: {
     Sidebar,
     IndrzMap,
-    FloorChanger
+    FloorChanger,
+    CampusSearch
   },
   data () {
     return {
@@ -70,11 +65,18 @@ export default {
         }
       ],
       picker: new Date().toISOString().substr(0, 10),
-      searchLabel: this.$t('search_our_campus'),
       miniVariant: false,
       mapId: 'mapContainer',
       map: null,
       mapElName: 'mapCard'
+    }
+  },
+  watch: {
+    search (text) {
+      if (text.length < 3) {
+        return;
+      }
+      this.term$.next(text);
     }
   },
 
