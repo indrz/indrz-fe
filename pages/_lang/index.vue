@@ -29,24 +29,7 @@
       max-width="320px"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-autocomplete
-        v-model="model"
-        :items="searchResult"
-        :loading="isLoading"
-        :search-input.sync="search"
-        item-text="properties.name"
-        item-value="properties.spaceid"
-        append-icon="mdi-magnify"
-        :no-data-text="noResultText"
-        single-line
-        return-object
-        solo
-        flat
-        hide-selected
-        hide-details
-        hide-no-data
-        :label="searchLabel"
-      />
+      <campus-search />
     </v-toolbar>
     <indrz-map ref="map" @selectFloor="onFloorSelect" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
@@ -54,20 +37,18 @@
 </template>
 
 <script>
-import { Subject } from 'rxjs';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
 import FloorChanger from '../../components/FloorChanger';
+import CampusSearch from '../../components/CampusSearch';
 import api from '../../util/api';
 
 export default {
   components: {
     Sidebar,
     IndrzMap,
-    FloorChanger
+    FloorChanger,
+    CampusSearch
   },
   data () {
     return {
@@ -76,7 +57,6 @@ export default {
       fixed: false,
       floors: [],
       loading: true,
-      term$: new Subject(),
       items: [
         {
           icon: 'mdi-apps',
@@ -85,17 +65,10 @@ export default {
         }
       ],
       picker: new Date().toISOString().substr(0, 10),
-      searchLabel: this.$t('search_our_campus'),
       miniVariant: false,
       mapId: 'mapContainer',
       map: null,
-      mapElName: 'mapCard',
-      noResultText: 'No result found',
-      serachItemLimit: 100,
-      searchResult: [],
-      isLoading: false,
-      model: null,
-      search: null
+      mapElName: 'mapCard'
     }
   },
   watch: {
@@ -108,12 +81,6 @@ export default {
   },
 
   async mounted () {
-    this
-      .term$
-      .debounceTime(500)
-      .distinctUntilChanged()
-      .subscribe(term => this.apiSearch(term));
-
     const floorData = await this.fetchFloors();
     if (floorData && floorData.data && floorData.data.results) {
       this.floors = floorData.data.results;
@@ -150,23 +117,6 @@ export default {
     },
     onFloorSelect (floor) {
       this.$refs.floorChanger.setSelection = floor;
-    },
-    apiSearch (term) {
-      this.isLoading = true;
-
-      api.request({
-        endPoint: 'search/' + term
-      })
-        .then((response) => {
-          this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
-          if (this.searchResult.length > 100) {
-            this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
-          }
-        })
-        .catch((err) => {
-          console.log(err)
-        })
-        .finally(() => (this.isLoading = false));
     }
   }
 }
