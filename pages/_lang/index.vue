@@ -73,7 +73,7 @@ export default {
   },
   watch: {
     search (text) {
-      if (text.length < 3) {
+      if (!text || text.length < 3) {
         return;
       }
       this.term$.next(text);
