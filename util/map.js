@@ -324,7 +324,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     }
     const fullName = att;
     const featureNameGet = 'category_' + requestedLocale;
-    const floor = feature.get('floor_num'); // todo: need to get the floor name instead fo number
+    const floor = feature.get('floor_name').toLowerCase();
     const roomCat = feature.get(featureNameGet);
     const roomCode = feature.get('roomcode');
     let someThing = '';
@@ -381,8 +381,8 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       search_text = searchString;
      */
     // active the floor of the start point
-    const floorNumber = featuresSearch[0].getProperties().floor_num;
-    const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorNumber === Number(floorNumber));
+    const floorName = featuresSearch[0].getProperties().floor_name.toLowerCase();
+    const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
 
     activateFloor(layerToActive, layers);
   } else if (featuresSearch.length === 0) {
