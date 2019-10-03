@@ -56,6 +56,7 @@ export default {
       layers: [],
       popup: null,
       activeFloorName: '',
+      initialFloor: {},
       globalPopupInfo: {},
       globalSearchInfo: {},
       globalRouteInfo: {},
@@ -113,13 +114,16 @@ export default {
     loadLayers (floors) {
       this.floors = floors;
       if (this.floors && this.floors.length) {
-        this.activeFloorName = indrzConfig.layerNamePrefix + this.floors[0].short_name.toLowerCase();
+        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
+        this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+        this.$emit('selectFloor', this.activeFloorName);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
       this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
       this.loadMapWithParams();
+      this.onFloorClick(this.activeFloorName);
     },
     onSearchSelect (selectedItem) {
       const campusId = selectedItem.building;
