@@ -29,7 +29,7 @@
       max-width="320px"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <campus-search />
+      <campus-search @selectSearhResult="onSearchSelect" />
     </v-toolbar>
     <indrz-map ref="map" @selectFloor="onFloorSelect" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
@@ -117,6 +117,9 @@ export default {
     },
     onFloorSelect (floor) {
       this.$refs.floorChanger.setSelection = floor;
+    },
+    onSearchSelect (selectedItem) {
+      this.$refs.map.onSearchSelect(selectedItem);
     }
   }
 }

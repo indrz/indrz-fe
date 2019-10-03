@@ -16,6 +16,7 @@
     hide-details
     hide-no-data
     :label="searchLabel"
+    @change="onSearchSelection"
   />
 </template>
 
@@ -65,6 +66,9 @@ export default {
         endPoint: 'search/' + term
       })
         .then((response) => {
+          if (!response || !response.data) {
+            return;
+          }
           this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
           if (this.searchResult.length > 100) {
             this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
@@ -74,6 +78,9 @@ export default {
           console.log(err)
         })
         .finally(() => (this.isLoading = false));
+    },
+    onSearchSelection (selection) {
+      this.$emit('selectSearhResult', selection);
     }
   }
 }

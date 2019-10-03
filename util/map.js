@@ -283,112 +283,120 @@ const styleFunction = (feature, resolution) => {
   }
 };
 
-const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
+const searchThroughAPI = async (searchText) => {
+  const searchUrl = `${indrzConfig.searchUrl}/${searchText}`;
+  const response = await api.request({
+    url: searchUrl
+  });
+  return response.data;
+};
+
+const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
   popUpHomePage, currentPOIID,
   currentLocale, objCenterCoords, routeToValTemp,
-  routeFromValTemp, activeFloorName, popup) => {
-  const searchUrl = indrzConfig.searchUrl + searchString + '?format=json';
-
+  routeFromValTemp, activeFloorName, popup, feature) => {
   if (searchLayer) {
     map.removeLayer(searchLayer);
     clearSearchResults(map, searchLayer);
   }
-
   const searchSource = new SourceVector();
+  let response = {};
+  if (!feature) {
+    response = await searchThroughAPI(searchString);
+  } else {
+    response = feature;
+  }
 
-  api.request({
-    url: searchUrl
-  }).then(function (response) {
-    const geojsonFormat3 = new GeoJSON();
-    const featuresSearch = geojsonFormat3.readFeatures(response.data, { featureProjection: 'EPSG:4326' });
-    searchSource.addFeatures(featuresSearch);
+  const geojsonFormat3 = new GeoJSON();
+  const featuresSearch = geojsonFormat3.readFeatures(response, { featureProjection: 'EPSG:4326' });
+  searchSource.addFeatures(featuresSearch);
 
-    searchSource.forEachFeature(function (feature) {
-      const requestedLocale = 'en';
-      const featureName = feature.get('name');
-      const featureExtent = feature.getGeometry().getExtent();
-      const featureCenter = getCenter(featureExtent);
-      let att = searchString;
-      if (searchString === featureName) {
-        att = searchString;
-      } else {
-        att = featureName;
-      }
-      const fullName = att;
-      const featureNameGet = 'category_' + requestedLocale;
-      const floor = feature.get('floorName');
-      const roomCat = feature.get(featureNameGet);
-      const roomCode = feature.get('roomcode');
-      let someThing = '';
-
-      if (att !== roomCode) {
-        someThing = ' (' + roomCode + ')'
-      } else {
-        someThing = ''
-      }
-      let featureId = '';
-      let poiIconPath = '';
-
-      if (feature.getProperties().hasOwnProperty('poi_id')) {
-        featureId = feature.get('poi_id');
-        poiIconPath = feature.get('icon');
-        globalPopupInfo.poiId = feature.get('poi_id');
-        globalPopupInfo.src = feature.get('src')
-      } else {
-        globalPopupInfo.poiId = 'noid';
-        globalPopupInfo.src = feature.get('src')
-      }
-      const attributeInfo = '"' + att + '"';
-      let htmlInsert = '';
-
-      if (roomCat !== '' && typeof roomCat !== 'undefined') {
-        const resultListName = fullName + ' (' + roomCat + ')';
-        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, resultListName, floor, featureId, poiIconPath)
-      } else if (roomCode !== '' && typeof roomCode !== 'undefined') {
-        const className = fullName + someThing;
-        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
-      } else {
-        const className = fullName;
-        htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
-      }
-      console.log(htmlInsert)
-      // todo: handle such jquery things
-      // $('#search-results-list').append(htmlInsert);
-    });
-
-    const centerCoOrd = getCenter(searchSource.getExtent());
-
-    if (featuresSearch.length === 1) {
-      MapHandler.openIndrzPopup(
-        globalPopupInfo, popUpHomePage, currentPOIID,
-        currentLocale, objCenterCoords, routeToValTemp,
-        routeFromValTemp, activeFloorName, popup,
-        featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
-      );
-      zoomer(map.getView(), centerCoOrd, zoomLevel);
-      /*
-       // the following code may need later use for space
-        space_id = response.features[0].properties.space_id;
-        poi_id = response.features[0].properties.poi_id;
-        search_text = searchString;
-       */
-      // active the floor of the start point
-      const floorNumber = featuresSearch[0].getProperties().floor_num;
-      const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorNumber === floorNumber);
-
-      activateFloor(layerToActive, layers);
-    } else if (featuresSearch.length === 0) {
-      const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
-      console.log(htmlInsert);
-      // todo: handle such jquery things
-      // $('#search-results-list').append(htmlInsert);
+  searchSource.forEachFeature(function (feature) {
+    const requestedLocale = 'en';
+    const featureName = feature.get('name');
+    const featureExtent = feature.getGeometry().getExtent();
+    const featureCenter = getCenter(featureExtent);
+    let att = searchString;
+    if (searchString === featureName) {
+      att = searchString;
     } else {
-      const resExtent = searchSource.getExtent();
-      map.getView().fit(resExtent);
-      map.getView().setZoom(zoomLevel);
+      att = featureName;
     }
-    // fixContentHeight();
+    const fullName = att;
+    const featureNameGet = 'category_' + requestedLocale;
+    const floor = feature.get('floor_num'); // todo: need to get the floor name instead fo number
+    const roomCat = feature.get(featureNameGet);
+    const roomCode = feature.get('roomcode');
+    let someThing = '';
+
+    if (att !== roomCode) {
+      someThing = ' (' + roomCode + ')'
+    } else {
+      someThing = ''
+    }
+    let featureId = '';
+    let poiIconPath = '';
+
+    if (feature.getProperties().hasOwnProperty('poi_id')) {
+      featureId = feature.get('poi_id');
+      poiIconPath = feature.get('icon');
+      globalPopupInfo.poiId = feature.get('poi_id');
+      globalPopupInfo.src = feature.get('src')
+    } else {
+      globalPopupInfo.poiId = 'noid';
+      globalPopupInfo.src = feature.get('src')
+    }
+    const attributeInfo = '"' + att + '"';
+    let htmlInsert = '';
+
+    if (roomCat !== '' && typeof roomCat !== 'undefined') {
+      const resultListName = fullName + ' (' + roomCat + ')';
+      htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, resultListName, floor, featureId, poiIconPath)
+    } else if (roomCode !== '' && typeof roomCode !== 'undefined') {
+      const className = fullName + someThing;
+      htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
+    } else {
+      const className = fullName;
+      htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
+    }
+    console.log(htmlInsert)
+    // todo: handle such jquery things
+    // $('#search-results-list').append(htmlInsert);
   });
+
+  const centerCoOrd = getCenter(searchSource.getExtent());
+
+  if (featuresSearch.length === 1) {
+    MapHandler.openIndrzPopup(
+      globalPopupInfo, popUpHomePage, currentPOIID,
+      currentLocale, objCenterCoords, routeToValTemp,
+      routeFromValTemp, activeFloorName, popup,
+      featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
+    );
+    zoomer(map.getView(), centerCoOrd, zoomLevel);
+    /*
+     // the following code may need later use for space
+      space_id = response.features[0].properties.space_id;
+      poi_id = response.features[0].properties.poi_id;
+      search_text = searchString;
+     */
+    // active the floor of the start point
+    const floorNumber = featuresSearch[0].getProperties().floor_num;
+    const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorNumber === Number(floorNumber));
+
+    activateFloor(layerToActive, layers);
+  } else if (featuresSearch.length === 0) {
+    const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
+    console.log(htmlInsert);
+    // todo: handle such jquery things
+    // $('#search-results-list').append(htmlInsert);
+  } else {
+    const resExtent = searchSource.getExtent();
+    map.getView().fit(resExtent);
+    map.getView().setZoom(zoomLevel);
+  }
+  // fixContentHeight();
+
   searchLayer = new LayerVector({
     source: searchSource,
     style: styleFunction,
