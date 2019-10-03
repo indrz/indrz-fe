@@ -7,5 +7,6 @@ export default {
   searchUrl: baseApiUrl + 'search',
   token: 'Token 42519ebe7bada4d7a151c76832b94614ea5b198d',
   layerNamePrefix: 'floor_',
-  geoServerLayerPrefix: 'indrztu:'
+  geoServerLayerPrefix: 'indrztu:',
+  defaultStartFloor: 'eg'
 }
