@@ -336,6 +336,7 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
   return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName);
 };
 
+/*
 const createPopupData = (globalPopupInfo, poiId) => {
   const $ = document.getElementById;
   const popupBuilding = $('#popupBuilding').text();
@@ -361,6 +362,7 @@ const createPopupData = (globalPopupInfo, poiId) => {
 
   return pData;
 };
+*/
 
 const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName) => {
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
@@ -393,7 +395,8 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       url = '/?campus=' + buildingId + '&startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
     }
   } else if (mode === 'search') {
-    const popupData = createPopupData();
+    //
+    // const popupData = createPopupData();
 
     if (globalPopupInfo.hasOwnProperty('external_id')) {
       if (globalPopupInfo.external_id === globalPopupInfo.name) {
@@ -407,10 +410,11 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     } else {
       url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.name;
     }
-
+    /*
     if (popupData.poiId) {
       url = '/?poi-id=' + popupData.poiId + '&floor=' + popupData.floor_num;
     }
+    */
   } else if (mode === 'map') {
     url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
   } else if (mode === 'bookId') {
@@ -443,7 +447,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   data.extent = currentExtent2;
   data.zoom = currentZoom2;
   history.pushState(data, 'live_url_update', url);
-  return url;
+  return location.href;
 };
 
 export default {
