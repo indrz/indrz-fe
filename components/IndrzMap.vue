@@ -131,7 +131,7 @@ export default {
 
       this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-        this.routeFromValTemp, this.activeFloorName, this.popup);
+        this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
     },
     loadMapWithParams () {
       const query = queryString.parse(location.search);
