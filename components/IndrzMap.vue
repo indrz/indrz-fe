@@ -121,6 +121,18 @@ export default {
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
       this.loadMapWithParams();
     },
+    onSearchSelect (selectedItem) {
+      const campusId = selectedItem.building;
+      const searchText = selectedItem.properties.name;
+      const zoomLevel = 20;
+
+      this.globalSearchInfo.searchText = searchText;
+      this.objCenterCoords = selectedItem.properties.centerGeometry.coordinates;
+
+      this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
+        this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
+        this.routeFromValTemp, this.activeFloorName, this.popup);
+    },
     loadMapWithParams () {
       const query = queryString.parse(location.search);
       const campusId = query.campus || 1;

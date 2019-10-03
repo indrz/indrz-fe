@@ -287,7 +287,7 @@ const searchIndrz = (map, layers, globalPopupInfo, searchLayer, campusId, search
   popUpHomePage, currentPOIID,
   currentLocale, objCenterCoords, routeToValTemp,
   routeFromValTemp, activeFloorName, popup) => {
-  const searchUrl = indrzConfig.searchUrl + searchString + '?format=json';
+  const searchUrl = `${indrzConfig.searchUrl}/${searchString}`;
 
   if (searchLayer) {
     map.removeLayer(searchLayer);
