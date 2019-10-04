@@ -70,6 +70,7 @@ export default {
           item.classList.remove(activeClass, linkClass);
         });
         listItems[floorIndex].classList.add(activeClass, linkClass);
+        listItems[floorIndex].scrollIntoView();
       }, 500);
     }
   }
