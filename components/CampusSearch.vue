@@ -22,9 +22,7 @@
 
 <script>
 import { Subject } from 'rxjs';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import api from '../util/api';
 
 export default {
@@ -40,12 +38,8 @@ export default {
       search: null
     }
   },
-
   watch: {
     search (text) {
-      if (text.length < 3) {
-        return;
-      }
       this.term$.next(text);
     }
   },
@@ -53,8 +47,11 @@ export default {
   mounted () {
     this
       .term$
-      .debounceTime(500)
-      .distinctUntilChanged()
+      .pipe(
+        filter(term => term.length > 2),
+        debounceTime(500),
+        distinctUntilChanged()
+      )
       .subscribe(term => this.apiSearch(term));
   },
 
