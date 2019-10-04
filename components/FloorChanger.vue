@@ -8,7 +8,7 @@
         <v-list-item
           v-for="(floor, i) in floors"
           :key="i"
-          @click.stop="onFloorClick(floor)"
+          @click.stop="onFloorClick(floor, true)"
         >
           <v-list-item-content>
             <v-list-item-title v-text="floor.short_name" />
@@ -52,12 +52,12 @@ export default {
         endPoint: 'floor'
       });
     },
-    onFloorClick (floor) {
+    onFloorClick (floor, isEvent) {
       const floorName = indrzConfig.layerNamePrefix + floor.short_name.toLowerCase();
       this.$emit('floorClick', floorName);
-      this.selectFloorWithCss(floor.short_name.toLowerCase());
+      this.selectFloorWithCss(floor.short_name.toLowerCase(), isEvent);
     },
-    selectFloorWithCss (floorName) {
+    selectFloorWithCss (floorName, isEvent) {
       if (floorName.includes(indrzConfig.layerNamePrefix)) {
         floorName = floorName.split(indrzConfig.layerNamePrefix)[1];
       }
@@ -70,7 +70,9 @@ export default {
           item.classList.remove(activeClass, linkClass);
         });
         listItems[floorIndex].classList.add(activeClass, linkClass);
-        listItems[floorIndex].scrollIntoView();
+        if (!isEvent) {
+          listItems[floorIndex].scrollIntoView();
+        }
       }, 500);
     }
   }
