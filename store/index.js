@@ -1,6 +1,7 @@
 export const state = () => ({
   locales: ['en', 'de'],
-  locale: 'en'
+  locale: 'en',
+  user: {}
 })
 
 export const mutations = {
@@ -9,4 +10,12 @@ export const mutations = {
       state.locale = locale
     }
   }
-}
+};
+
+export const actions = {
+  nuxtServerInit ({ commit }, { req }) {
+    if (req && req.user) {
+      commit('user/SET_USER', req.user)
+    }
+  }
+};
