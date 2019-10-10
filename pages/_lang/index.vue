@@ -20,6 +20,7 @@
         :menu-items="items"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
+        @setGlobalRoute="onSetGlobalRoute"
       />
     </v-navigation-drawer>
     <v-toolbar
@@ -120,6 +121,9 @@ export default {
     },
     onSearchSelect (selectedItem) {
       this.$refs.map.onSearchSelect(selectedItem);
+    },
+    onSetGlobalRoute (selectedItem) {
+      this.$refs.map.setGlobalRoute(selectedItem);
     }
   }
 }
@@ -128,9 +132,9 @@ export default {
 <style scoped>
   header {
     position: absolute;
-    z-index: 100;
+    z-index: 6;
   }
   nav {
-    z-index: 101
+    z-index: 7
   }
 </style>

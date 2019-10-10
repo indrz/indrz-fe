@@ -4,7 +4,7 @@
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
         <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
         <v-expansion-panel-content>
-          <component :is="menuItem.type" @locationClick="onLocationClick" />
+          <component :is="menuItem.type" @locationClick="onLocationClick" @setGlobalRoute="onSetGlobalRoute" />
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -108,6 +108,9 @@ export default {
     },
     onLocationClick (value) {
       this.$emit('locationClick', value);
+    },
+    onSetGlobalRoute (value) {
+      this.$emit('setGlobalRoute', value);
     }
   }
 }

@@ -1,23 +1,48 @@
 <template>
-  <v-autocomplete
-    v-model="model"
-    :items="searchResult"
-    :loading="isLoading"
-    :search-input.sync="search"
-    item-text="properties.name"
-    item-value="properties.spaceid"
-    append-icon="mdi-magnify"
-    :no-data-text="noResultText"
-    single-line
-    return-object
-    solo
-    flat
-    hide-selected
-    hide-details
-    hide-no-data
-    :label="searchLabel"
-    @change="onSearchSelection"
-  />
+  <div>
+    <template v-if="isRoute">
+      <v-autocomplete
+        v-model="model"
+        :items="searchResult"
+        :loading="isLoading"
+        :search-input.sync="search"
+        item-text="properties.name"
+        item-value="properties.spaceid"
+        :prepend-icon="icon"
+        append-icon="mdi-magnify"
+        :no-data-text="noResultText"
+        single-line
+        return-object
+        flat
+        hide-selected
+        hide-details
+        hide-no-data
+        :label="routeLabel"
+        @change="onSearchSelection"
+      />
+    </template>
+    <template v-else>
+      <v-autocomplete
+        v-model="model"
+        :items="searchResult"
+        :loading="isLoading"
+        :search-input.sync="search"
+        item-text="properties.name"
+        item-value="properties.spaceid"
+        append-icon="mdi-magnify"
+        :no-data-text="noResultText"
+        single-line
+        return-object
+        solo
+        flat
+        hide-selected
+        hide-details
+        hide-no-data
+        :label="searchLabel"
+        @change="onSearchSelection"
+      />
+    </template>
+  </div>
 </template>
 
 <script>
@@ -26,6 +51,32 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import api from '../util/api';
 
 export default {
+  props: {
+    isRoute: {
+      type: Boolean,
+      default: function () {
+        return false;
+      }
+    },
+    routeLabel: {
+      type: String,
+      default: function () {
+        return '';
+      }
+    },
+    routeType: {
+      type: String,
+      default: function () {
+        return 'from';
+      }
+    },
+    icon: {
+      type: String,
+      default: function () {
+        return '';
+      }
+    }
+  },
   data () {
     return {
       searchLabel: this.$t('search_our_campus'),
@@ -77,7 +128,13 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     onSearchSelection (selection) {
-      this.$emit('selectSearhResult', selection);
+      this.$emit('selectSearhResult', {
+        data: selection,
+        routeType: this.routeType
+      });
+    },
+    getValue () {
+      return this.model;
     }
   }
 }

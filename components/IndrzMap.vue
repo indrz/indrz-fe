@@ -300,6 +300,9 @@ export default {
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
       MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers);
+    },
+    setGlobalRoute (selectedItem) {
+      this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     }
   }
 };
