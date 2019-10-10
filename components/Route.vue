@@ -20,6 +20,7 @@
       color="blue-grey"
       class="ma-2 white--text"
       @click="onGoButtonClick"
+      :disabled="!isRouteAvailable"
     >
       <v-icon left dark>
         mdi-run
@@ -42,14 +43,23 @@ export default {
       startRouteLabel: this.$t('start_route'),
       endRouteLabel: this.$t('end_route'),
       barrierFreeLabel: this.$t('barrier_free_route'),
-      goLabel: this.$t('go')
+      goLabel: this.$t('go'),
+      fromRoute: null,
+      toRoute: null
+    }
+  },
+  computed: {
+    isRouteAvailable () {
+      return this.fromRoute && this.toRoute;
     }
   },
   methods: {
     onSearchSelect (selectedItem) {
+      this[selectedItem.routeType + 'Route'] = selectedItem.data;
       this.$emit('setGlobalRoute', selectedItem);
     },
     onGoButtonClick () {
+      this.$emit('routeGo');
     }
   }
 };

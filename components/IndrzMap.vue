@@ -303,6 +303,9 @@ export default {
     },
     setGlobalRoute (selectedItem) {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
+    },
+    routeGo () {
+      console.log('Go >>>')
     }
   }
 };

@@ -21,6 +21,7 @@
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
         @setGlobalRoute="onSetGlobalRoute"
+        @routeGo="onRouteGo"
       />
     </v-navigation-drawer>
     <v-toolbar
@@ -124,6 +125,9 @@ export default {
     },
     onSetGlobalRoute (selectedItem) {
       this.$refs.map.setGlobalRoute(selectedItem);
+    },
+    onRouteGo () {
+      this.$refs.map.routeGo();
     }
   }
 }
