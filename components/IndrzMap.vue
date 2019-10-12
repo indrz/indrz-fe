@@ -37,6 +37,7 @@ import queryString from 'query-string';
 // import {transform} from 'ol/proj'
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
+import RouteHandler from '../util/RouteHandler';
 import InfoOverlay from '../components/infoOverlay'
 import ShareOverlay from '../components/shareOverlay'
 import 'ol/ol.css';
@@ -125,7 +126,8 @@ export default {
       this.loadMapWithParams();
       this.onFloorClick(this.activeFloorName);
     },
-    onSearchSelect (selectedItem) {
+    onSearchSelect (selection) {
+      const selectedItem = selection.data;
       const campusId = selectedItem.building;
       const searchText = selectedItem.properties.name;
       const zoomLevel = 20;
@@ -300,6 +302,12 @@ export default {
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
       MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers);
+    },
+    setGlobalRoute (selectedItem) {
+      this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
+    },
+    routeGo () {
+      RouteHandler.routeGo(this.map, this.globalRouteInfo);
     }
   }
 };

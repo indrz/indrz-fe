@@ -12,7 +12,7 @@ const request = async function (requestObj) {
         'Authorization': indrzConfig.token,
         'Content-Type': 'application/json'
       }
-    })
+    });
   } catch (err) {
     console.log(err);
     return null;
