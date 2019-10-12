@@ -99,7 +99,7 @@ export default {
     this
       .term$
       .pipe(
-        filter(term => term.length > 2),
+        filter(term => term && term.length > 2),
         debounceTime(500),
         distinctUntilChanged()
       )
