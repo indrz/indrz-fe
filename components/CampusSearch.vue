@@ -11,6 +11,7 @@
         :prepend-icon="icon"
         append-icon="mdi-magnify"
         :no-data-text="noResultText"
+        :no-filter="true"
         single-line
         return-object
         flat
@@ -31,6 +32,7 @@
         item-value="properties.spaceid"
         append-icon="mdi-magnify"
         :no-data-text="noResultText"
+        :no-filter="true"
         single-line
         return-object
         solo
