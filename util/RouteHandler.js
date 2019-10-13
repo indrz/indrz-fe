@@ -15,11 +15,11 @@ import indrzConfig from '~/util/indrzConfig';
 const routeGo = (map, globalRouteInfo, routeType = 0) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
-  if (from.properties.spaceid && to.properties.spaceid) {
-    routeUrl = getDirections(map, from.properties.spaceid, to.properties.spaceid, '0', 'spaceIdToSpaceId');
-  } else if (from.properties.poiid && to.properties.spaceid) {
-    routeUrl = getDirections(map, from.properties.poiid, to.properties.spaceid, '0', 'spaceIdToPoiId');
-  } else if (from.properties.poiid && to.properties.poiid) {
+  if (from.properties.space_id && to.properties.space_id) {
+    routeUrl = getDirections(map, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
+  } else if (from.properties.poi_id && to.properties.space_id) {
+    routeUrl = getDirections(map, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
+  } else if (from.properties.poi_id && to.properties.poi_id) {
     // TODO following
     // routeToPoiFromPoi(from.poiid, to.poiid)
   }
@@ -198,7 +198,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       });
       const floorNumberStyle = new Style({
         image: new Icon({
-          src: '/static/img/route_floor_' + floorNumber + '.png'
+          src: '/images/route/route_floor_' + floorNumber + '.png'
         })
       });
 
