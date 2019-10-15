@@ -28,9 +28,25 @@ const routeGo = (map, layers, globalRouteInfo, routeType = 0) => {
   return routeUrl;
 };
 
+const clearRouteData = (map) => {
+  // $('#RouteDescription').remove()
+  const layersToRemove = [
+    'RouteToBook',
+    'RouteLibraryMarkers',
+    'RouteMarkers',
+    'RouteFromSearch'
+  ];
+  layersToRemove.forEach((layerName) => {
+    map.getLayers().forEach(function (layer) {
+      if (layer && layerName === layer.get('name')) {
+        map.removeLayer(layer);
+      }
+    })
+  });
+};
+
 const getDirections = (map, layers, startSearchText, endSearchText, routeType, searchType) => {
-  // TODO: Clear the route first
-  // clearRouteData()
+  clearRouteData(map);
   const baseApiRoutingUrl = indrzConfig.baseApiUrl + 'directions/';
   let startName = '';
   let endName = '';
@@ -141,7 +157,7 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     zIndex: 4
   });
 
-  map.getLayers().push(routeLayer)
+  map.getLayers().push(routeLayer);
   /*
   $('#clearRoute').removeClass('hide')
   $('#shareRoute').removeClass('hide')
@@ -461,5 +477,6 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 export default {
   getDirections,
   routeGo,
-  routeToPoiFromPoi
+  routeToPoiFromPoi,
+  clearRouteData
 }
