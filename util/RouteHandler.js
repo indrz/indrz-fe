@@ -9,16 +9,17 @@ import Style from 'ol/style/Style';
 import Text from 'ol/style/Text';
 import Fill from 'ol/style/Fill';
 import Icon from 'ol/style/Icon';
+import MapUtil from './map';
 import api from '~/util/api';
 import indrzConfig from '~/util/indrzConfig';
 
-const routeGo = (map, globalRouteInfo, routeType = 0) => {
+const routeGo = (map, layers, globalRouteInfo, routeType = 0) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
   if (from.properties.space_id && to.properties.space_id) {
-    routeUrl = getDirections(map, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
+    routeUrl = getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
   } else if (from.properties.poi_id && to.properties.space_id) {
-    routeUrl = getDirections(map, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
+    routeUrl = getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
   } else if (from.properties.poi_id && to.properties.poi_id) {
     // TODO following
     // routeToPoiFromPoi(from.poiid, to.poiid)
@@ -26,7 +27,7 @@ const routeGo = (map, globalRouteInfo, routeType = 0) => {
   return routeUrl;
 };
 
-const getDirections = (map, startSearchText, endSearchText, routeType, searchType) => {
+const getDirections = (map, layers, startSearchText, endSearchText, routeType, searchType) => {
   // TODO: Clear the route first
   // clearRouteData()
   const baseApiRoutingUrl = indrzConfig.baseApiUrl + 'directions/';
@@ -76,6 +77,8 @@ const getDirections = (map, startSearchText, endSearchText, routeType, searchTyp
       endName = routeData.route_info.end_name;
       routeUrl = '/?campus=1&start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
 
+      console.log(startName);
+      console.log(endName);
       // TODO:: Show hide things
       /*
       $('#route-from').val(startName)
@@ -87,14 +90,13 @@ const getDirections = (map, startSearchText, endSearchText, routeType, searchTyp
       */
     }
 
-    let startFloor = 0;
+    let floorName = '';
     if (typeof (features[0]) !== 'undefined') {
-      startFloor = features[0].getProperties().floor;
-      // activate it
+      floorName = features[0].getProperties().floor_name;
+      if (floorName) {
+        MapUtil.activateLayer(indrzConfig.layerNamePrefix + floorName, layers.switchableLayers);
+      }
     }
-    console.log(startName);
-    console.log(endName);
-    console.log(startFloor);
     // TODO Following to check later
     /*
     if (library_key !== 'nokey') {
@@ -302,7 +304,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
 
 const routeMarkerCStyle = new Style({
   image: new Icon({
-    src: '/static/homepage/img/route_marker_C.png',
+    src: '/images/route/route_marker_C.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6

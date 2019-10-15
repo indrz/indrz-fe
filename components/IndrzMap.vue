@@ -307,7 +307,7 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     routeGo () {
-      RouteHandler.routeGo(this.map, this.globalRouteInfo);
+      RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
     }
   }
 };
