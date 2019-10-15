@@ -8,6 +8,7 @@ import GeoJSON from 'ol/format/GeoJSON';
 import Style from 'ol/style/Style';
 // import Text from 'ol/style/Text';
 // import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
 import Icon from 'ol/style/Icon';
 import MapUtil from './map';
 import api from '~/util/api';
@@ -48,6 +49,8 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText + '&type=' + routeType + '/?format=json'
   }
   const source = new SourceVector();
+  let floorName = '';
+
   api.request({
     url: geoJsonUrl
   }).then(function (response) {
@@ -90,7 +93,6 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
       */
     }
 
-    let floorName = '';
     if (typeof (features[0]) !== 'undefined') {
       floorName = features[0].getProperties().floor_name;
       if (floorName) {
@@ -125,15 +127,12 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     // format: new ol.format.GeoJSON(),
     source: source,
     style: function (feature, resolution) {
-      // TODO: fix following later
-      /*
-      var featureFloor = feature.getProperties().floor;
-      if (featureFloor == active_floor_num) {
-        feature.setStyle(route_active_style)
+      const featureFloor = feature.getProperties().floor_name;
+      if (featureFloor === floorName) {
+        feature.setStyle(routeActiveStyle)
       } else {
-        feature.setStyle(route_inactive_style)
+        feature.setStyle(routeInactiveStyle)
       }
-      */
     },
     title: 'RouteFromSearch',
     name: 'RouteFromSearch',
@@ -309,18 +308,7 @@ const routeMarkerCStyle = new Style({
   }),
   zIndex: 6
 });
-/*
-const faCircleSolidStyle = new Style({
-  text: new Text({
-    text: '&#9872;', // fas circle
-    scale: 2,
-    font: 'normal 18px FontAwesome',
-    offsety: -30,
-    offsetx: -10,
-    fill: new Fill({ color: 'red' })
-  })
-});
-*/
+
 const faCircleSolidStyle = new Style({
   image: new Icon({
     src: '/images/icons/flag.png',
@@ -335,18 +323,24 @@ const faFlagCheckeredStyle = new Style({
   }),
   zIndex: 6
 });
-/*
-const faFlagCheckeredStyle = new Style({
-  text: new Text({
-    text: '\uF11e', // fas flag-checkered
-    scale: 1,
-    font: 'normal 18px FontAwesome',
-    offsety: -30,
-    offsetx: -10,
-    fill: new Fill({ color: 'black' })
-  })
-});
-*/
+
+const routeActiveStyle = new Style({
+  stroke: new Stroke({
+    color: 'red',
+    width: 4
+  }),
+  zIndex: 6
+})
+
+const routeInactiveStyle = new Style({
+  stroke: new Stroke({
+    color: 'red',
+    width: 2,
+    lineDash: [0.1, 5],
+    opacity: 0.5
+  }),
+  zIndex: 6
+})
 
 const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 /*
