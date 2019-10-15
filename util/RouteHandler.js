@@ -84,8 +84,7 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
       // TODO following
       // insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, false)
     }
-    // TODO following
-    // addMarkers(features, routeData.route_info)
+
     addMarkers(map, features, routeData.route_info);
 
     if (searchType === 'coords') {
@@ -332,6 +331,7 @@ const faCircleSolidStyle = new Style({
   }),
   zIndex: 6
 });
+
 const faFlagCheckeredStyle = new Style({
   image: new Icon({
     src: '/images/icons/flag-checkered.png',
@@ -346,7 +346,7 @@ const routeActiveStyle = new Style({
     width: 4
   }),
   zIndex: 6
-})
+});
 
 const routeInactiveStyle = new Style({
   stroke: new Stroke({
@@ -356,7 +356,7 @@ const routeInactiveStyle = new Style({
     opacity: 0.5
   }),
   zIndex: 6
-})
+});
 
 const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 /*
@@ -474,9 +474,63 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 */
 };
 
+const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, frontOffice) => {
+  // $('#RouteDescription').remove();
+
+  const ulList = '<ul id="RouteDescription" class="list-group"> </ul>';
+
+  const routeTime = routeData.route_info.walk_time;
+
+  const minutes = Math.floor(routeTime / 60);
+  const seconds = routeTime - minutes * 60;
+  const mins = 'minutes';
+  const secs = 'seconds';
+  const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
+  document.getElementById('routeTextContainer').append(ulList);
+
+  if (frontOffice) {
+    if (routeData.route_info.mid_name !== '') {
+      const routeMidPointName = routeData.route_info.mid_name;
+      const x = 'Please first visit the ' + routeMidPointName + ' ' + 'front office';
+      /*
+      if (req_locale === 'de') {
+        var x = gettext('Please first visit the ') + 'Front Office von ' + routeMidPointName
+
+      } else {
+        var x = gettext('Please first visit the ') + routeMidPointName + ' ' + gettext('front office')
+      }
+      */
+      document.getElementById('RouteDescription').append(
+        `<li class="list-group-item"><b> + Start:  </b> ${startSearchText} </li>
+        <li class="list-group-item"> ${x} </li>
+        <li class="list-group-item"><b>Destination: </b> ${endSearchText} </li>
+        <li class="list-group-item"><b>Aprox. distance: </b> ${routeData.route_info.route_length} m</li>
+        <li class="list-group-item"><b>Aprox. walk time: </b> ${walkTimeString}</li>`
+      );
+    } else if (startSearchText) {
+      document.getElementById('RouteDescription').append(
+        `<li class="list-group-item"><b>Start: </b> ${startSearchText}</li>
+         <li class="list-group-item"><b>Destination: </b> ${endSearchText}</li>
+         <li class="list-group-item"><b>Aprox. distance: </b>${routeData.route_info.route_length} m</li>'
+         <li class="list-group-item"><b>Aprox. walk time: </b> ${walkTimeString}</li>`
+      );
+    } else {
+      startSearchText = routeData.route_info.start_name
+      endSearchText = routeData.route_info.end_name
+      document.getElementById('RouteDescription').append(
+        `<li class="list-group-item"><b>Start: </b> ${startSearchText}</li>
+        <li class="list-group-item"><b>Destination: </b> ${endSearchText}</li>
+        <li class="list-group-item"><b>Aprox. distance: </b> ${routeData.route_info.route_length} m</li>
+        <li class="list-group-item"><b>Aprox. walk time: </b> ${walkTimeString}</li>`
+      );
+    }
+  }
+};
+
 export default {
   getDirections,
   routeGo,
   routeToPoiFromPoi,
-  clearRouteData
+  clearRouteData,
+  insertRouteDescriptionText
 }
