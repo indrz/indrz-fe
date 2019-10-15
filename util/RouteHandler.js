@@ -77,6 +77,8 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
       endName = routeData.route_info.end_name;
       routeUrl = '/?campus=1&start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
 
+      console.log(startName);
+      console.log(endName);
       // TODO:: Show hide things
       /*
       $('#route-from').val(startName)
