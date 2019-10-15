@@ -6,8 +6,9 @@ import MultiPoint from 'ol/geom/MultiPoint';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import Style from 'ol/style/Style';
-import Text from 'ol/style/Text';
-import Fill from 'ol/style/Fill';
+// import Text from 'ol/style/Text';
+// import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
 import Icon from 'ol/style/Icon';
 import MapUtil from './map';
 import api from '~/util/api';
@@ -27,9 +28,25 @@ const routeGo = (map, layers, globalRouteInfo, routeType = 0) => {
   return routeUrl;
 };
 
+const clearRouteData = (map) => {
+  // $('#RouteDescription').remove()
+  const layersToRemove = [
+    'RouteToBook',
+    'RouteLibraryMarkers',
+    'RouteMarkers',
+    'RouteFromSearch'
+  ];
+  layersToRemove.forEach((layerName) => {
+    map.getLayers().forEach(function (layer) {
+      if (layer && layerName === layer.get('name')) {
+        map.removeLayer(layer);
+      }
+    })
+  });
+};
+
 const getDirections = (map, layers, startSearchText, endSearchText, routeType, searchType) => {
-  // TODO: Clear the route first
-  // clearRouteData()
+  clearRouteData(map);
   const baseApiRoutingUrl = indrzConfig.baseApiUrl + 'directions/';
   let startName = '';
   let endName = '';
@@ -48,6 +65,8 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText + '&type=' + routeType + '/?format=json'
   }
   const source = new SourceVector();
+  let floorName = '';
+
   api.request({
     url: geoJsonUrl
   }).then(function (response) {
@@ -90,7 +109,6 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
       */
     }
 
-    let floorName = '';
     if (typeof (features[0]) !== 'undefined') {
       floorName = features[0].getProperties().floor_name;
       if (floorName) {
@@ -125,15 +143,12 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     // format: new ol.format.GeoJSON(),
     source: source,
     style: function (feature, resolution) {
-      // TODO: fix following later
-      /*
-      var featureFloor = feature.getProperties().floor;
-      if (featureFloor == active_floor_num) {
-        feature.setStyle(route_active_style)
+      const featureFloor = feature.getProperties().floor_name;
+      if (featureFloor === floorName) {
+        feature.setStyle(routeActiveStyle)
       } else {
-        feature.setStyle(route_inactive_style)
+        feature.setStyle(routeInactiveStyle)
       }
-      */
     },
     title: 'RouteFromSearch',
     name: 'RouteFromSearch',
@@ -142,7 +157,7 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     zIndex: 4
   });
 
-  map.getLayers().push(routeLayer)
+  map.getLayers().push(routeLayer);
   /*
   $('#clearRoute').removeClass('hide')
   $('#shareRoute').removeClass('hide')
@@ -269,7 +284,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           if (mid === true) {
             endMarker.setStyle(routeMarkerCStyle)
           } else {
-            endMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle])
+            endMarker.setStyle([faFlagCheckeredStyle])
           }
         }
       }
@@ -284,7 +299,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       });
       startMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle]);
       endMarker.setGeometry(endPoint);
-      endMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle]);
+      endMarker.setStyle([faFlagCheckeredStyle]);
       markerFeatures.push(startMarker);
       markerFeatures.push(endMarker);
     }
@@ -311,26 +326,37 @@ const routeMarkerCStyle = new Style({
 });
 
 const faCircleSolidStyle = new Style({
-  text: new Text({
-    text: '\uF111', // fas circle
-    scale: 2,
-    font: 'normal 18px FontAwesome',
-    offsety: -30,
-    offsetx: -10,
-    fill: new Fill({ color: 'red' })
-  })
+  image: new Icon({
+    src: '/images/icons/flag.png',
+    anchor: [0.5, 1]
+  }),
+  zIndex: 6
+});
+const faFlagCheckeredStyle = new Style({
+  image: new Icon({
+    src: '/images/icons/flag-checkered.png',
+    anchor: [0.5, 1]
+  }),
+  zIndex: 6
 });
 
-const faFlagCheckeredStyle = new Style({
-  text: new Text({
-    text: '\uF11e', // fas flag-checkered
-    scale: 1,
-    font: 'normal 18px FontAwesome',
-    offsety: -30,
-    offsetx: -10,
-    fill: new Fill({ color: 'black' })
-  })
-});
+const routeActiveStyle = new Style({
+  stroke: new Stroke({
+    color: 'red',
+    width: 4
+  }),
+  zIndex: 6
+})
+
+const routeInactiveStyle = new Style({
+  stroke: new Stroke({
+    color: 'red',
+    width: 2,
+    lineDash: [0.1, 5],
+    opacity: 0.5
+  }),
+  zIndex: 6
+})
 
 const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 /*
@@ -451,5 +477,6 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 export default {
   getDirections,
   routeGo,
-  routeToPoiFromPoi
+  routeToPoiFromPoi,
+  clearRouteData
 }
