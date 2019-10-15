@@ -136,8 +136,10 @@ const hideLayers = (layers) => {
 const setLayerVisible = (layerName, switchableLayers) => {
   if (switchableLayers.length > 0) {
     const foundLayer = switchableLayers
-      .find(layer => layer.getProperties().name.toLowerCase() === layerName.toLowerCase());
-
+      .find((layer) => {
+        const layerProperties = layer.getProperties();
+        return (layerProperties.name || layerProperties.floorName).toLowerCase() === layerName.toLowerCase();
+      });
     if (foundLayer) {
       foundLayer.setVisible(true);
     }
