@@ -18,6 +18,7 @@ module.exports = {
     'no-console': 0,
     'semi':0,
     'no-extra-semi': 0,
-    "object-shorthand": 0
+    'object-shorthand': 0,
+    'unicorn/escape-case': 0
   }
 }

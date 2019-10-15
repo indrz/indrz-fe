@@ -6,8 +6,8 @@ import MultiPoint from 'ol/geom/MultiPoint';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import Style from 'ol/style/Style';
-import Text from 'ol/style/Text';
-import Fill from 'ol/style/Fill';
+// import Text from 'ol/style/Text';
+// import Fill from 'ol/style/Fill';
 import Icon from 'ol/style/Icon';
 import MapUtil from './map';
 import api from '~/util/api';
@@ -269,7 +269,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           if (mid === true) {
             endMarker.setStyle(routeMarkerCStyle)
           } else {
-            endMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle])
+            endMarker.setStyle([faFlagCheckeredStyle])
           }
         }
       }
@@ -284,7 +284,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       });
       startMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle]);
       endMarker.setGeometry(endPoint);
-      endMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle]);
+      endMarker.setStyle([faFlagCheckeredStyle]);
       markerFeatures.push(startMarker);
       markerFeatures.push(endMarker);
     }
@@ -309,10 +309,10 @@ const routeMarkerCStyle = new Style({
   }),
   zIndex: 6
 });
-
+/*
 const faCircleSolidStyle = new Style({
   text: new Text({
-    text: '\uF111', // fas circle
+    text: '&#9872;', // fas circle
     scale: 2,
     font: 'normal 18px FontAwesome',
     offsety: -30,
@@ -320,7 +320,22 @@ const faCircleSolidStyle = new Style({
     fill: new Fill({ color: 'red' })
   })
 });
-
+*/
+const faCircleSolidStyle = new Style({
+  image: new Icon({
+    src: '/images/icons/flag.png',
+    anchor: [0.5, 1]
+  }),
+  zIndex: 6
+});
+const faFlagCheckeredStyle = new Style({
+  image: new Icon({
+    src: '/images/icons/flag-checkered.png',
+    anchor: [0.5, 1]
+  }),
+  zIndex: 6
+});
+/*
 const faFlagCheckeredStyle = new Style({
   text: new Text({
     text: '\uF11e', // fas flag-checkered
@@ -331,6 +346,7 @@ const faFlagCheckeredStyle = new Style({
     fill: new Fill({ color: 'black' })
   })
 });
+*/
 
 const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 /*
