@@ -77,15 +77,6 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     const routeData = JSON.parse(routeJson);
     source.addFeatures(features);
 
-    if (routeData.route_info.mid_name !== '') {
-      // TODO following
-      // insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, true)
-    } else {
-      // TODO following
-      // insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, false)
-    }
-    // TODO following
-    // addMarkers(features, routeData.route_info)
     addMarkers(map, features, routeData.route_info);
 
     if (searchType === 'coords') {
@@ -107,6 +98,11 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
       $('#collapseCampus').collapse('hide')
       insertRouteDescriptionText(startName, endName, routeData, true)
       */
+    }
+    if (routeData.route_info.mid_name !== '') {
+      insertRouteDescriptionText(startName, endName, routeData, true)
+    } else {
+      insertRouteDescriptionText(startName, endName, routeData, false)
     }
 
     if (typeof (features[0]) !== 'undefined') {
@@ -332,6 +328,7 @@ const faCircleSolidStyle = new Style({
   }),
   zIndex: 6
 });
+
 const faFlagCheckeredStyle = new Style({
   image: new Icon({
     src: '/images/icons/flag-checkered.png',
@@ -346,7 +343,7 @@ const routeActiveStyle = new Style({
     width: 4
   }),
   zIndex: 6
-})
+});
 
 const routeInactiveStyle = new Style({
   stroke: new Stroke({
@@ -356,7 +353,7 @@ const routeInactiveStyle = new Style({
     opacity: 0.5
   }),
   zIndex: 6
-})
+});
 
 const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 /*
@@ -474,9 +471,63 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 */
 };
 
+const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, frontOffice) => {
+  // $('#RouteDescription').remove();
+
+  const ulList = '<span class="font-weight-medium list-group">Route Description</span><ul class="list-group">';
+
+  const routeTime = routeData.route_info.walk_time;
+
+  const minutes = Math.floor(routeTime / 60);
+  const seconds = routeTime - minutes * 60;
+  const mins = 'minutes';
+  const secs = 'seconds';
+  const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
+  const descriptionEl = document.getElementById('route-description');
+  let routeInfo = '';
+
+  if (frontOffice) {
+    if (routeData.route_info.mid_name !== '') {
+      const routeMidPointName = routeData.route_info.mid_name;
+      const x = 'Please first visit the ' + routeMidPointName + ' ' + 'front office';
+      /*
+      if (req_locale === 'de') {
+        var x = gettext('Please first visit the ') + 'Front Office von ' + routeMidPointName
+
+      } else {
+        var x = gettext('Please first visit the ') + routeMidPointName + ' ' + gettext('front office')
+      }
+      */
+      routeInfo =
+        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText} </li>
+        <li class="list-group-item"> ${x} </li>
+        <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText} </li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span> ${routeData.route_info.route_length} m</li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
+    } else if (startSearchText) {
+      routeInfo =
+        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText}</li>
+         <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText}</li>
+         <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span>${routeData.route_info.route_length} m</li>'
+         <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
+    } else {
+      startSearchText = routeData.route_info.start_name
+      endSearchText = routeData.route_info.end_name
+      routeInfo =
+        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText}</li>
+        <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText}</li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span> ${routeData.route_info.route_length} m</li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
+    }
+
+    descriptionEl.innerHTML = ulList + routeInfo + '</ul>';
+  }
+};
+
 export default {
   getDirections,
   routeGo,
   routeToPoiFromPoi,
-  clearRouteData
+  clearRouteData,
+  insertRouteDescriptionText
 }
