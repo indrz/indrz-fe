@@ -31,9 +31,9 @@
       max-width="320px"
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <campus-search @selectSearhResult="onSearchSelect" />
+      <campus-search ref="searchComp" @selectSearhResult="onSearchSelect" />
     </v-toolbar>
-    <indrz-map ref="map" @selectFloor="onFloorSelect" />
+    <indrz-map ref="map" @selectFloor="onFloorSelect" @clearSearch="onClearSearch" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
   </v-card>
 </template>
@@ -128,6 +128,9 @@ export default {
     },
     onRouteGo () {
       this.$refs.map.routeGo();
+    },
+    onClearSearch () {
+      this.$refs.searchComp.clearSearch();
     }
   }
 }

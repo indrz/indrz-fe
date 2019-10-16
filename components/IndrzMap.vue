@@ -15,7 +15,7 @@
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
-    <info-overlay @closeClick="closeIndrzPopup" @shareClick="onShareButtonClick" />
+    <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" />
     <share-overlay ref="shareOverlay" />
   </div>
 </template>
@@ -126,8 +126,12 @@ export default {
       this.loadMapWithParams();
       this.onFloorClick(this.activeFloorName);
     },
-    onSearchSelect (selection) {
+    async onSearchSelect (selection) {
       const selectedItem = selection.data;
+      if (!selectedItem) {
+        this.closeIndrzPopup();
+        return;
+      }
       const campusId = selectedItem.building;
       const searchText = selectedItem.properties.name;
       const zoomLevel = 20;
@@ -135,7 +139,7 @@ export default {
       this.globalSearchInfo.searchText = searchText;
       this.objCenterCoords = selectedItem.properties.centerGeometry.coordinates;
 
-      this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
+      this.searchLayer = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
     },
@@ -167,8 +171,15 @@ export default {
         properties, coordinate, feature
       );
     },
-    closeIndrzPopup () {
+    closeIndrzPopup (fromEvent) {
       MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
+      if (this.searchLayer) {
+        this.map.removeLayer(this.searchLayer);
+        this.searchLayer = null;
+      }
+      if (fromEvent) {
+        this.$emit('clearSearch');
+      }
     },
     onShareButtonClick () {
       const shareOverlay = this.$refs.shareOverlay;
