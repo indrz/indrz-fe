@@ -41,6 +41,7 @@
         hide-details
         hide-no-data
         :label="searchLabel"
+        clearable
         @change="onSearchSelection"
       />
     </template>
@@ -137,6 +138,9 @@ export default {
     },
     getValue () {
       return this.model;
+    },
+    clearSearch () {
+      this.model = null;
     }
   }
 }
