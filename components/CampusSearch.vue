@@ -19,7 +19,6 @@
         hide-details
         hide-no-data
         :label="routeLabel"
-        clearable
         @change="onSearchSelection"
       />
     </template>
