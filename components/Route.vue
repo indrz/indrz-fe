@@ -16,6 +16,7 @@
       :route-label="endRouteLabel"
       @selectSearhResult="onSearchSelect" />
     <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" />
+    <div id="route-description" />
     <v-btn
       color="blue-grey"
       class="ma-2 white--text"

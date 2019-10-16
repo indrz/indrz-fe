@@ -77,14 +77,6 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     const routeData = JSON.parse(routeJson);
     source.addFeatures(features);
 
-    if (routeData.route_info.mid_name !== '') {
-      // TODO following
-      // insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, true)
-    } else {
-      // TODO following
-      // insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, false)
-    }
-
     addMarkers(map, features, routeData.route_info);
 
     if (searchType === 'coords') {
@@ -106,6 +98,11 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
       $('#collapseCampus').collapse('hide')
       insertRouteDescriptionText(startName, endName, routeData, true)
       */
+    }
+    if (routeData.route_info.mid_name !== '') {
+      insertRouteDescriptionText(startName, endName, routeData, true)
+    } else {
+      insertRouteDescriptionText(startName, endName, routeData, false)
     }
 
     if (typeof (features[0]) !== 'undefined') {
@@ -477,7 +474,7 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, frontOffice) => {
   // $('#RouteDescription').remove();
 
-  const ulList = '<ul id="RouteDescription" class="list-group"> </ul>';
+  const ulList = '<span class="font-weight-medium list-group">Route Description</span><ul class="list-group">';
 
   const routeTime = routeData.route_info.walk_time;
 
@@ -486,7 +483,8 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, f
   const mins = 'minutes';
   const secs = 'seconds';
   const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
-  document.getElementById('routeTextContainer').append(ulList);
+  const descriptionEl = document.getElementById('route-description');
+  let routeInfo = '';
 
   if (frontOffice) {
     if (routeData.route_info.mid_name !== '') {
@@ -500,30 +498,29 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, f
         var x = gettext('Please first visit the ') + routeMidPointName + ' ' + gettext('front office')
       }
       */
-      document.getElementById('RouteDescription').append(
-        `<li class="list-group-item"><b> + Start:  </b> ${startSearchText} </li>
+      routeInfo =
+        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText} </li>
         <li class="list-group-item"> ${x} </li>
-        <li class="list-group-item"><b>Destination: </b> ${endSearchText} </li>
-        <li class="list-group-item"><b>Aprox. distance: </b> ${routeData.route_info.route_length} m</li>
-        <li class="list-group-item"><b>Aprox. walk time: </b> ${walkTimeString}</li>`
-      );
+        <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText} </li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span> ${routeData.route_info.route_length} m</li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
     } else if (startSearchText) {
-      document.getElementById('RouteDescription').append(
-        `<li class="list-group-item"><b>Start: </b> ${startSearchText}</li>
-         <li class="list-group-item"><b>Destination: </b> ${endSearchText}</li>
-         <li class="list-group-item"><b>Aprox. distance: </b>${routeData.route_info.route_length} m</li>'
-         <li class="list-group-item"><b>Aprox. walk time: </b> ${walkTimeString}</li>`
-      );
+      routeInfo =
+        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText}</li>
+         <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText}</li>
+         <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span>${routeData.route_info.route_length} m</li>'
+         <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
     } else {
       startSearchText = routeData.route_info.start_name
       endSearchText = routeData.route_info.end_name
-      document.getElementById('RouteDescription').append(
-        `<li class="list-group-item"><b>Start: </b> ${startSearchText}</li>
-        <li class="list-group-item"><b>Destination: </b> ${endSearchText}</li>
-        <li class="list-group-item"><b>Aprox. distance: </b> ${routeData.route_info.route_length} m</li>
-        <li class="list-group-item"><b>Aprox. walk time: </b> ${walkTimeString}</li>`
-      );
+      routeInfo =
+        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText}</li>
+        <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText}</li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span> ${routeData.route_info.route_length} m</li>
+        <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
     }
+
+    descriptionEl.innerHTML = ulList + routeInfo + '</ul>';
   }
 };
 
