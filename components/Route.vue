@@ -91,6 +91,10 @@ export default {
       field.searchResult = [data];
       field.model = data;
       this[routeInfo.path + 'Route'] = data;
+      this.$emit('setGlobalRoute', {
+        data,
+        routeType: routeInfo.path
+      });
       setTimeout(() => {
         field.stopSearch = false;
       }, 1000);
