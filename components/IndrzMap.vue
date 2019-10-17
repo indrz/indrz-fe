@@ -324,6 +324,9 @@ export default {
     },
     routeGo () {
       RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+    },
+    clearRouteData () {
+      RouteHandler.clearRouteData(this.map);
     }
   }
 };
