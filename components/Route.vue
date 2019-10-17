@@ -81,8 +81,12 @@ export default {
       this.$emit('clearRoute');
     },
     setRoute (routeInfo) {
+      const routeData = { ...routeInfo.data };
+      if (!routeData.name && routeData.roomcode) {
+        routeData.name = routeData.roomcode;
+      }
       const data = {
-        properties: routeInfo.data,
+        properties: routeData,
         type: 'Feature',
         geometry: {}
       };
