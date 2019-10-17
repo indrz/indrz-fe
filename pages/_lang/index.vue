@@ -22,6 +22,7 @@
         @locationClick="onLocationClick"
         @setGlobalRoute="onSetGlobalRoute"
         @routeGo="onRouteGo"
+        @clearRoute="onClearRoute"
       />
     </v-navigation-drawer>
     <v-toolbar
@@ -131,6 +132,9 @@ export default {
     },
     onClearSearch () {
       this.$refs.searchComp.clearSearch();
+    },
+    onClearRoute () {
+      this.$refs.map.clearRouteData();
     }
   }
 }

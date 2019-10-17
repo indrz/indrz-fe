@@ -8,7 +8,8 @@
             :is="menuItem.type"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
-            @routeGo = "onRouteGo"
+            @routeGo="onRouteGo"
+            @clearRoute="onClearRoute"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -119,6 +120,9 @@ export default {
     },
     onRouteGo () {
       this.$emit('routeGo');
+    },
+    onClearRoute () {
+      this.$emit('clearRoute');
     }
   }
 }
