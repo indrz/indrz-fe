@@ -79,6 +79,21 @@ export default {
       this.$refs.toRoute.clearSearch('');
       document.getElementById('route-description').innerHTML = '';
       this.$emit('clearRoute');
+    },
+    setRoute (routeInfo) {
+      const data = {
+        properties: routeInfo.data,
+        type: 'Feature',
+        geometry: {}
+      };
+      const field = this.$refs[routeInfo.path + 'Route'];
+      field.stopSearch = true;
+      field.searchResult = [data];
+      field.model = data;
+      this[routeInfo.path + 'Route'] = data;
+      setTimeout(() => {
+        field.stopSearch = false;
+      }, 1000);
     }
   }
 };
