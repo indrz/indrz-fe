@@ -28,6 +28,16 @@
       </v-icon>
       <span>{{ goLabel }}!</span>
     </v-btn>
+    <v-btn
+      color="blue-grey"
+      class="ma-2 white--text"
+      @click="onClearRoute"
+      :disabled="!isRouteAvailable"
+    >
+      <v-icon dark>
+        mdi-close
+      </v-icon>
+    </v-btn>
   </div>
 </template>
 
@@ -61,6 +71,14 @@ export default {
     },
     onGoButtonClick () {
       this.$emit('routeGo');
+    },
+    onClearRoute () {
+      this.$refs.fromRoute.clearSearch();
+      this.fromRoute = null;
+      this.toRoute = null;
+      this.$refs.toRoute.clearSearch('');
+      document.getElementById('route-description').innerHTML = '';
+      this.$emit('clearRoute');
     }
   }
 };
