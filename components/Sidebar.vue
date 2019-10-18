@@ -11,6 +11,7 @@
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
             @clearRoute="onClearRoute"
+            @shareClick="onShareClick"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -129,6 +130,9 @@ export default {
     },
     onRouteGo () {
       this.$emit('routeGo');
+    },
+    onShareClick () {
+      this.$emit('shareClick');
     },
     onClearRoute () {
       this.$emit('clearRoute');

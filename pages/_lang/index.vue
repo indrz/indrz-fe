@@ -25,6 +25,7 @@
         @setGlobalRoute="onSetGlobalRoute"
         @routeGo="onRouteGo"
         @clearRoute="onClearRoute"
+        @shareClick="onShareClick"
       />
     </v-navigation-drawer>
     <v-toolbar
@@ -145,6 +146,9 @@ export default {
     },
     onClearRoute () {
       this.$refs.map.clearRouteData();
+    },
+    onShareClick () {
+      this.$refs.map.onShareButtonClick();
     }
   }
 }

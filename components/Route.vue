@@ -19,25 +19,50 @@
     <div id="route-description" />
     <v-btn
       color="blue-grey"
-      class="ma-2 white--text"
+      class="white--text"
       @click="onGoButtonClick"
       :disabled="!isRouteAvailable"
+      small
     >
       <v-icon left dark>
         mdi-run
       </v-icon>
       <span>{{ goLabel }}!</span>
     </v-btn>
-    <v-btn
-      color="blue-grey"
-      class="ma-2 white--text"
-      @click="onClearRoute"
-      :disabled="!isRouteAvailable"
-    >
-      <v-icon dark>
-        mdi-close
-      </v-icon>
-    </v-btn>
+    <v-tooltip top>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          color="blue-grey"
+          class="white--text"
+          @click="onShareRoute"
+          :disabled="!isRouteAvailable"
+          small
+          v-on="on"
+        >
+          <v-icon dark>
+            mdi-share
+          </v-icon>
+        </v-btn>
+      </template>
+      <span>Share Route</span>
+    </v-tooltip>
+    <v-tooltip top>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          color="blue-grey"
+          class="white--text"
+          @click="onClearRoute"
+          :disabled="!isRouteAvailable"
+          small
+          v-on="on"
+        >
+          <v-icon dark>
+            mdi-close
+          </v-icon>
+        </v-btn>
+      </template>
+      <span>Clear Route</span>
+    </v-tooltip>
   </div>
 </template>
 
@@ -71,6 +96,9 @@ export default {
     },
     onGoButtonClick () {
       this.$emit('routeGo');
+    },
+    onShareRoute () {
+      this.$emit('shareClick');
     },
     onClearRoute () {
       this.$refs.fromRoute.clearSearch();
