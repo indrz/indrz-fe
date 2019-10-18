@@ -88,6 +88,9 @@ export default {
       if (!routeData.space_id && routeData.spaceid) {
         routeData.space_id = routeData.spaceid;
       }
+      if (!routeData.space_id && routeData.id) {
+        routeData.space_id = routeData.id;
+      }
       const data = {
         properties: routeData,
         type: 'Feature',
