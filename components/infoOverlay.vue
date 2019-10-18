@@ -3,22 +3,16 @@
     <a id="popup-closer" href="#" class="ol-popup-closer" @click.stop="onPopupCloseClick" />
     <div id="popup-content" />
     <div id="popup-links">
-      <v-btn text color="primary" small>
+      <v-btn text color="primary" small @click.stop="onRouteClick('from')">
         <v-icon left>
           mdi-map-marker
         </v-icon> Route from here
       </v-btn>
-      <!--<a id="routeFromHere" style="color:#5bc0de; cursor:pointer;"><i class="mdi-map-marker" />Route
-        from here</a>
-      <br>-->
-      <v-btn text color="primary" small>
+      <v-btn text color="primary" small @click.stop="onRouteClick('to')">
         <v-icon left>
           mdi-map-marker
         </v-icon> Route to here
       </v-btn>
-      <!--<a id="routeToHere" style="color:#5bc0de; cursor:pointer;"><i class="mdi-map-marker" />Route to
-        here
-      </a>-->
       <br>
       <v-tooltip top>
         <template v-slot:activator="{ on }">
@@ -41,6 +35,9 @@ export default {
     },
     onShareButtonClick () {
       this.$emit('shareClick');
+    },
+    onRouteClick (path) {
+      this.$emit('popupRouteClick', path);
     }
   }
 }

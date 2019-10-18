@@ -20,7 +20,7 @@
         <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" />
       </a>
     </div>
-    <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" />
+    <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
     <share-overlay ref="shareOverlay" />
   </div>
 </template>
@@ -191,6 +191,12 @@ export default {
       const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
       shareOverlay.setShareLink(url);
       shareOverlay.show();
+    },
+    onPopupRouteClick (path) {
+      this.$emit('popupRouteClick', {
+        path,
+        data: this.globalPopupInfo
+      });
     },
     onMapClick (evt) {
       const pixel = evt.pixel;

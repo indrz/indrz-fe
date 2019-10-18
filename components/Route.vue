@@ -79,6 +79,32 @@ export default {
       this.$refs.toRoute.clearSearch('');
       document.getElementById('route-description').innerHTML = '';
       this.$emit('clearRoute');
+    },
+    setRoute (routeInfo) {
+      const routeData = { ...routeInfo.data };
+      if (!routeData.name && routeData.roomcode) {
+        routeData.name = routeData.roomcode;
+      }
+      if (!routeData.space_id && routeData.spaceid) {
+        routeData.space_id = routeData.spaceid;
+      }
+      const data = {
+        properties: routeData,
+        type: 'Feature',
+        geometry: {}
+      };
+      const field = this.$refs[routeInfo.path + 'Route'];
+      field.stopSearch = true;
+      field.searchResult = [data];
+      field.model = data;
+      this[routeInfo.path + 'Route'] = data;
+      this.$emit('setGlobalRoute', {
+        data,
+        routeType: routeInfo.path
+      });
+      setTimeout(() => {
+        field.stopSearch = false;
+      }, 1000);
     }
   }
 };

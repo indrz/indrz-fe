@@ -89,7 +89,8 @@ export default {
       isLoading: false,
       term$: new Subject(),
       model: null,
-      search: null
+      search: null,
+      stopSearch: false
     }
   },
   watch: {
@@ -102,7 +103,7 @@ export default {
     this
       .term$
       .pipe(
-        filter(term => term && term.length > 2),
+        filter(term => term && term.length > 2 && !this.stopSearch),
         debounceTime(500),
         distinctUntilChanged()
       )

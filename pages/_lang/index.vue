@@ -18,6 +18,8 @@
     >
       <sidebar
         :menu-items="items"
+        :opened-panels="openedPanels"
+        ref="sideBar"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
         @setGlobalRoute="onSetGlobalRoute"
@@ -34,7 +36,7 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <campus-search ref="searchComp" @selectSearhResult="onSearchSelect" />
     </v-toolbar>
-    <indrz-map ref="map" @selectFloor="onFloorSelect" @clearSearch="onClearSearch" />
+    <indrz-map ref="map" @selectFloor="onFloorSelect" @clearSearch="onClearSearch" @popupRouteClick="onPopupRouteClick" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
   </v-card>
 </template>
@@ -71,7 +73,8 @@ export default {
       miniVariant: false,
       mapId: 'mapContainer',
       map: null,
-      mapElName: 'mapCard'
+      mapElName: 'mapCard',
+      openedPanels: []
     }
   },
   watch: {
@@ -132,6 +135,13 @@ export default {
     },
     onClearSearch () {
       this.$refs.searchComp.clearSearch();
+    },
+    onPopupRouteClick (routeInfo) {
+      this.drawer = true;
+      this.openedPanels = [1];
+      setTimeout(() => {
+        this.$refs.sideBar.setRoute(routeInfo);
+      }, 500);
     },
     onClearRoute () {
       this.$refs.map.clearRouteData();

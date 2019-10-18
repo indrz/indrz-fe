@@ -1,11 +1,12 @@
 <template>
   <div>
-    <v-expansion-panels>
+    <v-expansion-panels v-model="openedPanels" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
         <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
         <v-expansion-panel-content>
           <component
             :is="menuItem.type"
+            :ref="menuItem.type"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
@@ -50,6 +51,14 @@ export default {
     CampusLocations,
     Route,
     PointsOfInterest
+  },
+  props: {
+    'openedPanels': {
+      type: Array,
+      default: function () {
+        return [];
+      }
+    }
   },
   data () {
     return {
@@ -123,6 +132,9 @@ export default {
     },
     onClearRoute () {
       this.$emit('clearRoute');
+    },
+    setRoute (routeInfo) {
+      this.$refs.Route[0].setRoute(routeInfo);
     }
   }
 }
