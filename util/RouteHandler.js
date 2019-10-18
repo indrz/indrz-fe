@@ -6,10 +6,8 @@ import MultiPoint from 'ol/geom/MultiPoint';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import Style from 'ol/style/Style';
-// import Text from 'ol/style/Text';
-// import Fill from 'ol/style/Fill';
-import Stroke from 'ol/style/Stroke';
 import Icon from 'ol/style/Icon';
+import MapStyles from './mapStyles';
 import MapUtil from './map';
 import api from '~/util/api';
 import indrzConfig from '~/util/indrzConfig';
@@ -139,9 +137,9 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     style: function (feature, resolution) {
       const featureFloor = feature.getProperties().floor_name;
       if (featureFloor === floorName) {
-        feature.setStyle(routeActiveStyle)
+        feature.setStyle(MapStyles.routeActiveStyle)
       } else {
-        feature.setStyle(routeInactiveStyle)
+        feature.setStyle(MapStyles.routeInactiveStyle)
       }
     },
     title: 'RouteFromSearch',
@@ -240,7 +238,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           const frontOfficeMarker = new Feature({
             geometry: frontOfficeGeometry
           });
-          frontOfficeMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle]);
+          frontOfficeMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
           markerFeatures.push(frontOfficeMarker);
         }
 
@@ -256,7 +254,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           const startMarker = new Feature({
             geometry: startPoint
           });
-          startMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle]);
+          startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
           markerFeatures.push(startMarker)
         }
 
@@ -276,9 +274,9 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           markerFeatures.push(endMarker);
 
           if (mid === true) {
-            endMarker.setStyle(routeMarkerCStyle)
+            endMarker.setStyle(MapStyles.routeMarkerCStyle)
           } else {
-            endMarker.setStyle([faFlagCheckeredStyle])
+            endMarker.setStyle([MapStyles.faFlagCheckeredStyle])
           }
         }
       }
@@ -291,9 +289,9 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const endMarker = new Feature({
         geometry: endPoint
       });
-      startMarker.setStyle([faCircleSolidStyle, faFlagCheckeredStyle]);
+      startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
       endMarker.setGeometry(endPoint);
-      endMarker.setStyle([faFlagCheckeredStyle]);
+      endMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
       markerFeatures.push(startMarker);
       markerFeatures.push(endMarker);
     }
@@ -310,48 +308,6 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
   });
   map.getLayers().push(markerLayer);
 };
-
-const routeMarkerCStyle = new Style({
-  image: new Icon({
-    src: '/images/route/route_marker_C.png',
-    anchor: [0.5, 1]
-  }),
-  zIndex: 6
-});
-
-const faCircleSolidStyle = new Style({
-  image: new Icon({
-    src: '/images/icons/flag.png',
-    anchor: [0.5, 1]
-  }),
-  zIndex: 6
-});
-
-const faFlagCheckeredStyle = new Style({
-  image: new Icon({
-    src: '/images/icons/flag-checkered.png',
-    anchor: [0.5, 1]
-  }),
-  zIndex: 6
-});
-
-const routeActiveStyle = new Style({
-  stroke: new Stroke({
-    color: '#ba4682',
-    width: 4
-  }),
-  zIndex: 6
-});
-
-const routeInactiveStyle = new Style({
-  stroke: new Stroke({
-    color: '#ba4682',
-    width: 2,
-    lineDash: [0.1, 5],
-    opacity: 0.5
-  }),
-  zIndex: 6
-});
 
 const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 /*
