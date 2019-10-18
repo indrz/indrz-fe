@@ -144,9 +144,13 @@ export default {
       this.globalSearchInfo.searchText = searchText;
       this.objCenterCoords = selectedItem.properties.centerGeometry.coordinates;
 
-      this.searchLayer = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
+      const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
+      this.searchLayer = result.searchLayer;
+      if (result.floorName) {
+        this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
+      }
     },
     loadMapWithParams () {
       const query = queryString.parse(location.search);

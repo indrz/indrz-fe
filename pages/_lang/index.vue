@@ -122,7 +122,7 @@ export default {
       this.$refs.map.onFloorClick(floor);
     },
     onFloorSelect (floor) {
-      this.$refs.floorChanger.setSelection = floor;
+      this.$refs.floorChanger.selectFloorWithCss(floor);
     },
     onSearchSelect (selectedItem) {
       this.$refs.map.onSearchSelect(selectedItem);

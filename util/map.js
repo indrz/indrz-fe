@@ -367,6 +367,8 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   });
 
   const centerCoOrd = getCenter(searchSource.getExtent());
+  let layerToActive = '';
+  let floorName = '';
 
   if (featuresSearch.length === 1) {
     MapHandler.openIndrzPopup(
@@ -383,8 +385,8 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       search_text = searchString;
      */
     // active the floor of the start point
-    const floorName = featuresSearch[0].getProperties().floor_name ? featuresSearch[0].getProperties().floor_name.toLowerCase() : '';
-    const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
+    floorName = featuresSearch[0].getProperties().floor_name ? featuresSearch[0].getProperties().floor_name.toLowerCase() : '';
+    layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
 
     activateFloor(layerToActive, layers);
   } else if (featuresSearch.length === 0) {
@@ -419,7 +421,10 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   $('#shareSearch').removeClass('hide');
   $('#searchTools').toggle(true); // show div tag
   */
-  return searchLayer;
+  return {
+    searchLayer,
+    floorName
+  };
 };
 
 const zoomer = (view, coord, zoomLevel) => {
