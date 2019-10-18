@@ -87,8 +87,6 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
       endName = routeData.route_info.end_name;
       routeUrl = '/?campus=1&start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
 
-      console.log(startName);
-      console.log(endName);
       // TODO:: Show hide things
       /*
       $('#route-from').val(startName)
@@ -108,7 +106,7 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     if (typeof (features[0]) !== 'undefined') {
       floorName = features[0].getProperties().floor_name;
       if (floorName) {
-        MapUtil.activateLayer(indrzConfig.layerNamePrefix + floorName, layers.switchableLayers);
+        MapUtil.activateLayer(indrzConfig.layerNamePrefix + floorName, layers.switchableLayers, map);
       }
     }
     // TODO Following to check later

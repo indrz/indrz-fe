@@ -163,7 +163,7 @@ export default {
       }
       if (query.floor) {
         this.activeFloorName = query.floor;
-        MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers);
+        MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers, this.map);
         this.$emit('selectFloor', this.activeFloorName);
       }
       if (query.q && query.q.length > 3) {
@@ -225,7 +225,7 @@ export default {
           }
 
           this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers);
+          MapUtil.activateFlooractivateFloor(feature, this.layers, this.map);
         } else if (featureType === 'Point') {
           MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
           coordinate = this.map.getCoordinateFromPixel(pixel);
@@ -235,7 +235,7 @@ export default {
           }
 
           this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers);
+          MapUtil.activateFloor(feature, this.layers, this.map);
         }
       } else {
         const featuresWms = this.map.getFeaturesAtPixel(pixel);
@@ -327,7 +327,7 @@ export default {
     },
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
-      MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers);
+      MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers, this.map);
     },
     setGlobalRoute (selectedItem) {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;

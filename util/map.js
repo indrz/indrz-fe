@@ -15,6 +15,7 @@ import Icon from 'ol/style/Icon';
 import Fill from 'ol/style/Fill';
 import Circle from 'ol/style/Circle';
 import { getCenter } from 'ol/extent';
+import MapStyles from './mapStyles';
 import MapHandler from './mapHandler';
 import api from './api';
 import indrzConfig from '~/util/indrzConfig'
@@ -133,7 +134,7 @@ const hideLayers = (layers) => {
   layers.forEach(layer => layer.setVisible(false));
 };
 
-const setLayerVisible = (layerName, switchableLayers) => {
+const setLayerVisible = (layerName, switchableLayers, map) => {
   if (switchableLayers.length > 0) {
     const foundLayer = switchableLayers
       .find((layer) => {
@@ -142,15 +143,28 @@ const setLayerVisible = (layerName, switchableLayers) => {
       });
     if (foundLayer) {
       foundLayer.setVisible(true);
+      map.getLayers().forEach((layer) => {
+        if (layer.get('name') === 'RouteFromSearch') {
+          const currentFloorName = foundLayer.getProperties().floorName;
+
+          layer.getSource().getFeatures().forEach((feature) => {
+            if (feature.getProperties().floor_name === currentFloorName) {
+              feature.setStyle(MapStyles.routeActiveStyle);
+            } else {
+              feature.setStyle(MapStyles.routeInactiveStyle);
+            }
+          });
+        }
+      })
     }
   }
 };
 
-const activateFloor = (feature, layers) => {
+const activateFloor = (feature, layers, map) => {
   const floorName = feature ? feature.getProperties().floorName : '';
   const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
   if (layerToActive) {
-    activateLayer(layerToActive.getProperties().name, layers.switchableLayers);
+    activateLayer(layerToActive.getProperties().name, layers.switchableLayers, map);
   }
 };
 const generateResultLinks = (att, searchString, featureCenter, className, floor, fid, poiIcon) => {
@@ -388,7 +402,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     floorName = featuresSearch[0].getProperties().floor_name ? featuresSearch[0].getProperties().floor_name.toLowerCase() : '';
     layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
 
-    activateFloor(layerToActive, layers);
+    activateFloor(layerToActive, layers, map);
   } else if (featuresSearch.length === 0) {
     const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
     console.log(htmlInsert);
@@ -435,9 +449,9 @@ const zoomer = (view, coord, zoomLevel) => {
   });
 };
 
-const activateLayer = (layerName, switchableLayers) => {
+const activateLayer = (layerName, switchableLayers, map) => {
   hideLayers(switchableLayers);
-  setLayerVisible(layerName, switchableLayers);
+  setLayerVisible(layerName, switchableLayers, map);
   // if (typeof update_url == undefined) {
   // safe to use the function
   // do we need to use that
