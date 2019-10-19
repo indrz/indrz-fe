@@ -152,7 +152,7 @@ export default {
         this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
       }
     },
-    loadMapWithParams () {
+    async loadMapWithParams () {
       const query = queryString.parse(location.search);
       const campusId = query.campus || 1;
       const zoomLevel = query.zlevel || 18;
@@ -167,9 +167,14 @@ export default {
         this.$emit('selectFloor', this.activeFloorName);
       }
       if (query.q && query.q.length > 3) {
-        this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
+        const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
           this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
           this.routeFromValTemp, this.activeFloorName, this.popup);
+
+        if (result.floorName) {
+          this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
+        }
+        this.searchLayer = result.searchLayer;
       }
       if (query['start-spaceid'] && query['end-spaceid']) {
         const startSpaceId = query['start-spaceid'];
