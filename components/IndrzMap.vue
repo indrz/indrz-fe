@@ -171,6 +171,28 @@ export default {
           this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
           this.routeFromValTemp, this.activeFloorName, this.popup);
       }
+      if (query['start-spaceid'] && query['end-spaceid']) {
+        const startSpaceId = query['start-spaceid'];
+        const endSpaceId = query['end-spaceid'];
+
+        this.$emit('popupRouteClick', {
+          path: 'from',
+          data: {
+            spaceid: startSpaceId,
+            name: startSpaceId
+          }
+        });
+        this.$emit('popupRouteClick', {
+          path: 'to',
+          data: {
+            spaceid: endSpaceId,
+            name: endSpaceId
+          }
+        });
+        setTimeout(async () => {
+          this.globalRouteInfo.routeUrl = await RouteHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
+        }, 600);
+      }
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
@@ -190,9 +212,9 @@ export default {
         this.$emit('clearSearch');
       }
     },
-    onShareButtonClick () {
+    onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
-      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
+      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
       shareOverlay.setShareLink(url);
       shareOverlay.show();
     },
@@ -332,8 +354,8 @@ export default {
     setGlobalRoute (selectedItem) {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
-    routeGo () {
-      RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+    async routeGo () {
+      this.globalRouteInfo.routeUrl = await RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
     },
     clearRouteData () {
       RouteHandler.clearRouteData(this.map);

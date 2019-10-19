@@ -313,10 +313,12 @@ const getRoomInfo = (floor, layers) => {
   return newel;
 };
 
-const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName) => {
+const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName, isRouteShare) => {
   let param = '';
 
-  if (globalPopupInfo.bookId) {
+  if (isRouteShare) {
+    param = 'route';
+  } else if (globalPopupInfo.bookId) {
     param = 'bookId';
     // $('#ShareBookModal').modal('show');
     // udpateUrl('bookId');
