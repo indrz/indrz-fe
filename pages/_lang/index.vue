@@ -148,7 +148,7 @@ export default {
       this.$refs.map.clearRouteData();
     },
     onShareClick () {
-      this.$refs.map.onShareButtonClick();
+      this.$refs.map.onShareButtonClick(true);
     }
   }
 }

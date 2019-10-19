@@ -190,9 +190,9 @@ export default {
         this.$emit('clearSearch');
       }
     },
-    onShareButtonClick () {
+    onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
-      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
+      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
       shareOverlay.setShareLink(url);
       shareOverlay.show();
     },
@@ -332,8 +332,8 @@ export default {
     setGlobalRoute (selectedItem) {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
-    routeGo () {
-      RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+    async routeGo () {
+      this.globalRouteInfo.routeUrl = await RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
     },
     clearRouteData () {
       RouteHandler.clearRouteData(this.map);

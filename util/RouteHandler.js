@@ -12,13 +12,13 @@ import MapUtil from './map';
 import api from '~/util/api';
 import indrzConfig from '~/util/indrzConfig';
 
-const routeGo = (map, layers, globalRouteInfo, routeType = 0) => {
+const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
   if (from.properties.space_id && to.properties.space_id) {
-    routeUrl = getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
+    routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
   } else if (from.properties.poi_id && to.properties.space_id) {
-    routeUrl = getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
+    routeUrl = await getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
   } else if (from.properties.poi_id && to.properties.poi_id) {
     // TODO following
     // routeToPoiFromPoi(from.poiid, to.poiid)
@@ -43,7 +43,7 @@ const clearRouteData = (map) => {
   });
 };
 
-const getDirections = (map, layers, startSearchText, endSearchText, routeType, searchType) => {
+const getDirections = async (map, layers, startSearchText, endSearchText, routeType, searchType) => {
   clearRouteData(map);
   const baseApiRoutingUrl = indrzConfig.baseApiUrl + 'directions/';
   let startName = '';
@@ -65,7 +65,7 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
   const source = new SourceVector();
   let floorName = '';
 
-  api.request({
+  routeUrl = await api.request({
     url: geoJsonUrl
   }).then(function (response) {
     response = response.data;
@@ -163,6 +163,7 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     },
     'slow')
     */
+  return routeUrl;
 };
 
 const addMarkers = (map, routeFeatures, routeInfo) => {
