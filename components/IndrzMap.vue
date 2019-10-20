@@ -152,7 +152,7 @@ export default {
         this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
       }
     },
-    loadMapWithParams () {
+    async loadMapWithParams () {
       const query = queryString.parse(location.search);
       const campusId = query.campus || 1;
       const zoomLevel = query.zlevel || 18;
@@ -167,9 +167,36 @@ export default {
         this.$emit('selectFloor', this.activeFloorName);
       }
       if (query.q && query.q.length > 3) {
-        this.searchLayer = MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
+        const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
           this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
           this.routeFromValTemp, this.activeFloorName, this.popup);
+
+        if (result.floorName) {
+          this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
+        }
+        this.searchLayer = result.searchLayer;
+      }
+      if (query['start-spaceid'] && query['end-spaceid']) {
+        const startSpaceId = query['start-spaceid'];
+        const endSpaceId = query['end-spaceid'];
+
+        this.$emit('popupRouteClick', {
+          path: 'from',
+          data: {
+            spaceid: startSpaceId,
+            name: startSpaceId
+          }
+        });
+        this.$emit('popupRouteClick', {
+          path: 'to',
+          data: {
+            spaceid: endSpaceId,
+            name: endSpaceId
+          }
+        });
+        setTimeout(async () => {
+          this.globalRouteInfo.routeUrl = await RouteHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
+        }, 600);
       }
     },
     openIndrzPopup (properties, coordinate, feature) {
@@ -190,9 +217,9 @@ export default {
         this.$emit('clearSearch');
       }
     },
-    onShareButtonClick () {
+    onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
-      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
+      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
       shareOverlay.setShareLink(url);
       shareOverlay.show();
     },
@@ -335,8 +362,8 @@ export default {
     setGlobalRoute (selectedItem) {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
-    routeGo () {
-      RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+    async routeGo () {
+      this.globalRouteInfo.routeUrl = await RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
     },
     clearRouteData () {
       RouteHandler.clearRouteData(this.map);
