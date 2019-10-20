@@ -128,7 +128,10 @@ const getDirections = (map, layers, startSearchText, endSearchText, routeType, s
     }
     */
     return routeUrl;
-  });
+  })
+    .catch((err) => {
+      console.log(err);
+    });
 
   const routeLayer = new VectorLayer({
     // url: geoJsonUrl,

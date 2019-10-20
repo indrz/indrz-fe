@@ -261,7 +261,10 @@ export default {
                       features: (new GeoJSON()).readFeatures(feature)
                     });
                     const centroidCoords = getCenter(centroidSource.getExtent());
-                    dataProperties.properties = feature.properties;
+                    if (!dataProperties.properties) {
+                      dataProperties.properties = {};
+                    }
+                    dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
                     dataProperties.centroid = centroidCoords;
                   }
                 }
