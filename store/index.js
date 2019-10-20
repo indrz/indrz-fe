@@ -10,3 +10,18 @@ export const mutations = {
     }
   }
 }
+/*
+export const state = () => ({
+  user: {}
+});
+
+export const mutations = {};
+
+export const actions = {
+  nuxtServerInit ({ commit }, { req }) {
+    if (req && req.user) {
+      commit('user/SET_USER', req.user)
+    }
+  }
+};
+*/
