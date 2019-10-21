@@ -39,6 +39,7 @@
     </v-toolbar>
     <indrz-map ref="map" @selectFloor="onFloorSelect" @clearSearch="onClearSearch" @popupRouteClick="onPopupRouteClick" />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
+    <snack-bar />
   </v-card>
 </template>
 
@@ -47,6 +48,7 @@ import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
 import FloorChanger from '../../components/FloorChanger';
 import CampusSearch from '../../components/CampusSearch';
+import SnackBar from '../../components/SnackBar';
 import api from '../../util/api';
 
 export default {
@@ -54,7 +56,8 @@ export default {
     Sidebar,
     IndrzMap,
     FloorChanger,
-    CampusSearch
+    CampusSearch,
+    SnackBar
   },
   data () {
     return {
