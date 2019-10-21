@@ -72,7 +72,8 @@ export default {
       currentLocale: 'en',
       routeToValTemp: '',
       routeFromValTemp: '',
-      hostUrl: window.location.href
+      hostUrl: window.location.href,
+      routeHandler: RouteHandler(this.$store)
     };
   },
 
@@ -195,7 +196,7 @@ export default {
           }
         });
         setTimeout(async () => {
-          this.globalRouteInfo.routeUrl = await RouteHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
+          this.globalRouteInfo.routeUrl = await this.routeHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
         }, 600);
       }
     },
@@ -363,10 +364,10 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo () {
-      this.globalRouteInfo.routeUrl = await RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
     },
     clearRouteData () {
-      RouteHandler.clearRouteData(this.map);
+      this.routeHandler.clearRouteData(this.map);
     }
   }
 };
