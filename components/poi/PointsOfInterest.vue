@@ -12,11 +12,14 @@
       v-model="tree"
       :open="open"
       :items="poiData"
+      return-object
       activatable
+      multiple-active
+      selection-type="leaf"
       item-key="name"
-      open-on-click
       dense
       class="poi"
+      @update:active="onActiveNodeChange"
     >
       <template v-slot:prepend="{ item, open }">
         <v-icon v-if="!item.icon">
@@ -70,6 +73,9 @@ export default {
       return api.request({
         endPoint: 'poi/tree'
       });
+    },
+    onActiveNodeChange (nodes) {
+      console.log(nodes.length);
     }
   }
 }
