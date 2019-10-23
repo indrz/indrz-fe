@@ -223,9 +223,24 @@ export default {
       shareOverlay.setShareLink(url);
       shareOverlay.show();
     },
-    onPoiLoad (data) {
-      const poiLayer = POIHandler.createPoilayer(data.features, data.catId, this.activeFloorName);
-      this.map.getLayers().push(poiLayer);
+    onPoiLoad ({ removedItems, newItems, oldItems }) {
+      if (removedItems && removedItems.length) {
+        removedItems.forEach((item) => {
+          if (POIHandler.poiExist(item, this.map)) {
+            POIHandler.disablePoiById(item.id, this.map);
+          }
+        });
+      }
+      if (oldItems && oldItems.length) {
+        oldItems.forEach((item) => {
+          POIHandler.setPoiVisibility(item, this.map);
+        })
+      }
+      if (newItems && newItems.length) {
+        newItems.forEach((item) => {
+          POIHandler.fetchPoi(item.id, this.map, this.activeFloorName);
+        })
+      }
     },
     onPopupRouteClick (path) {
       this.$emit('popupRouteClick', {

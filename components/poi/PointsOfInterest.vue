@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import _ from 'lodash';
 import api from '../../util/api';
 
 export default {
@@ -80,11 +81,24 @@ export default {
   },
 
   watch: {
-    tree () {
-      console.log(this.tree.length);
-      if (this.tree.length) {
-        this.fetchPoi();
+    tree (newSelections, oldSelections) {
+      let removedItems = [];
+      let newItems = [];
+      let oldItems = [];
+
+      if (oldSelections.length > newSelections.length) {
+        removedItems = _.differenceBy(oldSelections, newSelections, 'id');
       }
+      if (newSelections.length > oldSelections) {
+        newItems = _.differenceBy(newSelections, oldSelections, 'id');
+      }
+      oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
+
+      this.$emit('poiLoad', {
+        newItems,
+        oldItems,
+        removedItems
+      })
     }
   },
 
@@ -95,19 +109,6 @@ export default {
     fetchPoiTreeData () {
       return api.request({
         endPoint: 'poi/tree/'
-      });
-    },
-    fetchPoi () {
-      this.tree.forEach((node) => {
-        api.request({
-          endPoint: `poi/cat/${node.id}/?format=json`
-        })
-          .then((response) => {
-            this.$emit('poiLoad', {
-              features: response.data,
-              catId: this.tree[0].id
-            });
-          })
       });
     }
   }
