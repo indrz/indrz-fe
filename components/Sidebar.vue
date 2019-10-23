@@ -12,6 +12,7 @@
             @routeGo="onRouteGo"
             @clearRoute="onClearRoute"
             @shareClick="onShareClick"
+            @poiLoad="addPoi"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -139,6 +140,9 @@ export default {
     },
     setRoute (routeInfo) {
       this.$refs.Route[0].setRoute(routeInfo);
+    },
+    addPoi (data) {
+      this.$emit('poiLoad', data);
     }
   }
 }

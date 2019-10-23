@@ -38,11 +38,10 @@ import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getCenter } from 'ol/extent';
 import queryString from 'query-string';
-// import {toStringHDMS} from 'ol/coordinate';
-// import {transform} from 'ol/proj'
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
 import RouteHandler from '../util/RouteHandler';
+import POIHandler from '../util/POIHandler';
 import InfoOverlay from '../components/infoOverlay'
 import ShareOverlay from '../components/shareOverlay'
 import 'ol/ol.css';
@@ -223,6 +222,10 @@ export default {
       const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
       shareOverlay.setShareLink(url);
       shareOverlay.show();
+    },
+    onPoiLoad (data) {
+      const poiLayer = POIHandler.createPoilayer(data.features, data.catId, this.activeFloorName);
+      this.map.getLayers().push(poiLayer);
     },
     onPopupRouteClick (path) {
       this.$emit('popupRouteClick', {

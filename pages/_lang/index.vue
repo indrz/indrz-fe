@@ -26,6 +26,7 @@
         @routeGo="onRouteGo"
         @clearRoute="onClearRoute"
         @shareClick="onShareClick"
+        @poiLoad="onPoiLoad"
       />
     </v-navigation-drawer>
     <v-toolbar
@@ -152,6 +153,9 @@ export default {
     },
     onShareClick () {
       this.$refs.map.onShareButtonClick(true);
+    },
+    onPoiLoad (data) {
+      this.$refs.map.onPoiLoad(data);
     }
   }
 }

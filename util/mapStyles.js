@@ -44,10 +44,41 @@ const routeInactiveStyle = new Style({
   zIndex: 6
 });
 
+const createPoiStyle = (poiIconName, active) => {
+  const poiIconImage = '/images/route/' + poiIconName + '.png';
+  const mainPoiIcons = ['education_active', 'access_active', 'security_active', 'infrastructure_active', 'services_active'];
+
+  const iconDeactiveStyle = new Style({
+    image: new Icon(/** @type {olx.style.IconOptions} */ ({
+      anchor: [0.5, 46],
+      anchorXUnits: 'fraction',
+      anchorYUnits: 'pixels',
+      opacity: 0.4,
+      src: poiIconImage
+    }))
+  });
+
+  const iconStyle = new Style({
+    image: new Icon(/** @type {olx.style.IconOptions} */ ({
+      anchor: [0.5, 46],
+      anchorXUnits: 'fraction',
+      anchorYUnits: 'pixels',
+      src: poiIconImage
+    }))
+  });
+
+  if (active === 'y') {
+    return mainPoiIcons.includes(poiIconName) ? iconDeactiveStyle : iconStyle;
+  } else {
+    return iconDeactiveStyle;
+  }
+};
+
 export default {
   routeActiveStyle,
   routeInactiveStyle,
   routeMarkerCStyle,
   faCircleSolidStyle,
-  faFlagCheckeredStyle
+  faFlagCheckeredStyle,
+  createPoiStyle
 }
