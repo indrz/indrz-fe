@@ -283,7 +283,7 @@ export default {
           }
 
           this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFlooractivateFloor(feature, this.layers, this.map);
+          MapUtil.activateFloor(feature, this.layers, this.map);
         } else if (featureType === 'Point') {
           MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
           coordinate = this.map.getCoordinateFromPixel(pixel);
