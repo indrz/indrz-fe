@@ -7,12 +7,11 @@ import indrzConfig from './indrzConfig';
 import api from './api';
 
 const fetchPoi = (catId, map, activeFloorName) => {
-  api.request({
+  return api.request({
     endPoint: `poi/cat/${catId}/?format=json`
   })
     .then((response) => {
-      const poiLayer = createPoilayer(response.data, catId, activeFloorName);
-      map.getLayers().push(poiLayer);
+      return createPoilayer(response.data, catId, activeFloorName);
     })
 };
 
