@@ -428,8 +428,12 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     */
   } else if (mode === 'poiCatId') {
     url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
-    const urlSinglePoi = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
-    console.log(urlSinglePoi)
+    const singlePoiUrl = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
+    return {
+      type: 'poi',
+      singlePoiUrl,
+      poiCatUrl: url
+    };
     /*
     $('share-link').val(url);
     $('share-link-single-poi').val(urlSinglePoi);

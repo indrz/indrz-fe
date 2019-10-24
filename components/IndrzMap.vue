@@ -220,7 +220,12 @@ export default {
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
       const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
-      shareOverlay.setShareLink(url);
+
+      if (typeof url === 'object' && url.type === 'poi') {
+        shareOverlay.setPoiShareLink(url);
+      } else {
+        shareOverlay.setShareLink(url);
+      }
       shareOverlay.show();
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
@@ -370,9 +375,13 @@ export default {
           this.map.renderSync();
           break;
         case 'share-map':
-          MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
+          const url = MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
           const shareOverlay = this.$refs.shareOverlay;
-          shareOverlay.setShareLink(location.href);
+          if (typeof url === 'object' && url.type === 'poi') {
+            shareOverlay.setPoiShareLink(url);
+          } else {
+            shareOverlay.setShareLink(location.href);
+          }
           shareOverlay.show();
           break;
         default:

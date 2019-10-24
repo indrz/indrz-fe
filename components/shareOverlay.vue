@@ -2,15 +2,67 @@
   <v-dialog v-model="dialog" persistent max-width="600px">
     <v-card>
       <v-card-title>
-        <span class="headline">Share search result</span>
+        <span class="headline">{{ title }}</span>
       </v-card-title>
       <v-card-text>
         <v-container>
-          <v-row>
-            <v-col cols="12" sm="12" md="12">
-              <v-text-field ref="linkField" :value="link" />
-            </v-col>
-          </v-row>
+          <template v-if="link">
+            <v-row>
+              <v-col cols="10" sm="10" md="10">
+                <v-text-field ref="linkField" :value="link" hide-details outlined />
+              </v-col>
+              <v-col cols="2" sm="2" md="2">
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick">
+                  <v-icon dark>
+                    mdi-content-copy
+                  </v-icon>
+                  Copy
+                </v-btn>
+              </v-col>
+            </v-row>
+          </template>
+          <template v-else>
+            <v-row>
+              <v-col cols="10" sm="10" md="10">
+                <v-text-field
+                  ref="singlePoi"
+                  :value="poiSingleShareLink"
+                  label="poiSingleShareTitle"
+                  hide-details
+                  outlined
+                  readonly
+                />
+              </v-col>
+              <v-col cols="2" sm="2" md="2">
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick">
+                  <v-icon dark>
+                    mdi-content-copy
+                  </v-icon>
+                  Copy
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="10" sm="10" md="10">
+                <v-text-field
+                  ref="catPoi"
+                  :value="poiCatShareLink"
+                  label="poiCatShareTitle"
+                  hide-details
+                  outlined
+                  readonly
+                />
+              </v-col>
+              <v-col cols="2" sm="2" md="2">
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick">
+                  <v-icon dark>
+                    mdi-content-copy
+                  </v-icon>
+                  Copy
+                </v-btn>
+              </v-col>
+            </v-row>
+          </template>
           <v-row>
             <v-col cols="12" sm="8" md="8">
               {{ copyConfirmation }}
@@ -20,13 +72,7 @@
       </v-card-text>
       <v-card-actions>
         <div class="flex-grow-1" />
-        <v-btn color="blue darken-1" dark @click="onCopyButtonClick">
-          <v-icon dark>
-            mdi-content-copy
-          </v-icon>
-          Copy
-        </v-btn>
-        <v-btn color="blue darken-1" text @click="dialog = false">
+        <v-btn color="warning" text @click="dialog = false">
           Close
         </v-btn>
       </v-card-actions>
@@ -40,8 +86,15 @@ export default {
   data () {
     return {
       dialog: false,
+      title: '',
+      searchShareTitle: 'Share search result',
+      poiSingleShareTitle: 'Share the POI',
+      poiCatShareTitle: 'Share the POI category',
+      poiSingleShareLink: '',
+      poiCatShareLink: '',
       link: '',
-      copyConfirmation: ''
+      copyConfirmation: '',
+      copySuccess: 'Url successfully copied in to clipboard!'
     }
   },
   watch: {
@@ -56,7 +109,14 @@ export default {
     close () {
       this.dialog = false;
     },
+    setPoiShareLink (url) {
+      this.link = '';
+      this.title = '';
+      this.poiSingleShareLink = url.singlePoiUrl;
+      this.poiCatShareLink = url.poiCatUrl;
+    },
     setShareLink (link) {
+      this.title = this.searchShareTitle;
       this.link = link;
     },
     onCopyButtonClick () {
@@ -65,7 +125,7 @@ export default {
       inputField.select();
       inputField.setSelectionRange(0, 99999);
       document.execCommand('copy');
-      this.copyConfirmation = 'Url successfully copied in to clipboard!';
+      this.copyConfirmation = this.copySuccess;
     }
   }
 }
