@@ -38,11 +38,10 @@ import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getCenter } from 'ol/extent';
 import queryString from 'query-string';
-// import {toStringHDMS} from 'ol/coordinate';
-// import {transform} from 'ol/proj'
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
 import RouteHandler from '../util/RouteHandler';
+import POIHandler from '../util/POIHandler';
 import InfoOverlay from '../components/infoOverlay'
 import ShareOverlay from '../components/shareOverlay'
 import 'ol/ol.css';
@@ -223,6 +222,37 @@ export default {
       const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
       shareOverlay.setShareLink(url);
       shareOverlay.show();
+    },
+    onPoiLoad ({ removedItems, newItems, oldItems }) {
+      if (removedItems && removedItems.length) {
+        removedItems.forEach((item) => {
+          if (POIHandler.poiExist(item, this.map)) {
+            POIHandler.disablePoiById(item.id, this.map);
+          }
+        });
+      }
+      if (oldItems && oldItems.length) {
+        oldItems.forEach((item) => {
+          POIHandler.setPoiVisibility(item, this.map);
+        })
+      }
+      if (newItems && newItems.length) {
+        newItems.forEach((item) => {
+          if (POIHandler.poiExist(item, this.map)) {
+            POIHandler.setPoiVisibility(item.id, this.map);
+          } else {
+            POIHandler
+              .fetchPoi(item.id, this.map, this.activeFloorName)
+              .then((poiLayer) => {
+                this.map.getLayers().forEach((layer) => {
+                  if (layer.getProperties().id === 99999) {
+                    layer.getLayers().push(poiLayer);
+                  }
+                });
+              });
+          }
+        })
+      }
     },
     onPopupRouteClick (path) {
       this.$emit('popupRouteClick', {

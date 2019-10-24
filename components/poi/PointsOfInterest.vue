@@ -10,13 +10,19 @@
     <v-treeview
       v-if="!loading"
       v-model="tree"
-      :open="open"
       :items="poiData"
-      activatable
-      item-key="name"
+      selected-color="indigo"
       open-on-click
+      selectable
+      return-object
+      expand-icon="mdi-chevron-down"
+      on-icon="mdi-bookmark"
+      off-icon="mdi-bookmark-outline"
+      indeterminate-icon="mdi-bookmark-minus"
+      item-key="id"
       dense
       class="poi"
+      ref="poi"
     >
       <template v-slot:prepend="{ item, open }">
         <v-icon v-if="!item.icon">
@@ -27,18 +33,30 @@
         </v-icon>
       </template>
     </v-treeview>
+<!--
+    <v-chip
+      v-for="(selection, i) in tree"
+      :key="i"
+      color="grey"
+      dark
+      small
+      class="ma-1"
+    >
+      <v-icon left small>mdi-beer</v-icon>
+      {{ selection.name }}
+    </v-chip>
+    -->
   </div>
-
 </template>
 
 <script>
+import _ from 'lodash';
 import api from '../../util/api';
 
 export default {
   name: 'PointsOfInterest',
   data () {
     return {
-      open: ['public'],
       files: {
         html: 'mdi-language-html5',
         js: 'mdi-nodejs',
@@ -55,20 +73,42 @@ export default {
     }
   },
   async mounted () {
-    const poiData = await this.fetchPoiData();
+    const poiData = await this.fetchPoiTreeData();
     if (poiData && poiData.data) {
       this.poiData = poiData.data;
     }
     this.loading = false;
   },
 
+  watch: {
+    tree (newSelections, oldSelections) {
+      let removedItems = [];
+      let newItems = [];
+      let oldItems = [];
+
+      if (oldSelections.length > newSelections.length) {
+        removedItems = _.differenceBy(oldSelections, newSelections, 'id');
+      }
+      if (newSelections.length > oldSelections.length) {
+        newItems = _.differenceBy(newSelections, oldSelections, 'id');
+      }
+      oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
+
+      this.$emit('poiLoad', {
+        newItems,
+        oldItems,
+        removedItems
+      })
+    }
+  },
+
   methods: {
     onLocationClick (location) {
       this.$emit('locationClick', location.centroid);
     },
-    fetchPoiData () {
+    fetchPoiTreeData () {
       return api.request({
-        endPoint: 'poi/tree'
+        endPoint: 'poi/tree/'
       });
     }
   }
