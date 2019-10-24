@@ -89,7 +89,7 @@ export default {
       if (oldSelections.length > newSelections.length) {
         removedItems = _.differenceBy(oldSelections, newSelections, 'id');
       }
-      if (newSelections.length > oldSelections) {
+      if (newSelections.length > oldSelections.length) {
         newItems = _.differenceBy(newSelections, oldSelections, 'id');
       }
       oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
