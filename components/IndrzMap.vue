@@ -198,6 +198,9 @@ export default {
           this.globalRouteInfo.routeUrl = await this.routeHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
         }, 600);
       }
+      if (query['poi-cat-id']) {
+        this.$emit('openPoiTree', query['poi-cat-id']);
+      }
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(

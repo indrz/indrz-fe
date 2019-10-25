@@ -7,6 +7,7 @@
           <component
             :is="menuItem.type"
             :ref="menuItem.type"
+            :initial-poi-cat-id="initialPoiCatId"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
@@ -59,6 +60,12 @@ export default {
       type: Array,
       default: function () {
         return [];
+      }
+    },
+    'initialPoiCatId': {
+      type: Number,
+      default: function () {
+        return null;
       }
     }
   },
