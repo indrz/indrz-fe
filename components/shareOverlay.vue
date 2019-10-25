@@ -4,15 +4,15 @@
       <v-card-title>
         <span class="headline">{{ title }}</span>
       </v-card-title>
-      <v-card-text>
-        <v-container>
+      <v-card-text class="pb-0">
+        <v-container class="pt-0 pb-0">
           <template v-if="link">
             <v-row>
               <v-col cols="10" sm="10" md="10">
                 <v-text-field ref="linkField" :value="link" hide-details outlined />
               </v-col>
               <v-col cols="2" sm="2" md="2">
-                <v-btn color="blue darken-1" text @click="onCopyButtonClick">
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick('linkField')">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -27,14 +27,14 @@
                 <v-text-field
                   ref="singlePoi"
                   :value="poiSingleShareLink"
-                  label="poiSingleShareTitle"
+                  :label="poiSingleShareTitle"
                   hide-details
                   outlined
                   readonly
                 />
               </v-col>
               <v-col cols="2" sm="2" md="2">
-                <v-btn color="blue darken-1" text @click="onCopyButtonClick">
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick('singlePoi')">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -47,14 +47,14 @@
                 <v-text-field
                   ref="catPoi"
                   :value="poiCatShareLink"
-                  label="poiCatShareTitle"
+                  :label="poiCatShareTitle"
                   hide-details
                   outlined
                   readonly
                 />
               </v-col>
               <v-col cols="2" sm="2" md="2">
-                <v-btn color="blue darken-1" text @click="onCopyButtonClick">
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick('catPoi')">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -64,7 +64,7 @@
             </v-row>
           </template>
           <v-row>
-            <v-col cols="12" sm="8" md="8">
+            <v-col v-if="copyConfirmation" cols="12" sm="8" md="8">
               {{ copyConfirmation }}
             </v-col>
           </v-row>
@@ -119,8 +119,8 @@ export default {
       this.title = this.searchShareTitle;
       this.link = link;
     },
-    onCopyButtonClick () {
-      const copyTextField = this.$refs.linkField;
+    onCopyButtonClick (fieldRef) {
+      const copyTextField = this.$refs[fieldRef];
       const inputField = copyTextField.$el.querySelector('input');
       inputField.select();
       inputField.setSelectionRange(0, 99999);
