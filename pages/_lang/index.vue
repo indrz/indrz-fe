@@ -19,6 +19,7 @@
       <sidebar
         :menu-items="items"
         :opened-panels="openedPanels"
+        :initial-poi-cat-id="initialPoiCatId"
         ref="sideBar"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
@@ -38,7 +39,13 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <campus-search ref="searchComp" @selectSearhResult="onSearchSelect" />
     </v-toolbar>
-    <indrz-map ref="map" @selectFloor="onFloorSelect" @clearSearch="onClearSearch" @popupRouteClick="onPopupRouteClick" />
+    <indrz-map
+      ref="map"
+      @selectFloor="onFloorSelect"
+      @clearSearch="onClearSearch"
+      @popupRouteClick="onPopupRouteClick"
+      @openPoiTree="onOpenPoiTree"
+    />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
     <snack-bar />
   </v-card>
@@ -79,7 +86,8 @@ export default {
       mapId: 'mapContainer',
       map: null,
       mapElName: 'mapCard',
-      openedPanels: []
+      openedPanels: [],
+      initialPoiCatId: null
     }
   },
   watch: {
@@ -147,6 +155,11 @@ export default {
       setTimeout(() => {
         this.$refs.sideBar.setRoute(routeInfo);
       }, 500);
+    },
+    onOpenPoiTree (poiCatId) {
+      this.drawer = true;
+      this.openedPanels = [2];
+      this.initialPoiCatId = poiCatId;
     },
     onClearRoute () {
       this.$refs.map.clearRouteData();

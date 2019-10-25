@@ -33,19 +33,6 @@
         </v-icon>
       </template>
     </v-treeview>
-<!--
-    <v-chip
-      v-for="(selection, i) in tree"
-      :key="i"
-      color="grey"
-      dark
-      small
-      class="ma-1"
-    >
-      <v-icon left small>mdi-beer</v-icon>
-      {{ selection.name }}
-    </v-chip>
-    -->
   </div>
 </template>
 
@@ -55,6 +42,14 @@ import api from '../../util/api';
 
 export default {
   name: 'PointsOfInterest',
+  props: {
+    'initialPoiCatId': {
+      type: Number,
+      default: function () {
+        return null;
+      }
+    }
+  },
   data () {
     return {
       files: {
@@ -69,6 +64,7 @@ export default {
       },
       tree: [],
       poiData: [],
+      openedItems: [],
       loading: true
     }
   },
@@ -76,6 +72,18 @@ export default {
     const poiData = await this.fetchPoiTreeData();
     if (poiData && poiData.data) {
       this.poiData = poiData.data;
+      if (this.initialPoiCatId) {
+        const foundData = this.findItem(Number(this.initialPoiCatId), this.poiData);
+        this.tree = [foundData.data];
+        setTimeout(() => {
+          const treeComp = this.$refs.poi;
+          treeComp.updateSelected(this.initialPoiCatId, true);
+          foundData.roots.reverse().forEach((node) => {
+            treeComp.updateOpen(node, true);
+          });
+          treeComp.updateActive(this.initialPoiCatId, true);
+        }, 500);
+      }
     }
     this.loading = false;
   },
@@ -110,6 +118,31 @@ export default {
       return api.request({
         endPoint: 'poi/tree/'
       });
+    },
+    findItem (itemId, data) {
+      let foundData = null;
+
+      data.some((d) => {
+        if (d.id && d.id === itemId) {
+          foundData = d;
+          return true;
+        }
+        if (d.children) {
+          foundData = this.findItem(itemId, d.children);
+          if (foundData) {
+            if (!foundData.roots) {
+              foundData = {
+                data: foundData,
+                roots: [d.id]
+              };
+            } else {
+              foundData.roots.push(d.id);
+            }
+            return true;
+          }
+        }
+      });
+      return foundData;
     }
   }
 }
