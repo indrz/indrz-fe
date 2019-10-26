@@ -201,6 +201,9 @@ export default {
       if (query['poi-cat-id']) {
         this.$emit('openPoiTree', query['poi-cat-id']);
       }
+      if (query['poi-id']) {
+        this.$emit('openPoiTree', query['poi-id'], true);
+      }
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
@@ -230,6 +233,9 @@ export default {
         shareOverlay.setShareLink(url);
       }
       shareOverlay.show();
+    },
+    loadSinglePoi (poiId) {
+      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 20, this.map, this.activeFloorName);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       if (removedItems && removedItems.length) {

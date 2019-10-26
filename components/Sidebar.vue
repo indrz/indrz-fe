@@ -8,12 +8,14 @@
             :is="menuItem.type"
             :ref="menuItem.type"
             :initial-poi-cat-id="initialPoiCatId"
+            :initial-poi-id="initialPoiId"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
             @clearRoute="onClearRoute"
             @shareClick="onShareClick"
             @poiLoad="addPoi"
+            @loadSinglePoi="loadSinglePoi"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -63,7 +65,13 @@ export default {
       }
     },
     'initialPoiCatId': {
-      type: Number,
+      type: String,
+      default: function () {
+        return null;
+      }
+    },
+    'initialPoiId': {
+      type: String,
       default: function () {
         return null;
       }
@@ -150,6 +158,9 @@ export default {
     },
     addPoi (data) {
       this.$emit('poiLoad', data);
+    },
+    loadSinglePoi (poiId) {
+      this.$emit('loadSinglePoi', poiId);
     }
   }
 }

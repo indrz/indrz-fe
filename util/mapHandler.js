@@ -100,6 +100,7 @@ const openIndrzPopup = (
       }
     }
   }
+
   if (globalPopupInfo.poiId !== 'noid') {
     globalPopupInfo.poiCatShareUrl = 'poi-cat-id=' + globalPopupInfo.poiCatId;
   }

@@ -2,7 +2,10 @@ import SourceVector from 'ol/source/Vector';
 import VectorLayer from 'ol/layer/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import Group from 'ol/layer/Group';
+import { getCenter } from 'ol/extent';
 import MapStyles from './mapStyles';
+import MapUtil from './map';
+import MapHandler from './mapHandler';
 import indrzConfig from './indrzConfig';
 import api from './api';
 
@@ -104,10 +107,78 @@ const createPoilayer = (data, poiCatId, activeFloorName) => {
   return poiVectorLayer;
 };
 
+const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, activeFloorName) => {
+  globalPopupInfo.poiId = poiId;
+  // map.getLayers().getArray()[0].getProperties()
+  const poiSingleLayer = map
+    .getLayers()
+    .getArray()
+    .filter(layer => layer.getProperties().id === poiId);
+  if (poiSingleLayer && poiSingleLayer.length) {
+    map.removeLayer(poiSingleLayer[0]);
+  }
+  let poiTitle = '';
+  const poiSource = new SourceVector();
+
+  return api.request({
+    endPoint: `poi/${poiId}/?format=json`
+  })
+    .then((response) => {
+      const geojsonFormat3 = new GeoJSON();
+      const featuresSearch = geojsonFormat3.readFeatures(response, { featureProjection: 'EPSG:4326' });
+      poiSource.addFeatures(featuresSearch);
+      const centerCoord = getCenter(poiSource.getExtent());
+      if (featuresSearch.length === 1) {
+        const offSetPos = [0, -35];
+        const poiProperties = featuresSearch[0].getProperties();
+        poiProperties.poiId = poiId;
+        // open_popup(poiProperties, centerCoord, -1, offSetPos);
+        MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', centerCoord, null, null, activeFloorName, null, null, offSetPos, null, null);
+        MapUtil.zoomer(map.getView(), centerCoord, zlevel);
+
+        globalPopupInfo.poiCatId = featuresSearch[0].getProperties().fk_poi_category.id;
+        globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + featuresSearch[0].getProperties().fk_poi_category.id;
+
+        const poiLayer = new VectorLayer({
+          source: poiSource,
+          style: function (feature, resolution) {
+            const poiFeatureFloor = feature.getProperties().floor_name;
+            /*
+            if (req_locale === 'de') {
+              poiTitle = feature.getProperties().name_de;
+            } else {
+              poiTitle = feature.getProperties().name || feature.getProperties().name_en;
+            }
+            */
+            poiTitle = feature.getProperties().name || feature.getProperties().name_en;
+
+            const cssName = feature.getProperties().fk_poi_category.icon_css_name;
+            if (poiFeatureFloor === activeFloorName) {
+              feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
+            } else {
+              feature.setStyle(MapStyles.createPoiStyle(cssName, 'n', poiFeatureFloor));
+            }
+          },
+
+          title: poiTitle,
+          name: poiTitle,
+          id: poiId,
+          active: true,
+          visible: true,
+          zIndex: 999
+        });
+
+        map.addLayer(poiLayer);
+        return poiLayer;
+      }
+    });
+};
+
 export default {
   createPoilayer,
   poiExist,
   disablePoiById,
   setPoiVisibility,
-  fetchPoi
+  fetchPoi,
+  showSinglePoi
 };
