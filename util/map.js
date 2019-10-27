@@ -552,5 +552,6 @@ export default {
   setLayerVisible,
   activateFloor,
   activateLayer,
-  searchIndrz
+  searchIndrz,
+  zoomer
 };

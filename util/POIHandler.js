@@ -107,7 +107,7 @@ const createPoilayer = (data, poiCatId, activeFloorName) => {
   return poiVectorLayer;
 };
 
-const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, activeFloorName) => {
+const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorName) => {
   globalPopupInfo.poiId = poiId;
   // map.getLayers().getArray()[0].getProperties()
   const poiSingleLayer = map
@@ -125,15 +125,17 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, activeFloorName) => 
   })
     .then((response) => {
       const geojsonFormat3 = new GeoJSON();
-      const featuresSearch = geojsonFormat3.readFeatures(response, { featureProjection: 'EPSG:4326' });
+      const featuresSearch = geojsonFormat3.readFeatures(response.data, { featureProjection: 'EPSG:4326' });
       poiSource.addFeatures(featuresSearch);
       const centerCoord = getCenter(poiSource.getExtent());
       if (featuresSearch.length === 1) {
         const offSetPos = [0, -35];
         const poiProperties = featuresSearch[0].getProperties();
+        const poiCoords = poiProperties.geometry.getCoordinates();
         poiProperties.poiId = poiId;
-        // open_popup(poiProperties, centerCoord, -1, offSetPos);
-        MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', centerCoord, null, null, activeFloorName, null, null, offSetPos, null, null);
+        MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', poiCoords,
+          null, null, activeFloorName, popup, poiProperties, centerCoord,
+          null, offSetPos);
         MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
         globalPopupInfo.poiCatId = featuresSearch[0].getProperties().fk_poi_category.id;
