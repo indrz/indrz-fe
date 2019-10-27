@@ -48,6 +48,12 @@ export default {
       default: function () {
         return null;
       }
+    },
+    'initialPoiId': {
+      type: String,
+      default: function () {
+        return null;
+      }
     }
   },
   data () {
@@ -82,6 +88,10 @@ export default {
             treeComp.updateOpen(node, true);
           });
           treeComp.updateActive(this.initialPoiCatId, true);
+        }, 500);
+      } else if (this.initialPoiId) {
+        setTimeout(() => {
+          this.$emit('loadSinglePoi', this.initialPoiId);
         }, 500);
       }
     }

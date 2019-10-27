@@ -74,11 +74,42 @@ const createPoiStyle = (poiIconName, active) => {
   }
 };
 
+const setPoiStyleOnLayerSwitch = (iconName, visible) => {
+  const poiIconImage = '/images/route/' + iconName + '.png';
+
+  const iconDeactiveStyle = new Style({
+    image: new Icon(/** @type {olx.style.IconOptions} */ ({
+      anchor: [0.5, 46],
+      anchorXUnits: 'fraction',
+      anchorYUnits: 'pixels',
+      opacity: 0.4,
+      src: poiIconImage
+    }))
+  });
+
+  const iconActiveStyle = new Style({
+    image: new Icon(/** @type {olx.style.IconOptions} */ ({
+      anchor: [0.5, 46],
+      anchorXUnits: 'fraction',
+      anchorYUnits: 'pixels',
+      opacity: 1,
+      src: poiIconImage
+    }))
+  });
+
+  if (visible) {
+    return iconActiveStyle
+  } else {
+    return iconDeactiveStyle
+  }
+};
+
 export default {
   routeActiveStyle,
   routeInactiveStyle,
   routeMarkerCStyle,
   faCircleSolidStyle,
   faFlagCheckeredStyle,
+  setPoiStyleOnLayerSwitch,
   createPoiStyle
 }

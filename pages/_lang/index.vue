@@ -20,6 +20,7 @@
         :menu-items="items"
         :opened-panels="openedPanels"
         :initial-poi-cat-id="initialPoiCatId"
+        :initial-poi-id="initialPoiId"
         ref="sideBar"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
@@ -28,6 +29,7 @@
         @clearRoute="onClearRoute"
         @shareClick="onShareClick"
         @poiLoad="onPoiLoad"
+        @loadSinglePoi="loadSinglePoi"
       />
     </v-navigation-drawer>
     <v-toolbar
@@ -87,7 +89,8 @@ export default {
       map: null,
       mapElName: 'mapCard',
       openedPanels: [],
-      initialPoiCatId: null
+      initialPoiCatId: null,
+      initialPoiId: null
     }
   },
   watch: {
@@ -156,10 +159,14 @@ export default {
         this.$refs.sideBar.setRoute(routeInfo);
       }, 500);
     },
-    onOpenPoiTree (poiCatId) {
+    onOpenPoiTree (poiCatId, isPoiId = false) {
       this.drawer = true;
       this.openedPanels = [2];
-      this.initialPoiCatId = poiCatId;
+      if (isPoiId) {
+        this.initialPoiId = poiCatId;
+      } else {
+        this.initialPoiCatId = poiCatId;
+      }
     },
     onClearRoute () {
       this.$refs.map.clearRouteData();
@@ -169,6 +176,9 @@ export default {
     },
     onPoiLoad (data) {
       this.$refs.map.onPoiLoad(data);
+    },
+    loadSinglePoi (poiId) {
+      this.$refs.map.loadSinglePoi(poiId);
     }
   }
 }
