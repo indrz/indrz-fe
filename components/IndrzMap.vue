@@ -235,7 +235,7 @@ export default {
       shareOverlay.show();
     },
     loadSinglePoi (poiId) {
-      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 20, this.map, this.popup, this.activeFloorName);
+      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       if (removedItems && removedItems.length) {

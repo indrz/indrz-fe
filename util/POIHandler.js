@@ -155,7 +155,8 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
             poiTitle = feature.getProperties().name || feature.getProperties().name_en;
 
             const cssName = feature.getProperties().fk_poi_category.icon_css_name;
-            if (poiFeatureFloor === activeFloorName) {
+
+            if (indrzConfig.layerNamePrefix + (poiFeatureFloor).toLowerCase() === activeFloorName) {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
             } else {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'n', poiFeatureFloor));
