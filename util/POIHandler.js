@@ -177,11 +177,30 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
     });
 };
 
+const setPoiFeatureVisibility = (map, activeFloorName) => {
+  map.getLayers().forEach(function (layer, i) {
+    if (layer instanceof Group) {
+      if (layer.getProperties().name === 'poi group' || layer.getProperties().name === 'POI-Gruppe') {
+        layer.getLayers().forEach(function (sublayer, i) {
+          sublayer.getSource().forEachFeature(function (feature, i) {
+            if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== activeFloorName) {
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().fk_poi_category.icon_css_name, false));
+            } else {
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().fk_poi_category.icon_css_name, true));
+            }
+          });
+        });
+      }
+    }
+  });
+};
+
 export default {
   createPoilayer,
   poiExist,
   disablePoiById,
   setPoiVisibility,
   fetchPoi,
-  showSinglePoi
+  showSinglePoi,
+  setPoiFeatureVisibility
 };

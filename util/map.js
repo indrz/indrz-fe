@@ -19,6 +19,7 @@ import MapStyles from './mapStyles';
 import MapHandler from './mapHandler';
 import api from './api';
 import indrzConfig from '~/util/indrzConfig'
+import POIHandler from '~/util/POIHandler';
 
 const createWmsLayer = function (
   layerName,
@@ -452,6 +453,7 @@ const zoomer = (view, coord, zoomLevel) => {
 const activateLayer = (layerName, switchableLayers, map) => {
   hideLayers(switchableLayers);
   setLayerVisible(layerName, switchableLayers, map);
+  POIHandler.setPoiFeatureVisibility(map, layerName);
   // if (typeof update_url == undefined) {
   // safe to use the function
   // do we need to use that
