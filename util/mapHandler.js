@@ -100,6 +100,7 @@ const openIndrzPopup = (
       }
     }
   }
+
   if (globalPopupInfo.poiId !== 'noid') {
     globalPopupInfo.poiCatShareUrl = 'poi-cat-id=' + globalPopupInfo.poiCatId;
   }
@@ -210,7 +211,7 @@ const getTitle = (properties, currentLocale) => {
         name = properties.name_de;
         return name
       } else {
-        name = properties.name;
+        name = properties.name || properties.name_en;
         return name
       }
     }
@@ -427,8 +428,13 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     $('share-link').select();
     */
   } else if (mode === 'poiCatId') {
-    url = hostUrl + globalPopupInfo.poiCatShareUrl;
-    // const urlSinglePoi = hostUrl + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
+    url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
+    const singlePoiUrl = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
+    return {
+      type: 'poi',
+      singlePoiUrl,
+      poiCatUrl: url
+    };
     /*
     $('share-link').val(url);
     $('share-link-single-poi').val(urlSinglePoi);

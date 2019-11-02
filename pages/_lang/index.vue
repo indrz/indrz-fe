@@ -20,12 +20,16 @@
         ref="sideBar"
         :menu-items="items"
         :opened-panels="openedPanels"
+        :initial-poi-cat-id="initialPoiCatId"
+        :initial-poi-id="initialPoiId"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
         @setGlobalRoute="onSetGlobalRoute"
         @routeGo="onRouteGo"
         @clearRoute="onClearRoute"
         @shareClick="onShareClick"
+        @poiLoad="onPoiLoad"
+        @loadSinglePoi="loadSinglePoi"
       />
     </v-navigation-drawer>
     <v-toolbar
@@ -37,8 +41,15 @@
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <campus-search ref="searchComp" @selectSearhResult="onSearchSelect" />
     </v-toolbar>
-    <indrz-map ref="map" @selectFloor="onFloorSelect" @clearSearch="onClearSearch" @popupRouteClick="onPopupRouteClick" />
+    <indrz-map
+      ref="map"
+      @selectFloor="onFloorSelect"
+      @clearSearch="onClearSearch"
+      @popupRouteClick="onPopupRouteClick"
+      @openPoiTree="onOpenPoiTree"
+    />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
+    <snack-bar />
   </v-card>
 </template>
 
@@ -47,6 +58,7 @@ import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
 import FloorChanger from '../../components/FloorChanger';
 import CampusSearch from '../../components/CampusSearch';
+import SnackBar from '../../components/SnackBar';
 import api from '../../util/api';
 
 export default {
@@ -54,7 +66,8 @@ export default {
     Sidebar,
     IndrzMap,
     FloorChanger,
-    CampusSearch
+    CampusSearch,
+    SnackBar
   },
   data () {
     return {
@@ -75,7 +88,9 @@ export default {
       mapId: 'mapContainer',
       map: null,
       mapElName: 'mapCard',
-      openedPanels: []
+      openedPanels: [],
+      initialPoiCatId: null,
+      initialPoiId: null
     }
   },
   watch: {
@@ -144,11 +159,26 @@ export default {
         this.$refs.sideBar.setRoute(routeInfo);
       }, 500);
     },
+    onOpenPoiTree (poiCatId, isPoiId = false) {
+      this.drawer = true;
+      this.openedPanels = [2];
+      if (isPoiId) {
+        this.initialPoiId = poiCatId;
+      } else {
+        this.initialPoiCatId = poiCatId;
+      }
+    },
     onClearRoute () {
       this.$refs.map.clearRouteData();
     },
     onShareClick () {
       this.$refs.map.onShareButtonClick(true);
+    },
+    onPoiLoad (data) {
+      this.$refs.map.onPoiLoad(data);
+    },
+    loadSinglePoi (poiId) {
+      this.$refs.map.loadSinglePoi(poiId);
     }
   }
 }
