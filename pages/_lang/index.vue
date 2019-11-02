@@ -17,9 +17,9 @@
       app
     >
       <sidebar
+        ref="sideBar"
         :menu-items="items"
         :opened-panels="openedPanels"
-        ref="sideBar"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
         @setGlobalRoute="onSetGlobalRoute"
