@@ -44,7 +44,7 @@
           </v-icon>
         </v-btn>
       </template>
-      <span>Share Route</span>
+      <span>{{shareRoute}}</span>
     </v-tooltip>
     <v-tooltip top>
       <template v-slot:activator="{ on }">
@@ -80,6 +80,7 @@ export default {
       endRouteLabel: this.$t('end_route'),
       barrierFreeLabel: this.$t('barrier_free_route'),
       goLabel: this.$t('go'),
+      shareRoute: this.$t('shareRoute'),
       fromRoute: null,
       toRoute: null
     }
