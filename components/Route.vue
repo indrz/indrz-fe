@@ -1,28 +1,29 @@
 <template>
   <div>
     <campus-search
+      ref="fromRoute"
       :is-route="true"
       icon="mdi-flag"
-      ref="fromRoute"
       route-type="from"
       :route-label="startRouteLabel"
       @selectSearhResult="onSearchSelect"
     />
     <campus-search
+      ref="toRoute"
       :is-route="true"
       icon="mdi-flag-checkered"
-      ref="toRoute"
       route-type="to"
       :route-label="endRouteLabel"
-      @selectSearhResult="onSearchSelect" />
+      @selectSearhResult="onSearchSelect"
+    />
     <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" />
     <div id="route-description" />
     <v-btn
       color="blue-grey"
       class="white--text"
-      @click="onGoButtonClick"
-      :disabled="!isRouteAvailable"
       small
+      :disabled="!isRouteAvailable"
+      @click="onGoButtonClick"
     >
       <v-icon left dark>
         mdi-run
@@ -34,9 +35,9 @@
         <v-btn
           color="blue-grey"
           class="white--text"
-          @click="onShareRoute"
-          :disabled="!isRouteAvailable"
           small
+          :disabled="!isRouteAvailable"
+          @click="onShareRoute"
           v-on="on"
         >
           <v-icon dark>
@@ -44,16 +45,16 @@
           </v-icon>
         </v-btn>
       </template>
-      <span>{{shareRoute}}</span>
+      <span>{{ shareRoute }}</span>
     </v-tooltip>
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn
           color="blue-grey"
           class="white--text"
-          @click="onClearRoute"
-          :disabled="!isRouteAvailable"
           small
+          :disabled="!isRouteAvailable"
+          @click="onClearRoute"
           v-on="on"
         >
           <v-icon dark>

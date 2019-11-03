@@ -92,12 +92,6 @@ export default {
     }
   },
 
-  watch: {
-    openedPanels (value) {
-      this.expanded = value;
-    }
-  },
-
   computed: {
     menuItems () {
       return [
@@ -138,6 +132,12 @@ export default {
           text: this.locale.pdf
         }
       ]
+    }
+  },
+
+  watch: {
+    openedPanels (value) {
+      this.expanded = value;
     }
   },
 

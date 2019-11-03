@@ -9,6 +9,7 @@
     </div>
     <v-treeview
       v-if="!loading"
+      ref="poi"
       v-model="tree"
       :items="poiData"
       selected-color="indigo"
@@ -20,9 +21,8 @@
       off-icon="mdi-bookmark-outline"
       indeterminate-icon="mdi-bookmark-minus"
       item-key="id"
-      dense
       class="poi"
-      ref="poi"
+      dense
     >
       <template v-slot:prepend="{ item, open }">
         <v-icon v-if="!item.icon">
@@ -74,6 +74,29 @@ export default {
       loading: true
     }
   },
+
+  watch: {
+    tree (newSelections, oldSelections) {
+      let removedItems = [];
+      let newItems = [];
+      let oldItems = [];
+
+      if (oldSelections.length > newSelections.length) {
+        removedItems = _.differenceBy(oldSelections, newSelections, 'id');
+      }
+      if (newSelections.length > oldSelections.length) {
+        newItems = _.differenceBy(newSelections, oldSelections, 'id');
+      }
+      oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
+
+      this.$emit('poiLoad', {
+        newItems,
+        oldItems,
+        removedItems
+      })
+    }
+  },
+
   async mounted () {
     const poiData = await this.fetchPoiTreeData();
     if (poiData && poiData.data) {
@@ -96,28 +119,6 @@ export default {
       }
     }
     this.loading = false;
-  },
-
-  watch: {
-    tree (newSelections, oldSelections) {
-      let removedItems = [];
-      let newItems = [];
-      let oldItems = [];
-
-      if (oldSelections.length > newSelections.length) {
-        removedItems = _.differenceBy(oldSelections, newSelections, 'id');
-      }
-      if (newSelections.length > oldSelections.length) {
-        newItems = _.differenceBy(newSelections, oldSelections, 'id');
-      }
-      oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
-
-      this.$emit('poiLoad', {
-        newItems,
-        oldItems,
-        removedItems
-      })
-    }
   },
 
   methods: {

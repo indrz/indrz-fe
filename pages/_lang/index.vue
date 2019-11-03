@@ -17,11 +17,11 @@
       app
     >
       <sidebar
+        ref="sideBar"
         :menu-items="items"
         :opened-panels="openedPanels"
         :initial-poi-cat-id="initialPoiCatId"
         :initial-poi-id="initialPoiId"
-        ref="sideBar"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
         @setGlobalRoute="onSetGlobalRoute"
