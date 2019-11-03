@@ -398,6 +398,9 @@ export default {
       }
     },
     onLocationClick (centroid) {
+      if (!centroid) {
+        return;
+      }
       this.view.animate({
         center: centroid.coordinates,
         duration: 2000,

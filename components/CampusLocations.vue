@@ -49,7 +49,7 @@ export default {
     },
     fetchLocations () {
       return api.request({
-        endPoint: 'campus'
+        endPoint: 'campus/'
       });
     }
   }
