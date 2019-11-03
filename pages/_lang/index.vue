@@ -17,11 +17,11 @@
       app
     >
       <sidebar
+        ref="sideBar"
         :menu-items="items"
         :opened-panels="openedPanels"
         :initial-poi-cat-id="initialPoiCatId"
         :initial-poi-id="initialPoiId"
-        ref="sideBar"
         @menuButtonClick="onMenuButtonClick"
         @locationClick="onLocationClick"
         @setGlobalRoute="onSetGlobalRoute"
@@ -104,9 +104,10 @@ export default {
 
   async mounted () {
     const floorData = await this.fetchFloors();
+    const mapComponent = this.$refs.map;
     if (floorData && floorData.data && floorData.data.results) {
       this.floors = floorData.data.results;
-      this.$refs.map.loadLayers(this.floors);
+      mapComponent.loadLayers(this.floors);
     }
     this.loading = false;
     if (this.setSelection) {
@@ -116,7 +117,7 @@ export default {
   methods: {
     fetchFloors () {
       return api.request({
-        endPoint: 'floor'
+        endPoint: 'floor/'
       });
     },
     onDrawerClick () {

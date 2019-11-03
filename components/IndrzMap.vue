@@ -17,7 +17,7 @@
     </div>
     <div class="indrz-logo">
       <a href="http://www.indrz.com" target="_blank">
-        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" />
+        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
