@@ -44,7 +44,7 @@ export default {
   name: 'PointsOfInterest',
   props: {
     'initialPoiCatId': {
-      type: Number,
+      type: String,
       default: function () {
         return null;
       }

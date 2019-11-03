@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-expansion-panels v-model="openedPanels" multiple>
+    <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
         <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -87,7 +87,14 @@ export default {
         shareMap: this.$t('share_map'),
         download: this.$t('download'),
         pdf: this.$t('pdf')
-      }
+      },
+      expanded: []
+    }
+  },
+
+  watch: {
+    openedPanels (value) {
+      this.expanded = value;
     }
   },
 
