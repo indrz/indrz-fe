@@ -20,9 +20,9 @@
         <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
       </a>
     </div>
-        <div class="tu-logo">
+    <div class="tu-logo">
       <a href="https://www.tuwien.at" target="_blank">
-        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; "/>
+        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
