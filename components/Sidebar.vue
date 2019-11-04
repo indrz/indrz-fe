@@ -1,5 +1,6 @@
 <template>
   <div>
+     <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; left: 10px;" />
     <v-expansion-panels v-model="openedPanels" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
         <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
