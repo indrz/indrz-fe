@@ -17,7 +17,7 @@
     </div>
     <div class="indrz-logo">
       <a href="https://www.indrz.com" target="_blank">
-        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo" />
+        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
       </a>
     </div>
         <div class="tu-logo">
@@ -403,6 +403,9 @@ export default {
       }
     },
     onLocationClick (centroid) {
+      if (!centroid) {
+        return;
+      }
       this.view.animate({
         center: centroid.coordinates,
         duration: 2000,

@@ -1,7 +1,7 @@
 <template>
   <div>
-     <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; left: 10px;" />
-    <v-expansion-panels v-model="openedPanels" multiple>
+     <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; left: 10px;">
+    <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
         <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -88,7 +88,8 @@ export default {
         shareMap: this.$t('share_map'),
         download: this.$t('download'),
         pdf: this.$t('pdf')
-      }
+      },
+      expanded: []
     }
   },
 
@@ -132,6 +133,12 @@ export default {
           text: this.locale.pdf
         }
       ]
+    }
+  },
+
+  watch: {
+    openedPanels (value) {
+      this.expanded = value;
     }
   },
 

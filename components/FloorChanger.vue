@@ -10,7 +10,7 @@
           :key="i"
           @click.stop="onFloorClick(floor, true)"
         >
-          <v-list-item-content>
+          <v-list-item-content style="min-width: 20px">
             <v-list-item-title v-text="floor.short_name" />
           </v-list-item-content>
         </v-list-item>
@@ -49,7 +49,7 @@ export default {
   methods: {
     fetchFloors () {
       return api.request({
-        endPoint: 'floor'
+        endPoint: 'floor/'
       });
     },
     onFloorClick (floor, isEvent) {
