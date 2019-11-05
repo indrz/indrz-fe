@@ -133,6 +133,11 @@ export default {
     },
     async onSearchSelect (selection) {
       const selectedItem = selection.data;
+      const floorName = selectedItem.properties.floor_name;
+      if (floorName) {
+        this.$emit('selectFloor', indrzConfig.layerNamePrefix + floorName);
+        this.activeFloorName = indrzConfig.layerNamePrefix + floorName;
+      }
       if (!selectedItem) {
         this.closeIndrzPopup();
         return;
@@ -148,9 +153,6 @@ export default {
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
       this.searchLayer = result.searchLayer;
-      if (result.floorName) {
-        this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
-      }
     },
     async loadMapWithParams () {
       const query = queryString.parse(location.search);
