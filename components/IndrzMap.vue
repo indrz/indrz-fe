@@ -411,7 +411,7 @@ export default {
       this.view.animate({
         center: centroid.coordinates,
         duration: 2000,
-        zoom: 16
+        zoom: 18
       });
     },
     onFloorClick (floorName) {
