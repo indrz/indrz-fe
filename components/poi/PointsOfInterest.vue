@@ -11,20 +11,24 @@
       v-if="!loading"
       ref="poi"
       v-model="tree"
+      multiple-active
       :items="poiData"
       selected-color="indigo"
       open-on-click
       selectable
       return-object
-      expand-icon="mdi-chevron-down"
-      on-icon="mdi-bookmark"
-      off-icon="mdi-bookmark-outline"
-      indeterminate-icon="mdi-bookmark-minus"
       item-key="id"
       class="poi"
       dense
     >
-      <template v-slot:prepend="{ item, open }">
+      <template slot="label" slot-scope="{ item }">
+        <div style="width: 100%; height: 100%" @click="onTreeClick(item)">
+          {{ item.name }}
+        </div>
+      </template>
+      <template v-slot:prepend="{ item, open, active }" @click="onTreeClick(item)">
+        <img v-if="active" :src="'/images/icons/' + item.icon + '_active_24.png'">
+        <img v-else :src="'/images/icons/' + item.icon + '_24.png'">
         <v-icon v-if="!item.icon">
           {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
         </v-icon>
@@ -122,6 +126,14 @@ export default {
   },
 
   methods: {
+    onTreeClick (item) {
+      const treeComp = this.$refs.poi;
+      const shouldAdd = !treeComp.selectedCache.has(item.id);
+
+      treeComp.updateSelected(item.id, shouldAdd);
+      treeComp.updateActive(item.id, shouldAdd);
+      treeComp.emitSelected();
+    },
     onLocationClick (location) {
       this.$emit('locationClick', location.centroid);
     },
@@ -159,8 +171,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .poi {
   font-size: 0.875rem;
+}
+.v-treeview-node__checkbox {
+  display: none !important;
 }
 </style>
