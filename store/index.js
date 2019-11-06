@@ -14,7 +14,7 @@ export const mutations = {
     state.snackBar = val
   }
 };
-}
+
 /*
 export const state = () => ({
   user: {}
