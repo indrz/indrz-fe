@@ -16,8 +16,13 @@
       </v-btn>
     </div>
     <div class="indrz-logo">
-      <a href="http://www.indrz.com" target="_blank">
-        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" />
+      <a href="https://www.indrz.com" target="_blank">
+        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
+      </a>
+    </div>
+    <div class="tu-logo">
+      <a href="https://www.tuwien.at" target="_blank">
+        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
@@ -38,11 +43,10 @@ import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getCenter } from 'ol/extent';
 import queryString from 'query-string';
-// import {toStringHDMS} from 'ol/coordinate';
-// import {transform} from 'ol/proj'
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
 import RouteHandler from '../util/RouteHandler';
+import POIHandler from '../util/POIHandler';
 import InfoOverlay from '../components/infoOverlay'
 import ShareOverlay from '../components/shareOverlay'
 import 'ol/ol.css';
@@ -72,7 +76,8 @@ export default {
       currentLocale: 'en',
       routeToValTemp: '',
       routeFromValTemp: '',
-      hostUrl: window.location.href
+      hostUrl: window.location.href,
+      routeHandler: RouteHandler(this.$store)
     };
   },
 
@@ -133,6 +138,11 @@ export default {
     },
     async onSearchSelect (selection) {
       const selectedItem = selection.data;
+      const floorName = selectedItem.properties.floor_name;
+      if (floorName) {
+        this.$emit('selectFloor', indrzConfig.layerNamePrefix + floorName);
+        this.activeFloorName = indrzConfig.layerNamePrefix + floorName;
+      }
       if (!selectedItem) {
         this.closeIndrzPopup();
         return;
@@ -148,9 +158,6 @@ export default {
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
       this.searchLayer = result.searchLayer;
-      if (result.floorName) {
-        this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
-      }
     },
     async loadMapWithParams () {
       const query = queryString.parse(location.search);
@@ -195,8 +202,14 @@ export default {
           }
         });
         setTimeout(async () => {
-          this.globalRouteInfo.routeUrl = await RouteHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
+          this.globalRouteInfo.routeUrl = await this.routeHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
         }, 600);
+      }
+      if (query['poi-cat-id']) {
+        this.$emit('openPoiTree', query['poi-cat-id']);
+      }
+      if (query['poi-id']) {
+        this.$emit('openPoiTree', query['poi-id'], true);
       }
     },
     openIndrzPopup (properties, coordinate, feature) {
@@ -220,8 +233,47 @@ export default {
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
       const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
-      shareOverlay.setShareLink(url);
+
+      if (typeof url === 'object' && url.type === 'poi') {
+        shareOverlay.setPoiShareLink(url);
+      } else {
+        shareOverlay.setShareLink(url);
+      }
       shareOverlay.show();
+    },
+    loadSinglePoi (poiId) {
+      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName);
+    },
+    onPoiLoad ({ removedItems, newItems, oldItems }) {
+      if (removedItems && removedItems.length) {
+        removedItems.forEach((item) => {
+          if (POIHandler.poiExist(item, this.map)) {
+            POIHandler.disablePoiById(item.id, this.map);
+          }
+        });
+      }
+      if (oldItems && oldItems.length) {
+        oldItems.forEach((item) => {
+          POIHandler.setPoiVisibility(item, this.map);
+        })
+      }
+      if (newItems && newItems.length) {
+        newItems.forEach((item) => {
+          if (POIHandler.poiExist(item, this.map)) {
+            POIHandler.setPoiVisibility(item.id, this.map);
+          } else {
+            POIHandler
+              .fetchPoi(item.id, this.map, this.activeFloorName)
+              .then((poiLayer) => {
+                this.map.getLayers().forEach((layer) => {
+                  if (layer.getProperties().id === 99999) {
+                    layer.getLayers().push(poiLayer);
+                  }
+                });
+              });
+          }
+        })
+      }
     },
     onPopupRouteClick (path) {
       this.$emit('popupRouteClick', {
@@ -252,7 +304,7 @@ export default {
           }
 
           this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFlooractivateFloor(feature, this.layers, this.map);
+          MapUtil.activateFloor(feature, this.layers, this.map);
         } else if (featureType === 'Point') {
           MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
           coordinate = this.map.getCoordinateFromPixel(pixel);
@@ -288,7 +340,10 @@ export default {
                       features: (new GeoJSON()).readFeatures(feature)
                     });
                     const centroidCoords = getCenter(centroidSource.getExtent());
-                    dataProperties.properties = feature.properties;
+                    if (!dataProperties.properties) {
+                      dataProperties.properties = {};
+                    }
+                    dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
                     dataProperties.centroid = centroidCoords;
                   }
                 }
@@ -336,9 +391,13 @@ export default {
           this.map.renderSync();
           break;
         case 'share-map':
-          MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
+          const url = MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
           const shareOverlay = this.$refs.shareOverlay;
-          shareOverlay.setShareLink(location.href);
+          if (typeof url === 'object' && url.type === 'poi') {
+            shareOverlay.setPoiShareLink(url);
+          } else {
+            shareOverlay.setShareLink(location.href);
+          }
           shareOverlay.show();
           break;
         default:
@@ -346,10 +405,13 @@ export default {
       }
     },
     onLocationClick (centroid) {
+      if (!centroid) {
+        return;
+      }
       this.view.animate({
         center: centroid.coordinates,
         duration: 2000,
-        zoom: 16
+        zoom: 18
       });
     },
     onFloorClick (floorName) {
@@ -360,10 +422,10 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo () {
-      this.globalRouteInfo.routeUrl = await RouteHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
     },
     clearRouteData () {
-      RouteHandler.clearRouteData(this.map);
+      this.routeHandler.clearRouteData(this.map);
     }
   }
 };

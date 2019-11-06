@@ -12,6 +12,8 @@ import MapUtil from './map';
 import api from '~/util/api';
 import indrzConfig from '~/util/indrzConfig';
 
+let store = null;
+
 const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
@@ -65,70 +67,79 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
   const source = new SourceVector();
   let floorName = '';
 
-  routeUrl = await api.request({
-    url: geoJsonUrl
-  }).then(function (response) {
-    response = response.data;
-    const geojsonFormat = new GeoJSON();
-    const features = geojsonFormat.readFeatures(response, { featureProjection: 'EPSG:4326' });
-    const routeJson = JSON.stringify(response);
-    const routeData = JSON.parse(routeJson);
-    source.addFeatures(features);
-
-    addMarkers(map, features, routeData.route_info);
-
-    if (searchType === 'coords') {
-      startName = routeData.route_info.start_name
-      endName = routeData.route_info.end_name
-    } else if (searchType === 'spaceIdToSpaceId') {
-      startName = routeData.route_info.start_name;
-      endName = routeData.route_info.end_name;
-      routeUrl = '/?campus=1&start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
-
-      // TODO:: Show hide things
-      /*
-      $('#route-from').val(startName)
-      $('#route-to').val(endName)
-      $('#collapseRouting').collapse('show')
-      $('#collapsePoi').collapse('hide')
-      $('#collapseCampus').collapse('hide')
-      insertRouteDescriptionText(startName, endName, routeData, true)
-      */
-    }
-    if (routeData.route_info.mid_name !== '') {
-      insertRouteDescriptionText(startName, endName, routeData, true)
-    } else {
-      insertRouteDescriptionText(startName, endName, routeData, false)
-    }
-
-    if (typeof (features[0]) !== 'undefined') {
-      floorName = features[0].getProperties().floor_name;
-      if (floorName) {
-        MapUtil.activateLayer(indrzConfig.layerNamePrefix + floorName, layers.switchableLayers, map);
+  try {
+    routeUrl = await api.request({
+      url: geoJsonUrl
+    }).then(function (response) {
+      if (!response) {
+        store.commit('SET_SNACKBAR', 'test message');
+        return;
       }
-    }
-    // TODO Following to check later
-    /*
-    if (library_key !== 'nokey') {
-      startFloor = routeLocalData.end.floor
-    }
-    */
+      response = response.data;
+      const geojsonFormat = new GeoJSON();
+      const features = geojsonFormat.readFeatures(response, { featureProjection: 'EPSG:4326' });
+      const routeJson = JSON.stringify(response);
+      const routeData = JSON.parse(routeJson);
+      source.addFeatures(features);
 
-    // center up the route
-    const extent = source.getExtent();
-    map.getView().fit(extent);
-    /*
-    var checkName = Number(startName[0]);
+      addMarkers(map, features, routeData.route_info);
 
-    if (checkName > 0) {
-      routeUrl = '/?campus=' + building_id + '&start-xyz=' + startName + '&end-xyz=' + endName;
+      if (searchType === 'coords') {
+        startName = routeData.route_info.start_name
+        endName = routeData.route_info.end_name
+      } else if (searchType === 'spaceIdToSpaceId') {
+        startName = routeData.route_info.start_name;
+        endName = routeData.route_info.end_name;
+        routeUrl = '/?campus=1&start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
 
-    } else if (typeof checkName !== 'number' && startName !== '' && endName !== '') {
-      routeUrl = '/?campus=' + building_id + '&startstr=' + startName + '&endstr=' + endName + '&type=' + routeType;
-    }
-    */
-    return routeUrl;
-  });
+        // TODO:: Show hide things
+        /*
+        $('#route-from').val(startName)
+        $('#route-to').val(endName)
+        $('#collapseRouting').collapse('show')
+        $('#collapsePoi').collapse('hide')
+        $('#collapseCampus').collapse('hide')
+        insertRouteDescriptionText(startName, endName, routeData, true)
+        */
+      }
+      if (routeData.route_info.mid_name !== '') {
+        insertRouteDescriptionText(startName, endName, routeData, true)
+      } else {
+        insertRouteDescriptionText(startName, endName, routeData, false)
+      }
+
+      if (typeof (features[0]) !== 'undefined') {
+        floorName = features[0].getProperties().floor_name;
+        if (floorName) {
+          MapUtil.activateLayer(indrzConfig.layerNamePrefix + floorName, layers.switchableLayers, map);
+        }
+      }
+      // TODO Following to check later
+      /*
+      if (library_key !== 'nokey') {
+        startFloor = routeLocalData.end.floor
+      }
+      */
+
+      // center up the route
+      const extent = source.getExtent();
+      map.getView().fit(extent);
+      /*
+      var checkName = Number(startName[0]);
+
+      if (checkName > 0) {
+        routeUrl = '/?campus=' + building_id + '&start-xyz=' + startName + '&end-xyz=' + endName;
+
+      } else if (typeof checkName !== 'number' && startName !== '' && endName !== '') {
+        routeUrl = '/?campus=' + building_id + '&startstr=' + startName + '&endstr=' + endName + '&type=' + routeType;
+      }
+      */
+      return routeUrl;
+    })
+  } catch ({ response }) {
+    console.log('got error');
+    store.commit('SET_SNACKBAR', response.data.error.reason);
+  }
 
   const routeLayer = new VectorLayer({
     // url: geoJsonUrl,
@@ -479,10 +490,13 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, f
   }
 };
 
-export default {
-  getDirections,
-  routeGo,
-  routeToPoiFromPoi,
-  clearRouteData,
-  insertRouteDescriptionText
+export default function (_store) {
+  store = _store;
+  return {
+    getDirections,
+    routeGo,
+    routeToPoiFromPoi,
+    clearRouteData,
+    insertRouteDescriptionText
+  }
 }
