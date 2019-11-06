@@ -1,5 +1,10 @@
 const signIn = (userInfo) => {
-  return 'dummy-token-data';
+  return {
+    data: {
+      userName: userInfo.username,
+      token: 'dummy-token'
+    }
+  };
 };
 
 export default {
