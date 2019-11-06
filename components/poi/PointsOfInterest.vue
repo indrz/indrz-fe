@@ -11,6 +11,7 @@
       v-if="!loading"
       ref="poi"
       v-model="tree"
+      multiple-active
       :items="poiData"
       selected-color="indigo"
       open-on-click
@@ -127,12 +128,10 @@ export default {
   methods: {
     onTreeClick (item) {
       const treeComp = this.$refs.poi;
-      treeComp.updateSelected(item.id, true);
-      const foundData = this.findItem(Number(item.id), this.poiData);
-      foundData.roots.reverse().forEach((node) => {
-        treeComp.updateOpen(node, true);
-      });
-      treeComp.updateActive(item.id, true);
+      const shouldAdd = !treeComp.selectedCache.has(item.id);
+
+      treeComp.updateSelected(item.id, shouldAdd);
+      treeComp.updateActive(item.id, shouldAdd);
       treeComp.emitSelected();
     },
     onLocationClick (location) {
