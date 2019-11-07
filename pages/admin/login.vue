@@ -73,8 +73,8 @@ export default {
   mounted () {
     const tokenData = LocalStorageService.getTokenData();
     if (tokenData && tokenData.token) {
-      this.$store.commit('user/SET_USER', tokenData)
-      this.$router.push(this.$route.query.redirect || '/');
+      this.$store.commit('user/SET_USER', tokenData);;
+      this.$router.push(this.$route.query.redirect || '/admin');
     }
   },
 
@@ -92,7 +92,7 @@ export default {
           });
 
         if (this.$store.getters['user/isUserSignedIn']) {
-          this.$router.push(this.$route.query.redirect || '/');
+          this.$router.push(this.$route.query.redirect || '/admin');
           this.noUser = false;
           return;
         }

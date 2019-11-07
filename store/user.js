@@ -27,7 +27,7 @@ export const actions = {
 
   SIGN_OUT ({ commit }) {
     commit('SET_USER', null);
-    this.$router.push('/login');
+    this.$router.push('/admin/login');
   }
 };
 
