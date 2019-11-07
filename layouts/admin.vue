@@ -1,0 +1,84 @@
+<template>
+  <v-app id="admin-app">
+    <side-bar
+      v-if="isUserSignedIn"
+      :menu-items="menuItems"
+      :drawer="drawer"
+      @drawerClick="onDrawerClick"
+    />
+    <v-app-bar
+      v-if="isUserSignedIn"
+      app
+      color="indigo"
+      dark
+      dense
+    >
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
+      <v-toolbar-title>Indoor Frontend Manager</v-toolbar-title>
+      <v-spacer />
+      <user-menu />
+    </v-app-bar>
+    <v-content>
+      <v-container
+        class="fill-height pa-0"
+        fluid
+      >
+        <nuxt />
+      </v-container>
+    </v-content>
+    <v-footer color="indigo" app>
+      <span class="white--text">Powered by indrz</span>
+    </v-footer>
+  </v-app>
+</template>
+
+<script>
+import { mapGetters } from 'vuex';
+import SideBar from '../components/admin/SideBar'
+import UserMenu from '../components/admin/UserMenu'
+
+export default {
+  components: {
+    SideBar,
+    UserMenu
+  },
+  data: () => ({
+    drawer: null,
+    menuItems: [
+      {
+        text: 'Dashboard',
+        icon: 'home',
+        route: { name: 'dashboard', path: '/admin/' }
+      },
+      {
+        text: 'List shelves',
+        icon: 'view-list',
+        route: { name: 'shelves', path: '/admin/shelves' }
+      }
+    ]
+  }),
+
+  computed: {
+    ...mapGetters({
+      isUserSignedIn: 'user/isUserSignedIn'
+    })
+  },
+
+  watch: {
+    isUserSignedIn: {
+      immediate: true,
+      handler (value) {
+        if (!value) {
+          this.$router.push(this.$route.query.redirect || '/admin/login');
+        }
+      }
+    }
+  },
+
+  methods: {
+    onDrawerClick (drawer) {
+      this.drawer = drawer;
+    }
+  }
+}
+</script>

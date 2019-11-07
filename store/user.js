@@ -12,7 +12,7 @@ export const mutations = {
     if (user) {
       LocalStorageService.setToken(state.user);
     } else {
-      LocalStorageService.removeToekn();
+      LocalStorageService.removeToken();
     }
   }
 };

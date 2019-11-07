@@ -34,7 +34,7 @@ export default {
   },
   methods: {
     signOut () {
-      this.$store.dispatch('SIGN_OUT');
+      this.$store.dispatch('user/SIGN_OUT');
     }
   }
 }
