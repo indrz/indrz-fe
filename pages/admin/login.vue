@@ -10,7 +10,12 @@
     <span class="v-card__text">Please login</span>
 
     <template>
-      <v-form ref="loginForm" lazy-validation @submit.prevent="onSignIn" v-model="valid">
+      <v-form
+        ref="loginForm"
+        v-model="valid"
+        lazy-validation
+        @submit.prevent="onSignIn"
+      >
         <v-container>
           <v-layout row wrap>
             <v-flex xs12 sm6>
@@ -38,7 +43,7 @@
               />
             </v-flex>
           </v-layout>
-          <v-layout row wrap v-if="noUser" class="subheader-2 justify-center error--text">
+          <v-layout v-if="noUser" row wrap class="subheader-2 justify-center error--text">
             User name or password is not valid!
           </v-layout>
           <v-layout row wrap>
@@ -73,7 +78,7 @@ export default {
   mounted () {
     const tokenData = LocalStorageService.getTokenData();
     if (tokenData && tokenData.token) {
-      this.$store.commit('user/SET_USER', tokenData);;
+      this.$store.commit('user/SET_USER', tokenData);
       this.$router.push(this.$route.query.redirect || '/admin');
     }
   },
