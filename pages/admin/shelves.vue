@@ -1,12 +1,16 @@
 <template>
   <div>
-    Shelves List
+    <shelves-list />
   </div>
 </template>
 
 <script>
+import ShelvesList from '../../components/admin/shelves/ShelvesList'
 export default {
-  layout: 'admin'
+  layout: 'admin',
+  components: {
+    ShelvesList
+  }
 }
 </script>
 

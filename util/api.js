@@ -14,6 +14,15 @@ const request = function (requestObj) {
   });
 };
 
+const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
+  return {
+    // page,
+    limit: itemsPerPage,
+    offset: (page - 1) * itemsPerPage
+  }
+};
+
 export default {
-  request
+  request,
+  getPageParams
 }
