@@ -10,6 +10,7 @@
             :ref="menuItem.type"
             :initial-poi-cat-id="initialPoiCatId"
             :initial-poi-id="initialPoiId"
+            :search-result="searchResult"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
@@ -92,7 +93,8 @@ export default {
         download: this.$t('download'),
         pdf: this.$t('pdf')
       },
-      expanded: []
+      expanded: [],
+      searchResult: []
     }
   },
 

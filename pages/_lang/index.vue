@@ -173,6 +173,7 @@ export default {
     onShowSearchResult (searchResult) {
       this.drawer = true;
       this.openedPanels = [3];
+      this.$refs.sideBar.searchResult = searchResult;
     },
     onClearRoute () {
       this.$refs.map.clearRouteData();
