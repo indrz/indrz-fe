@@ -182,6 +182,9 @@ export default {
           this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
         }
         this.searchLayer = result.searchLayer;
+        if (result && result.searchResult && result.searchResult.length) {
+          this.$emit('showSearchResult', result.searchResult);
+        }
       }
       if (query['start-spaceid'] && query['end-spaceid']) {
         const startSpaceId = query['start-spaceid'];

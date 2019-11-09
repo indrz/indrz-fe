@@ -49,6 +49,7 @@
 <script>
 import CampusLocations from './CampusLocations';
 import Route from './Route';
+import SearchResult from './SearchResult';
 import PointsOfInterest from './poi/PointsOfInterest';
 
 export default {
@@ -56,7 +57,8 @@ export default {
   components: {
     CampusLocations,
     Route,
-    PointsOfInterest
+    PointsOfInterest,
+    SearchResult
   },
   props: {
     'openedPanels': {
@@ -83,6 +85,7 @@ export default {
       locale: {
         campusLocations: this.$t('campus_locations'),
         route: this.$t('route'),
+        searchResult: this.$t('search_result'),
         pointsOfInterest: this.$t('points_of_interest'),
         zooToHome: this.$t('zoom_to_home'),
         shareMap: this.$t('share_map'),
@@ -107,6 +110,10 @@ export default {
         {
           type: 'PointsOfInterest',
           title: this.locale.pointsOfInterest
+        },
+        {
+          type: 'SearchResult',
+          title: this.locale.searchResult
         }
       ]
     },
