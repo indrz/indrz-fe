@@ -105,7 +105,7 @@ export default {
   computed: {
     ...mapState({
       shelvesListData: function (state) {
-        const { data, total } = state.shelves;
+        const { data, total } = state.user.shelves;
         this.total = total;
 
         return data;
@@ -139,7 +139,7 @@ export default {
 
       this
         .$store
-        .dispatch('LOAD_SHELVES', {
+        .dispatch('user/LOAD_SHELVES', {
           ...api.getPageParams(this.pagination)
         })
         .catch((err) => {

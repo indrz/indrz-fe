@@ -19,10 +19,7 @@
       <user-menu />
     </v-app-bar>
     <v-content>
-      <v-container
-        class="fill-height pa-0"
-        fluid
-      >
+      <v-container>
         <nuxt />
       </v-container>
     </v-content>
