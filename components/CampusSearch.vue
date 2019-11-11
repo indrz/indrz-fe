@@ -2,6 +2,7 @@
   <div>
     <template v-if="isRoute">
       <v-autocomplete
+        ref="searchField"
         v-model="model"
         :items="searchResult"
         :loading="isLoading"
@@ -24,6 +25,7 @@
     </template>
     <template v-else>
       <v-autocomplete
+        ref="searchField"
         v-model="model"
         :items="searchResult"
         :loading="isLoading"
@@ -108,6 +110,7 @@ export default {
         distinctUntilChanged()
       )
       .subscribe(term => this.apiSearch(term));
+    this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
 
   methods: {
@@ -142,6 +145,10 @@ export default {
     },
     clearSearch () {
       this.model = null;
+    },
+    onLoadSearchQuery (query) {
+      this.$refs.searchField.focus();
+      this.search = query;
     }
   }
 }

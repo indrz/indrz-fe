@@ -112,11 +112,13 @@ export default {
         {
           type: 'PointsOfInterest',
           title: this.locale.pointsOfInterest
-        },
+        }
+        /*,
         {
           type: 'SearchResult',
           title: this.locale.searchResult
         }
+        */
       ]
     },
     menuButtons () {
