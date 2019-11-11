@@ -317,6 +317,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     clearSearchResults(map, searchLayer);
   }
   const searchSource = new SourceVector();
+  const searchResult = [];
   let response = {};
   if (!feature) {
     response = await searchThroughAPI(searchString);
@@ -364,19 +365,18 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       globalPopupInfo.src = feature.get('src')
     }
     const attributeInfo = '"' + att + '"';
-    let htmlInsert = '';
 
     if (roomCat !== '' && typeof roomCat !== 'undefined') {
       const resultListName = fullName + ' (' + roomCat + ')';
-      htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, resultListName, floor, featureId, poiIconPath)
+      searchResult.push(generateResultLinks(att, attributeInfo, featureCenter, resultListName, floor, featureId, poiIconPath));
     } else if (roomCode !== '' && typeof roomCode !== 'undefined') {
       const className = fullName + someThing;
-      htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
+      searchResult.push(generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath));
     } else {
       const className = fullName;
-      htmlInsert = generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath)
+      searchResult.push(generateResultLinks(att, attributeInfo, featureCenter, className, floor, featureId, poiIconPath));
     }
-    console.log(htmlInsert)
+    // console.log(htmlInsert);
     // todo: handle such jquery things
     // $('#search-results-list').append(htmlInsert);
   });
@@ -438,7 +438,8 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   */
   return {
     searchLayer,
-    floorName
+    floorName,
+    searchResult
   };
 };
 

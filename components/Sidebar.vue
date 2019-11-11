@@ -10,6 +10,7 @@
             :ref="menuItem.type"
             :initial-poi-cat-id="initialPoiCatId"
             :initial-poi-id="initialPoiId"
+            :search-result="searchResult"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
@@ -49,6 +50,7 @@
 <script>
 import CampusLocations from './CampusLocations';
 import Route from './Route';
+import SearchResult from './SearchResult';
 import PointsOfInterest from './poi/PointsOfInterest';
 
 export default {
@@ -56,7 +58,8 @@ export default {
   components: {
     CampusLocations,
     Route,
-    PointsOfInterest
+    PointsOfInterest,
+    SearchResult
   },
   props: {
     'openedPanels': {
@@ -83,13 +86,15 @@ export default {
       locale: {
         campusLocations: this.$t('campus_locations'),
         route: this.$t('route'),
+        searchResult: this.$t('search_result'),
         pointsOfInterest: this.$t('points_of_interest'),
         zooToHome: this.$t('zoom_to_home'),
         shareMap: this.$t('share_map'),
         download: this.$t('download'),
         pdf: this.$t('pdf')
       },
-      expanded: []
+      expanded: [],
+      searchResult: []
     }
   },
 
@@ -108,6 +113,12 @@ export default {
           type: 'PointsOfInterest',
           title: this.locale.pointsOfInterest
         }
+        /*,
+        {
+          type: 'SearchResult',
+          title: this.locale.searchResult
+        }
+        */
       ]
     },
     menuButtons () {

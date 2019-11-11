@@ -178,6 +178,8 @@ export default {
           this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
           this.routeFromValTemp, this.activeFloorName, this.popup);
 
+        this.$root.$emit('load-search-query', query.q);
+
         if (result.floorName) {
           this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
         }

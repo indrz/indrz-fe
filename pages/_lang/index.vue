@@ -47,6 +47,7 @@
       @clearSearch="onClearSearch"
       @popupRouteClick="onPopupRouteClick"
       @openPoiTree="onOpenPoiTree"
+      @showSearchResult="onShowSearchResult"
     />
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
     <snack-bar />
@@ -168,6 +169,11 @@ export default {
       } else {
         this.initialPoiCatId = poiCatId;
       }
+    },
+    onShowSearchResult (searchResult) {
+      this.drawer = true;
+      this.openedPanels = [3];
+      this.$refs.sideBar.searchResult = searchResult;
     },
     onClearRoute () {
       this.$refs.map.clearRouteData();
