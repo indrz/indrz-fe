@@ -14,13 +14,17 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
+    <points-of-interest v-show="showPoi" />
   </v-navigation-drawer>
 </template>
 
 <script>
+import PointsOfInterest from '../poi/PointsOfInterest';
 export default {
   name: 'SideBar',
-  // props: ['menuItems', 'drawer'],
+  components: {
+    PointsOfInterest
+  },
   props: {
     drawer: {
       type: Boolean,
@@ -41,6 +45,9 @@ export default {
       set (value) {
         this.$emit('drawerClick', value);
       }
+    },
+    showPoi () {
+      return this.$route.name === 'admin-poi';
     }
   },
   methods: {

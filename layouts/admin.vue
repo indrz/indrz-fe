@@ -51,6 +51,11 @@ export default {
         text: 'List shelves',
         icon: 'view-list',
         route: { name: 'shelves', path: '/admin/shelves' }
+      },
+      {
+        text: 'POI Manager',
+        // icon: 'view-list',
+        route: { name: 'poi', path: '/admin/poi' }
       }
     ]
   }),
