@@ -19,7 +19,7 @@
       <user-menu />
     </v-app-bar>
     <v-content>
-``      <v-container :class="isPoiManager ? 'admin-map-container' : ''">
+      <v-container :class="isPoiManager ? 'admin-map-container' : ''">
         <nuxt />
       </v-container>
     </v-content>
