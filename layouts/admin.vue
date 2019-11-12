@@ -19,7 +19,7 @@
       <user-menu />
     </v-app-bar>
     <v-content>
-      <v-container>
+``      <v-container :class="isPoiManager ? 'admin-map-container' : ''">
         <nuxt />
       </v-container>
     </v-content>
@@ -63,7 +63,10 @@ export default {
   computed: {
     ...mapGetters({
       isUserSignedIn: 'user/isUserSignedIn'
-    })
+    }),
+    isPoiManager () {
+      return this.$route.name === 'admin-poi';
+    }
   },
 
   watch: {
@@ -84,3 +87,10 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .admin-map-container {
+    margin: 0px !important;
+    padding: 0px !important;
+    max-width: none !important;
+  }
+</style>
