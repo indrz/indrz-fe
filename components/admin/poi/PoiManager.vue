@@ -1,7 +1,35 @@
 <template>
   <div class="fill-height">
     <div :id="mapId" :ref="map" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+    <div id="zoom-control" class="indrz-zoom-control" />
+    <div id="id-map-switcher-widget">
+      <v-btn
+        id="id-map-switcher"
+        color="rgba(0,60,136,0.5)"
+        min-width="95px"
+        class="pa-2"
+        small
+        dark
+        @click="onMapSwitchClick"
+      >
+        {{ isSatelliteMap ? "Satellite" : "Map" }}
+      </v-btn>
+    </div>
+    <div class="indrz-logo">
+      <a href="https://www.indrz.com" target="_blank">
+        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
+      </a>
+    </div>
+    <div class="tu-logo">
+      <a href="https://www.tuwien.at" target="_blank">
+        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
+      </a>
+    </div>
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
+    <!--<div id="save-cancel-widget">
+      <v-btn>Save</v-btn>
+      <v-btn>Cancel</v-btn>
+    </div>-->
   </div>
 </template>
 
@@ -20,6 +48,7 @@ import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import MapHandler from '~/util/mapHandler';
 import api from '~/util/api';
+import 'ol/ol.css';
 export default {
   name: 'PoiManager',
   components: {
@@ -33,7 +62,8 @@ export default {
       layers: [],
       activeFloorName: '',
       initialFloor: {},
-      floors: []
+      floors: [],
+      isSatelliteMap: true
     };
   },
   async mounted () {
@@ -82,6 +112,19 @@ export default {
   },
 
   methods: {
+    onMapSwitchClick () {
+      const { baseLayers } = this.layers;
+
+      this.isSatelliteMap = !this.isSatelliteMap;
+
+      if (this.isSatelliteMap) {
+        baseLayers.ortho30cmBmapat.setVisible(false);
+        baseLayers.greyBmapat.setVisible(true);
+        return;
+      }
+      baseLayers.ortho30cmBmapat.setVisible(true);
+      baseLayers.greyBmapat.setVisible(false);
+    },
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
       MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers, this.map);
@@ -162,5 +205,14 @@ export default {
 </script>
 
 <style scoped>
-
+  .indrz-zoom-control {
+    right: 50px !important;
+    bottom: 100px !important;
+    position: absolute;
+  }
+  #id-map-switcher-widget {
+    position: absolute;
+    right: 45px !important;
+    bottom: 37px !important;
+  }
 </style>

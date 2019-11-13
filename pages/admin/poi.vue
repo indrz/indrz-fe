@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <poi-manager />
-  </div>
+  <poi-manager />
 </template>
 
 <script>
