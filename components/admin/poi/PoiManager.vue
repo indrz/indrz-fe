@@ -1,6 +1,27 @@
 <template>
   <div class="fill-height">
     <div :id="mapId" :ref="map" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+    <div class="save-btn-panel">
+      <v-btn color="primary" small width="70px">Save</v-btn>
+      <v-btn color="primary" small width="70px">Cancel</v-btn>
+    </div>
+    <div class="action-btn-panel">
+      <div>
+        <v-btn color="primary" fab small dark>
+          <v-icon>mdi-delete</v-icon>
+        </v-btn>
+      </div>
+      <div>
+        <v-btn color="primary" fab small dark>
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+      </div>
+      <div>
+        <v-btn color="primary" fab small dark>
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </div>
+    </div>
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
       <v-btn
@@ -204,7 +225,22 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .save-btn-panel {
+    position: absolute;
+    top: 10px;
+    position: absolute;
+    left: calc(50% - 70px);
+  }
+  .action-btn-panel {
+    position: absolute;
+    top: 50%;
+    position: absolute;
+    right: 80px;
+    div {
+      margin-top: 5px;
+    }
+  }
   .indrz-zoom-control {
     right: 50px !important;
     bottom: 100px !important;
