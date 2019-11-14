@@ -93,7 +93,7 @@ export default {
       }
       oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
 
-      this.$emit('poiLoad', {
+      this.$root.$emit('poiLoad', {
         newItems,
         oldItems,
         removedItems

@@ -65,6 +65,7 @@ import { defaults as defaultInteraction } from 'ol/interaction';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import FloorChanger from '../../FloorChanger';
+import POIHandler from '../../../util/POIHandler';
 import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import MapHandler from '~/util/mapHandler';
@@ -130,6 +131,7 @@ export default {
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
       this.onFloorClick(this.activeFloorName);
     }
+    this.$root.$on('poiLoad', this.onPoiLoad);
   },
 
   methods: {
@@ -219,6 +221,37 @@ export default {
             }
           });
         }
+      }
+    },
+    onPoiLoad ({ removedItems, newItems, oldItems }) {
+      if (removedItems && removedItems.length) {
+        removedItems.forEach((item) => {
+          if (POIHandler.poiExist(item, this.map)) {
+            POIHandler.disablePoiById(item.id, this.map);
+          }
+        });
+      }
+      if (oldItems && oldItems.length) {
+        oldItems.forEach((item) => {
+          POIHandler.setPoiVisibility(item, this.map);
+        })
+      }
+      if (newItems && newItems.length) {
+        newItems.forEach((item) => {
+          if (POIHandler.poiExist(item, this.map)) {
+            POIHandler.setPoiVisibility(item.id, this.map);
+          } else {
+            POIHandler
+              .fetchPoi(item.id, this.map, this.activeFloorName)
+              .then((poiLayer) => {
+                this.map.getLayers().forEach((layer) => {
+                  if (layer.getProperties().id === 99999) {
+                    layer.getLayers().push(poiLayer);
+                  }
+                });
+              });
+          }
+        })
       }
     }
   }

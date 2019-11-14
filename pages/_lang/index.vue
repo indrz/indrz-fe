@@ -114,6 +114,7 @@ export default {
     if (this.setSelection) {
       this.selectFloorWithCss(this.setSelection);
     }
+    this.$root.$on('poiLoad', this.onPoiLoad);
   },
   methods: {
     fetchFloors () {
