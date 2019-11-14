@@ -118,18 +118,19 @@ export default {
 
     const floorData = await api.request({ endPoint: 'floor/' });
 
-    // const mapComponent = this.$refs.map;
     if (floorData && floorData.data && floorData.data.results) {
       this.floors = floorData.data.results;
       if (this.floors && this.floors.length) {
         this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
         this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+        this.$nextTick(function () {
+          this.$refs.floorChanger.onFloorClick(this.intitialFloor);
+        });
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
       this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
-      this.onFloorClick(this.activeFloorName);
     }
     this.$root.$on('poiLoad', this.onPoiLoad);
   },
