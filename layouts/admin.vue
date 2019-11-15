@@ -19,13 +19,13 @@
       <user-menu />
     </v-app-bar>
     <v-content>
-      <v-container>
+      <v-container :class="isPoiManager ? 'admin-map-container' : ''">
         <nuxt />
       </v-container>
     </v-content>
-    <v-footer color="indigo" app>
-      <span class="white--text">Powered by indrz</span>
-    </v-footer>
+    <!--<v-footer color="indigo" app>
+      <span class="white&#45;&#45;text">Powered by indrz</span>
+    </v-footer>-->
   </v-app>
 </template>
 
@@ -51,6 +51,11 @@ export default {
         text: 'List shelves',
         icon: 'view-list',
         route: { name: 'shelves', path: '/admin/shelves' }
+      },
+      {
+        text: 'POI Manager',
+        // icon: 'view-list',
+        route: { name: 'poi', path: '/admin/poi' }
       }
     ]
   }),
@@ -58,7 +63,10 @@ export default {
   computed: {
     ...mapGetters({
       isUserSignedIn: 'user/isUserSignedIn'
-    })
+    }),
+    isPoiManager () {
+      return this.$route.name === 'admin-poi';
+    }
   },
 
   watch: {
@@ -79,3 +87,14 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .admin-map-container {
+    align-items: start;
+    width: 100%;
+    height: 100%;
+    padding: 0px !important;
+    margin: 0px !important;
+    padding: 0px !important;
+    max-width: none;
+  }
+</style>
