@@ -14,16 +14,13 @@
         </v-list-item-content>
       </v-list-item>
     </v-list>
-    <points-of-interest v-show="showPoi" />
   </v-navigation-drawer>
 </template>
 
 <script>
-import PointsOfInterest from '../poi/PointsOfInterest';
 export default {
   name: 'SideBar',
   components: {
-    PointsOfInterest
   },
   props: {
     drawer: {

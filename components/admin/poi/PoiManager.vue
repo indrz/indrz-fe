@@ -1,6 +1,9 @@
 <template>
   <div class="fill-height">
     <div :id="mapId" :ref="map" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+    <div class="poi">
+      <points-of-interest />
+    </div>
     <div class="save-btn-panel">
       <v-btn color="primary" small width="70px">Save</v-btn>
       <v-btn color="primary" small width="70px">Cancel</v-btn>
@@ -65,16 +68,19 @@ import { defaults as defaultInteraction } from 'ol/interaction';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import FloorChanger from '../../FloorChanger';
+import PointsOfInterest from '../../poi/PointsOfInterest';
 import POIHandler from '../../../util/POIHandler';
 import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import MapHandler from '~/util/mapHandler';
 import api from '~/util/api';
 import 'ol/ol.css';
+
 export default {
   name: 'PoiManager',
   components: {
-    FloorChanger
+    FloorChanger,
+    PointsOfInterest
   },
   data () {
     return {
@@ -284,5 +290,12 @@ export default {
     position: absolute;
     right: 45px !important;
     bottom: 37px !important;
+  }
+  .poi {
+    position: absolute;
+    left: 10px;
+    top: 70px;
+    background: white;
+    padding: 10px 20px;
   }
 </style>
