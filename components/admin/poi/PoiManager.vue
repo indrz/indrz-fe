@@ -8,23 +8,6 @@
       <v-btn color="primary" small width="70px">Save</v-btn>
       <v-btn color="primary" small width="70px">Cancel</v-btn>
     </div>
-    <div class="action-btn-panel">
-      <div>
-        <v-btn color="primary" fab small dark>
-          <v-icon>mdi-delete</v-icon>
-        </v-btn>
-      </div>
-      <div>
-        <v-btn color="primary" fab small dark>
-          <v-icon>mdi-pencil</v-icon>
-        </v-btn>
-      </div>
-      <div>
-        <v-btn color="primary" fab small dark>
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </div>
-    </div>
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
       <v-btn
@@ -50,10 +33,7 @@
       </a>
     </div>
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
-    <!--<div id="save-cancel-widget">
-      <v-btn>Save</v-btn>
-      <v-btn>Cancel</v-btn>
-    </div>-->
+    <action-buttons />
   </div>
 </template>
 
@@ -70,6 +50,7 @@ import PinchZoom from 'ol/interaction/PinchZoom';
 import FloorChanger from '../../FloorChanger';
 import PointsOfInterest from '../../poi/PointsOfInterest';
 import POIHandler from '../../../util/POIHandler';
+import ActionButtons from './ActionButtons';
 import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import MapHandler from '~/util/mapHandler';
@@ -79,6 +60,7 @@ import 'ol/ol.css';
 export default {
   name: 'PoiManager',
   components: {
+    ActionButtons,
     FloorChanger,
     PointsOfInterest
   },
@@ -272,15 +254,6 @@ export default {
     position: absolute;
     left: calc(50% - 70px);
   }
-  .action-btn-panel {
-    position: absolute;
-    top: 50%;
-    position: absolute;
-    right: 80px;
-    div {
-      margin-top: 5px;
-    }
-  }
   .indrz-zoom-control {
     right: 50px !important;
     bottom: 100px !important;
@@ -296,6 +269,7 @@ export default {
     left: 10px;
     top: 70px;
     background: white;
-    padding: 10px 20px;
+    padding: 15px;
+    border-radius: 5px;
   }
 </style>
