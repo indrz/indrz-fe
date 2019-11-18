@@ -69,9 +69,11 @@ export default {
         listItems.forEach((item) => {
           item.classList.remove(activeClass, linkClass);
         });
-        listItems[floorIndex].classList.add(activeClass, linkClass);
-        if (!isEvent) {
-          listItems[floorIndex].scrollIntoView();
+        if (listItems.length && floorIndex > -1) {
+          listItems[floorIndex].classList.add(activeClass, linkClass);
+          if (!isEvent) {
+            listItems[floorIndex].scrollIntoView();
+          }
         }
       }, 500);
     }
