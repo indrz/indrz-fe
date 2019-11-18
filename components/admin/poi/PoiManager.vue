@@ -36,7 +36,7 @@ export default {
     };
   },
   mounted () {
-    this.$root.$on('poiLoad', this.onPoiLoad);
+    this.$root.$on('poiLoad', this.$refs.map.onPoiLoad);
   },
 
   methods: {
