@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="fill-height">
     <div :id="mapId" :ref="map" class="fill-height fluid flat width='100%' style='border-radius: 0" />
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
@@ -34,8 +34,11 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { OSM, Vector as VectorSource } from 'ol/source';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Draw, Modify, Snap, defaults as defaultInteraction } from 'ol/interaction';
 import { getCenter } from 'ol/extent';
-import { defaults as defaultInteraction } from 'ol/interaction';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
@@ -46,6 +49,14 @@ import api from '~/util/api';
 import 'ol/ol.css';
 export default {
   name: 'Map',
+  props: {
+    selectedPoiCategory: {
+      type: Object,
+      default: function () {
+        return null;
+      }
+    }
+  },
   data () {
     return {
       mapId: 'mapContainer',
@@ -56,53 +67,107 @@ export default {
     };
   },
   async mounted () {
-    this.view = new View({
-      center: MapUtil.getStartCenter(),
-      zoom: 17,
-      maxZoom: 23
-    });
-
-    this.layers = MapUtil.getLayers();
-
-    this.map = new Map({
-      interactions: defaultInteraction().extend([
-        new DragRotateAndZoom(),
-        new PinchZoom({
-          constrainResolution: true
-        })
-      ]),
-      target: this.mapId,
-      controls: MapUtil.getMapControls(),
-      view: this.view,
-      layers: this.layers.layerGroups
-    });
-    this.map.on('singleclick', this.onMapClick, this);
-    window.onresize = () => {
-      setTimeout(() => {
-        this.map.updateSize();
-      }, 500);
-    };
-
-    const floorData = await api.request({ endPoint: 'floor/' });
-
-    if (floorData && floorData.data && floorData.data.results) {
-      this.floors = floorData.data.results;
-      if (this.floors && this.floors.length) {
-        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
-        this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
-        this.$emit('floorChange', {
-          floor: this.intitialFloor,
-          floors: this.floors,
-          name: this.activeFloorName
-        });
-        this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
-      }
-      this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
-      this.layers.switchableLayers = this.wmsLayerInfo.layers;
-      this.map.addLayer(this.wmsLayerInfo.layerGroup);
-    }
+    await this.initializeMap();
+    this.initializeEventHandlers();
   },
   methods: {
+    initializeEventHandlers () {
+      this.$root.$on('addPoiClick', this.addInteractions);
+      this.$root.$on('cancelPoiClick', this.removeInteraction)
+    },
+    async initializeMap () {
+      this.view = new View({
+        center: MapUtil.getStartCenter(),
+        zoom: 17,
+        maxZoom: 23
+      });
+
+      this.layers = MapUtil.getLayers();
+
+      this.raster = new TileLayer({
+        source: new OSM()
+      });
+
+      this.source = new VectorSource();
+
+      this.vector = new VectorLayer({
+        source: this.source,
+        style: new Style({
+          fill: new Fill({
+            color: 'rgba(255, 255, 255, 0.2)'
+          }),
+          stroke: new Stroke({
+            color: '#ffcc33',
+            width: 2
+          }),
+          image: new CircleStyle({
+            radius: 7,
+            fill: new Fill({
+              color: '#ffcc33'
+            })
+          })
+        })
+      });
+
+      this.layers.layerGroups.push(this.vector);
+      this.map = new Map({
+        interactions: defaultInteraction().extend([
+          new DragRotateAndZoom(),
+          new PinchZoom({
+            constrainResolution: true
+          })
+        ]),
+        target: this.mapId,
+        controls: MapUtil.getMapControls(),
+        view: this.view,
+        layers: this.layers.layerGroups
+      });
+      this.map.on('singleclick', this.onMapClick, this);
+      window.onresize = () => {
+        setTimeout(() => {
+          this.map.updateSize();
+        }, 500);
+      };
+
+      const modify = new Modify({ source: this.source });
+      this.map.addInteraction(modify);
+
+      const floorData = await api.request({ endPoint: 'floor/' });
+
+      if (floorData && floorData.data && floorData.data.results) {
+        this.floors = floorData.data.results;
+        if (this.floors && this.floors.length) {
+          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
+          this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+          this.$emit('floorChange', {
+            floor: this.intitialFloor,
+            floors: this.floors,
+            name: this.activeFloorName
+          });
+          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+        }
+        this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
+        this.layers.switchableLayers = this.wmsLayerInfo.layers;
+        this.map.addLayer(this.wmsLayerInfo.layerGroup);
+      }
+    },
+    addInteractions () {
+      if (!this.activeFloorName || !this.selectedPoiCategory) {
+        this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
+        return;
+      }
+      this.draw = new Draw({
+        source: this.source,
+        type: 'Point'
+      });
+      this.map.addInteraction(this.draw);
+      this.snap = new Snap({ source: this.source });
+      this.map.addInteraction(this.snap);
+    },
+    removeInteraction () {
+      this.map.removeInteraction(this.draw);
+      this.map.removeInteraction(this.snap);
+    },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
 

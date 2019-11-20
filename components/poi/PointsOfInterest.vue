@@ -132,6 +132,7 @@ export default {
 
       treeComp.updateSelected(item.id, shouldAdd);
       treeComp.updateActive(item.id, shouldAdd);
+      this.$emit('selectPoiCategory', item);
       treeComp.emitSelected();
     },
     onLocationClick (location) {

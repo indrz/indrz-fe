@@ -1,13 +1,18 @@
 <template>
-  <poi-manager />
+  <div class="fill-height">
+    <poi-manager />
+    <snack-bar />
+  </div>
 </template>
 
 <script>
 import PoiManager from '../../components/admin/poi/PoiManager'
+import SnackBar from '../../components/SnackBar';
 export default {
   layout: 'admin',
   components: {
-    PoiManager
+    PoiManager,
+    SnackBar
   }
 }
 </script>

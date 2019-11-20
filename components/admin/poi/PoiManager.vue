@@ -1,12 +1,16 @@
 <template>
   <div class="fill-height">
-    <poi-map ref="map" @floorChange="onMapFloorChange" />
+    <poi-map ref="map" @floorChange="onMapFloorChange" :selectedPoiCategory="selectedPoiCategory" />
     <div class="poi">
-      <points-of-interest />
+      <points-of-interest @selectPoiCategory="setSelectedPoiCategory" />
     </div>
     <div class="save-btn-panel">
-      <v-btn color="primary" small width="70px">Save</v-btn>
-      <v-btn color="primary" small width="70px">Cancel</v-btn>
+      <v-btn color="primary" small width="70px" @click.stop.prevent="onSaveButtonClick">
+        Save
+      </v-btn>
+      <v-btn color="primary" small width="70px" @click.stop.prevent="onCancelButtonClick">
+        Cancel
+      </v-btn>
     </div>
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
     <action-buttons />
@@ -32,6 +36,7 @@ export default {
   data () {
     return {
       activeFloorName: '',
+      selectedPoiCategory: null,
       floors: []
     };
   },
@@ -40,6 +45,9 @@ export default {
   },
 
   methods: {
+    setSelectedPoiCategory (poiCategory) {
+      this.selectedPoiCategory = poiCategory;
+    },
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
       const { map, layers } = this.$refs.map;
@@ -51,6 +59,12 @@ export default {
         this.activeFloorName = name;
         this.floors = floors;
       });
+    },
+    onSaveButtonClick () {
+      this.$root.$emit('cancelPoiClick');
+    },
+    onCancelButtonClick () {
+      this.$root.$emit('cancelPoiClick');
     }
   }
 }

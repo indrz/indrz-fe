@@ -17,8 +17,12 @@
           dark
           fab
         >
-          <v-icon v-if="fab">mdi-close</v-icon>
-          <v-icon v-else>mdi-map-marker</v-icon>
+          <v-icon v-if="fab">
+            mdi-close
+          </v-icon>
+          <v-icon v-else>
+            mdi-map-marker
+          </v-icon>
         </v-btn>
       </template>
       <v-btn
@@ -34,6 +38,7 @@
         dark
         small
         color="indigo"
+        @click.stop.prevent="onAddPoiClick"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
@@ -65,6 +70,11 @@ export default {
       left: false,
       transition: 'slide-y-reverse-transition'
     };
+  },
+  methods: {
+    onAddPoiClick () {
+      this.$root.$emit('addPoiClick');
+    }
   }
 }
 </script>
