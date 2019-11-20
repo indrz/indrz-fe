@@ -49,6 +49,14 @@ import api from '~/util/api';
 import 'ol/ol.css';
 export default {
   name: 'Map',
+  props: {
+    selectedPoiCategory: {
+      type: Object,
+      default: function () {
+        return null;
+      }
+    }
+  },
   data () {
     return {
       mapId: 'mapContainer',
@@ -144,6 +152,10 @@ export default {
       }
     },
     addInteractions () {
+      if (!this.activeFloorName || !this.selectedPoiCategory) {
+        this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
+        return;
+      }
       this.draw = new Draw({
         source: this.source,
         type: 'Point'
