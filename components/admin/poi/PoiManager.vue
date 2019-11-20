@@ -5,10 +5,10 @@
       <points-of-interest />
     </div>
     <div class="save-btn-panel">
-      <v-btn color="primary" small width="70px">
+      <v-btn color="primary" small width="70px" @click.stop.prevent="onSaveButtonClick">
         Save
       </v-btn>
-      <v-btn color="primary" small width="70px">
+      <v-btn color="primary" small width="70px" @click.stop.prevent="onCancelButtonClick">
         Cancel
       </v-btn>
     </div>
@@ -55,6 +55,12 @@ export default {
         this.activeFloorName = name;
         this.floors = floors;
       });
+    },
+    onSaveButtonClick () {
+      this.$root.$emit('cancelPoiClick');
+    },
+    onCancelButtonClick () {
+      this.$root.$emit('cancelPoiClick');
     }
   }
 }

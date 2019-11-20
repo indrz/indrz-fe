@@ -59,82 +59,90 @@ export default {
     };
   },
   async mounted () {
-    this.view = new View({
-      center: MapUtil.getStartCenter(),
-      zoom: 17,
-      maxZoom: 23
-    });
-
-    this.layers = MapUtil.getLayers();
-
-    this.raster = new TileLayer({
-      source: new OSM()
-    });
-
-    this.source = new VectorSource();
-
-    this.vector = new VectorLayer({
-      source: this.source,
-      style: new Style({
-        fill: new Fill({
-          color: 'rgba(255, 255, 255, 0.2)'
-        }),
-        stroke: new Stroke({
-          color: '#ffcc33',
-          width: 2
-        }),
-        image: new CircleStyle({
-          radius: 7,
-          fill: new Fill({
-            color: '#ffcc33'
-          })
-        })
-      })
-    });
-
-    this.layers.layerGroups.push(this.vector);
-    this.map = new Map({
-      interactions: defaultInteraction().extend([
-        new DragRotateAndZoom(),
-        new PinchZoom({
-          constrainResolution: true
-        })
-      ]),
-      target: this.mapId,
-      controls: MapUtil.getMapControls(),
-      view: this.view,
-      layers: this.layers.layerGroups
-    });
-    this.map.on('singleclick', this.onMapClick, this);
-    window.onresize = () => {
-      setTimeout(() => {
-        this.map.updateSize();
-      }, 500);
-    };
-
-    const modify = new Modify({ source: this.source });
-    this.map.addInteraction(modify);
-
-    const floorData = await api.request({ endPoint: 'floor/' });
-
-    if (floorData && floorData.data && floorData.data.results) {
-      this.floors = floorData.data.results;
-      if (this.floors && this.floors.length) {
-        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
-        this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
-        this.$emit('floorChange', {
-          floor: this.intitialFloor,
-          floors: this.floors,
-          name: this.activeFloorName
-        });
-        this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
-      }
-      this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
-      this.layers.switchableLayers = this.wmsLayerInfo.layers;
-      this.map.addLayer(this.wmsLayerInfo.layerGroup);
-    }
+    await this.initializeMap();
+    this.initializeEventHandlers();
   },
   methods: {
+    initializeEventHandlers () {
+      this.$root.$on('addPoiClick', this.addInteractions);
+      this.$root.$on('cancelPoiClick', this.removeInteraction)
+    },
+    async initializeMap () {
+      this.view = new View({
+        center: MapUtil.getStartCenter(),
+        zoom: 17,
+        maxZoom: 23
+      });
+
+      this.layers = MapUtil.getLayers();
+
+      this.raster = new TileLayer({
+        source: new OSM()
+      });
+
+      this.source = new VectorSource();
+
+      this.vector = new VectorLayer({
+        source: this.source,
+        style: new Style({
+          fill: new Fill({
+            color: 'rgba(255, 255, 255, 0.2)'
+          }),
+          stroke: new Stroke({
+            color: '#ffcc33',
+            width: 2
+          }),
+          image: new CircleStyle({
+            radius: 7,
+            fill: new Fill({
+              color: '#ffcc33'
+            })
+          })
+        })
+      });
+
+      this.layers.layerGroups.push(this.vector);
+      this.map = new Map({
+        interactions: defaultInteraction().extend([
+          new DragRotateAndZoom(),
+          new PinchZoom({
+            constrainResolution: true
+          })
+        ]),
+        target: this.mapId,
+        controls: MapUtil.getMapControls(),
+        view: this.view,
+        layers: this.layers.layerGroups
+      });
+      this.map.on('singleclick', this.onMapClick, this);
+      window.onresize = () => {
+        setTimeout(() => {
+          this.map.updateSize();
+        }, 500);
+      };
+
+      const modify = new Modify({ source: this.source });
+      this.map.addInteraction(modify);
+
+      const floorData = await api.request({ endPoint: 'floor/' });
+
+      if (floorData && floorData.data && floorData.data.results) {
+        this.floors = floorData.data.results;
+        if (this.floors && this.floors.length) {
+          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
+          this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+          this.$emit('floorChange', {
+            floor: this.intitialFloor,
+            floors: this.floors,
+            name: this.activeFloorName
+          });
+          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+        }
+        this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
+        this.layers.switchableLayers = this.wmsLayerInfo.layers;
+        this.map.addLayer(this.wmsLayerInfo.layerGroup);
+      }
+    },
     addInteractions () {
       this.draw = new Draw({
         source: this.source,
