@@ -5,8 +5,12 @@
       <points-of-interest />
     </div>
     <div class="save-btn-panel">
-      <v-btn color="primary" small width="70px">Save</v-btn>
-      <v-btn color="primary" small width="70px">Cancel</v-btn>
+      <v-btn color="primary" small width="70px">
+        Save
+      </v-btn>
+      <v-btn color="primary" small width="70px">
+        Cancel
+      </v-btn>
     </div>
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
     <action-buttons />

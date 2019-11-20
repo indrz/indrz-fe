@@ -17,8 +17,12 @@
           dark
           fab
         >
-          <v-icon v-if="fab">mdi-close</v-icon>
-          <v-icon v-else>mdi-map-marker</v-icon>
+          <v-icon v-if="fab">
+            mdi-close
+          </v-icon>
+          <v-icon v-else>
+            mdi-map-marker
+          </v-icon>
         </v-btn>
       </template>
       <v-btn
