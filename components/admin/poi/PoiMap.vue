@@ -140,7 +140,6 @@ export default {
         if (this.floors && this.floors.length) {
           this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
           this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
-          debugger;
           this.$emit('floorChange', {
             floor: this.intitialFloor,
             floors: this.floors,
