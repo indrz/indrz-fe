@@ -76,6 +76,17 @@ export default {
           }
         }
       }, 500);
+    },
+    getFloorByFloorName (floorName) {
+      const shortName = floorName.split(indrzConfig.layerNamePrefix)[1];
+      if (!shortName) {
+        return {};
+      }
+      const foundFloors = this.floors.filter(floor => floor.short_name.toLowerCase() === shortName);
+      if (foundFloors && foundFloors.length) {
+        return foundFloors[0];
+      }
+      return {};
     }
   }
 }
