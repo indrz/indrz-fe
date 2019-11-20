@@ -1,6 +1,6 @@
 <template>
   <div class="fill-height">
-    <poi-map ref="map" @floorChange="onMapFloorChange" :selectedPoiCategory="selectedPoiCategory" />
+    <poi-map ref="map" @floorChange="onMapFloorChange" :selectedPoiCategory="selectedPoiCategory" :activeFloor="activeFloor" />
     <div class="poi">
       <points-of-interest @selectPoiCategory="setSelectedPoiCategory" />
     </div>
@@ -35,6 +35,7 @@ export default {
   },
   data () {
     return {
+      activeFloor: null,
       activeFloorName: '',
       selectedPoiCategory: null,
       floors: []
@@ -50,14 +51,16 @@ export default {
     },
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
+      this.activeFloor = this.$refs.floorChanger.getFloorByFloorName(floorName);
       const { map, layers } = this.$refs.map;
       MapUtil.activateLayer(this.activeFloorName, layers.switchableLayers, map);
     },
     onMapFloorChange ({ floor, floors, name }) {
+      this.floors = floors;
+      this.activeFloor = floor;
       this.$nextTick(function () {
         this.$refs.floorChanger.onFloorClick(floor);
         this.activeFloorName = name;
-        this.floors = floors;
       });
     },
     onSaveButtonClick () {

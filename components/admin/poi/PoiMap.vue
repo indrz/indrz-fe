@@ -29,28 +29,29 @@
 </template>
 
 <script>
-import axios from 'axios';
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
-import Vector from 'ol/source/Vector';
-import GeoJSON from 'ol/format/GeoJSON';
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import { OSM, Vector as VectorSource } from 'ol/source';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { Draw, Modify, Snap, defaults as defaultInteraction } from 'ol/interaction';
-import { getCenter } from 'ol/extent';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
 import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
-import MapHandler from '~/util/mapHandler';
 import api from '~/util/api';
 import 'ol/ol.css';
 export default {
   name: 'Map',
   props: {
     selectedPoiCategory: {
+      type: Object,
+      default: function () {
+        return null;
+      }
+    },
+    activeFloor: {
       type: Object,
       default: function () {
         return null;
@@ -183,74 +184,38 @@ export default {
     },
     onMapClick (evt) {
       const pixel = evt.pixel;
-      let feature = this.map.getFeaturesAtPixel(pixel);
-      const features = [];
-
-      this.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
-        features.push(feature);
-      });
-      feature = features[0];
-      let coordinate = this.map.getCoordinateFromPixel(pixel);
-      const properties = feature ? feature.getProperties() : null;
-
-      if (feature) {
-        const featureType = feature.getGeometry().getType().toString();
-
-        if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
-          if (featureType === 'MultiPoint') {
-            properties.poiId = feature.getId();
-            properties.src = 'poi';
-          }
-
-          // this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers, this.map);
-        } else if (featureType === 'Point') {
-          coordinate = this.map.getCoordinateFromPixel(pixel);
-          properties.src = 'poi';
-          if (feature.getProperties().hasOwnProperty('poi_id')) {
-            properties.poiId = feature.properties.poi_id;
-          }
-
-          // this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers, this.map);
-        }
-      } else {
-        // const featuresWms = this.map.getFeaturesAtPixel(pixel);
-        const v = this.map.getView();
-        const viewResolution = /** @type {number} */ (v.getResolution());
-        const wmsSource2 = MapHandler.getRoomInfo(this.activeFloorName, this.layers);
-        const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
-          'INFO_FORMAT': 'application/json',
-          'FEATURE_COUNT': 50
-        });
-
-        if (url) {
-          axios.get(url).then((response) => {
-            const listFeatures = response.data && response.data.features ? response.data.features : [];
-            const dataProperties = {};
-
-            if (listFeatures.length > 0) {
-              listFeatures.forEach(function (feature) {
-                if (feature.properties.hasOwnProperty('space_type_id')) {
-                  if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
-                    const centroidSource = new Vector({
-                      features: (new GeoJSON()).readFeatures(feature)
-                    });
-                    const centroidCoords = getCenter(centroidSource.getExtent());
-                    if (!dataProperties.properties) {
-                      dataProperties.properties = {};
-                    }
-                    dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
-                    dataProperties.centroid = centroidCoords;
-                  }
-                }
-              });
-              dataProperties.properties.src = 'wms';
-              // this.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
+      const coordinate = this.map.getCoordinateFromPixel(pixel);
+      const data = {
+        'fk_building_floor': 1,
+        'fk_campus': 1,
+        'fk_building': 1,
+        'name': this.selectedPoiCategory.name,
+        'description': 'foo',
+        'enabled': true,
+        'name_en': this.selectedPoiCategory.name_en,
+        'name_de': this.selectedPoiCategory.name_de,
+        'floor_num': this.activeFloor.floor_num,
+        'floor_name': this.activeFloor.short_name,
+        'fk_poi_category': this.selectedPoiCategory.id,
+        'geom': {
+          'type': 'MultiPoint',
+          'coordinates': [
+            coordinate
+          ],
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:3857'
             }
-          });
+          }
         }
-      }
+      };
+
+      api.postRequest({
+        endPoint: `poi/`,
+        method: 'POST',
+        data
+      });
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       if (removedItems && removedItems.length) {

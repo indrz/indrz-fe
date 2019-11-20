@@ -14,6 +14,27 @@ const request = function (requestObj) {
   });
 };
 
+const postRequest = async function (requestObj) {
+  try {
+    const formData = new FormData();
+    // eslint-disable-next-line no-unused-vars
+    for (const [key, value] of Object.entries(requestObj.data)) {
+      formData.append(key, value);
+    }
+    return await axios({
+      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+      method: requestObj.method || 'POST',
+      headers: {
+        'Authorization': indrzConfig.token,
+        'Content-Type': 'application/json'
+      },
+      data: formData
+    })
+  } catch (err) {
+    return err;
+  }
+};
+
 const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
   return {
     // page,
@@ -24,5 +45,6 @@ const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
 
 export default {
   request,
+  postRequest,
   getPageParams
 }
