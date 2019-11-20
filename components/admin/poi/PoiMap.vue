@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="fill-height">
     <div :id="mapId" :ref="map" class="fill-height fluid flat width='100%' style='border-radius: 0" />
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
@@ -34,8 +34,11 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
+import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import { OSM, Vector as VectorSource } from 'ol/source';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Draw, Modify, Snap, defaults as defaultInteraction } from 'ol/interaction';
 import { getCenter } from 'ol/extent';
-import { defaults as defaultInteraction } from 'ol/interaction';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
@@ -64,6 +67,32 @@ export default {
 
     this.layers = MapUtil.getLayers();
 
+    this.raster = new TileLayer({
+      source: new OSM()
+    });
+
+    this.source = new VectorSource();
+
+    this.vector = new VectorLayer({
+      source: this.source,
+      style: new Style({
+        fill: new Fill({
+          color: 'rgba(255, 255, 255, 0.2)'
+        }),
+        stroke: new Stroke({
+          color: '#ffcc33',
+          width: 2
+        }),
+        image: new CircleStyle({
+          radius: 7,
+          fill: new Fill({
+            color: '#ffcc33'
+          })
+        })
+      })
+    });
+
+    this.layers.layerGroups.push(this.vector);
     this.map = new Map({
       interactions: defaultInteraction().extend([
         new DragRotateAndZoom(),
@@ -82,6 +111,9 @@ export default {
         this.map.updateSize();
       }, 500);
     };
+
+    const modify = new Modify({ source: this.source });
+    this.map.addInteraction(modify);
 
     const floorData = await api.request({ endPoint: 'floor/' });
 
@@ -103,6 +135,19 @@ export default {
     }
   },
   methods: {
+    addInteractions () {
+      this.draw = new Draw({
+        source: this.source,
+        type: 'Point'
+      });
+      this.map.addInteraction(this.draw);
+      this.snap = new Snap({ source: this.source });
+      this.map.addInteraction(this.snap);
+    },
+    removeInteraction () {
+      this.map.removeInteraction(this.draw);
+      this.map.removeInteraction(this.snap);
+    },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
 
