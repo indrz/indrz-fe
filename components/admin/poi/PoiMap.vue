@@ -64,7 +64,8 @@ export default {
       map: null,
       view: null,
       layers: [],
-      isSatelliteMap: true
+      isSatelliteMap: true,
+      newPois: []
     };
   },
   async mounted () {
@@ -168,6 +169,7 @@ export default {
     removeInteraction () {
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
+      this.newItems = [];
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -196,8 +198,8 @@ export default {
         'name_de': this.selectedPoiCategory.name_de,
         'floor_num': this.activeFloor.floor_num,
         'floor_name': this.activeFloor.short_name,
-        'fk_poi_category': this.selectedPoiCategory.id,
-        'geom': {
+        'fk_poi_category_id': this.selectedPoiCategory.id,
+        'geom': JSON.stringify({
           'type': 'MultiPoint',
           'coordinates': [
             coordinate
@@ -208,8 +210,9 @@ export default {
               'name': 'EPSG:3857'
             }
           }
-        }
+        })
       };
+      this.newPois.push(data);
 
       api.postRequest({
         endPoint: `poi/`,
