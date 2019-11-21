@@ -3,6 +3,17 @@ import indrzConfig from '~/util/indrzConfig'
 
 const baseApiUrl = indrzConfig.baseApiUrl;
 
+const getAuthorizationHeader = () => {
+  const token = indrzConfig.token;
+  const header = {
+    'Content-Type': 'application/json'
+  };
+  if (token) {
+    header.Authorization = token;
+  }
+  return header;
+};
+
 const request = function (requestObj) {
   return axios({
     url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
@@ -24,10 +35,7 @@ const postRequest = async function (requestObj) {
     return await axios({
       url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'POST',
-      headers: {
-        'Authorization': indrzConfig.token,
-        'Content-Type': 'application/json'
-      },
+      headers: getAuthorizationHeader(),
       data: formData
     })
   } catch (err) {
