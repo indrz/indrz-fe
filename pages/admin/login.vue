@@ -63,6 +63,7 @@ import LocalStorageService from '../../service/localStorage';
 
 export default {
   name: 'Login',
+  layout: 'admin',
   data () {
     return {
       username: '',
