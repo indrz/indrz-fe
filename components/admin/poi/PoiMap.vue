@@ -188,17 +188,15 @@ export default {
       const pixel = evt.pixel;
       const coordinate = this.map.getCoordinateFromPixel(pixel);
       const data = {
-        'fk_building_floor': 1,
-        'fk_campus': 1,
-        'fk_building': 1,
+        'floor': 1,
         'name': this.selectedPoiCategory.name,
-        'description': 'foo',
+        'description': '',
         'enabled': true,
         'name_en': this.selectedPoiCategory.name_en,
         'name_de': this.selectedPoiCategory.name_de,
         'floor_num': this.activeFloor.floor_num,
         'floor_name': this.activeFloor.short_name,
-        'fk_poi_category_id': this.selectedPoiCategory.id,
+        'category': this.selectedPoiCategory.id,
         'geom': JSON.stringify({
           'type': 'MultiPoint',
           'coordinates': [
