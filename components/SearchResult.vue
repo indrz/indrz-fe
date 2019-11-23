@@ -4,7 +4,7 @@
       <span>No results available</span>
     </div>
     <template v-for="(result, i) in searchResult">
-      <span :key="i" v-html="result.html"></span>
+      <span :key="i" v-html="result.html" />
     </template>
   </div>
 </template>

@@ -1,6 +1,12 @@
 <template>
   <div class="fill-height">
-    <poi-map ref="map" @floorChange="onMapFloorChange" :selectedPoiCategory="selectedPoiCategory" :activeFloor="activeFloor" />
+    <poi-map
+      ref="map"
+      :selected-poi-category="selectedPoiCategory"
+      :active-floor="activeFloor"
+      @floorChange="onMapFloorChange"
+      @addnewPoi="onAddNewPoi"
+    />
     <div class="poi">
       <points-of-interest @selectPoiCategory="setSelectedPoiCategory" />
     </div>
@@ -23,6 +29,7 @@ import FloorChanger from '../../FloorChanger';
 import PoiMap from './PoiMap';
 import ActionButtons from './ActionButtons';
 import MapUtil from '~/util/map';
+import api from '~/util/api';
 import 'ol/ol.css';
 
 export default {
@@ -38,7 +45,8 @@ export default {
       activeFloor: null,
       activeFloorName: '',
       selectedPoiCategory: null,
-      floors: []
+      floors: [],
+      newPoiCollection: []
     };
   },
   mounted () {
@@ -63,10 +71,23 @@ export default {
         this.activeFloorName = name;
       });
     },
+    onAddNewPoi (newPoi) {
+      this.newPoiCollection.push(newPoi);
+    },
     onSaveButtonClick () {
+      if (this.newPoiCollection.length) {
+        this.newPoiCollection.forEach((newPoi) => {
+          api.postRequest({
+            endPoint: `poi/`,
+            method: 'POST',
+            data: newPoi
+          })
+        });
+      }
       this.$root.$emit('cancelPoiClick');
     },
     onCancelButtonClick () {
+      this.newPoiCollection = [];
       this.$root.$emit('cancelPoiClick');
     }
   }

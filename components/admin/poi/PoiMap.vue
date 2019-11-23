@@ -64,8 +64,7 @@ export default {
       map: null,
       view: null,
       layers: [],
-      isSatelliteMap: true,
-      newPois: []
+      isSatelliteMap: true
     };
   },
   async mounted () {
@@ -169,7 +168,6 @@ export default {
     removeInteraction () {
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
-      this.newItems = [];
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -210,13 +208,14 @@ export default {
           }
         })
       };
-      this.newPois.push(data);
-
+      /*
       api.postRequest({
         endPoint: `poi/`,
         method: 'POST',
         data
       });
+      */
+      this.$emit('addnewPoi', data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       if (removedItems && removedItems.length) {
