@@ -31,8 +31,8 @@
 <script>
 import Map from 'ol/Map.js';
 import View from 'ol/View.js';
-import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
-import { OSM, Vector as VectorSource } from 'ol/source';
+import { Vector as VectorLayer } from 'ol/layer';
+import { Vector as VectorSource } from 'ol/source';
 import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
 import { Draw, Modify, Snap, defaults as defaultInteraction } from 'ol/interaction';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
@@ -64,7 +64,8 @@ export default {
       map: null,
       view: null,
       layers: [],
-      isSatelliteMap: true
+      isSatelliteMap: true,
+      vectorInteractionLayer: null
     };
   },
   async mounted () {
@@ -85,32 +86,7 @@ export default {
 
       this.layers = MapUtil.getLayers();
 
-      this.raster = new TileLayer({
-        source: new OSM()
-      });
-
-      this.source = new VectorSource();
-
-      this.vector = new VectorLayer({
-        source: this.source,
-        style: new Style({
-          fill: new Fill({
-            color: 'rgba(255, 255, 255, 0.2)'
-          }),
-          stroke: new Stroke({
-            color: '#ffcc33',
-            width: 2
-          }),
-          image: new CircleStyle({
-            radius: 7,
-            fill: new Fill({
-              color: '#ffcc33'
-            })
-          })
-        })
-      });
-
-      this.layers.layerGroups.push(this.vector);
+      // this.layers.layerGroups.push(this.vector);
       this.map = new Map({
         interactions: defaultInteraction().extend([
           new DragRotateAndZoom(),
@@ -129,9 +105,6 @@ export default {
           this.map.updateSize();
         }, 500);
       };
-
-      const modify = new Modify({ source: this.source });
-      this.map.addInteraction(modify);
 
       const floorData = await api.request({ endPoint: 'floor/' });
 
@@ -157,6 +130,28 @@ export default {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
         return;
       }
+      this.source = new VectorSource();
+      this.vectorInteractionLayer = new VectorLayer({
+        source: this.source,
+        style: new Style({
+          fill: new Fill({
+            color: 'rgba(255, 255, 255, 0.2)'
+          }),
+          stroke: new Stroke({
+            color: '#ffcc33',
+            width: 2
+          }),
+          image: new CircleStyle({
+            radius: 7,
+            fill: new Fill({
+              color: '#ffcc33'
+            })
+          })
+        })
+      });
+      const modify = new Modify({ source: this.source });
+      this.map.addInteraction(modify);
+      this.map.addLayer(this.vectorInteractionLayer);
       this.draw = new Draw({
         source: this.source,
         type: 'Point'
@@ -168,6 +163,7 @@ export default {
     removeInteraction () {
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
+      this.map.removeLayer(this.vectorInteractionLayer);
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
