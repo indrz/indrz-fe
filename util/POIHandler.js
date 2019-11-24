@@ -86,7 +86,7 @@ const createPoilayer = (data, poiCatId, activeFloorName) => {
       */
       poiTitle = feature.getProperties().name_en;
       // poiTitle = feature.getProperties().name;
-      const cssName = feature.getProperties().fk_poi_category.icon_css_name;
+      const cssName = feature.getProperties().category_icon_css_name;
       if (indrzConfig.layerNamePrefix + (poiFeatureFloor).toLowerCase() === activeFloorName) {
         feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
       } else {
@@ -138,8 +138,8 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
           null, offSetPos);
         MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
-        globalPopupInfo.poiCatId = featuresSearch[0].getProperties().fk_poi_category.id;
-        globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + featuresSearch[0].getProperties().fk_poi_category.id;
+        globalPopupInfo.poiCatId = featuresSearch[0].getProperties().category;
+        globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + featuresSearch[0].getProperties().category;
 
         const poiLayer = new VectorLayer({
           source: poiSource,
@@ -154,7 +154,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
             */
             poiTitle = feature.getProperties().name || feature.getProperties().name_en;
 
-            const cssName = feature.getProperties().fk_poi_category.icon_css_name;
+            const cssName = feature.getProperties().category_icon_css_name;
 
             if (indrzConfig.layerNamePrefix + (poiFeatureFloor).toLowerCase() === activeFloorName) {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
@@ -184,9 +184,9 @@ const setPoiFeatureVisibility = (map, activeFloorName) => {
         layer.getLayers().forEach(function (sublayer, i) {
           sublayer.getSource().forEachFeature(function (feature, i) {
             if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== activeFloorName) {
-              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().fk_poi_category.icon_css_name, false));
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().category_icon_css_name, false));
             } else {
-              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().fk_poi_category.icon_css_name, true));
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().category_icon_css_name, true));
             }
           });
         });
