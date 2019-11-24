@@ -32,9 +32,9 @@ const openIndrzPopup = (
     globalPopupInfo.src = 'poi';
     globalPopupInfo.poiId = properties.poiId;
   }
-  if (properties.hasOwnProperty('fk_poi_category')) {
+  if (properties.hasOwnProperty('category')) {
     globalPopupInfo.src = 'poi';
-    globalPopupInfo.poiCatId = properties.fk_poi_category.id;
+    globalPopupInfo.poiCatId = properties.category;
   }
   if (properties.hasOwnProperty('spaceid')) {
     globalPopupInfo.spaceid = properties.spaceid
@@ -73,14 +73,14 @@ const openIndrzPopup = (
   if (properties.hasOwnProperty('poi_id')) {
     currentPOIID = properties.poi_id;
     globalPopupInfo.poiId = properties.poi_id;
-    if (properties.hasOwnProperty('fk_poi_category')) {
-      globalPopupInfo.poiCatId = properties.fk_poi_category.id;
+    if (properties.hasOwnProperty('category')) {
+      globalPopupInfo.poiCatId = properties.category;
       if (currentLocale === 'de') {
-        globalPopupInfo.poiCatName = properties.fk_poi_category.cat_name_de;
+        globalPopupInfo.poiCatName = properties.category_name_de;
       } else {
-        globalPopupInfo.poiCatName = properties.fk_poi_category.cat_name_en;
+        globalPopupInfo.poiCatName = properties.category_name_en;
       }
-      // globalPopupInfo.poiCatName = properties.fk_poi_category.cat_name;
+      // globalPopupInfo.poiCatName = properties.category.cat_name;
       globalPopupInfo.poiCatShareUrl = hostUrl + '?poi-cat-id=' + globalPopupInfo.poiCatId;
     }
   } else if (feature !== -1) {
@@ -88,12 +88,12 @@ const openIndrzPopup = (
       if (typeof feature !== 'string' && feature.getId()) {
         globalPopupInfo.poiId = feature.getId();
         globalPopupInfo.poiIdPopup = feature.getId();
-        if (feature.get('fk_poi_category')) {
-          globalPopupInfo.poiCatId = feature.get('fk_poi_category').id;
+        if (feature.get('category')) {
+          globalPopupInfo.poiCatId = feature.get('category');
           if (currentLocale === 'de') {
-            globalPopupInfo.poiCatName = feature.get('fk_poi_category').cat_name_de;
+            globalPopupInfo.poiCatName = feature.get('category_name_de');
           } else {
-            globalPopupInfo.poiCatName = feature.get('fk_poi_category').cat_name_en;
+            globalPopupInfo.poiCatName = feature.get('category_name_en');
           }
           globalPopupInfo.poiCatShareUrl = hostUrl + '?poi-cat-id=' + globalPopupInfo.poiCatId;
         }
