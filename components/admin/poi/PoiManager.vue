@@ -11,7 +11,13 @@
       <points-of-interest @selectPoiCategory="setSelectedPoiCategory" />
     </div>
     <div class="save-btn-panel">
-      <v-btn color="primary" small width="70px" @click.stop.prevent="onSaveButtonClick">
+      <v-btn
+        color="primary"
+        small
+        width="70px"
+        :disabled="!newPoiCollection.length"
+        @click.stop.prevent="onSaveButtonClick"
+      >
         Save
       </v-btn>
       <v-btn color="primary" small width="70px" @click.stop.prevent="onCancelButtonClick">
@@ -76,8 +82,8 @@ export default {
     },
     onSaveButtonClick () {
       if (this.newPoiCollection.length) {
-        this.newPoiCollection.forEach((newPoi) => {
-          api.postRequest({
+        this.newPoiCollection.forEach(async (newPoi) => {
+          await api.postRequest({
             endPoint: `poi/`,
             method: 'POST',
             data: newPoi
@@ -85,6 +91,7 @@ export default {
         });
       }
       this.$root.$emit('cancelPoiClick');
+      this.$root.$emit('addPoiClick');
     },
     onCancelButtonClick () {
       this.newPoiCollection = [];
