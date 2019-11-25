@@ -91,7 +91,10 @@ export default {
         });
       }
       this.$root.$emit('cancelPoiClick');
-      this.$root.$emit('addPoiClick');
+      this.$nextTick(() => {
+        this.newPoiCollection = [];
+        this.$root.$emit('addPoiClick');
+      });
     },
     onCancelButtonClick () {
       this.newPoiCollection = [];
