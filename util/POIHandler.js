@@ -54,7 +54,8 @@ const removePoiById = (poiId, map) => {
       if (layer.getProperties().id === 99999) {
         layer.getLayers().forEach(function (sublayer) {
           if (sublayer.getProperties().id === poiId) {
-            map.removeLayer(layer);
+            sublayer.setVisible(false);
+            map.removeLayer(sublayer);
           }
         });
       }
