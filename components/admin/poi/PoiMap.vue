@@ -65,7 +65,8 @@ export default {
       view: null,
       layers: [],
       isSatelliteMap: true,
-      vectorInteractionLayer: null
+      vectorInteractionLayer: null,
+      isAddPoiMode: false
     };
   },
   async mounted () {
@@ -130,6 +131,7 @@ export default {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
         return;
       }
+      this.isAddPoiMode = true;
       this.source = new VectorSource();
       this.vectorInteractionLayer = new VectorLayer({
         source: this.source,
@@ -161,6 +163,7 @@ export default {
       this.map.addInteraction(this.snap);
     },
     removeInteraction () {
+      this.isAddPoiMode = false;
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
       this.map.removeLayer(this.vectorInteractionLayer);
@@ -179,6 +182,9 @@ export default {
       baseLayers.greyBmapat.setVisible(false);
     },
     onMapClick (evt) {
+      if (!this.isAddPoiMode) {
+        return;
+      }
       const pixel = evt.pixel;
       const coordinate = this.map.getCoordinateFromPixel(pixel);
       const data = {
@@ -217,7 +223,7 @@ export default {
       if (removedItems && removedItems.length) {
         removedItems.forEach((item) => {
           if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.disablePoiById(item.id, this.map);
+            POIHandler.removePoiById(item.id, this.map);
           }
         });
       }
@@ -228,19 +234,15 @@ export default {
       }
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
-          if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.setPoiVisibility(item.id, this.map);
-          } else {
-            POIHandler
-              .fetchPoi(item.id, this.map, this.activeFloorName)
-              .then((poiLayer) => {
-                this.map.getLayers().forEach((layer) => {
-                  if (layer.getProperties().id === 99999) {
-                    layer.getLayers().push(poiLayer);
-                  }
-                });
+          POIHandler
+            .fetchPoi(item.id, this.map, this.activeFloorName)
+            .then((poiLayer) => {
+              this.map.getLayers().forEach((layer) => {
+                if (layer.getProperties().id === 99999) {
+                  layer.getLayers().push(poiLayer);
+                }
               });
-          }
+            });
         })
       }
     }
