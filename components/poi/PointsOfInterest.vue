@@ -11,7 +11,7 @@
       v-if="!loading"
       ref="poi"
       v-model="tree"
-      multiple-active
+      :multiple-active="multi"
       :items="poiData"
       selected-color="indigo"
       open-on-click
@@ -58,6 +58,12 @@ export default {
       default: function () {
         return null;
       }
+    },
+    'multi': {
+      type: Boolean,
+      default: function () {
+        return true;
+      }
     }
   },
   data () {
@@ -75,6 +81,7 @@ export default {
       tree: [],
       poiData: [],
       openedItems: [],
+      forceReloadNode: false,
       loading: true
     }
   },
@@ -93,6 +100,15 @@ export default {
       }
       oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
 
+      if (
+        this.forceReloadNode &&
+        newSelections.length === oldSelections.length &&
+        newSelections[0].id === oldSelections[0].id) {
+        newItems = newSelections;
+        removedItems = newSelections;
+        oldItems = [];
+        this.forceReloadNode = false;
+      }
       this.$root.$emit('poiLoad', {
         newItems,
         oldItems,
@@ -101,31 +117,34 @@ export default {
     }
   },
 
-  async mounted () {
-    const poiData = await this.fetchPoiTreeData();
-    if (poiData && poiData.data) {
-      this.poiData = poiData.data;
-      if (this.initialPoiCatId) {
-        const foundData = this.findItem(Number(this.initialPoiCatId), this.poiData);
-        this.tree = [foundData.data];
-        setTimeout(() => {
-          const treeComp = this.$refs.poi;
-          treeComp.updateSelected(this.initialPoiCatId, true);
-          foundData.roots.reverse().forEach((node) => {
-            treeComp.updateOpen(node, true);
-          });
-          treeComp.updateActive(this.initialPoiCatId, true);
-        }, 500);
-      } else if (this.initialPoiId) {
-        setTimeout(() => {
-          this.$emit('loadSinglePoi', this.initialPoiId);
-        }, 500);
-      }
-    }
-    this.loading = false;
+  mounted () {
+    this.loadDataToPoiTree();
   },
 
   methods: {
+    async loadDataToPoiTree () {
+      const poiData = await this.fetchPoiTreeData();
+      if (poiData && poiData.data) {
+        this.poiData = poiData.data;
+        if (this.initialPoiCatId) {
+          const foundData = this.findItem(Number(this.initialPoiCatId), this.poiData);
+          this.tree = [foundData.data];
+          setTimeout(() => {
+            const treeComp = this.$refs.poi;
+            treeComp.updateSelected(this.initialPoiCatId, true);
+            foundData.roots.reverse().forEach((node) => {
+              treeComp.updateOpen(node, true);
+            });
+            treeComp.updateActive(this.initialPoiCatId, true);
+          }, 500);
+        } else if (this.initialPoiId) {
+          setTimeout(() => {
+            this.$emit('loadSinglePoi', this.initialPoiId);
+          }, 500);
+        }
+      }
+      this.loading = false;
+    },
     onTreeClick (item) {
       const treeComp = this.$refs.poi;
       const shouldAdd = !treeComp.selectedCache.has(item.id);

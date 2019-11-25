@@ -234,19 +234,15 @@ export default {
       }
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
-          if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.setPoiVisibility(item.id, this.map);
-          } else {
-            POIHandler
-              .fetchPoi(item.id, this.map, this.activeFloorName)
-              .then((poiLayer) => {
-                this.map.getLayers().forEach((layer) => {
-                  if (layer.getProperties().id === 99999) {
-                    layer.getLayers().push(poiLayer);
-                  }
-                });
+          POIHandler
+            .fetchPoi(item.id, this.map, this.activeFloorName)
+            .then((poiLayer) => {
+              this.map.getLayers().forEach((layer) => {
+                if (layer.getProperties().id === 99999) {
+                  layer.getLayers().push(poiLayer);
+                }
               });
-          }
+            });
         })
       }
     }

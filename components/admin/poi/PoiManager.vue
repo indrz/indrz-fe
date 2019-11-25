@@ -8,7 +8,7 @@
       @addnewPoi="onAddNewPoi"
     />
     <div class="poi">
-      <points-of-interest @selectPoiCategory="setSelectedPoiCategory" />
+      <points-of-interest ref="poiTree" @selectPoiCategory="setSelectedPoiCategory" />
     </div>
     <div class="save-btn-panel">
       <v-btn
@@ -89,6 +89,10 @@ export default {
             data: newPoi
           })
         });
+        const treeComp = this.$refs.poiTree;
+        treeComp.forceReloadNode = true;
+        treeComp.initialPoiCatId = this.newPoiCollection[0].category.toString();
+        treeComp.loadDataToPoiTree();
       }
       this.$root.$emit('cancelPoiClick');
       this.$nextTick(() => {

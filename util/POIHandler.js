@@ -48,6 +48,20 @@ const disablePoiById = (poiId, map) => {
   });
 };
 
+const removePoiById = (poiId, map) => {
+  map.getLayers().forEach(function (layer, i) {
+    if (layer instanceof Group) {
+      if (layer.getProperties().id === 99999) {
+        layer.getLayers().forEach(function (sublayer) {
+          if (sublayer.getProperties().id === poiId) {
+            map.removeLayer(layer);
+          }
+        });
+      }
+    }
+  });
+};
+
 const poiExist = (poiItem, map) => {
   const poiName = typeof poiItem.name !== 'undefined' ? poiItem.name : 0;
   const poiCatId = poiItem.id;
@@ -199,6 +213,7 @@ export default {
   createPoilayer,
   poiExist,
   disablePoiById,
+  removePoiById,
   setPoiVisibility,
   fetchPoi,
   showSinglePoi,
