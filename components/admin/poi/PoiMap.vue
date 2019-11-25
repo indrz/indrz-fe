@@ -223,7 +223,7 @@ export default {
       if (removedItems && removedItems.length) {
         removedItems.forEach((item) => {
           if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.disablePoiById(item.id, this.map);
+            POIHandler.removePoiById(item.id, this.map);
           }
         });
       }
