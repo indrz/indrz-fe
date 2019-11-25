@@ -234,6 +234,7 @@ export default {
       }
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
+          this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
           POIHandler
             .fetchPoi(item.id, this.map, this.activeFloorName)
             .then((poiLayer) => {
