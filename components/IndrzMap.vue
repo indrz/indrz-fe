@@ -27,6 +27,7 @@
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
     <share-overlay ref="shareOverlay" />
+    <terms :show="showTerms" @termsShow="onTermShowChange" />
   </div>
 </template>
 
@@ -47,21 +48,24 @@ import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
 import RouteHandler from '../util/RouteHandler';
 import POIHandler from '../util/POIHandler';
-import InfoOverlay from '../components/infoOverlay'
-import ShareOverlay from '../components/shareOverlay'
+import InfoOverlay from '../components/infoOverlay';
+import ShareOverlay from '../components/shareOverlay';
 import 'ol/ol.css';
 import indrzConfig from '../util/indrzConfig';
+import Terms from './Terms';
 
 export default {
   components: {
     InfoOverlay,
-    ShareOverlay
+    ShareOverlay,
+    Terms
   },
   data () {
     return {
       mapId: 'mapContainer',
       map: null,
       view: null,
+      showTerms: false,
       isSatelliteMap: true,
       layers: [],
       popup: null,
@@ -277,6 +281,9 @@ export default {
         })
       }
     },
+    onTermShowChange (value) {
+      this.showTerms = value;
+    },
     onPopupRouteClick (path) {
       this.$emit('popupRouteClick', {
         path,
@@ -401,6 +408,9 @@ export default {
             shareOverlay.setShareLink(location.href);
           }
           shareOverlay.show();
+          break;
+        case 'terms':
+          this.showTerms = true;
           break;
         default:
           break;
