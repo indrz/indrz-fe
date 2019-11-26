@@ -44,6 +44,11 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
+    <div>
+      <p class="font-weight-regular" style="padding: 8px 16px">
+        Powered by <a href="https://www.indrz.com" target="_blank">www.indrz.com</a>
+      </p>
+    </div>
   </div>
 </template>
 
@@ -142,6 +147,11 @@ export default {
           icon: 'file-pdf-outline',
           type: 'pdf',
           text: this.locale.pdf
+        },
+        {
+          icon: 'clipboard-text',
+          type: 'terms',
+          text: 'About/Terms Conditions'
         }
       ]
     }
