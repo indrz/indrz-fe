@@ -66,7 +66,8 @@ export default {
       layers: [],
       isSatelliteMap: true,
       vectorInteractionLayer: null,
-      isAddPoiMode: false
+      isAddPoiMode: false,
+      currentEditingPoi: null
     };
   },
   async mounted () {
@@ -84,10 +85,7 @@ export default {
         zoom: 17,
         maxZoom: 23
       });
-
       this.layers = MapUtil.getLayers();
-
-      // this.layers.layerGroups.push(this.vector);
       this.map = new Map({
         interactions: defaultInteraction().extend([
           new DragRotateAndZoom(),
@@ -100,7 +98,7 @@ export default {
         view: this.view,
         layers: this.layers.layerGroups
       });
-      this.map.on('singleclick', this.onMapClick, this);
+
       window.onresize = () => {
         setTimeout(() => {
           this.map.updateSize();
@@ -161,6 +159,20 @@ export default {
       this.map.addInteraction(this.draw);
       this.snap = new Snap({ source: this.source });
       this.map.addInteraction(this.snap);
+      this.draw.on('drawend', this.onDrawEnd);
+      modify.on('modifyend', this.onModifyEnd);
+      modify.on('modifystart', this.onModifyStart);
+    },
+    onModifyStart (e) {
+      this.currentEditingPoi = {
+        oldCoord: e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates()
+      };
+    },
+    onModifyEnd (e) {
+      if (this.currentEditingPoi) {
+        this.currentEditingPoi.newCoord = e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates();
+        this.$emit('updatePoiCoord', this.currentEditingPoi);
+      }
     },
     removeInteraction () {
       this.isAddPoiMode = false;
@@ -181,12 +193,11 @@ export default {
       baseLayers.ortho30cmBmapat.setVisible(true);
       baseLayers.greyBmapat.setVisible(false);
     },
-    onMapClick (evt) {
+    onDrawEnd (drawEvent) {
       if (!this.isAddPoiMode) {
         return;
       }
-      const pixel = evt.pixel;
-      const coordinate = this.map.getCoordinateFromPixel(pixel);
+      const coordinate = drawEvent.feature.getGeometry().getCoordinates();
       const data = {
         'floor': 1,
         'name': this.selectedPoiCategory.name,
@@ -210,13 +221,6 @@ export default {
           }
         })
       };
-      /*
-      api.postRequest({
-        endPoint: `poi/`,
-        method: 'POST',
-        data
-      });
-      */
       this.$emit('addnewPoi', data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
