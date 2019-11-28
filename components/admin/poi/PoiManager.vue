@@ -6,6 +6,7 @@
       :active-floor="activeFloor"
       @floorChange="onMapFloorChange"
       @addnewPoi="onAddNewPoi"
+      @updatePoiCoord="onUpdatePoiCoord"
     />
     <div class="poi">
       <points-of-interest ref="poiTree" @selectPoiCategory="setSelectedPoiCategory" />
@@ -80,6 +81,28 @@ export default {
     onAddNewPoi (newPoi) {
       this.newPoiCollection.push(newPoi);
     },
+    onUpdatePoiCoord (editingPoi) {
+      const foundPoi = this.newPoiCollection.find((poi) => {
+        const coord = JSON.parse(this.newPoiCollection[0].geom).coordinates[0];
+        if (editingPoi.oldCoord[0] === coord[0] && editingPoi.oldCoord[1] === coord[1]) {
+          return poi;
+        }
+      });
+      if (foundPoi) {
+        foundPoi.geom = JSON.stringify({
+          'type': 'MultiPoint',
+          'coordinates': [
+            editingPoi.newCoord
+          ],
+          'crs': {
+            'type': 'name',
+            'properties': {
+              'name': 'EPSG:3857'
+            }
+          }
+        });
+      }
+    },
     onSaveButtonClick () {
       if (this.newPoiCollection.length) {
         this.newPoiCollection.forEach(async (newPoi) => {
@@ -93,6 +116,7 @@ export default {
         treeComp.forceReloadNode = true;
         treeComp.initialPoiCatId = this.newPoiCollection[0].category.toString();
         treeComp.loadDataToPoiTree();
+        this.$refs.map.currentEditingPoi = null;
       }
       this.$root.$emit('cancelPoiClick');
       this.$nextTick(() => {

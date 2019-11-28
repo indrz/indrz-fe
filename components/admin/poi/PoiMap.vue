@@ -66,7 +66,8 @@ export default {
       layers: [],
       isSatelliteMap: true,
       vectorInteractionLayer: null,
-      isAddPoiMode: false
+      isAddPoiMode: false,
+      currentEditingPoi: null
     };
   },
   async mounted () {
@@ -84,10 +85,7 @@ export default {
         zoom: 17,
         maxZoom: 23
       });
-
       this.layers = MapUtil.getLayers();
-
-      // this.layers.layerGroups.push(this.vector);
       this.map = new Map({
         interactions: defaultInteraction().extend([
           new DragRotateAndZoom(),
@@ -166,12 +164,15 @@ export default {
       modify.on('modifystart', this.onModifyStart);
     },
     onModifyStart (e) {
-      console.log(e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates());
-      console.log('todo: find the drag node within existing data');
+      this.currentEditingPoi = {
+        oldCoord: e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates()
+      };
     },
     onModifyEnd (e) {
-      console.log(e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates());
-      console.log('todo: update the dragged node');
+      if (this.currentEditingPoi) {
+        this.currentEditingPoi.newCoord = e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates();
+        this.$emit('updatePoiCoord', this.currentEditingPoi);
+      }
     },
     removeInteraction () {
       this.isAddPoiMode = false;
