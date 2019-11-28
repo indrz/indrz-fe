@@ -83,7 +83,7 @@ export default {
     },
     onUpdatePoiCoord (editingPoi) {
       const foundPoi = this.newPoiCollection.find((poi) => {
-        const coord = JSON.parse(this.newPoiCollection[0].geom).coordinates[0];
+        const coord = JSON.parse(poi.geom).coordinates[0];
         if (editingPoi.oldCoord[0] === coord[0] && editingPoi.oldCoord[1] === coord[1]) {
           return poi;
         }
