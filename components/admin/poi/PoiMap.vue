@@ -67,7 +67,8 @@ export default {
       isSatelliteMap: true,
       vectorInteractionLayer: null,
       isAddPoiMode: false,
-      currentEditingPoi: null
+      currentEditingPoi: null,
+      modify: null
     };
   },
   async mounted () {
@@ -149,8 +150,8 @@ export default {
           })
         })
       });
-      const modify = new Modify({ source: this.source });
-      this.map.addInteraction(modify);
+      this.modify = new Modify({ source: this.source });
+      this.map.addInteraction(this.modify);
       this.map.addLayer(this.vectorInteractionLayer);
       this.draw = new Draw({
         source: this.source,
@@ -160,8 +161,8 @@ export default {
       this.snap = new Snap({ source: this.source });
       this.map.addInteraction(this.snap);
       this.draw.on('drawend', this.onDrawEnd);
-      modify.on('modifyend', this.onModifyEnd);
-      modify.on('modifystart', this.onModifyStart);
+      this.modify.on('modifyend', this.onModifyEnd);
+      this.modify.on('modifystart', this.onModifyStart);
     },
     onModifyStart (e) {
       this.currentEditingPoi = {
@@ -179,6 +180,9 @@ export default {
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
       this.map.removeLayer(this.vectorInteractionLayer);
+      this.draw.un('drawend', this.onDrawEnd);
+      this.modify.un('modifyend', this.onModifyEnd);
+      this.modify.un('modifystart', this.onModifyStart);
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;

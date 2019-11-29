@@ -9,7 +9,7 @@
       @updatePoiCoord="onUpdatePoiCoord"
     />
     <div class="poi">
-      <points-of-interest ref="poiTree" @selectPoiCategory="setSelectedPoiCategory" />
+      <points-of-interest ref="poiTree" :initial-poi-cat-id="initialPoiCatId" @selectPoiCategory="setSelectedPoiCategory" />
     </div>
     <div class="save-btn-panel">
       <v-btn
@@ -53,7 +53,8 @@ export default {
       activeFloorName: '',
       selectedPoiCategory: null,
       floors: [],
-      newPoiCollection: []
+      newPoiCollection: [],
+      initialPoiCatId: null
     };
   },
   mounted () {
@@ -114,7 +115,7 @@ export default {
         });
         const treeComp = this.$refs.poiTree;
         treeComp.forceReloadNode = true;
-        treeComp.initialPoiCatId = this.newPoiCollection[0].category.toString();
+        this.initialPoiCatId = this.newPoiCollection[0].category.toString();
         treeComp.loadDataToPoiTree();
         this.$refs.map.currentEditingPoi = null;
       }
