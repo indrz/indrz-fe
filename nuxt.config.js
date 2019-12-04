@@ -35,7 +35,7 @@ export default {
   */
   router: {
     middleware: [
-      'i18n',
+      // 'i18n',
       'auth'
     ]
   },

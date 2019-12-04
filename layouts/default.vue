@@ -28,6 +28,20 @@ export default {
       ],
       miniVariant: false
     }
+  },
+  created: function () {
+    const currentLocale = this.getLocale();
+    let defaultLocale = 'en';
+
+    if (currentLocale.includes('de')) {
+      defaultLocale = 'de';
+    }
+    this.$i18n.locale = defaultLocale;
+  },
+  methods: {
+    getLocale () {
+      return navigator.language || navigator.browserLanguage || (navigator.languages || [ 'en' ])[ 0 ];
+    }
   }
 }
 </script>

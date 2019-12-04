@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import VueI18n from 'vue-i18n'
+import Vue from 'vue';
+import VueI18n from 'vue-i18n';
 
-Vue.use(VueI18n)
+Vue.use(VueI18n);
 
 export default ({ app, store }) => {
   // Set i18n instance on app
@@ -13,8 +13,9 @@ export default ({ app, store }) => {
       'en': require('~/assets/locale/en.json'),
       'de': require('~/assets/locale/de.json')
     }
-  })
+  });
 
+/*
   app.i18n.path = (link) => {
     if (app.i18n.locale === app.i18n.fallbackLocale) {
       return `/${link}`
@@ -22,4 +23,5 @@ export default ({ app, store }) => {
 
     return `/${app.i18n.locale}/${link}`
   }
+*/
 }
