@@ -59,6 +59,7 @@ export default {
   },
   mounted () {
     this.$root.$on('poiLoad', this.$refs.map.onPoiLoad);
+    this.$root.$on('deletePoi', this.deletePoi);
   },
 
   methods: {
@@ -123,6 +124,12 @@ export default {
       this.$nextTick(() => {
         this.newPoiCollection = [];
         this.$root.$emit('addPoiClick');
+      });
+    },
+    async deletePoi (selectedPoi) {
+      await api.postRequest({
+        endPoint: `poi/${selectedPoi.featureId}`,
+        method: 'DELETE'
       });
     },
     onCancelButtonClick () {

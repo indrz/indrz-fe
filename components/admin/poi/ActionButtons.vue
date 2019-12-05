@@ -47,6 +47,7 @@
         dark
         small
         color="red"
+        @click.stop.prevent="onDeletePoiClick"
       >
         <v-icon>mdi-delete</v-icon>
       </v-btn>
@@ -74,6 +75,9 @@ export default {
   methods: {
     onAddPoiClick () {
       this.$root.$emit('addPoiClick');
+    },
+    onDeletePoiClick () {
+      this.$root.$emit('deletePoiClick');
     }
   }
 }

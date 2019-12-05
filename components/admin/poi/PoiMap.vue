@@ -25,6 +25,20 @@
         <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
+    <v-dialog
+      v-model="deleteConfirm"
+      persistent
+      max-width="350"
+    >
+      <v-card>
+        <v-card-title>Are you sure you want to delete?</v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="error darken-1" text @click="onDeletePoiClick">Yes</v-btn>
+          <v-btn color="blue darken-1" text @click="deleteConfirm = false">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -68,7 +82,9 @@ export default {
       vectorInteractionLayer: null,
       isAddPoiMode: false,
       currentEditingPoi: null,
-      modify: null
+      modify: null,
+      selectedPoi: null,
+      deleteConfirm: false
     };
   },
   async mounted () {
@@ -78,6 +94,7 @@ export default {
   methods: {
     initializeEventHandlers () {
       this.$root.$on('addPoiClick', this.addInteractions);
+      this.$root.$on('deletePoiClick', this.confirmDeletePoi);
       this.$root.$on('cancelPoiClick', this.removeInteraction)
     },
     async initializeMap () {
@@ -99,6 +116,8 @@ export default {
         view: this.view,
         layers: this.layers.layerGroups
       });
+
+      this.map.on('singleclick', this.onMapClick, this);
 
       window.onresize = () => {
         setTimeout(() => {
@@ -125,7 +144,43 @@ export default {
         this.map.addLayer(this.wmsLayerInfo.layerGroup);
       }
     },
+    onMapClick (evt) {
+      const pixel = evt.pixel;
+      let feature = this.map.getFeaturesAtPixel(pixel);
+      const features = [];
+
+      this.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+        features.push(feature);
+      });
+      feature = features[0];
+      const properties = feature ? feature.getProperties() : null;
+      if (feature) {
+        const featureType = feature.getGeometry().getType().toString();
+
+        if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
+          if (featureType === 'MultiPoint') {
+            this.selectedPoi = {
+              featureId: feature.getId(),
+              categoryId: properties.category
+            };
+          }
+        }
+      }
+    },
+    confirmDeletePoi () {
+      if (!this.selectedPoi || !this.selectedPoi.featureId) {
+        this.$store.commit('SET_SNACKBAR', 'Please select the POI first to delete.');
+        return;
+      }
+      this.deleteConfirm = true;
+    },
+    onDeletePoiClick () {
+      this.$root.$emit('deletePoi', this.selectedPoi);
+      this.selectedPoi = null;
+      this.deleteConfirm = false;
+    },
     addInteractions () {
+      this.selectedPoi = null;
       if (!this.activeFloorName || !this.selectedPoiCategory) {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
         return;
@@ -176,6 +231,7 @@ export default {
       }
     },
     removeInteraction () {
+      this.selectedPoi = null;
       this.isAddPoiMode = false;
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
