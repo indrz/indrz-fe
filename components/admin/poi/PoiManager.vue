@@ -129,7 +129,8 @@ export default {
     async deletePoi (selectedPoi) {
       await api.postRequest({
         endPoint: `poi/${selectedPoi.featureId}`,
-        method: 'DELETE'
+        method: 'DELETE',
+        data: {}
       });
     },
     onCancelButtonClick () {
