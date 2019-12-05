@@ -132,6 +132,10 @@ export default {
         method: 'DELETE',
         data: {}
       });
+      const treeComp = this.$refs.poiTree;
+      treeComp.forceReloadNode = true;
+      this.initialPoiCatId = selectedPoi.categoryId.toString();
+      treeComp.loadDataToPoiTree();
     },
     onCancelButtonClick () {
       this.newPoiCollection = [];
