@@ -82,7 +82,8 @@ export default {
       poiData: [],
       openedItems: [],
       forceReloadNode: false,
-      loading: true
+      loading: true,
+      currentPoi: null
     }
   },
 
@@ -92,13 +93,18 @@ export default {
       let newItems = [];
       let oldItems = [];
 
-      if (oldSelections.length > newSelections.length) {
-        removedItems = _.differenceBy(oldSelections, newSelections, 'id');
+      if (this.multi === false) {
+        removedItems = oldSelections;
+        newItems = this.currentPoi;
+      } else {
+        if (oldSelections.length > newSelections.length) {
+          removedItems = _.differenceBy(oldSelections, newSelections, 'id');
+        }
+        if (newSelections.length > oldSelections.length) {
+          newItems = _.differenceBy(newSelections, oldSelections, 'id');
+        }
+        oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
       }
-      if (newSelections.length > oldSelections.length) {
-        newItems = _.differenceBy(newSelections, oldSelections, 'id');
-      }
-      oldItems = _.intersectionBy(newSelections, oldSelections, 'id');
 
       if (
         this.forceReloadNode &&
@@ -149,8 +155,9 @@ export default {
       const treeComp = this.$refs.poi;
       const shouldAdd = !treeComp.selectedCache.has(item.id);
 
-      treeComp.updateSelected(item.id, shouldAdd);
-      treeComp.updateActive(item.id, shouldAdd);
+      treeComp.updateSelected(item.id, (this.multi === false ? true : shouldAdd));
+      treeComp.updateActive(item.id, (this.multi === false ? true : shouldAdd));
+      this.currentPoi = item.children || [item];
       this.$emit('selectPoiCategory', item);
       treeComp.emitSelected();
     },

@@ -9,7 +9,7 @@
       @updatePoiCoord="onUpdatePoiCoord"
     />
     <div class="poi">
-      <points-of-interest ref="poiTree" :initial-poi-cat-id="initialPoiCatId" @selectPoiCategory="setSelectedPoiCategory" />
+      <points-of-interest ref="poiTree" :multi="false" :initial-poi-cat-id="initialPoiCatId" @selectPoiCategory="setSelectedPoiCategory" />
     </div>
     <div class="save-btn-panel">
       <v-btn
