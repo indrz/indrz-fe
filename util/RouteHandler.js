@@ -217,9 +217,10 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const middleFeature = new Feature({
         geometry: middlePoint
       });
+      // TODO create icon based on font with circle as background and number in front
       const floorNumberStyle = new Style({
         image: new Icon({
-          src: '/images/route/route_floor_' + floorNumber + '.png'
+          src: '/media/route_floor_' + floorNumber + '.png'
         })
       });
 

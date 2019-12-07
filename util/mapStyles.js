@@ -4,7 +4,7 @@ import Icon from 'ol/style/Icon';
 
 const routeMarkerCStyle = new Style({
   image: new Icon({
-    src: '/images/route/route_marker_C.png',
+    src: '/media/poi_icons/route_marker_C.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6
@@ -12,7 +12,7 @@ const routeMarkerCStyle = new Style({
 
 const faCircleSolidStyle = new Style({
   image: new Icon({
-    src: '/images/icons/flag.png',
+    src: '/media/poi_icons/flag.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6
@@ -20,7 +20,7 @@ const faCircleSolidStyle = new Style({
 
 const faFlagCheckeredStyle = new Style({
   image: new Icon({
-    src: '/images/icons/flag-checkered.png',
+    src: '/media/poi_icons/flag-checkered.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6
@@ -45,7 +45,7 @@ const routeInactiveStyle = new Style({
 });
 
 const createPoiStyle = (poiIconName, active) => {
-  const poiIconImage = '/images/route/' + poiIconName + '.png';
+  const poiIconImage = '/media/poi_icons/' + poiIconName + '.png';
   const mainPoiIcons = ['education_active', 'access_active', 'security_active', 'infrastructure_active', 'services_active'];
 
   const iconDeactiveStyle = new Style({
@@ -75,7 +75,7 @@ const createPoiStyle = (poiIconName, active) => {
 };
 
 const setPoiStyleOnLayerSwitch = (iconName, visible) => {
-  const poiIconImage = '/images/route/' + iconName + '.png';
+  const poiIconImage = '/media/poi_icons/' + iconName + '.png';
 
   const iconDeactiveStyle = new Style({
     image: new Icon(/** @type {olx.style.IconOptions} */ ({
