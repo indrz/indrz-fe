@@ -35,8 +35,8 @@
         </div>
       </template>
       <template v-slot:prepend="{ item, open, active }">
-        <img v-if="active" :src="item.icon" @click="onTreeClick(item)" style="width: 24px; height: 24px;">
-        <img v-else :src="item.icon" @click="onTreeClick(item)" style="width: 24px; height: 24px;">
+        <img v-if="active" :src="item.icon" @click="onTreeClick(item)">
+        <img v-else :src="item.icon" @click="onTreeClick(item)">
         <v-icon v-if="!item.icon">
           {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
         </v-icon>
