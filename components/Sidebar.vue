@@ -1,6 +1,8 @@
 <template>
   <div>
-    <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; left: 10px;">
+    <div>
+      <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" class="left-bar-logo">
+    </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
         <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
@@ -194,3 +196,12 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .left-bar-logo {
+    width: auto;
+    height: 40px;
+    left: 10px;
+    vertical-align: middle;
+    margin: 5px 0px 5px 16px;
+  }
+</style>

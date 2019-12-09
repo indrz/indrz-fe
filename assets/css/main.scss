@@ -41,3 +41,13 @@ li {
 .list-group-item:hover {
   background-color: #65b6f5;
 }
+
+.v-expansion-panel-header {
+  padding: 16px 0px 16px 16px !important;
+}
+.v-expansion-panel-content__wrap {
+  padding: 0px 0px 16px 16px !important;
+}
+.v-expansion-panel-header__icon {
+  margin-right: 10px !important;
+}

@@ -22,13 +22,21 @@
       dense
     >
       <template slot="label" slot-scope="{ item }">
+        <!--<v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <div v-on="on" style="width: 100%; height: 100%" @click="onTreeClick(item)">
+              {{ item.name }}
+            </div>
+          </template>
+          <span>{{ item.name }}</span>
+        </v-tooltip>-->
         <div style="width: 100%; height: 100%" @click="onTreeClick(item)">
           {{ item.name }}
         </div>
       </template>
       <template v-slot:prepend="{ item, open, active }">
-        <img v-if="active" :src="item.icon" @click="onTreeClick(item)">
-        <img v-else :src="item.icon" @click="onTreeClick(item)">
+        <img v-if="active" :src="item.icon" @click="onTreeClick(item)" style="width: 24px; height: 24px;">
+        <img v-else :src="item.icon" @click="onTreeClick(item)" style="width: 24px; height: 24px;">
         <v-icon v-if="!item.icon">
           {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
         </v-icon>

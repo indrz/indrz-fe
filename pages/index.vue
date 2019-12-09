@@ -11,6 +11,7 @@
   >
     <v-navigation-drawer
       v-model="drawer"
+      style="width: 275px"
       absolute
       temporary
       app
