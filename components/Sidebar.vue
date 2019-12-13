@@ -202,6 +202,7 @@ export default {
     height: 40px;
     left: 10px;
     vertical-align: middle;
-    margin: 5px 0px 5px 16px;
+    display: block;
+    margin: 5px auto;
   }
 </style>
