@@ -31,7 +31,7 @@
           <span>{{ item.name }}</span>
         </v-tooltip>-->
         <div style="width: 100%; height: 100%" @click="onTreeClick(item)">
-          {{ item.name }}
+          {{ item['name_' + $i18n.locale] }}
         </div>
       </template>
       <template v-slot:prepend="{ item, open, active }">
