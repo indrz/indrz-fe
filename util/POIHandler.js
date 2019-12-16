@@ -100,12 +100,11 @@ const createPoilayer = (data, poiCatId, activeFloorName) => {
       }
       */
       poiTitle = feature.getProperties().name_en;
-      // poiTitle = feature.getProperties().name;
-      const cssName = feature.getProperties().category_icon_css_name;
+      const icon = feature.getProperties().icon;
       if (indrzConfig.layerNamePrefix + (poiFeatureFloor).toLowerCase() === activeFloorName) {
-        feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
+        feature.setStyle(MapStyles.createPoiStyle(icon, 'y', poiFeatureFloor));
       } else {
-        feature.setStyle(MapStyles.createPoiStyle(cssName, 'n', poiFeatureFloor));
+        feature.setStyle(MapStyles.createPoiStyle(icon, 'n', poiFeatureFloor));
       }
     },
 
@@ -199,9 +198,9 @@ const setPoiFeatureVisibility = (map, activeFloorName) => {
         layer.getLayers().forEach(function (sublayer, i) {
           sublayer.getSource().forEachFeature(function (feature, i) {
             if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== activeFloorName) {
-              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().category_icon_css_name, false));
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, false));
             } else {
-              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().category_icon_css_name, true));
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, true));
             }
           });
         });

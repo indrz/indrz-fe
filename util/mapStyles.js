@@ -45,7 +45,7 @@ const routeInactiveStyle = new Style({
 });
 
 const createPoiStyle = (poiIconName, active) => {
-  const poiIconImage = '/media/poi_icons/' + poiIconName + '.png';
+  const poiIconImage = poiIconName.replace('.', '_pin.');
   const mainPoiIcons = ['education_active', 'access_active', 'security_active', 'infrastructure_active', 'services_active'];
 
   const iconDeactiveStyle = new Style({
@@ -75,8 +75,7 @@ const createPoiStyle = (poiIconName, active) => {
 };
 
 const setPoiStyleOnLayerSwitch = (iconName, visible) => {
-  const poiIconImage = '/media/poi_icons/' + iconName + '.png';
-
+  const poiIconImage = iconName.replace('.', '_pin.');
   const iconDeactiveStyle = new Style({
     image: new Icon(/** @type {olx.style.IconOptions} */ ({
       anchor: [0.5, 46],

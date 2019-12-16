@@ -163,7 +163,7 @@ export default {
       }, 500);
     },
     onOpenPoiTree (poiCatId, isPoiId = false) {
-      this.drawer = true;
+      this.drawer = false;
       this.openedPanels = [2];
       if (isPoiId) {
         this.initialPoiId = poiCatId;
