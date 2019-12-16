@@ -52,6 +52,7 @@ import { Draw, Modify, Snap, defaults as defaultInteraction } from 'ol/interacti
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
+import MapStyles from '../../../util/mapStyles';
 import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import api from '~/util/api';
@@ -153,22 +154,37 @@ export default {
         features.push(feature);
       });
       feature = features[0];
-      const properties = feature ? feature.getProperties() : null;
+
       if (feature) {
         const featureType = feature.getGeometry().getType().toString();
 
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
-            this.selectedPoi = {
-              featureId: feature.getId(),
-              categoryId: properties.category
-            };
+            this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+            let onActiveLayer = true;
+            if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+              onActiveLayer = false;
+            }
+            feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/images/selected.png', onActiveLayer));
+            this.clearPreviousSelection();
+            this.selectedPoi = feature;
           }
         }
       }
     },
+    clearPreviousSelection () {
+      let onActiveLayer = true;
+      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+
+      if (this.selectedPoi) {
+        if (indrzConfig.layerNamePrefix + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+          onActiveLayer = false;
+        }
+        this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
+      }
+    },
     confirmDeletePoi () {
-      if (!this.selectedPoi || !this.selectedPoi.featureId) {
+      if (!this.selectedPoi || !this.selectedPoi.getId()) {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI first to delete.');
         return;
       }
@@ -231,14 +247,21 @@ export default {
       }
     },
     removeInteraction () {
-      this.selectedPoi = null;
       this.isAddPoiMode = false;
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
       this.map.removeLayer(this.vectorInteractionLayer);
-      this.draw.un('drawend', this.onDrawEnd);
-      this.modify.un('modifyend', this.onModifyEnd);
-      this.modify.un('modifystart', this.onModifyStart);
+      if (this.draw) {
+        this.draw.un('drawend', this.onDrawEnd)
+      }
+      if (this.modify) {
+        this.modify.un('modifyend', this.onModifyEnd)
+      }
+      if (this.modify) {
+        this.modify.un('modifystart', this.onModifyStart)
+      }
+      this.clearPreviousSelection();
+      this.selectedPoi = null;
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;

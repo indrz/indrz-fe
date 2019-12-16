@@ -128,13 +128,13 @@ export default {
     },
     async deletePoi (selectedPoi) {
       await api.postRequest({
-        endPoint: `poi/${selectedPoi.featureId}`,
+        endPoint: `poi/${selectedPoi.getId()}`,
         method: 'DELETE',
         data: {}
       });
       const treeComp = this.$refs.poiTree;
       treeComp.forceReloadNode = true;
-      this.initialPoiCatId = selectedPoi.categoryId.toString();
+      this.initialPoiCatId = selectedPoi.getProperties().category.toString();
       treeComp.loadDataToPoiTree();
     },
     onCancelButtonClick () {
