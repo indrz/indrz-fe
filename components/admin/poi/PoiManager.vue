@@ -6,6 +6,7 @@
       :active-floor="activeFloor"
       @floorChange="onMapFloorChange"
       @addnewPoi="onAddNewPoi"
+      @editPoi="onEditPoi"
       @updatePoiCoord="onUpdatePoiCoord"
     />
     <div class="poi">
@@ -16,7 +17,7 @@
         color="primary"
         small
         width="70px"
-        :disabled="!newPoiCollection.length"
+        :disabled="!newPoiCollection.length && !editPoi"
         @click.stop.prevent="onSaveButtonClick"
       >
         Save
@@ -54,6 +55,7 @@ export default {
       selectedPoiCategory: null,
       floors: [],
       newPoiCollection: [],
+      editPoi: null,
       initialPoiCatId: null
     };
   },
@@ -82,6 +84,9 @@ export default {
     },
     onAddNewPoi (newPoi) {
       this.newPoiCollection.push(newPoi);
+    },
+    onEditPoi (poi) {
+      this.editPoi = poi;
     },
     onUpdatePoiCoord (editingPoi) {
       const foundPoi = this.newPoiCollection.find((poi) => {
@@ -139,6 +144,7 @@ export default {
     },
     onCancelButtonClick () {
       this.newPoiCollection = [];
+      this.editPoi = null;
       this.$root.$emit('cancelPoiClick');
     }
   }

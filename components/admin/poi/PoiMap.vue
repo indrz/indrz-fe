@@ -228,9 +228,12 @@ export default {
       this.map.addInteraction(this.translate);
 
       let coordMarker;
-      this.translate.on('translateend', function (evt) {
+      this.translate.on('translateend', (evt) => {
         coordMarker = marker.getCoordinates();
-        console.log(coordMarker);
+        this.$emit('editPoi', {
+          fetature: this.selectedPoi,
+          coord: coordMarker
+        });
       });
     },
     addInteractions () {
@@ -252,8 +255,9 @@ export default {
             width: 2
           }),
           image: new Icon({
-            scale: 0.7,
-            anchor: [0.5, 1],
+            anchor: [0.5, 46],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
             src: '/images/selected_pin.png'
           }),
           image1: new CircleStyle({
