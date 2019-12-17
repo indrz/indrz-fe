@@ -30,6 +30,7 @@
         dark
         small
         color="green"
+        @click.stop.prevent="onEditPoiClick"
       >
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
@@ -75,6 +76,9 @@ export default {
   methods: {
     onAddPoiClick () {
       this.$root.$emit('addPoiClick');
+    },
+    onEditPoiClick () {
+      this.$root.$emit('editPoiClick');
     },
     onDeletePoiClick () {
       this.$root.$emit('deletePoiClick');
