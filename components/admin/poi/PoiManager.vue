@@ -6,6 +6,7 @@
       :active-floor="activeFloor"
       @floorChange="onMapFloorChange"
       @addnewPoi="onAddNewPoi"
+      @editPoi="onEditPoi"
       @updatePoiCoord="onUpdatePoiCoord"
     />
     <div class="poi">
@@ -16,7 +17,7 @@
         color="primary"
         small
         width="70px"
-        :disabled="!newPoiCollection.length"
+        :disabled="!newPoiCollection.length && !editPoi"
         @click.stop.prevent="onSaveButtonClick"
       >
         Save
@@ -54,6 +55,7 @@ export default {
       selectedPoiCategory: null,
       floors: [],
       newPoiCollection: [],
+      editPoi: null,
       initialPoiCatId: null
     };
   },
@@ -82,6 +84,9 @@ export default {
     },
     onAddNewPoi (newPoi) {
       this.newPoiCollection.push(newPoi);
+    },
+    onEditPoi (poi) {
+      this.editPoi = poi;
     },
     onUpdatePoiCoord (editingPoi) {
       const foundPoi = this.newPoiCollection.find((poi) => {
@@ -119,11 +124,33 @@ export default {
         this.initialPoiCatId = this.newPoiCollection[0].category.toString();
         treeComp.loadDataToPoiTree();
         this.$refs.map.currentEditingPoi = null;
+      } else if (this.editPoi) {
+        const { feature } = this.editPoi;
+        feature.getGeometry().setCoordinates([this.editPoi.coord]);
+        const data = {
+          'category': feature.getProperties().category,
+          'geometry': {
+            'type': 'MultiPoint',
+            'coordinates': feature.getGeometry().getCoordinates()
+          }
+        };
+        api.putRequest({
+          endPoint: `poi/${feature.getId()}/`,
+          method: 'PUT',
+          data
+        })
+          .then((resp) => {
+            console.log(resp);
+          })
       }
+
       this.$root.$emit('cancelPoiClick');
       this.$nextTick(() => {
+        if (this.newPoiCollection.length) {
+          this.$root.$emit('addPoiClick');
+        }
         this.newPoiCollection = [];
-        this.$root.$emit('addPoiClick');
+        this.editPoi = null;
       });
     },
     async deletePoi (selectedPoi) {
@@ -139,6 +166,7 @@ export default {
     },
     onCancelButtonClick () {
       this.newPoiCollection = [];
+      this.editPoi = null;
       this.$root.$emit('cancelPoiClick');
     }
   }

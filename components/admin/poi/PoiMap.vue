@@ -47,8 +47,10 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
-import { Draw, Modify, Snap, defaults as defaultInteraction } from 'ol/interaction';
+import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from 'ol/style';
+import { Draw, Modify, Snap, defaults as defaultInteraction, Translate } from 'ol/interaction';
+import { Point } from 'ol/geom';
+import { Feature, Collection } from 'ol';
 import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
@@ -95,6 +97,7 @@ export default {
   methods: {
     initializeEventHandlers () {
       this.$root.$on('addPoiClick', this.addInteractions);
+      this.$root.$on('editPoiClick', this.editInteraction);
       this.$root.$on('deletePoiClick', this.confirmDeletePoi);
       this.$root.$on('cancelPoiClick', this.removeInteraction)
     },
@@ -195,6 +198,39 @@ export default {
       this.selectedPoi = null;
       this.deleteConfirm = false;
     },
+    editInteraction () {
+      if (!this.selectedPoi) {
+        return;
+      }
+      const coord = this.selectedPoi.getGeometry().getCoordinates()[0];
+      this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
+      this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
+      const styleMarker = new Style({
+        image: new Icon({
+          anchor: [0.5, 46],
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'pixels',
+          opacity: 1,
+          src: '/images/selected_pin.png'
+        })
+      });
+
+      this.editMarker = new Point(coord);
+      const featureMarker = new Feature(this.editMarker);
+      this.editingVectorLayer = new VectorLayer({
+        source: new VectorSource({
+          features: [featureMarker]
+        }),
+        style: [styleMarker]
+      });
+      this.map.addLayer(this.editingVectorLayer);
+
+      this.translate = new Translate({
+        features: new Collection([featureMarker])
+      });
+      this.map.addInteraction(this.translate);
+      this.translate.on('translateend', this.onTranslateEnd);
+    },
     addInteractions () {
       this.selectedPoi = null;
       if (!this.activeFloorName || !this.selectedPoiCategory) {
@@ -213,7 +249,13 @@ export default {
             color: '#ffcc33',
             width: 2
           }),
-          image: new CircleStyle({
+          image: new Icon({
+            anchor: [0.5, 46],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
+            src: '/images/selected_pin.png'
+          }),
+          image1: new CircleStyle({
             radius: 7,
             fill: new Fill({
               color: '#ffcc33'
@@ -235,6 +277,12 @@ export default {
       this.modify.on('modifyend', this.onModifyEnd);
       this.modify.on('modifystart', this.onModifyStart);
     },
+    onTranslateEnd (e) {
+      this.$emit('editPoi', {
+        feature: this.selectedPoi,
+        coord: this.editMarker.getCoordinates()
+      });
+    },
     onModifyStart (e) {
       this.currentEditingPoi = {
         oldCoord: e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates()
@@ -250,7 +298,13 @@ export default {
       this.isAddPoiMode = false;
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
-      this.map.removeLayer(this.vectorInteractionLayer);
+      this.map.removeInteraction(this.translate);
+      if (this.vectorInteractionLayer) {
+        this.map.removeLayer(this.vectorInteractionLayer);
+      }
+      if (this.editingVectorLayer) {
+        this.map.removeLayer(this.editingVectorLayer);
+      }
       if (this.draw) {
         this.draw.un('drawend', this.onDrawEnd)
       }
@@ -259,6 +313,9 @@ export default {
       }
       if (this.modify) {
         this.modify.un('modifystart', this.onModifyStart)
+      }
+      if (this.translate) {
+        this.translate.un('translateend')
       }
       this.clearPreviousSelection();
       this.selectedPoi = null;

@@ -75,7 +75,20 @@ const createPoiStyle = (poiIconName, active) => {
 };
 
 const setPoiStyleOnLayerSwitch = (iconName, visible) => {
-  const poiIconImage = iconName.replace('.', '_pin.');
+  const poiIconImage = iconName ? iconName.replace('.', '_pin.') : '';
+
+  if (!poiIconImage) {
+    return new Style({
+      image: new Icon(/** @type {olx.style.IconOptions} */ ({
+        anchor: [0.5, 46],
+        anchorXUnits: 'fraction',
+        anchorYUnits: 'pixels',
+        opacity: 0,
+        src: './noimage.png'
+      }))
+    });
+  }
+
   const iconDeactiveStyle = new Style({
     image: new Icon(/** @type {olx.style.IconOptions} */ ({
       anchor: [0.5, 46],
