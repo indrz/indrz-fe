@@ -215,8 +215,8 @@ export default {
         })
       });
 
-      const marker = new Point(coord);
-      const featureMarker = new Feature(marker);
+      this.editMarker = new Point(coord);
+      const featureMarker = new Feature(this.editMarker);
       this.editingVectorLayer = new VectorLayer({
         source: new VectorSource({
           features: [featureMarker]
@@ -229,15 +229,7 @@ export default {
         features: new Collection([featureMarker])
       });
       this.map.addInteraction(this.translate);
-
-      let coordMarker;
-      this.translate.on('translateend', (evt) => {
-        coordMarker = marker.getCoordinates();
-        this.$emit('editPoi', {
-          feature: this.selectedPoi,
-          coord: coordMarker
-        });
-      });
+      this.translate.on('translateend', this.onTranslateEnd);
     },
     addInteractions () {
       this.selectedPoi = null;
@@ -285,6 +277,12 @@ export default {
       this.modify.on('modifyend', this.onModifyEnd);
       this.modify.on('modifystart', this.onModifyStart);
     },
+    onTranslateEnd (e) {
+      this.$emit('editPoi', {
+        feature: this.selectedPoi,
+        coord: this.editMarker.getCoordinates()
+      });
+    },
     onModifyStart (e) {
       this.currentEditingPoi = {
         oldCoord: e.target.dragSegments_[0][0].feature.getGeometry().getCoordinates()
@@ -315,6 +313,9 @@ export default {
       }
       if (this.modify) {
         this.modify.un('modifystart', this.onModifyStart)
+      }
+      if (this.translate) {
+        this.translate.un('translateend')
       }
       this.clearPreviousSelection();
       this.selectedPoi = null;
