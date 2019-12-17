@@ -43,6 +43,19 @@ const postRequest = async function (requestObj) {
   }
 };
 
+const putRequest = async function (requestObj) {
+  try {
+    return await axios({
+      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+      method: requestObj.method || 'PUT',
+      headers: getAuthorizationHeader(),
+      data: requestObj.data
+    })
+  } catch (err) {
+    return err;
+  }
+};
+
 const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
   return {
     // page,
@@ -54,5 +67,6 @@ const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
 export default {
   request,
   postRequest,
+  putRequest,
   getPageParams
 }

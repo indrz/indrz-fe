@@ -125,7 +125,23 @@ export default {
         treeComp.loadDataToPoiTree();
         this.$refs.map.currentEditingPoi = null;
       } else if (this.editPoi) {
-        this.editPoi.feature.getGeometry().setCoordinates([this.editPoi.coord]);
+        const { feature } = this.editPoi;
+        feature.getGeometry().setCoordinates([this.editPoi.coord]);
+        const data = {
+          'category': feature.getProperties().category,
+          'geometry': {
+            'type': 'MultiPoint',
+            'coordinates': feature.getGeometry().getCoordinates()
+          }
+        };
+        api.putRequest({
+          endPoint: `poi/${feature.getId()}/`,
+          method: 'PUT',
+          data
+        })
+          .then((resp) => {
+            console.log(resp);
+          })
       }
 
       this.$root.$emit('cancelPoiClick');
