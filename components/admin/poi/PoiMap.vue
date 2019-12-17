@@ -199,6 +199,9 @@ export default {
       this.deleteConfirm = false;
     },
     editInteraction () {
+      if (!this.selectedPoi) {
+        return;
+      }
       const coord = this.selectedPoi.getGeometry().getCoordinates()[0];
       this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
       this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
@@ -231,7 +234,7 @@ export default {
       this.translate.on('translateend', (evt) => {
         coordMarker = marker.getCoordinates();
         this.$emit('editPoi', {
-          fetature: this.selectedPoi,
+          feature: this.selectedPoi,
           coord: coordMarker
         });
       });

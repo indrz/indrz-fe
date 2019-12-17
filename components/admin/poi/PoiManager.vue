@@ -124,11 +124,17 @@ export default {
         this.initialPoiCatId = this.newPoiCollection[0].category.toString();
         treeComp.loadDataToPoiTree();
         this.$refs.map.currentEditingPoi = null;
+      } else if (this.editPoi) {
+        this.editPoi.feature.getGeometry().setCoordinates([this.editPoi.coord]);
       }
+
       this.$root.$emit('cancelPoiClick');
       this.$nextTick(() => {
+        if (this.newPoiCollection.length) {
+          this.$root.$emit('addPoiClick');
+        }
         this.newPoiCollection = [];
-        this.$root.$emit('addPoiClick');
+        this.editPoi = null;
       });
     },
     async deletePoi (selectedPoi) {
