@@ -33,9 +33,13 @@
       <v-card>
         <v-card-title>Are you sure you want to delete?</v-card-title>
         <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="error darken-1" text @click="onDeletePoiClick">Yes</v-btn>
-          <v-btn color="blue darken-1" text @click="deleteConfirm = false">Cancel</v-btn>
+          <v-spacer />
+          <v-btn color="error darken-1" text @click="onDeletePoiClick">
+            Yes
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="deleteConfirm = false">
+            Cancel
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -202,6 +206,7 @@ export default {
       if (!this.selectedPoi) {
         return;
       }
+      this.clearPreviousSelection();
       const coord = this.selectedPoi.getGeometry().getCoordinates()[0];
       this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
       this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
@@ -218,6 +223,7 @@ export default {
       this.editMarker = new Point(coord);
       const featureMarker = new Feature(this.editMarker);
       this.editingVectorLayer = new VectorLayer({
+        zIndex: 35,
         source: new VectorSource({
           features: [featureMarker]
         }),
@@ -232,6 +238,7 @@ export default {
       this.translate.on('translateend', this.onTranslateEnd);
     },
     addInteractions () {
+      this.clearPreviousSelection();
       this.selectedPoi = null;
       if (!this.activeFloorName || !this.selectedPoiCategory) {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
@@ -241,6 +248,7 @@ export default {
       this.source = new VectorSource();
       this.vectorInteractionLayer = new VectorLayer({
         source: this.source,
+        zIndex: 35,
         style: new Style({
           fill: new Fill({
             color: 'rgba(255, 255, 255, 0.2)'
