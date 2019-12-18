@@ -51,7 +51,7 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
-import { Circle as CircleStyle, Fill, Stroke, Style, Icon } from 'ol/style';
+import { Fill, Stroke, Style, Icon } from 'ol/style';
 import { Draw, Modify, Snap, defaults as defaultInteraction, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
 import { Feature, Collection } from 'ol';
@@ -188,6 +188,8 @@ export default {
           onActiveLayer = false;
         }
         this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
+        this.selectedPoi = null;
+        this.map.removeLayer(this.editingVectorLayer);
       }
     },
     confirmDeletePoi () {
@@ -201,12 +203,12 @@ export default {
       this.$root.$emit('deletePoi', this.selectedPoi);
       this.selectedPoi = null;
       this.deleteConfirm = false;
+      this.removeInteraction();
     },
     editInteraction () {
       if (!this.selectedPoi) {
         return;
       }
-      this.clearPreviousSelection();
       const coord = this.selectedPoi.getGeometry().getCoordinates()[0];
       this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
       this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
@@ -238,7 +240,7 @@ export default {
       this.translate.on('translateend', this.onTranslateEnd);
     },
     addInteractions () {
-      this.clearPreviousSelection();
+      this.removeInteraction();
       this.selectedPoi = null;
       if (!this.activeFloorName || !this.selectedPoiCategory) {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
@@ -262,12 +264,6 @@ export default {
             anchorXUnits: 'fraction',
             anchorYUnits: 'pixels',
             src: '/images/selected_pin.png'
-          }),
-          image1: new CircleStyle({
-            radius: 7,
-            fill: new Fill({
-              color: '#ffcc33'
-            })
           })
         })
       });
