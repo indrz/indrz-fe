@@ -20,6 +20,7 @@
       item-key="id"
       class="poi"
       dense
+      style="overflow: auto; width: auto;"
     >
       <template slot="label" slot-scope="{ item }">
         <!--<v-tooltip bottom>

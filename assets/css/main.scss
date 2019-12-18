@@ -51,3 +51,7 @@ li {
 .v-expansion-panel-header__icon {
   margin-right: 10px !important;
 }
+.v-treeview-node__content {
+  flex: none !important;
+  width: auto !important;
+}
