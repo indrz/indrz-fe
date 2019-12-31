@@ -47,8 +47,8 @@
       </v-list-item-group>
     </v-list>
     <div>
-      <p class="font-weight-regular" style="padding: 8px 16px">
-        Powered by <a href="https://www.indrz.com" target="_blank">www.indrz.com</a>
+      <p class="font-weight-regular caption" style="padding: 8px 16px">
+        Powered by <a href="https://www.indrz.com/#contact" target="_blank">www.indrz.com</a>
       </p>
     </div>
   </div>

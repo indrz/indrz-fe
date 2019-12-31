@@ -6,10 +6,10 @@
     <v-card>
       <v-card-title class="headline" />
       <v-card-text>
-        <h1>Terms and Conditions</h1>
+        <h1>{{ $t('terms_and_conditions') }}</h1>
         <p>Lorem Ipsum</p>
-        <h1>Contact</h1>
-        <p>Please contact test@tuwien.ac.at  to report any issues or problems with the map.</p>
+        <h1>{{ contact }}</h1>
+        <p>{{ $t('contact_us') }}</p>
       </v-card-text>
     </v-card>
   </v-dialog>
@@ -18,12 +18,18 @@
 <script>
 export default {
   name: 'Terms',
+
   props: {
     show: {
       type: Boolean,
       default: function () {
         return false
       }
+    }
+  },
+  data () {
+    return {
+      contact: this.$t('contact')
     }
   },
   computed: {
