@@ -3,8 +3,13 @@ import axios from 'axios';
 import UserService from '../service/user';
 import LocalStorageService from '../service/localStorage';
 
-const baseUrl = 'http://localhost:8000/api/v1';
-const authorization = 'Token a6e744b52ce4515e30602ac8de7337ee36262ea7';
+// const baseUrl = 'http://localhost:8000/api/v1';
+// const baseUrl = 'https://tu.indrz.com/api/v1';
+// const baseUrl = 'https://campusplan.aau.at/api/v1'; // AAU
+const baseUrl = 'https://tuw-maps.tuwien.ac.at/api/v1';
+// const authorization = 'Token a6e744b52ce4515e30602ac8de7337ee36262ea7'; //AAU
+const authorization = 'Token 42519ebe7bada4d7a151c76832b94614ea5b198d'; // TU tuw-maps.tuwien.ac.at
+// const authorization = 'Token 42519ebe7bada4d7a151c76832b94614ea5b198d'; // TU tu.indrz.com
 
 export const state = () => ({
   user: null,
