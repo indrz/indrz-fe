@@ -383,7 +383,7 @@ export default {
           this.view.animate({
             center: MapUtil.getStartCenter(),
             duration: 2000,
-            zoom: 17
+            zoom: 15
           });
           break;
         case 'download':
