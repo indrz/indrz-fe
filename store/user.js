@@ -84,6 +84,6 @@ export const getters = {
     return !_.isNil(state.user);
   },
   userEmail (state) {
-    return state.user ? state.user.userName : ''
+    return state.user ? state.user.username : ''
   }
 };
