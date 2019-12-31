@@ -108,7 +108,7 @@ export default {
     async initializeMap () {
       this.view = new View({
         center: MapUtil.getStartCenter(),
-        zoom: 17,
+        zoom: 15,
         maxZoom: 23
       });
       this.layers = MapUtil.getLayers();
