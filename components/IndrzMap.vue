@@ -141,16 +141,17 @@ export default {
       this.onFloorClick(this.activeFloorName);
     },
     async onSearchSelect (selection) {
+      if (!selection || !selection.data) {
+        this.closeIndrzPopup();
+        return;
+      }
       const selectedItem = selection.data;
       const floorName = selectedItem.properties.floor_name;
       if (floorName) {
         this.$emit('selectFloor', indrzConfig.layerNamePrefix + floorName);
         this.activeFloorName = indrzConfig.layerNamePrefix + floorName;
       }
-      if (!selectedItem) {
-        this.closeIndrzPopup();
-        return;
-      }
+
       const campusId = selectedItem.building;
       const searchText = selectedItem.properties.name;
       const zoomLevel = 20;
