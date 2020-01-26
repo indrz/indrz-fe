@@ -20,6 +20,8 @@
         hide-details
         hide-no-data
         :label="routeLabel"
+        clearable
+        @click:clear="onClearClick"
         @change="onSearchSelection"
       />
     </template>
@@ -44,6 +46,7 @@
         hide-no-data
         :label="searchLabel"
         clearable
+        @click:clear="onClearClick"
         @change="onSearchSelection"
       />
     </template>
@@ -139,6 +142,9 @@ export default {
         data: selection,
         routeType: this.routeType
       });
+    },
+    onClearClick () {
+      this.$refs.searchField.blur();
     },
     getValue () {
       return this.model;
