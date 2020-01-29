@@ -1,43 +1,56 @@
 <template>
   <div>
-    <v-data-table
-      v-model="selected"
-      :headers="headers"
-      :items="shelvesListData"
-      :server-items-length="total"
-      :single-select="singleSelect"
-      item-key="id"
-      :options.sync="pagination"
-      show-select
-      class="elevation-1"
-      :loading="loading"
-      loading-text="Loading... Please wait"
-    >
-      <template v-slot:top>
-        <add-edit-shelf
-          :title="formTitle"
-          :dialog="dialog"
-          :edited-item="editedItem"
-          @save="save"
-          @close="close"
+    <v-card>
+      <v-card-title>
+        Regal
+        <v-spacer />
+        <v-text-field
+          v-model="search"
+          label="Search"
+          single-line
+          hide-details
         />
-      </template>
-      <template v-slot:item.map="{ item }">
-        <v-icon
-          small
-        >
-          mdi-map
-        </v-icon>
-      </template>
-      <template v-slot:item.edit="{ item }">
-        <v-icon
-          small
-          @click="editItem(item)"
-        >
-          mdi-pencil
-        </v-icon>
-      </template>
-    </v-data-table>
+      </v-card-title>
+      <v-data-table
+        v-model="selected"
+        :headers="headers"
+        :items="shelvesListData"
+        :search="search"
+        :server-items-length="total"
+        :single-select="singleSelect"
+        item-key="id"
+        :options.sync="pagination"
+        show-select
+        class="elevation-1"
+        :loading="loading"
+        loading-text="Loading... Please wait"
+      >
+        <template v-slot:top>
+          <add-edit-shelf
+            :title="formTitle"
+            :dialog="dialog"
+            :edited-item="editedItem"
+            @save="save"
+            @close="close"
+          />
+        </template>
+        <template v-slot:item.map="{ item }">
+          <v-icon
+            small
+          >
+            mdi-map
+          </v-icon>
+        </template>
+        <template v-slot:item.edit="{ item }">
+          <v-icon
+            small
+            @click="editItem(item)"
+          >
+            mdi-pencil
+          </v-icon>
+        </template>
+      </v-data-table>
+    </v-card>
   </div>
 </template>
 
@@ -56,6 +69,7 @@ export default {
       dialog: false,
       selected: [],
       pagination: {},
+      search: '',
       headers: [
         {
           text: 'External Id',
@@ -64,22 +78,44 @@ export default {
           value: 'external_id'
         },
         {
+          text: 'Floor',
+          align: 'right',
+          filterable: false,
+          sortable: false,
+          value: 'floor'
+        },
+        {
           text: 'System From',
           align: 'right',
-          sortable: false,
+          sortable: true,
           value: 'system_from'
         },
         {
           text: 'System To',
           align: 'right',
-          sortable: false,
+          sortable: true,
           value: 'system_to'
         },
         {
           text: 'Shelf Side',
           align: 'right',
+          filterable: false,
           sortable: false,
           value: 'side'
+        },
+        {
+          text: 'Measure From',
+          align: 'right',
+          filterable: false,
+          sortable: false,
+          value: 'measure_from'
+        },
+        {
+          text: 'Measure To',
+          align: 'right',
+          filterable: false,
+          sortable: false,
+          value: 'measure_to'
         },
         { text: 'Map', value: 'map', sortable: false, width: '56px' },
         { text: 'Edit', value: 'edit', sortable: false, width: '56px' }
