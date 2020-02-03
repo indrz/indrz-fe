@@ -307,7 +307,7 @@ const getRoomInfo = (floor, layers) => {
   let newel;
 
   availableWmsLayers.forEach(function (element) {
-    if (floor === (indrzConfig.layerNamePrefix + element.getProperties().floorName)) {
+    if (floor.toLowerCase() === (indrzConfig.layerNamePrefix + element.getProperties().floorName).toLowerCase()) {
       newel = element.getSource();
     }
   });
