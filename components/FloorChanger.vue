@@ -65,7 +65,7 @@ export default {
         const activeClass = 'v-list-item--active';
         const linkClass = 'v-list-item--link';
         const listItems = this.$el.querySelectorAll('[role=listitem]');
-        const floorIndex = this.floors.findIndex(_floor => _floor.short_name.toLowerCase() === floorName);
+        const floorIndex = this.floors.findIndex(_floor => _floor.short_name.toLowerCase() === floorName.toLowerCase());
         listItems.forEach((item) => {
           item.classList.remove(activeClass, linkClass);
         });
