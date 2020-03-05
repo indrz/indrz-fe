@@ -7,6 +7,7 @@
         <v-text-field
           v-model="search"
           label="Search"
+          clearable
           single-line
           hide-details
         />
@@ -15,7 +16,6 @@
         v-model="selected"
         :headers="headers"
         :items="shelvesListData"
-        :search="search"
         :server-items-length="total"
         :single-select="singleSelect"
         item-key="id"
@@ -56,8 +56,10 @@
 
 <script>
 import { mapState } from 'vuex';
+import { Subject } from 'rxjs';
 import api from '../../../util/api';
 import AddEditShelf from './AddEditShelf';
+import {debounceTime, distinctUntilChanged, filter} from "rxjs/operators";
 
 export default {
   name: 'ShelvesList',
@@ -70,6 +72,7 @@ export default {
       selected: [],
       pagination: {},
       search: '',
+      term$: new Subject(),
       headers: [
         {
           text: 'External Id',
@@ -117,8 +120,8 @@ export default {
           sortable: false,
           value: 'measure_to'
         },
-        { text: 'Map', value: 'map', sortable: false, width: '56px' },
-        { text: 'Edit', value: 'edit', sortable: false, width: '56px' }
+        { text: 'Map', value: 'map', sortable: false, filterable: false, width: '56px' },
+        { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' }
       ],
       editedIndex: -1,
       editedItem: {},
@@ -152,6 +155,9 @@ export default {
     }
   },
   watch: {
+    search (text) {
+      this.term$.next(text);
+    },
     dialog (val) {
       val || this.close()
     },
@@ -163,26 +169,37 @@ export default {
     }
   },
   mounted () {
+    this
+      .term$
+      .pipe(
+        filter(term => !term || term.length > 2),
+        debounceTime(500),
+        distinctUntilChanged()
+      )
+        .subscribe(term => this.loadData(term));
     this.loadData();
   },
   methods: {
-    loadData () {
+    loadData (term) {
       if (this.loading) {
         return;
       }
 
       this.loading = true;
+      let query = api.getPageParams(this.pagination);
+
+      if (term) {
+        query.search=term;
+      }
 
       this
         .$store
-        .dispatch('user/LOAD_SHELVES', {
-          ...api.getPageParams(this.pagination)
-        })
+        .dispatch('user/LOAD_SHELVES', query)
         .catch((err) => {
-          console.log(err)
+          console.log(err);
         })
         .finally(() => {
-          this.loading = false
+          this.loading = false;
         })
     },
 
