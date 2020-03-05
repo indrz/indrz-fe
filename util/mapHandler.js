@@ -114,10 +114,13 @@ const openIndrzPopup = (
   const titleBuildingName = 'Building: ';
   const titleFloorNumber = 'Floor Name: ';
   const titleRoomcode = 'Room Number: ';
+  const titleRoomCapacity = 'Capacity: ';
   const titleRoomCat = 'Category: ';
   const buildingName = getBuildingLetter(properties);
   let roomCode = null;
   let roomCat = null;
+  let roomCapacity = properties.hasOwnProperty('capacity') ? properties.hasOwnProperty('capacity') : null;
+
   if (properties.hasOwnProperty('category_de')) {
     if (properties.category_de) {
       if (currentLocale === 'de') {
@@ -145,6 +148,7 @@ const openIndrzPopup = (
   } else {
     roomCode = properties.roomcode;
   }
+
   const tb = '<table id="popupTable" style="user-select: text;"></table>';
   popupContent.innerHTML = '<h4 style="user-select: text;">' + titlePopup + '</h4>';
   popupContent.innerHTML += '<div><p>';
@@ -159,6 +163,9 @@ const openIndrzPopup = (
     }
     if (properties.hasOwnProperty('shelfID')) {
       addPoiTableRow(titleBuildingName, properties.building, 'popupBuilding');
+    }
+    if (roomCapacity) {
+      addPoiTableRow(titleRoomCapacity, roomCapacity, 'popupRoomCapacity');
     }
     if (roomCode) {
       addPoiTableRow(titleRoomcode, roomCode, 'popupRoomCode');
