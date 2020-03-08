@@ -119,7 +119,13 @@ const openIndrzPopup = (
   const buildingName = getBuildingLetter(properties);
   let roomCode = null;
   let roomCat = null;
-  let roomCapacity = properties.hasOwnProperty('capacity') ? properties.hasOwnProperty('capacity') : null;
+  let roomCapacity = null;
+
+  if (properties.hasOwnProperty('capacity')) {
+    if (properties.capacity) {
+      roomCapacity = properties.capacity
+    }
+  }
 
   if (properties.hasOwnProperty('category_de')) {
     if (properties.category_de) {
