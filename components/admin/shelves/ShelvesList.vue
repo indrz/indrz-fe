@@ -57,9 +57,9 @@
 <script>
 import { mapState } from 'vuex';
 import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import api from '../../../util/api';
 import AddEditShelf from './AddEditShelf';
-import {debounceTime, distinctUntilChanged, filter} from "rxjs/operators";
 
 export default {
   name: 'ShelvesList',
@@ -176,7 +176,7 @@ export default {
         debounceTime(500),
         distinctUntilChanged()
       )
-        .subscribe(term => this.loadData(term));
+      .subscribe(term => this.loadData(term));
     this.loadData();
   },
   methods: {
@@ -186,10 +186,10 @@ export default {
       }
 
       this.loading = true;
-      let query = api.getPageParams(this.pagination);
+      const query = api.getPageParams(this.pagination);
 
       if (term) {
-        query.search=term;
+        query.search = term;
       }
 
       this
