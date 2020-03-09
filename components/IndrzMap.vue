@@ -129,7 +129,7 @@ export default {
     loadLayers (floors) {
       this.floors = floors;
       if (this.floors && this.floors.length) {
-        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
+        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor.toLowerCase())[0];
         this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
         this.$emit('selectFloor', this.activeFloorName);
       }
