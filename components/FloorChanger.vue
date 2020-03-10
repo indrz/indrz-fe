@@ -78,7 +78,7 @@ export default {
       }, 500);
     },
     getFloorByFloorName (floorName) {
-      const shortName = floorName.split(indrzConfig.layerNamePrefix)[1];
+      const shortName = indrzConfig.layerNamePrefix ? floorName.split(indrzConfig.layerNamePrefix)[1]: floorName;
       if (!shortName) {
         return {};
       }

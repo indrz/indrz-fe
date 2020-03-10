@@ -138,7 +138,7 @@ export default {
       if (floorData && floorData.data && floorData.data.results) {
         this.floors = floorData.data.results;
         if (this.floors && this.floors.length) {
-          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor)[0];
+          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor.toLowerCase())[0];
           this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
           this.$emit('floorChange', {
             floor: this.intitialFloor,
@@ -368,6 +368,7 @@ export default {
       this.$emit('addnewPoi', data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
+      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
       if (removedItems && removedItems.length) {
         removedItems.forEach((item) => {
           if (POIHandler.poiExist(item, this.map)) {
@@ -382,7 +383,6 @@ export default {
       }
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
-          this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
           POIHandler
             .fetchPoi(item.id, this.map, this.activeFloorName)
             .then((poiLayer) => {
