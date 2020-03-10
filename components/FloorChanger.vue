@@ -58,7 +58,7 @@ export default {
       this.selectFloorWithCss(floor.short_name.toLowerCase(), isEvent);
     },
     selectFloorWithCss (floorName, isEvent) {
-      if (floorName.includes(indrzConfig.layerNamePrefix)) {
+      if (indrzConfig.layerNamePrefix && floorName.includes(indrzConfig.layerNamePrefix)) {
         floorName = floorName.split(indrzConfig.layerNamePrefix)[1];
       }
       setTimeout(() => {
