@@ -275,7 +275,15 @@ export default {
       this.map.addLayer(this.vectorInteractionLayer);
       this.draw = new Draw({
         source: this.source,
-        type: 'Point'
+        type: 'Point',
+        style: new Style({
+          image: new Icon({
+            anchor: [0.5, 46],
+            anchorXUnits: 'fraction',
+            anchorYUnits: 'pixels',
+            src: icon
+          })
+        })
       });
       this.map.addInteraction(this.draw);
       this.snap = new Snap({ source: this.source });
