@@ -248,6 +248,8 @@ export default {
       }
       this.isAddPoiMode = true;
       this.source = new VectorSource();
+
+      const icon = this.selectedPoiCategory.icon.replace('.', '_pin.');
       this.vectorInteractionLayer = new VectorLayer({
         source: this.source,
         zIndex: 35,
@@ -263,10 +265,11 @@ export default {
             anchor: [0.5, 46],
             anchorXUnits: 'fraction',
             anchorYUnits: 'pixels',
-            src: '/images/selected_pin.png'
+            src: icon
           })
         })
       });
+
       this.modify = new Modify({ source: this.source });
       this.map.addInteraction(this.modify);
       this.map.addLayer(this.vectorInteractionLayer);
