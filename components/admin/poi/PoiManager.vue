@@ -41,7 +41,7 @@
             Yes
           </v-btn>
           <v-btn color="blue darken-1" text @click="cleanUp">
-            Cancel
+            No
           </v-btn>
         </v-card-actions>
       </v-card>
