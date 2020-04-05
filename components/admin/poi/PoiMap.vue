@@ -51,7 +51,7 @@ import Map from 'ol/Map.js';
 import View from 'ol/View.js';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
-import { Fill, Stroke, Style, Icon } from 'ol/style';
+import { Style, Icon } from 'ol/style';
 import { Draw, Modify, Snap, defaults as defaultInteraction, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
 import { Feature, Collection } from 'ol';
@@ -253,21 +253,7 @@ export default {
       this.vectorInteractionLayer = new VectorLayer({
         source: this.source,
         zIndex: 35,
-        style: new Style({
-          fill: new Fill({
-            color: 'rgba(255, 255, 255, 0.2)'
-          }),
-          stroke: new Stroke({
-            color: '#ffcc33',
-            width: 2
-          }),
-          image: new Icon({
-            anchor: [0.5, 46],
-            anchorXUnits: 'fraction',
-            anchorYUnits: 'pixels',
-            src: icon
-          })
-        })
+        style: this.getCategoryIconImage(icon)
       });
 
       this.modify = new Modify({ source: this.source });
@@ -276,14 +262,7 @@ export default {
       this.draw = new Draw({
         source: this.source,
         type: 'Point',
-        style: new Style({
-          image: new Icon({
-            anchor: [0.5, 46],
-            anchorXUnits: 'fraction',
-            anchorYUnits: 'pixels',
-            src: icon
-          })
-        })
+        style: this.getCategoryIconImage(icon)
       });
       this.map.addInteraction(this.draw);
       this.snap = new Snap({ source: this.source });
@@ -405,6 +384,16 @@ export default {
             });
         })
       }
+    },
+    getCategoryIconImage (icon) {
+      return new Style({
+        image: new Icon({
+          anchor: [0.5, 46],
+          anchorXUnits: 'fraction',
+          anchorYUnits: 'pixels',
+          src: icon
+        })
+      });
     }
   }
 }
