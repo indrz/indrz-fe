@@ -28,6 +28,24 @@
     </div>
     <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
     <action-buttons />
+    <v-dialog
+      v-model="unsavedChanges"
+      persistent
+      max-width="350"
+    >
+      <v-card>
+        <v-card-title>There are unsaved changes. Do you want to save changes?</v-card-title>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="error darken-1" text @click="onSaveButtonClick(false)">
+            Yes
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="cleanUp">
+            No
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -56,7 +74,8 @@ export default {
       floors: [],
       newPoiCollection: [],
       editPoi: null,
-      initialPoiCatId: null
+      initialPoiCatId: null,
+      unsavedChanges: false
     };
   },
   mounted () {
@@ -67,6 +86,11 @@ export default {
   methods: {
     setSelectedPoiCategory (poiCategory) {
       this.selectedPoiCategory = poiCategory;
+      if (this.newPoiCollection.length || this.editPoi) {
+        this.unsavedChanges = true;
+      } else {
+        this.$refs.map.removeInteraction();
+      }
     },
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
@@ -110,7 +134,7 @@ export default {
         });
       }
     },
-    onSaveButtonClick () {
+    onSaveButtonClick (force = true) {
       if (this.newPoiCollection.length) {
         this.newPoiCollection.forEach(async (newPoi) => {
           await api.postRequest({
@@ -120,9 +144,11 @@ export default {
           })
         });
         const treeComp = this.$refs.poiTree;
-        treeComp.forceReloadNode = true;
+        treeComp.forceReloadNode = force;
         this.initialPoiCatId = this.newPoiCollection[0].category.toString();
-        treeComp.loadDataToPoiTree();
+        if (force) {
+          treeComp.loadDataToPoiTree();
+        }
         this.$refs.map.currentEditingPoi = null;
       } else if (this.editPoi) {
         const { feature } = this.editPoi;
@@ -141,17 +167,20 @@ export default {
         })
           .then((resp) => {
             console.log(resp);
-          })
+          });
       }
-
       this.$root.$emit('cancelPoiClick');
       this.$nextTick(() => {
-        if (this.newPoiCollection.length) {
-          this.$root.$emit('addPoiClick');
-        }
-        this.newPoiCollection = [];
-        this.editPoi = null;
+        this.cleanUp();
       });
+    },
+    cleanUp () {
+      if (this.newPoiCollection.length) {
+        this.$root.$emit('addPoiClick');
+      }
+      this.unsavedChanges = false;
+      this.newPoiCollection = [];
+      this.editPoi = null;
     },
     async deletePoi (selectedPoi) {
       await api.postRequest({
