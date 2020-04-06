@@ -6,17 +6,15 @@
     <v-card>
       <v-card-title class="headline" />
       <v-card-text>
-        <h1>{{ $t('terms_and_conditions') }}</h1>
-        <p>Lorem Ipsum</p>
-        <h1>{{ contact }}</h1>
-        <p>{{ $t('contact_us') }}</p>
+        <h1>Allgemeine Hinweise</h1>
+        <p />
+
         <div>
-          <h3>Allgemeine Hinweise</h3>
           <p>
             TUW-maps bietet eine
             einfache grafische Darstellung und begleitende Informationen zu
             Geb&auml;uden, R&auml;umen und Serviceangeboten der Technischen
-            Universit&auml;t Wien. Die ApplikationEs arbeitet nicht mit Ihrem
+            Universit&auml;t Wien. Die Applikation arbeitet nicht mit Ihrem
             Standort, sondern basiert ausschlie&szlig;lich auf dem vorhanden
             Kartenmaterial der TU Wien: &Uuml;bersichtspl&auml;ne der
             verschiedenen Campus-Areale, Etagengrundrisse bis hin zu
@@ -59,7 +57,7 @@
           </p>
           <p>
             Eine Haftung der TU
-            Wien und / bzw. des software-Herstellers (gomogi / Michael Diener)
+            Wien und / bzw. des software-Herstellers (<a href="https://www.gomogi.com">www.gomogi.com</a> GOMOGI / Michael Diener)
             sind daherist ausgeschlossen. Im Zuge der Darstellung von Geb&auml;uden
             und Zugangsm&ouml;glichkeiten wird versucht, auf Einschr&auml;nkungen
             m&ouml;glichst aktuell hinzuweisen, wir bitten jedoch, stetsht&acute;s
@@ -118,7 +116,7 @@
             <b>Sie suchen Suche</b>
           </p>
           <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_8ccb10dae600ca81.gif" align="bottom">
+            <img src="../static/images/tu-help/search.jpg" align="bottom">
           </p>
           <p>
             Um die Suchfunktion
@@ -135,7 +133,7 @@
             <b>Routing/Wegbeschreibung</b>
           </p>
           <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_56eda75eecea4e4c.gif" align="bottom">
+            <img src="../static/images/tu-help/routing.jpg" align="bottom">
           </p>
           <p>
             &Uuml;ber die
@@ -167,7 +165,7 @@
             <b>POIs</b>
           </p>
           <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_bd0946f7af5f0133.gif" align="bottom">
+            <img src="../static/images/tu-help/poi.jpg" align="bottom">
           </p>
           <p>
             POIs&ldquo; -
@@ -222,16 +220,13 @@
             <b>Werkzeugleiste</b>
           </p>
           <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_affd9eb71aa218c2.gif" alt="" align="bottom">
+            <img src="../static/images/tu-help/share.jpg" alt="" align="bottom">
           </p>
           <p>
             Die Werkzeugleiste,
             welche &uuml;ber der Karte platziert ist, bietet Ihnen verschiedene
             M&ouml;glichkeiten und Funktionen: (folgende Beschreibung der Symbole
             von links nach rechts):
-          </p>
-          <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_ef09683f1b7f778f.gif" alt="" align="bottom">
           </p>
           <p>
             <b>Download map as an
@@ -254,7 +249,7 @@
             Stockwerk liegenden R&auml;ume anzuzeigen.
           </p>
           <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_969f08292cdfdd7a.gif" align="bottom">
+            <img src="../static/images/tu-help/floor-changer.jpg" align="bottom">
           </p>
           <p>
             Durch Klick auf das
@@ -274,7 +269,7 @@
             <b>ZOOM </b>
           </p>
           <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_f0fdd719bf1c27c3.gif" align="bottom">
+            <img src="../static/images/tu-help/zoom.jpg" align="bottom">
           </p>
           <p>
             Zus&auml;tzlich
@@ -317,7 +312,7 @@
             <br>
           </p>
           <p>
-            <img src="200212%20navigaTUr%20Beschreibung_Hinweise_editHK%20+%20Titscher%20_htm_b668fa2b356f1d5a.gif" align="bottom">
+            <img src="" align="bottom">
             <!-- Wohin sollen diese Links zeigen? -->
           </p>
           <p>
