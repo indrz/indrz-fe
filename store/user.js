@@ -2,14 +2,8 @@ import * as _ from 'lodash';
 import axios from 'axios';
 import UserService from '../service/user';
 import LocalStorageService from '../service/localStorage';
-
-// const baseUrl = 'http://localhost:8000/api/v1';
-// const baseUrl = 'https://tu.indrz.com/api/v1';
-// const baseUrl = 'https://campusplan.aau.at/api/v1'; // AAU
-const baseUrl = 'https://tuw-maps.tuwien.ac.at/api/v1';
-// const authorization = 'Token a6e744b52ce4515e30602ac8de7337ee36262ea7'; //AAU
-const authorization = 'Token 42519ebe7bada4d7a151c76832b94614ea5b198d'; // TU tuw-maps.tuwien.ac.at
-// const authorization = 'Token 42519ebe7bada4d7a151c76832b94614ea5b198d'; // TU tu.indrz.com
+import baseApiUrl from '../util/indrzConfig';
+import token from '../util/indrzConfig';
 
 export const state = () => ({
   user: null,
@@ -46,7 +40,7 @@ export const actions = {
     this.$router.push('/admin/login');
   },
   async LOAD_SHELVES ({ commit }, payload) {
-    const url = `${baseUrl}/shelf/`;
+    const url = `${baseApiUrl}/shelf/`;
     const urlWithParams = payload ? `${url + '?' + Object.keys(payload).map(key => key + '=' + payload[key]).join('&')}` : url;
 
     try {
@@ -54,7 +48,7 @@ export const actions = {
         method: 'GET',
         url: urlWithParams,
         headers: {
-          'Authorization': authorization
+          'Authorization': token
         }
       });
 
@@ -70,14 +64,14 @@ export const actions = {
   },
 
   SAVE_SHELF ({ commit }, payload) {
-    const url = `${baseUrl}/shelf/${payload.id}/`;
+    const url = `${baseApiUrl}/shelf/${payload.id}/`;
 
     return axios({
       method: 'PUT',
       url: url,
       data: payload,
       headers: {
-        'Authorization': authorization,
+        'Authorization': token,
         'Content-Type': 'application/json'
       }
     });
