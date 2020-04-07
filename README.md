@@ -7,7 +7,7 @@
 You need a static webserver such as nginx or apache, google-storage, s3 bucket, whatever gets you going.
 
 1. Clone the repo
-1. Rename util/indrzConf.sample.json to indrzConf.js if you want to change settings
+1. Rename `util/indrzConf.sample.json` to `indrzConf.js` if you want to change settings
 1. Install dependencies
     ``` bash
     # install dependencies
