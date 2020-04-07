@@ -31,7 +31,8 @@
       max-width="350"
     >
       <v-card>
-        <v-card-title>Are you sure you want to delete?</v-card-title>
+        <v-card-title v-if="removePois.length > 1">Are you sure you want to delete all {{removePois.length}} poi's?</v-card-title>
+        <v-card-title v-if="removePois.length === 1">Are you sure you want to delete the selected poi?</v-card-title>
         <v-card-actions>
           <v-spacer />
           <v-btn color="error darken-1" text @click="onDeletePoiClick">
@@ -87,11 +88,18 @@ export default {
       layers: [],
       isSatelliteMap: true,
       vectorInteractionLayer: null,
-      isAddPoiMode: false,
       currentEditingPoi: null,
       modify: null,
       selectedPoi: null,
-      deleteConfirm: false
+      removePois: [],
+      newPois: [],
+      deleteConfirm: false,
+      currentMode: null,
+      mode: {
+        add: 'add',
+        edit: 'edit',
+        remove: 'remove'
+      }
     };
   },
   async mounted () {
@@ -102,7 +110,7 @@ export default {
     initializeEventHandlers () {
       this.$root.$on('addPoiClick', this.addInteractions);
       this.$root.$on('editPoiClick', this.editInteraction);
-      this.$root.$on('deletePoiClick', this.confirmDeletePoi);
+      this.$root.$on('deletePoiClick', this.enableDeletePoi);
       this.$root.$on('cancelPoiClick', this.removeInteraction)
     },
     async initializeMap () {
@@ -173,8 +181,12 @@ export default {
               onActiveLayer = false;
             }
             feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/images/selected.png', onActiveLayer));
-            this.clearPreviousSelection();
             this.selectedPoi = feature;
+            if (this.currentMode && this.currentMode === this.mode.remove) {
+              this.removePois.push(this.selectedPoi);
+            } else {
+              this.clearPreviousSelection();
+            }
           }
         }
       }
@@ -192,20 +204,16 @@ export default {
         this.map.removeLayer(this.editingVectorLayer);
       }
     },
-    confirmDeletePoi () {
-      if (!this.selectedPoi || !this.selectedPoi.getId()) {
-        this.$store.commit('SET_SNACKBAR', 'Please select the POI first to delete.');
-        return;
-      }
-      this.deleteConfirm = true;
+    enableDeletePoi () {
+      this.currentMode = this.mode.remove;
     },
     onDeletePoiClick () {
-      this.$root.$emit('deletePoi', this.selectedPoi);
-      this.selectedPoi = null;
+      this.$root.$emit('deletePoi');
       this.deleteConfirm = false;
-      this.removeInteraction();
     },
     editInteraction () {
+      this.currentMode = this.mode.edit;
+
       if (!this.selectedPoi) {
         return;
       }
@@ -241,12 +249,14 @@ export default {
     },
     addInteractions () {
       this.removeInteraction();
-      this.selectedPoi = null;
+      this.cleanUp();
+      this.currentMode = this.mode.add;
+
       if (!this.activeFloorName || !this.selectedPoiCategory) {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
         return;
       }
-      this.isAddPoiMode = true;
+
       this.source = new VectorSource();
 
       const icon = this.selectedPoiCategory.icon.replace('.', '_pin.');
@@ -289,7 +299,6 @@ export default {
       }
     },
     removeInteraction () {
-      this.isAddPoiMode = false;
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
       this.map.removeInteraction(this.translate);
@@ -314,6 +323,13 @@ export default {
       this.clearPreviousSelection();
       this.selectedPoi = null;
     },
+    cleanUp () {
+      this.selectedPoi = null;
+      this.currentEditingPoi = null;
+      this.currentMode = null;
+      this.newPois = [];
+      this.removePois = [];
+    },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
 
@@ -328,7 +344,7 @@ export default {
       baseLayers.greyBmapat.setVisible(false);
     },
     onDrawEnd (drawEvent) {
-      if (!this.isAddPoiMode) {
+      if (!(this.currentMode && this.currentMode === this.mode.add)) {
         return;
       }
       const coordinate = drawEvent.feature.getGeometry().getCoordinates();
@@ -355,7 +371,7 @@ export default {
           }
         })
       };
-      this.$emit('addnewPoi', data);
+      this.newPois.push(data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       if (removedItems && removedItems.length) {

@@ -5,7 +5,6 @@
       :selected-poi-category="selectedPoiCategory"
       :active-floor="activeFloor"
       @floorChange="onMapFloorChange"
-      @addnewPoi="onAddNewPoi"
       @editPoi="onEditPoi"
       @updatePoiCoord="onUpdatePoiCoord"
     />
@@ -17,12 +16,12 @@
         color="primary"
         small
         width="70px"
-        :disabled="!newPoiCollection.length && !editPoi"
-        @click.stop.prevent="onSaveButtonClick"
+        :disabled="!changes"
+        @click.stop.prevent="onSaveButtonClick(true)"
       >
         Save
       </v-btn>
-      <v-btn color="primary" small width="70px" @click.stop.prevent="onCancelButtonClick">
+      <v-btn color="primary" small width="70px" @click.stop.prevent="cleanupAndRemoveInteraction">
         Cancel
       </v-btn>
     </div>
@@ -75,18 +74,28 @@ export default {
       newPoiCollection: [],
       editPoi: null,
       initialPoiCatId: null,
-      unsavedChanges: false
+      unsavedChanges: false,
+      mapComp: null
     };
   },
+
+  computed: {
+    changes () {
+      return this.mapComp && (this.mapComp.newPois.length || this.mapComp.removePois.length);
+    }
+  },
+
   mounted () {
     this.$root.$on('poiLoad', this.$refs.map.onPoiLoad);
     this.$root.$on('deletePoi', this.deletePoi);
+    this.mapComp = this.$refs.map;
   },
 
   methods: {
     setSelectedPoiCategory (poiCategory) {
       this.selectedPoiCategory = poiCategory;
-      if (this.newPoiCollection.length || this.editPoi) {
+
+      if (this.mapComp.newPois.length || this.mapComp.removePois.length) {
         this.unsavedChanges = true;
       } else {
         this.$refs.map.removeInteraction();
@@ -106,14 +115,11 @@ export default {
         this.activeFloorName = name;
       });
     },
-    onAddNewPoi (newPoi) {
-      this.newPoiCollection.push(newPoi);
-    },
     onEditPoi (poi) {
       this.editPoi = poi;
     },
     onUpdatePoiCoord (editingPoi) {
-      const foundPoi = this.newPoiCollection.find((poi) => {
+      const foundPoi = this.mapComp.newPois.find((poi) => {
         const coord = JSON.parse(poi.geom).coordinates[0];
         if (editingPoi.oldCoord[0] === coord[0] && editingPoi.oldCoord[1] === coord[1]) {
           return poi;
@@ -135,68 +141,98 @@ export default {
       }
     },
     onSaveButtonClick (force = true) {
-      if (this.newPoiCollection.length) {
-        this.newPoiCollection.forEach(async (newPoi) => {
-          await api.postRequest({
-            endPoint: `poi/`,
-            method: 'POST',
-            data: newPoi
-          })
-        });
-        const treeComp = this.$refs.poiTree;
-        treeComp.forceReloadNode = force;
-        this.initialPoiCatId = this.newPoiCollection[0].category.toString();
-        if (force) {
-          treeComp.loadDataToPoiTree();
-        }
-        this.$refs.map.currentEditingPoi = null;
-      } else if (this.editPoi) {
-        const { feature } = this.editPoi;
-        feature.getGeometry().setCoordinates([this.editPoi.coord]);
-        const data = {
-          'category': feature.getProperties().category,
-          'geometry': {
-            'type': 'MultiPoint',
-            'coordinates': feature.getGeometry().getCoordinates()
-          }
-        };
-        api.putRequest({
-          endPoint: `poi/${feature.getId()}/`,
-          method: 'PUT',
-          data
-        })
-          .then((resp) => {
-            console.log(resp);
-          });
+      if (!this.mapComp.currentMode) {
+        return;
       }
-      this.$root.$emit('cancelPoiClick');
+      switch (this.mapComp.currentMode) {
+        case 'add':
+          this.saveAddPoi(force);
+          break;
+        case 'edit':
+          this.saveEditPoi();
+          break;
+        case 'remove':
+          this.saveRemovePoi();
+          break;
+      }
+    },
+    saveAddPoi (force) {
+      this.mapComp.newPois.forEach(async (newPoi) => {
+        await api.postRequest({
+          endPoint: `poi/`,
+          method: 'POST',
+          data: newPoi
+        })
+      });
+      const treeComp = this.$refs.poiTree;
+      treeComp.forceReloadNode = force;
+      this.initialPoiCatId = this.mapComp.newPois[0].category.toString();
+      if (force) {
+        treeComp.loadDataToPoiTree();
+      }
       this.$nextTick(() => {
-        this.cleanUp();
+        this.cleanUp(force, 'add');
       });
     },
-    cleanUp () {
-      if (this.newPoiCollection.length) {
+    saveEditPoi () {
+      const { feature } = this.editPoi;
+      feature.getGeometry().setCoordinates([this.editPoi.coord]);
+      const data = {
+        'category': feature.getProperties().category,
+        'geometry': {
+          'type': 'MultiPoint',
+          'coordinates': feature.getGeometry().getCoordinates()
+        }
+      };
+      api.putRequest({
+        endPoint: `poi/${feature.getId()}/`,
+        method: 'PUT',
+        data
+      })
+        .then((resp) => {
+          console.log(resp);
+        });
+      this.cleanUp(false, 'edit');
+    },
+    saveRemovePoi () {
+      this.mapComp.deleteConfirm = true;
+    },
+    cleanUp (force = false, mode) {
+      if (!force) {
         this.$root.$emit('addPoiClick');
       }
       this.unsavedChanges = false;
-      this.newPoiCollection = [];
-      this.editPoi = null;
+      this.mapComp.cleanUp();
+      this.mapComp.removeInteraction();
     },
-    async deletePoi (selectedPoi) {
-      await api.postRequest({
-        endPoint: `poi/${selectedPoi.getId()}`,
-        method: 'DELETE',
-        data: {}
+    deletePoi (selectedPoi) {
+      if (!this.mapComp.removePois.length) {
+        return;
+      }
+      const functions = [];
+
+      this.mapComp.removePois.forEach((poi) => {
+        functions.push(
+          api.postRequest({
+            endPoint: `poi/${poi.getId()}`,
+            method: 'DELETE',
+            data: {}
+          })
+        )
       });
-      const treeComp = this.$refs.poiTree;
-      treeComp.forceReloadNode = true;
-      this.initialPoiCatId = selectedPoi.getProperties().category.toString();
-      treeComp.loadDataToPoiTree();
+      Promise.all(functions)
+        .then((response) => {
+          const treeComp = this.$refs.poiTree;
+
+          treeComp.forceReloadNode = true;
+          this.initialPoiCatId = this.mapComp.removePois[0].getProperties().category.toString();
+          treeComp.loadDataToPoiTree();
+          this.cleanupAndRemoveInteraction();
+        });
     },
-    onCancelButtonClick () {
-      this.newPoiCollection = [];
-      this.editPoi = null;
-      this.$root.$emit('cancelPoiClick');
+    cleanupAndRemoveInteraction () {
+      this.mapComp.cleanUp();
+      this.mapComp.removeInteraction();
     }
   }
 }
