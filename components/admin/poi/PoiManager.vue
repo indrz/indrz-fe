@@ -201,9 +201,7 @@ export default {
       if (!force) {
         this.$root.$emit('addPoiClick');
       }
-      this.unsavedChanges = false;
-      this.mapComp.removeInteraction();
-      this.mapComp.cleanUp();
+      this.cleanupAndRemoveInteraction();
     },
     deletePoi (selectedPoi) {
       if (!this.mapComp.removePois.length) {
@@ -231,6 +229,7 @@ export default {
         });
     },
     cleanupAndRemoveInteraction () {
+      this.unsavedChanges = false;
       this.mapComp.removeInteraction();
       this.mapComp.cleanUp();
     }
