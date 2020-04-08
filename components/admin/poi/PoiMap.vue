@@ -191,6 +191,25 @@ export default {
         }
       }
     },
+    clearSelection () {
+      let onActiveLayer = true;
+      const features = this.currentMode && this.currentMode === this.mode.remove ? this.removePois : [this.selectedPoi];
+      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+
+      features.forEach((feature) => {
+        if (feature) {
+          if (indrzConfig.layerNamePrefix + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+            onActiveLayer = false;
+          }
+          const featureType = feature.getGeometry().getType().toString();
+          if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
+            if (featureType === 'MultiPoint') {
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, onActiveLayer));
+            }
+          }
+        }
+      });
+    },
     clearPreviousSelection () {
       let onActiveLayer = true;
       this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
@@ -320,7 +339,7 @@ export default {
       if (this.translate) {
         this.translate.un('translateend')
       }
-      this.clearPreviousSelection();
+      this.clearSelection();
       this.selectedPoi = null;
     },
     cleanUp () {
