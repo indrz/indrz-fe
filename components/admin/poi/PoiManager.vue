@@ -224,7 +224,10 @@ export default {
 
           treeComp.forceReloadNode = true;
           this.initialPoiCatId = this.mapComp.removePois[0].getProperties().category.toString();
-          treeComp.loadDataToPoiTree();
+
+          if (!this.unsavedChanges) {
+            treeComp.loadDataToPoiTree();
+          }
           this.cleanupAndRemoveInteraction();
         });
     },
