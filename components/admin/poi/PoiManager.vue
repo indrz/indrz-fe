@@ -85,7 +85,7 @@ export default {
       return mapComp && (
         mapComp.newPois.length ||
         mapComp.removePois.length ||
-        mapComp.selectedPoi
+        mapComp.editPois.length
       );
     }
   },
@@ -98,9 +98,14 @@ export default {
 
   methods: {
     setSelectedPoiCategory (poiCategory) {
+      const mapComp = this.mapComp;
       this.selectedPoiCategory = poiCategory;
 
-      if (this.mapComp.newPois.length || this.mapComp.removePois.length) {
+      if (
+        mapComp.newPois.length ||
+        mapComp.removePois.length ||
+        mapComp.editPois.length
+      ) {
         this.unsavedChanges = true;
       } else {
         this.$refs.map.removeInteraction();

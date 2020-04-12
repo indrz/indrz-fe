@@ -97,6 +97,7 @@ export default {
       selectedPoi: null,
       removePois: [],
       newPois: [],
+      editPois: [],
       deleteConfirm: false,
       currentMode: null,
       mode: {
@@ -181,9 +182,6 @@ export default {
 
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
-            if (this.currentMode && this.currentMode === this.mode.edit) {
-              this.clearPreviousSelection();
-            }
             this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
             let onActiveLayer = true;
             if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
@@ -194,6 +192,7 @@ export default {
             if (this.currentMode && this.currentMode === this.mode.remove) {
               this.removePois.push(this.selectedPoi);
             } else if (this.currentMode && this.currentMode === this.mode.edit) {
+              this.editPois.push(this.selectedPoi);
               this.editInteraction();
             } else {
               this.clearPreviousSelection();
@@ -204,7 +203,19 @@ export default {
     },
     clearSelection () {
       let onActiveLayer = true;
-      const features = this.currentMode && this.currentMode === this.mode.remove ? this.removePois : [this.selectedPoi];
+      let features = [];
+      switch (this.currentMode) {
+        case 'add':
+          features = this.newPois;
+          break;
+        case 'edit':
+          features = this.editPois;
+          break;
+        case 'remove':
+          features = this.removePois;
+          break;
+      }
+
       this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
 
       features.forEach((feature) => {
@@ -245,9 +256,13 @@ export default {
       if (!this.selectedPoi) {
         return;
       }
-      const coord = this.selectedPoi.getGeometry().getCoordinates()[0];
-      this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
-      this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
+      if (this.editingVectorLayer) {
+        this.removeInteraction();
+      }
+      const currentPoi = this.editPois[this.editPois.length - 1];
+      const coord = currentPoi.getGeometry().getCoordinates()[0];
+      currentPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
+      currentPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
       const styleMarker = new Style({
         image: new Icon({
           anchor: [0.5, 46],
@@ -357,6 +372,7 @@ export default {
       this.currentMode = null;
       this.newPois = [];
       this.removePois = [];
+      this.editPois = [];
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
