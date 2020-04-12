@@ -31,8 +31,12 @@
       max-width="350"
     >
       <v-card>
-        <v-card-title v-if="removePois.length > 1">Are you sure you want to delete all {{removePois.length}} poi's?</v-card-title>
-        <v-card-title v-if="removePois.length === 1">Are you sure you want to delete the selected poi?</v-card-title>
+        <v-card-title v-if="removePois.length > 1">
+          Are you sure you want to delete all {{removePois.length}} poi's?
+        </v-card-title>
+        <v-card-title v-if="removePois.length === 1">
+          Are you sure you want to delete the selected poi?
+        </v-card-title>
         <v-card-actions>
           <v-spacer />
           <v-btn color="error darken-1" text @click="onDeletePoiClick">
@@ -109,7 +113,9 @@ export default {
   methods: {
     initializeEventHandlers () {
       this.$root.$on('addPoiClick', this.addInteractions);
-      this.$root.$on('editPoiClick', this.editInteraction);
+      this.$root.$on('editPoiClick', () => {
+        this.currentMode = this.mode.edit;
+      });
       this.$root.$on('deletePoiClick', this.enableDeletePoi);
       this.$root.$on('cancelPoiClick', this.removeInteraction)
     },
@@ -175,6 +181,9 @@ export default {
 
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
+            if (this.currentMode && this.currentMode === this.mode.edit) {
+              this.clearPreviousSelection();
+            }
             this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
             let onActiveLayer = true;
             if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
@@ -184,6 +193,8 @@ export default {
             this.selectedPoi = feature;
             if (this.currentMode && this.currentMode === this.mode.remove) {
               this.removePois.push(this.selectedPoi);
+            } else if (this.currentMode && this.currentMode === this.mode.edit) {
+              this.editInteraction();
             } else {
               this.clearPreviousSelection();
             }
@@ -231,8 +242,6 @@ export default {
       this.deleteConfirm = false;
     },
     editInteraction () {
-      this.currentMode = this.mode.edit;
-
       if (!this.selectedPoi) {
         return;
       }

@@ -81,7 +81,12 @@ export default {
 
   computed: {
     changes () {
-      return this.mapComp && (this.mapComp.newPois.length || this.mapComp.removePois.length);
+      const mapComp = this.mapComp;
+      return mapComp && (
+        mapComp.newPois.length ||
+        mapComp.removePois.length ||
+        mapComp.selectedPoi
+      );
     }
   },
 
