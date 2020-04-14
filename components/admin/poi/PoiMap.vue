@@ -341,7 +341,7 @@ export default {
 
         const index = this.editPois.findIndex(poi => poi._id === this.selectedPoi._id);
 
-        this.editPois[index].getGeometry().setCoordinates(this.editMarker.getCoordinates());
+        this.editPois[index].getGeometry().setCoordinates([this.editMarker.getCoordinates()]);
     },
     onModifyStart (e) {
       this.currentEditingPoi = {

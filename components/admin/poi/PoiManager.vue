@@ -189,6 +189,41 @@ export default {
       });
     },
     saveEditPoi () {
+        if (!this.mapComp.editPois.length) {
+            return;
+        }
+        const functions = [];
+
+        this.mapComp.editPois.forEach((poi) => {
+            const data = {
+                'category': poi.getProperties().category,
+                'geometry': {
+                    'type': 'MultiPoint',
+                    'coordinates': poi.getGeometry().getCoordinates()
+                }
+            };
+            functions.push(
+                api.putRequest({
+                    endPoint: `poi/${poi.getId()}/`,
+                    method: 'PUT',
+                    data
+                })
+            )
+        });
+        Promise.all(functions)
+            .then((response) => {
+                const treeComp = this.$refs.poiTree;
+
+                treeComp.forceReloadNode = true;
+                this.initialPoiCatId = this.mapComp.editPois[0].getProperties().category.toString();
+
+                if (!this.unsavedChanges) {
+                    treeComp.loadDataToPoiTree();
+                }
+                this.cleanupAndRemoveInteraction();
+            });
+    },
+    saveEditPoi_ () {
       const { feature } = this.editPoi;
       feature.getGeometry().setCoordinates([this.editPoi.coord]);
       const data = {
