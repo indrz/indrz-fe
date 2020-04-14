@@ -71,6 +71,9 @@ typings/
 # Nuxt generate
 dist
 
+# Indrz config
+util/indrzConfig.js
+
 # vuepress build output
 .vuepress/dist
 
