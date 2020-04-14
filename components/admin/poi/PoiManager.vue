@@ -75,7 +75,8 @@ export default {
       editPoi: null,
       initialPoiCatId: null,
       unsavedChanges: false,
-      mapComp: null
+      mapComp: null,
+      lastLoadedData: {}
     };
   },
 
@@ -91,7 +92,10 @@ export default {
   },
 
   mounted () {
-    this.$root.$on('poiLoad', this.$refs.map.onPoiLoad);
+    this.$root.$on('poiLoad', (data) => {
+        this.lastLoadedData = {...data};
+        this.$refs.map.onPoiLoad(data);
+    });
     this.$root.$on('deletePoi', this.deletePoi);
     this.mapComp = this.$refs.map;
   },
@@ -245,6 +249,7 @@ export default {
       this.unsavedChanges = false;
       this.mapComp.removeInteraction();
       this.mapComp.cleanUp();
+      this.$refs.map.onPoiLoad(this.lastLoadedData);
     }
   }
 }

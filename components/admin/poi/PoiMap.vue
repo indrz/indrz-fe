@@ -104,7 +104,8 @@ export default {
         add: 'add',
         edit: 'edit',
         remove: 'remove'
-      }
+      },
+        editingVectorLayer: []
     };
   },
   async mounted () {
@@ -187,6 +188,7 @@ export default {
             if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
               onActiveLayer = false;
             }
+
             feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/images/selected.png', onActiveLayer));
             this.selectedPoi = feature;
             if (this.currentMode && this.currentMode === this.mode.remove) {
@@ -216,6 +218,10 @@ export default {
           break;
       }
 
+      if (!this.selectedPoi) {
+          return;
+      }
+
       this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
 
       features.forEach((feature) => {
@@ -242,8 +248,14 @@ export default {
         }
         this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
         this.selectedPoi = null;
-        this.map.removeLayer(this.editingVectorLayer);
+        this.clearEditingVectorLayer();
       }
+    },
+    clearEditingVectorLayer () {
+        this.editingVectorLayer.forEach((layer) => {
+            this.map.removeLayer(layer);
+        });
+        this.editingVectorLayer = [];
     },
     enableDeletePoi () {
       this.currentMode = this.mode.remove;
@@ -256,9 +268,7 @@ export default {
       if (!this.selectedPoi) {
         return;
       }
-      if (this.editingVectorLayer) {
-        this.removeInteraction();
-      }
+
       const currentPoi = this.editPois[this.editPois.length - 1];
       const coord = currentPoi.getGeometry().getCoordinates()[0];
       currentPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
@@ -275,14 +285,14 @@ export default {
 
       this.editMarker = new Point(coord);
       const featureMarker = new Feature(this.editMarker);
-      this.editingVectorLayer = new VectorLayer({
+      this.editingVectorLayer.push(new VectorLayer({
         zIndex: 35,
         source: new VectorSource({
           features: [featureMarker]
         }),
         style: [styleMarker]
-      });
-      this.map.addLayer(this.editingVectorLayer);
+      }));
+      this.map.addLayer(this.editingVectorLayer[this.editingVectorLayer.length - 1]);
 
       this.translate = new Translate({
         features: new Collection([featureMarker])
@@ -324,11 +334,14 @@ export default {
       this.modify.on('modifyend', this.onModifyEnd);
       this.modify.on('modifystart', this.onModifyStart);
     },
-    onTranslateEnd (e) {
-      this.$emit('editPoi', {
-        feature: this.selectedPoi,
-        coord: this.editMarker.getCoordinates()
-      });
+    onTranslateEnd(e) {
+        if (!this.selectedPoi) {
+            return;
+        }
+
+        const index = this.editPois.findIndex(poi => poi._id === this.selectedPoi._id);
+
+        this.editPois[index].getGeometry().setCoordinates(this.editMarker.getCoordinates());
     },
     onModifyStart (e) {
       this.currentEditingPoi = {
@@ -348,9 +361,8 @@ export default {
       if (this.vectorInteractionLayer) {
         this.map.removeLayer(this.vectorInteractionLayer);
       }
-      if (this.editingVectorLayer) {
-        this.map.removeLayer(this.editingVectorLayer);
-      }
+      this.clearEditingVectorLayer();
+
       if (this.draw) {
         this.draw.un('drawend', this.onDrawEnd)
       }
@@ -363,7 +375,7 @@ export default {
       if (this.translate) {
         this.translate.un('translateend')
       }
-      this.clearSelection();
+      // this.clearSelection();
       this.selectedPoi = null;
     },
     cleanUp () {
