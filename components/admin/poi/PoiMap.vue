@@ -31,7 +31,12 @@
       max-width="350"
     >
       <v-card>
-        <v-card-title>Are you sure you want to delete?</v-card-title>
+        <v-card-title v-if="removePois.length > 1">
+          Are you sure you want to delete all {{removePois.length}} poi's?
+        </v-card-title>
+        <v-card-title v-if="removePois.length === 1">
+          Are you sure you want to delete the selected poi?
+        </v-card-title>
         <v-card-actions>
           <v-spacer />
           <v-btn color="error darken-1" text @click="onDeletePoiClick">
@@ -87,11 +92,20 @@ export default {
       layers: [],
       isSatelliteMap: true,
       vectorInteractionLayer: null,
-      isAddPoiMode: false,
       currentEditingPoi: null,
       modify: null,
       selectedPoi: null,
-      deleteConfirm: false
+      removePois: [],
+      newPois: [],
+      editPois: [],
+      deleteConfirm: false,
+      currentMode: null,
+      mode: {
+        add: 'add',
+        edit: 'edit',
+        remove: 'remove'
+      },
+        editingVectorLayer: []
     };
   },
   async mounted () {
@@ -101,8 +115,10 @@ export default {
   methods: {
     initializeEventHandlers () {
       this.$root.$on('addPoiClick', this.addInteractions);
-      this.$root.$on('editPoiClick', this.editInteraction);
-      this.$root.$on('deletePoiClick', this.confirmDeletePoi);
+      this.$root.$on('editPoiClick', () => {
+        this.currentMode = this.mode.edit;
+      });
+      this.$root.$on('deletePoiClick', this.enableDeletePoi);
       this.$root.$on('cancelPoiClick', this.removeInteraction)
     },
     async initializeMap () {
@@ -172,12 +188,55 @@ export default {
             if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
               onActiveLayer = false;
             }
+
             feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/images/selected.png', onActiveLayer));
-            this.clearPreviousSelection();
             this.selectedPoi = feature;
+            if (this.currentMode && this.currentMode === this.mode.remove) {
+              this.removePois.push(this.selectedPoi);
+            } else if (this.currentMode && this.currentMode === this.mode.edit) {
+              this.editPois.push(this.selectedPoi);
+              this.editInteraction();
+            } else {
+              this.clearPreviousSelection();
+            }
           }
         }
       }
+    },
+    clearSelection () {
+      let onActiveLayer = true;
+      let features = [];
+      switch (this.currentMode) {
+        case 'add':
+          features = this.newPois;
+          break;
+        case 'edit':
+          features = this.editPois;
+          break;
+        case 'remove':
+          features = this.removePois;
+          break;
+      }
+
+      if (!this.selectedPoi) {
+          return;
+      }
+
+      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+
+      features.forEach((feature) => {
+        if (feature) {
+          if (indrzConfig.layerNamePrefix + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+            onActiveLayer = false;
+          }
+          const featureType = feature.getGeometry().getType().toString();
+          if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
+            if (featureType === 'MultiPoint') {
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, onActiveLayer));
+            }
+          }
+        }
+      });
     },
     clearPreviousSelection () {
       let onActiveLayer = true;
@@ -189,29 +248,31 @@ export default {
         }
         this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
         this.selectedPoi = null;
-        this.map.removeLayer(this.editingVectorLayer);
+        this.clearEditingVectorLayer();
       }
     },
-    confirmDeletePoi () {
-      if (!this.selectedPoi || !this.selectedPoi.getId()) {
-        this.$store.commit('SET_SNACKBAR', 'Please select the POI first to delete.');
-        return;
-      }
-      this.deleteConfirm = true;
+    clearEditingVectorLayer () {
+        this.editingVectorLayer.forEach((layer) => {
+            this.map.removeLayer(layer);
+        });
+        this.editingVectorLayer = [];
+    },
+    enableDeletePoi () {
+      this.currentMode = this.mode.remove;
     },
     onDeletePoiClick () {
-      this.$root.$emit('deletePoi', this.selectedPoi);
-      this.selectedPoi = null;
+      this.$root.$emit('deletePoi');
       this.deleteConfirm = false;
-      this.removeInteraction();
     },
     editInteraction () {
       if (!this.selectedPoi) {
         return;
       }
-      const coord = this.selectedPoi.getGeometry().getCoordinates()[0];
-      this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
-      this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
+
+      const currentPoi = this.editPois[this.editPois.length - 1];
+      const coord = currentPoi.getGeometry().getCoordinates()[0];
+      currentPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch('', true));
+      currentPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(null, true));
       const styleMarker = new Style({
         image: new Icon({
           anchor: [0.5, 46],
@@ -224,14 +285,14 @@ export default {
 
       this.editMarker = new Point(coord);
       const featureMarker = new Feature(this.editMarker);
-      this.editingVectorLayer = new VectorLayer({
+      this.editingVectorLayer.push(new VectorLayer({
         zIndex: 35,
         source: new VectorSource({
           features: [featureMarker]
         }),
         style: [styleMarker]
-      });
-      this.map.addLayer(this.editingVectorLayer);
+      }));
+      this.map.addLayer(this.editingVectorLayer[this.editingVectorLayer.length - 1]);
 
       this.translate = new Translate({
         features: new Collection([featureMarker])
@@ -241,12 +302,14 @@ export default {
     },
     addInteractions () {
       this.removeInteraction();
-      this.selectedPoi = null;
+      this.cleanUp();
+      this.currentMode = this.mode.add;
+
       if (!this.activeFloorName || !this.selectedPoiCategory) {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
         return;
       }
-      this.isAddPoiMode = true;
+
       this.source = new VectorSource();
 
       const icon = this.selectedPoiCategory.icon.replace('.', '_pin.');
@@ -271,11 +334,14 @@ export default {
       this.modify.on('modifyend', this.onModifyEnd);
       this.modify.on('modifystart', this.onModifyStart);
     },
-    onTranslateEnd (e) {
-      this.$emit('editPoi', {
-        feature: this.selectedPoi,
-        coord: this.editMarker.getCoordinates()
-      });
+    onTranslateEnd(e) {
+        if (!this.selectedPoi) {
+            return;
+        }
+
+        const index = this.editPois.findIndex(poi => poi._id === this.selectedPoi._id);
+
+        this.editPois[index].getGeometry().setCoordinates([this.editMarker.getCoordinates()]);
     },
     onModifyStart (e) {
       this.currentEditingPoi = {
@@ -289,16 +355,14 @@ export default {
       }
     },
     removeInteraction () {
-      this.isAddPoiMode = false;
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
       this.map.removeInteraction(this.translate);
       if (this.vectorInteractionLayer) {
         this.map.removeLayer(this.vectorInteractionLayer);
       }
-      if (this.editingVectorLayer) {
-        this.map.removeLayer(this.editingVectorLayer);
-      }
+      this.clearEditingVectorLayer();
+
       if (this.draw) {
         this.draw.un('drawend', this.onDrawEnd)
       }
@@ -311,8 +375,16 @@ export default {
       if (this.translate) {
         this.translate.un('translateend')
       }
-      this.clearPreviousSelection();
+      // this.clearSelection();
       this.selectedPoi = null;
+    },
+    cleanUp () {
+      this.selectedPoi = null;
+      this.currentEditingPoi = null;
+      this.currentMode = null;
+      this.newPois = [];
+      this.removePois = [];
+      this.editPois = [];
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -328,7 +400,7 @@ export default {
       baseLayers.greyBmapat.setVisible(false);
     },
     onDrawEnd (drawEvent) {
-      if (!this.isAddPoiMode) {
+      if (!(this.currentMode && this.currentMode === this.mode.add)) {
         return;
       }
       const coordinate = drawEvent.feature.getGeometry().getCoordinates();
@@ -355,7 +427,7 @@ export default {
           }
         })
       };
-      this.$emit('addnewPoi', data);
+      this.newPois.push(data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();

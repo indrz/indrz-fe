@@ -34,7 +34,7 @@
             @close="close"
           />
         </template>
-        <template v-slot:item.map="{ item }">
+        <template v-slot:item.map="{}">
           <v-icon
             small
           >
