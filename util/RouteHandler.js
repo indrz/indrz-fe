@@ -13,10 +13,13 @@ import api from '~/util/api';
 import indrzConfig from '~/util/indrzConfig';
 
 let store = null;
+let scope = null;
+let translate = null;
 
 const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
+
   if (from.properties.space_id && to.properties.space_id) {
     routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
   } else if (from.properties.poi_id && to.properties.space_id) {
@@ -72,7 +75,7 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
       url: geoJsonUrl
     }).then(function (response) {
       if (!response) {
-        store.commit('SET_SNACKBAR', 'test message');
+        // store.commit('SET_SNACKBAR', 'test message');
         return;
       }
       response = response.data;
@@ -137,8 +140,11 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
       return routeUrl;
     })
   } catch ({ response }) {
-    console.log('got error');
-    store.commit('SET_SNACKBAR', response.data.error.reason);
+    if ((response && response.status === 404) || (response.data.error && response.data.error === 'no geometry')) {
+      setNoRouteFoundText();
+    } else {
+      console.log(response.data.error);
+    }
   }
 
   const routeLayer = new VectorLayer({
@@ -438,6 +444,12 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 */
 };
 
+const setNoRouteFoundText = () => {
+  const text = translate.call(scope, 'no_route_found');
+  const descriptionEl = document.getElementById('route-description');
+  descriptionEl.innerHTML=`<span style="color: red">${text}</span>`;
+};
+
 const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, frontOffice) => {
   // $('#RouteDescription').remove();
 
@@ -491,8 +503,11 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, f
   }
 };
 
-export default function (_store) {
+export default function (_store, _$t, _scope) {
   store = _store;
+  translate = _$t;
+  scope = _scope;
+
   return {
     getDirections,
     routeGo,
