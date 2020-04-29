@@ -81,7 +81,7 @@ export default {
       routeToValTemp: '',
       routeFromValTemp: '',
       hostUrl: window.location.href,
-      routeHandler: RouteHandler(this.$store)
+      routeHandler: RouteHandler(this.$store, this.$t, this)
     };
   },
 
