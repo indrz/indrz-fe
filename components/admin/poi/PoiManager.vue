@@ -195,12 +195,22 @@ export default {
         const functions = [];
 
         this.mapComp.editPois.forEach((poi) => {
+            const properties = {...poi.getProperties()};
+            delete properties.geometry;
+
             const data = {
                 'category': poi.getProperties().category,
                 'geometry': {
                     'type': 'MultiPoint',
-                    'coordinates': poi.getGeometry().getCoordinates()
-                }
+                    'coordinates': poi.getGeometry().getCoordinates(),
+                    'crs': {
+                        "type": "name",
+                        "properties": {
+                            "name": "EPSG:3857"
+                        }
+                    }
+                },
+                properties
             };
             functions.push(
                 api.putRequest({
