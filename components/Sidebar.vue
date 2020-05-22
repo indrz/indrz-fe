@@ -98,7 +98,9 @@ export default {
         zooToHome: this.$t('zoom_to_home'),
         shareMap: this.$t('share_map'),
         download: this.$t('download'),
-        pdf: this.$t('pdf')
+        pdf: this.$t('pdf'),
+        helpLegendInfos: this.$t('help_legend_infos'),
+        aboutTermsConditions: this.$t('about_terms_conditions')
       },
       expanded: [],
       searchResult: []
@@ -151,9 +153,14 @@ export default {
           text: this.locale.pdf
         },
         {
-          icon: 'clipboard-text',
-          type: 'terms',
-          text: 'About/Terms Conditions'
+          icon: 'help',
+          type: 'help',
+          text: this.locale.helpLegendInfos
+        },
+        {
+            icon: 'clipboard-text',
+            type: 'terms',
+            text: this.locale.aboutTermsConditions
         }
       ]
     }

@@ -17,5 +17,7 @@
   "contact": "Contact",
   "terms_and_conditions": "Terms and Conditions",
   "about": "About Us / Terms Conditions",
-  "no_route_found": "Sorry, no route found."
+  "no_route_found": "Sorry, no route found.",
+  "help_legend_infos": "Help, Legend, Infos",
+  "about_terms_conditions": "About/Terms Conditions"
 }
