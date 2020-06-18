@@ -175,7 +175,7 @@ function map2pdf() {
 
                     doc.setFontSize(22);
 
-                    doc.text('AAU Campus Plan', title_x_pos, title_y_pos);
+                    doc.text('TU Campus', title_x_pos, title_y_pos);
                     doc.setFontSize(12);
 
                     var x = calculateAspectRatioFit(canvasMapWidth, canvasMapHeight, maxWidth,
@@ -213,7 +213,7 @@ function map2pdf() {
                         }
 
 
-                        doc.save(todayFileName + '-WU-Plan.pdf')
+                        doc.save(todayFileName + '-TU.pdf')
 
 
                     }
