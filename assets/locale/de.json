@@ -17,5 +17,7 @@
   "contact": "Kontakt",
   "terms_and_conditions": "allgemeine geschäftsbedingungen",
   "about": "Über uns/AGBs",
-  "no_route_found": "Sorry, keine Route gefunden."
+  "no_route_found": "Sorry, keine Route gefunden.",
+  "help_legend_infos": "-Help, Legend, Infos",
+  "about_terms_conditions": "-About/Terms Conditions"
 }
