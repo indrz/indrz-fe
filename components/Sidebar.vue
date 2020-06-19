@@ -158,9 +158,9 @@ export default {
           text: this.locale.helpLegendInfos
         },
         {
-            icon: 'clipboard-text',
-            type: 'terms',
-            text: this.locale.aboutTermsConditions
+          icon: 'clipboard-text',
+          type: 'terms',
+          text: this.locale.aboutTermsConditions
         }
       ]
     }

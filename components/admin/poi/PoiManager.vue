@@ -9,7 +9,12 @@
       @updatePoiCoord="onUpdatePoiCoord"
     />
     <div class="poi">
-      <points-of-interest ref="poiTree" :multi="false" :initial-poi-cat-id="initialPoiCatId" @selectPoiCategory="setSelectedPoiCategory" />
+      <points-of-interest
+        ref="poiTree"
+        :multi="false"
+        :initial-poi-cat-id="initialPoiCatId"
+        @selectPoiCategory="setSelectedPoiCategory"
+      />
     </div>
     <div class="save-btn-panel">
       <v-btn
@@ -25,8 +30,8 @@
         Cancel
       </v-btn>
     </div>
-    <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
-    <action-buttons />
+    <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick"/>
+    <action-buttons/>
     <v-dialog
       v-model="unsavedChanges"
       persistent
@@ -35,7 +40,7 @@
       <v-card>
         <v-card-title>There are unsaved changes. Do you want to save changes?</v-card-title>
         <v-card-actions>
-          <v-spacer />
+          <v-spacer/>
           <v-btn color="error darken-1" text @click="onSaveButtonClick(false)">
             Yes
           </v-btn>
@@ -93,8 +98,8 @@ export default {
 
   mounted () {
     this.$root.$on('poiLoad', (data) => {
-        this.lastLoadedData = {...data};
-        this.$refs.map.onPoiLoad(data);
+      this.lastLoadedData = { ...data };
+      this.$refs.map.onPoiLoad(data);
     });
     this.$root.$on('deletePoi', this.deletePoi);
     this.mapComp = this.$refs.map;
@@ -189,49 +194,49 @@ export default {
       });
     },
     saveEditPoi () {
-        if (!this.mapComp.editPois.length) {
-            return;
-        }
-        const functions = [];
+      if (!this.mapComp.editPois.length) {
+        return;
+      }
+      const functions = [];
 
-        this.mapComp.editPois.forEach((poi) => {
-            const properties = {...poi.getProperties()};
-            delete properties.geometry;
+      this.mapComp.editPois.forEach((poi) => {
+        const properties = { ...poi.getProperties() };
+        delete properties.geometry;
 
-            const data = {
-                'category': poi.getProperties().category,
-                'geometry': {
-                    'type': 'MultiPoint',
-                    'coordinates': poi.getGeometry().getCoordinates(),
-                    'crs': {
-                        "type": "name",
-                        "properties": {
-                            "name": "EPSG:3857"
-                        }
-                    }
-                },
-                properties
-            };
-            functions.push(
-                api.putRequest({
-                    endPoint: `poi/${poi.getId()}/`,
-                    method: 'PUT',
-                    data
-                })
-            )
+        const data = {
+          'category': poi.getProperties().category,
+          'geometry': {
+            'type': 'MultiPoint',
+            'coordinates': poi.getGeometry().getCoordinates(),
+            'crs': {
+              'type': 'name',
+              'properties': {
+                'name': 'EPSG:3857'
+              }
+            }
+          },
+          properties
+        };
+        functions.push(
+          api.putRequest({
+            endPoint: `poi/${poi.getId()}/`,
+            method: 'PUT',
+            data
+          })
+        )
+      });
+      Promise.all(functions)
+        .then((response) => {
+          const treeComp = this.$refs.poiTree;
+
+          treeComp.forceReloadNode = true;
+          this.initialPoiCatId = this.mapComp.editPois[0].getProperties().category.toString();
+
+          if (!this.unsavedChanges) {
+            treeComp.loadDataToPoiTree();
+          }
+          this.cleanupAndRemoveInteraction();
         });
-        Promise.all(functions)
-            .then((response) => {
-                const treeComp = this.$refs.poiTree;
-
-                treeComp.forceReloadNode = true;
-                this.initialPoiCatId = this.mapComp.editPois[0].getProperties().category.toString();
-
-                if (!this.unsavedChanges) {
-                    treeComp.loadDataToPoiTree();
-                }
-                this.cleanupAndRemoveInteraction();
-            });
     },
     saveEditPoi_ () {
       const { feature } = this.editPoi;
