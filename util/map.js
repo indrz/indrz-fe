@@ -463,6 +463,30 @@ const activateLayer = (layerName, switchableLayers, map) => {
   // }
 };
 
+const getMapSize = (map) => {
+  const mapWidthPixels = map.getSize()[0];
+  const mapHeightPixels = map.getSize()[1];
+  const floors = mapWidthPixels / 200;
+  const newWidth = mapWidthPixels / floors;
+  const newHeight = mapHeightPixels / floors;
+
+  return {
+    'width_px': mapWidthPixels,
+    'height_px': mapHeightPixels,
+    'new_width': newWidth,
+    'new_height': newHeight
+  }
+};
+
+const calculateAspectRatioFit = (srcWidth, srcHeight, maxWidth, maxHeight) => {
+  const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+
+  return {
+    width: srcWidth * ratio,
+    height: srcHeight * ratio
+  };
+};
+
 export default {
 
   getStartCenter: () => indrzConfig.defaultCenterXY,
@@ -556,5 +580,7 @@ export default {
   activateFloor,
   activateLayer,
   searchIndrz,
-  zoomer
+  zoomer,
+  getMapSize,
+  calculateAspectRatioFit
 };

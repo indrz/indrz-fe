@@ -12,7 +12,7 @@ import MapUtil from './map';
 import api from '~/util/api';
 import indrzConfig from '~/util/indrzConfig';
 
-let store = null;
+// let store = null;
 let scope = null;
 let translate = null;
 
@@ -447,7 +447,7 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 const setNoRouteFoundText = () => {
   const text = translate.call(scope, 'no_route_found');
   const descriptionEl = document.getElementById('route-description');
-  descriptionEl.innerHTML=`<span style="color: red">${text}</span>`;
+  descriptionEl.innerHTML = `<span style="color: red">${text}</span>`;
 };
 
 const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, frontOffice) => {
@@ -504,7 +504,7 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, f
 };
 
 export default function (_store, _$t, _scope) {
-  store = _store;
+  // store = _store;
   translate = _$t;
   scope = _scope;
 

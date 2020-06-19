@@ -105,7 +105,7 @@ export default {
         edit: 'edit',
         remove: 'remove'
       },
-        editingVectorLayer: []
+      editingVectorLayer: []
     };
   },
   async mounted () {
@@ -219,7 +219,7 @@ export default {
       }
 
       if (!this.selectedPoi) {
-          return;
+        return;
       }
 
       this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
@@ -252,10 +252,10 @@ export default {
       }
     },
     clearEditingVectorLayer () {
-        this.editingVectorLayer.forEach((layer) => {
-            this.map.removeLayer(layer);
-        });
-        this.editingVectorLayer = [];
+      this.editingVectorLayer.forEach((layer) => {
+        this.map.removeLayer(layer);
+      });
+      this.editingVectorLayer = [];
     },
     enableDeletePoi () {
       this.currentMode = this.mode.remove;
@@ -334,14 +334,13 @@ export default {
       this.modify.on('modifyend', this.onModifyEnd);
       this.modify.on('modifystart', this.onModifyStart);
     },
-    onTranslateEnd(e) {
-        if (!this.selectedPoi) {
-            return;
-        }
+    onTranslateEnd (e) {
+      if (!this.selectedPoi) {
+        return;
+      }
+      const index = this.editPois.findIndex(poi => poi._id === this.selectedPoi._id);
 
-        const index = this.editPois.findIndex(poi => poi._id === this.selectedPoi._id);
-
-        this.editPois[index].getGeometry().setCoordinates([this.editMarker.getCoordinates()]);
+      this.editPois[index].getGeometry().setCoordinates([this.editMarker.getCoordinates()]);
     },
     onModifyStart (e) {
       this.currentEditingPoi = {
