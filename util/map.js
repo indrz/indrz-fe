@@ -623,13 +623,13 @@ const loadMapWithParams = async (mapInfo, query) => {
   const zoomLevel = query.zlevel || 18;
 
   if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
-    const view = this.map.getView();
+    const view = mapInfo.map.getView();
     view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
   }
   if (query.floor) {
     mapInfo.activeFloorName = query.floor;
     activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map);
-    mapInfo.$emit('selectFloor', this.activeFloorName);
+    mapInfo.$emit('selectFloor', mapInfo.activeFloorName);
   }
   if (query.q && query.q.length > 3) {
     const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
