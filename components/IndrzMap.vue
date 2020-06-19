@@ -33,12 +33,8 @@
 </template>
 
 <script>
-import axios from 'axios';
 import JSPDF from 'jspdf';
 import { saveAs } from 'file-saver';
-import Vector from 'ol/source/Vector';
-import GeoJSON from 'ol/format/GeoJSON';
-import { getCenter } from 'ol/extent';
 import queryString from 'query-string';
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
@@ -141,58 +137,7 @@ export default {
     },
     async loadMapWithParams () {
       const query = queryString.parse(location.search);
-      const campusId = query.campus || 1;
-      const zoomLevel = query.zlevel || 18;
-
-      if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
-        const view = this.map.getView();
-        view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
-      }
-      if (query.floor) {
-        this.activeFloorName = query.floor;
-        MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers, this.map);
-        this.$emit('selectFloor', this.activeFloorName);
-      }
-      if (query.q && query.q.length > 3) {
-        const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
-          this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-          this.routeFromValTemp, this.activeFloorName, this.popup);
-
-        this.$root.$emit('load-search-query', query.q);
-
-        if (result.floorName) {
-          this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
-        }
-        this.searchLayer = result.searchLayer;
-      }
-      if (query['start-spaceid'] && query['end-spaceid']) {
-        const startSpaceId = query['start-spaceid'];
-        const endSpaceId = query['end-spaceid'];
-
-        this.$emit('popupRouteClick', {
-          path: 'from',
-          data: {
-            spaceid: startSpaceId,
-            name: startSpaceId
-          }
-        });
-        this.$emit('popupRouteClick', {
-          path: 'to',
-          data: {
-            spaceid: endSpaceId,
-            name: endSpaceId
-          }
-        });
-        setTimeout(async () => {
-          this.globalRouteInfo.routeUrl = await this.routeHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
-        }, 600);
-      }
-      if (query['poi-cat-id']) {
-        this.$emit('openPoiTree', query['poi-cat-id']);
-      }
-      if (query['poi-id']) {
-        this.$emit('openPoiTree', query['poi-id'], true);
-      }
+      await MapUtil.loadMapWithParams(this, query);
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
@@ -243,80 +188,6 @@ export default {
     },
     onMapClick (evt) {
       MapHandler.handleMapClick(this, evt);
-    },
-    onMapClick_ (evt) {
-      const pixel = evt.pixel;
-      let feature = this.map.getFeaturesAtPixel(pixel);
-      const features = [];
-
-      this.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
-        features.push(feature);
-      });
-      feature = features[0];
-      let coordinate = this.map.getCoordinateFromPixel(pixel);
-      const properties = feature ? feature.getProperties() : null;
-
-      if (feature) {
-        const featureType = feature.getGeometry().getType().toString();
-
-        if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
-          MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
-          if (featureType === 'MultiPoint') {
-            properties.poiId = feature.getId();
-            properties.src = 'poi';
-          }
-
-          this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers, this.map);
-        } else if (featureType === 'Point') {
-          MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
-          coordinate = this.map.getCoordinateFromPixel(pixel);
-          properties.src = 'poi';
-          if (feature.getProperties().hasOwnProperty('poi_id')) {
-            properties.poiId = feature.properties.poi_id;
-          }
-
-          this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers, this.map);
-        }
-      } else {
-        const featuresWms = this.map.getFeaturesAtPixel(pixel);
-        const v = this.map.getView();
-        const viewResolution = /** @type {number} */ (v.getResolution());
-        const wmsSource2 = MapHandler.getRoomInfo(this.activeFloorName, this.layers);
-        const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
-          'INFO_FORMAT': 'application/json',
-          'FEATURE_COUNT': 50
-        });
-
-        if (url) {
-          axios.get(url).then((response) => {
-            this.globalPopupInfo.src = 'wms';
-            const listFeatures = response.data && response.data.features ? response.data.features : [];
-            const dataProperties = {};
-
-            if (listFeatures.length > 0) {
-              listFeatures.forEach(function (feature) {
-                if (feature.properties.hasOwnProperty('space_type_id')) {
-                  if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
-                    const centroidSource = new Vector({
-                      features: (new GeoJSON()).readFeatures(feature)
-                    });
-                    const centroidCoords = getCenter(centroidSource.getExtent());
-                    if (!dataProperties.properties) {
-                      dataProperties.properties = {};
-                    }
-                    dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
-                    dataProperties.centroid = centroidCoords;
-                  }
-                }
-              });
-              dataProperties.properties.src = 'wms';
-              this.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
-            }
-          });
-        }
-      }
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;

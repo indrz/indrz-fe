@@ -618,6 +618,61 @@ const getWmsLayers = (floors) => {
   }
 };
 
+const loadMapWithParams = async (mapInfo, query) => {
+  const campusId = query.campus || 1;
+  const zoomLevel = query.zlevel || 18;
+
+  if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
+    const view = this.map.getView();
+    view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
+  }
+  if (query.floor) {
+    mapInfo.activeFloorName = query.floor;
+    activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map);
+    mapInfo.$emit('selectFloor', this.activeFloorName);
+  }
+  if (query.q && query.q.length > 3) {
+    const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
+      mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.currentLocale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
+      mapInfo.routeFromValTemp, mapInfo.activeFloorName, mapInfo.popup);
+
+    mapInfo.$root.$emit('load-search-query', query.q);
+
+    if (result.floorName) {
+      mapInfo.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
+    }
+    mapInfo.searchLayer = result.searchLayer;
+  }
+  if (query['start-spaceid'] && query['end-spaceid']) {
+    const startSpaceId = query['start-spaceid'];
+    const endSpaceId = query['end-spaceid'];
+
+    mapInfo.$emit('popupRouteClick', {
+      path: 'from',
+      data: {
+        spaceid: startSpaceId,
+        name: startSpaceId
+      }
+    });
+    mapInfo.$emit('popupRouteClick', {
+      path: 'to',
+      data: {
+        spaceid: endSpaceId,
+        name: endSpaceId
+      }
+    });
+    setTimeout(async () => {
+      mapInfo.globalRouteInfo.routeUrl = await mapInfo.routeHandler.getDirections(mapInfo.map, mapInfo.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
+    }, 600);
+  }
+  if (query['poi-cat-id']) {
+    mapInfo.$emit('openPoiTree', query['poi-cat-id']);
+  }
+  if (query['poi-id']) {
+    mapInfo.$emit('openPoiTree', query['poi-id'], true);
+  }
+};
+
 export default {
   initializeMap,
   getStartCenter,
@@ -631,5 +686,6 @@ export default {
   searchIndrz,
   zoomer,
   getMapSize,
-  calculateAspectRatioFit
+  calculateAspectRatioFit,
+  loadMapWithParams
 };
