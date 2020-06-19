@@ -1,4 +1,10 @@
+import Vector from 'ol/source/Vector';
+import GeoJSON from 'ol/format/GeoJSON';
+import { getCenter } from 'ol/extent';
+import axios from 'axios';
 import indrzConfig from '~/util/indrzConfig';
+import POIHandler from '~/util/POIHandler';
+import MapUtil from '~/util/map';
 
 const hostUrl = window.location.href;
 const closeIndrzPopup = (popup, globalPopupInfo) => {
@@ -471,6 +477,113 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   return location.href;
 };
 
+const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }) => {
+  if (removedItems && removedItems.length) {
+    removedItems.forEach((item) => {
+      if (POIHandler.poiExist(item, map)) {
+        POIHandler.disablePoiById(item.id, map);
+      }
+    });
+  }
+  if (oldItems && oldItems.length) {
+    oldItems.forEach((item) => {
+      POIHandler.setPoiVisibility(item, map);
+    })
+  }
+  if (newItems && newItems.length) {
+    newItems.forEach((item) => {
+      if (POIHandler.poiExist(item, map)) {
+        POIHandler.setPoiVisibility(item.id, map);
+      } else {
+        POIHandler
+          .fetchPoi(item.id, map, activeFloorName)
+          .then((poiLayer) => {
+            map.getLayers().forEach((layer) => {
+              if (layer.getProperties().id === 99999) {
+                layer.getLayers().push(poiLayer);
+              }
+            });
+          });
+      }
+    })
+  }
+};
+
+const handleMapClick = (mapInfo, evt) => {
+  const pixel = evt.pixel;
+  let feature = mapInfo.map.getFeaturesAtPixel(pixel);
+  const features = [];
+
+  mapInfo.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+    features.push(feature);
+  });
+  feature = features[0];
+  let coordinate = mapInfo.map.getCoordinateFromPixel(pixel);
+  const properties = feature ? feature.getProperties() : null;
+
+  if (feature) {
+    const featureType = feature.getGeometry().getType().toString();
+
+    if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
+      closeIndrzPopup(mapInfo.popup, mapInfo.globalPopupInfo);
+      if (featureType === 'MultiPoint') {
+        properties.poiId = feature.getId();
+        properties.src = 'poi';
+      }
+
+      mapInfo.openIndrzPopup(properties, coordinate, feature);
+      MapUtil.activateFloor(feature, mapInfo.layers, mapInfo.map);
+    } else if (featureType === 'Point') {
+      closeIndrzPopup(mapInfo.popup, mapInfo.globalPopupInfo);
+      coordinate = mapInfo.map.getCoordinateFromPixel(pixel);
+      properties.src = 'poi';
+      if (feature.getProperties().hasOwnProperty('poi_id')) {
+        properties.poiId = feature.properties.poi_id;
+      }
+
+      mapInfo.openIndrzPopup(properties, coordinate, feature);
+      MapUtil.activateFloor(feature, mapInfo.layers, mapInfo.map);
+    }
+  } else {
+    const featuresWms = mapInfo.map.getFeaturesAtPixel(pixel);
+    const v = mapInfo.map.getView();
+    const viewResolution = /** @type {number} */ (v.getResolution());
+    const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers);
+    const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
+      'INFO_FORMAT': 'application/json',
+      'FEATURE_COUNT': 50
+    });
+
+    if (url) {
+      axios.get(url).then((response) => {
+        mapInfo.globalPopupInfo.src = 'wms';
+        const listFeatures = response.data && response.data.features ? response.data.features : [];
+        const dataProperties = {};
+
+        if (listFeatures.length > 0) {
+          listFeatures.forEach(function (feature) {
+            if (feature.properties.hasOwnProperty('space_type_id')) {
+              if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
+                const centroidSource = new Vector({
+                  features: (new GeoJSON()).readFeatures(feature)
+                });
+                const centroidCoords = getCenter(centroidSource.getExtent());
+                if (!dataProperties.properties) {
+                  dataProperties.properties = {};
+                }
+                dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
+                dataProperties.centroid = centroidCoords;
+              }
+            }
+          });
+          dataProperties.properties.src = 'wms';
+          mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
+        }
+      });
+    }
+  }
+};
+
 export default {
   closeIndrzPopup,
   openIndrzPopup,
@@ -479,5 +592,7 @@ export default {
   addPoiTableRow,
   getRoomInfo,
   handleShareClick,
-  updateUrl
+  updateUrl,
+  handlePoiLoad,
+  handleMapClick
 };

@@ -36,12 +36,6 @@
 import axios from 'axios';
 import JSPDF from 'jspdf';
 import { saveAs } from 'file-saver';
-import Overlay from 'ol/Overlay';
-import Map from 'ol/Map.js';
-import View from 'ol/View.js';
-import { defaults as defaultInteraction } from 'ol/interaction';
-import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
-import PinchZoom from 'ol/interaction/PinchZoom';
 import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getCenter } from 'ol/extent';
@@ -91,36 +85,12 @@ export default {
   },
 
   mounted () {
-    this.view = new View({
-      center: MapUtil.getStartCenter(),
-      zoom: 15,
-      maxZoom: 23
-    });
+    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
 
-    this.layers = MapUtil.getLayers();
-
-    this.map = new Map({
-      interactions: defaultInteraction().extend([
-        new DragRotateAndZoom(),
-        new PinchZoom({
-          constrainResolution: true
-        })
-      ]),
-      target: this.mapId,
-      controls: MapUtil.getMapControls(),
-      view: this.view,
-      layers: this.layers.layerGroups
-    });
-    this.popup = new Overlay({
-      element: document.getElementById('indrz-popup'),
-      autoPan: true,
-      autoPanAnimation: {
-        duration: 250
-      },
-      zIndex: 5,
-      name: 'indrzPopup'
-    });
-    this.map.addOverlay(this.popup);
+    this.view = view;
+    this.map = map;
+    this.layers = layers;
+    this.popup = popup;
 
     this.map.on('singleclick', this.onMapClick, this);
     window.onresize = () => {
@@ -257,35 +227,7 @@ export default {
       POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      if (removedItems && removedItems.length) {
-        removedItems.forEach((item) => {
-          if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.disablePoiById(item.id, this.map);
-          }
-        });
-      }
-      if (oldItems && oldItems.length) {
-        oldItems.forEach((item) => {
-          POIHandler.setPoiVisibility(item, this.map);
-        })
-      }
-      if (newItems && newItems.length) {
-        newItems.forEach((item) => {
-          if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.setPoiVisibility(item.id, this.map);
-          } else {
-            POIHandler
-              .fetchPoi(item.id, this.map, this.activeFloorName)
-              .then((poiLayer) => {
-                this.map.getLayers().forEach((layer) => {
-                  if (layer.getProperties().id === 99999) {
-                    layer.getLayers().push(poiLayer);
-                  }
-                });
-              });
-          }
-        })
-      }
+      MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems });
     },
     onTermShowChange (value) {
       this.showTerms = value;
@@ -300,6 +242,9 @@ export default {
       });
     },
     onMapClick (evt) {
+      MapHandler.handleMapClick(this, evt);
+    },
+    onMapClick_ (evt) {
       const pixel = evt.pixel;
       let feature = this.map.getFeaturesAtPixel(pixel);
       const features = [];

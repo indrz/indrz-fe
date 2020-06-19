@@ -15,11 +15,56 @@ import Icon from 'ol/style/Icon';
 import Fill from 'ol/style/Fill';
 import Circle from 'ol/style/Circle';
 import { getCenter } from 'ol/extent';
+import View from 'ol/View';
+import Map from 'ol/Map';
+import { defaults as defaultInteraction } from 'ol/interaction';
+import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
+import PinchZoom from 'ol/interaction/PinchZoom';
+import Overlay from 'ol/Overlay';
 import MapStyles from './mapStyles';
 import MapHandler from './mapHandler';
 import api from './api';
 import indrzConfig from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
+
+const initializeMap = (mapId) => {
+  const view = new View({
+    center: getStartCenter(),
+    zoom: 15,
+    maxZoom: 23
+  });
+
+  const layers = getLayers();
+
+  const map = new Map({
+    interactions: defaultInteraction().extend([
+      new DragRotateAndZoom(),
+      new PinchZoom({
+        constrainResolution: true
+      })
+    ]),
+    target: mapId,
+    controls: getMapControls(),
+    view,
+    layers: layers.layerGroups
+  });
+
+  const popup = new Overlay({
+    element: document.getElementById('indrz-popup'),
+    autoPan: true,
+    autoPanAnimation: {
+      duration: 250
+    },
+    zIndex: 5,
+    name: 'indrzPopup'
+  });
+
+  map.addOverlay(popup);
+
+  return {
+    view, map, layers, popup
+  };
+};
 
 const createWmsLayer = function (
   layerName,
@@ -487,94 +532,98 @@ const calculateAspectRatioFit = (srcWidth, srcHeight, maxWidth, maxHeight) => {
   };
 };
 
+const getLayers = () => {
+  // layers
+  const greyBmapat = createWmtsLayer(
+    'bmapgrau',
+    '.png',
+    true,
+    'basemap.at'
+  );
+  const ortho30cmBmapat = createWmtsLayer(
+    'bmaporthofoto30cm',
+    '.jpg',
+    false,
+    'basemap.at'
+  );
+  // layer group
+  const backgroundLayerGroup = new Group({
+    layers: [greyBmapat, ortho30cmBmapat],
+    name: 'background maps'
+  });
+  const poiLayerGroup = new Group({
+    layers: [],
+    id: 99999,
+    name: 'poi group'
+  });
+  const campusLocationsGroup = new Group({
+    layers: [],
+    id: 900,
+    name: 'campus locations'
+  });
+
+  return {
+    baseLayers: {
+      ortho30cmBmapat,
+      greyBmapat
+    },
+    switchableLayers: [],
+    layerGroups: [
+      backgroundLayerGroup,
+      poiLayerGroup,
+      campusLocationsGroup
+    ]
+  }
+}
+
+const getStartCenter = () => indrzConfig.defaultCenterXY;
+
+const getMapControls = () => {
+  // controls
+  const attributionControl = new Attribution({
+    collapsible: false
+  });
+  const scaleLineControl = new ScaleLine();
+  const zoomControl = new Zoom({ target: 'zoom-control' });
+
+  return [
+    attributionControl,
+    scaleLineControl,
+    zoomControl
+  ];
+};
+
+const getWmsLayers = (floors) => {
+  const wmsLayers = [];
+
+  floors.forEach((floor, index) => {
+    const floorName = floor.short_name.toLowerCase();
+    const layerName = indrzConfig.layerNamePrefix + floorName;
+    const layer = createWmsLayer(
+      layerName,
+      indrzConfig.geoServerLayerPrefix + layerName,
+      floor.floor_num,
+      index === 0,
+      3
+    );
+    wmsLayers.push(layer);
+  });
+  const wmsFloorLayerGroup = new Group({
+    layers: wmsLayers,
+    name: 'wms floor maps'
+  });
+  return {
+    layers: wmsLayers,
+    layerGroup: wmsFloorLayerGroup
+  }
+};
+
 export default {
-
-  getStartCenter: () => indrzConfig.defaultCenterXY,
-
-  getMapControls: () => {
-    // controls
-    const attributionControl = new Attribution({
-      collapsible: false
-    });
-    const scaleLineControl = new ScaleLine();
-    const zoomControl = new Zoom({ target: 'zoom-control' });
-
-    return [
-      attributionControl,
-      scaleLineControl,
-      zoomControl
-    ];
-  },
-
-  getWmsLayers: (floors) => {
-    const wmsLayers = [];
-
-    floors.forEach((floor, index) => {
-      const floorName = floor.short_name.toLowerCase();
-      const layerName = indrzConfig.layerNamePrefix + floorName;
-      const layer = createWmsLayer(
-        layerName,
-        indrzConfig.geoServerLayerPrefix + layerName,
-        floor.floor_num,
-        index === 0,
-        3
-      );
-      wmsLayers.push(layer);
-    });
-    const wmsFloorLayerGroup = new Group({
-      layers: wmsLayers,
-      name: 'wms floor maps'
-    });
-    return {
-      layers: wmsLayers,
-      layerGroup: wmsFloorLayerGroup
-    }
-  },
-
-  getLayers: () => {
-    // layers
-    const greyBmapat = createWmtsLayer(
-      'bmapgrau',
-      '.png',
-      true,
-      'basemap.at'
-    );
-    const ortho30cmBmapat = createWmtsLayer(
-      'bmaporthofoto30cm',
-      '.jpg',
-      false,
-      'basemap.at'
-    );
-    // layer group
-    const backgroundLayerGroup = new Group({
-      layers: [greyBmapat, ortho30cmBmapat],
-      name: 'background maps'
-    });
-    const poiLayerGroup = new Group({
-      layers: [],
-      id: 99999,
-      name: 'poi group'
-    });
-    const campusLocationsGroup = new Group({
-      layers: [],
-      id: 900,
-      name: 'campus locations'
-    });
-
-    return {
-      baseLayers: {
-        ortho30cmBmapat,
-        greyBmapat
-      },
-      switchableLayers: [],
-      layerGroups: [
-        backgroundLayerGroup,
-        poiLayerGroup,
-        campusLocationsGroup
-      ]
-    }
-  },
-
+  initializeMap,
+  getStartCenter,
+  getMapControls,
+  getWmsLayers,
+  getLayers,
   hideLayers,
   setLayerVisible,
   activateFloor,
