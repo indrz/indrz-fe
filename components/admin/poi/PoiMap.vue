@@ -5,12 +5,12 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
+        @click="onMapSwitchClick"
         color="rgba(0,60,136,0.5)"
         min-width="95px"
         class="pa-2"
         small
         dark
-        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -32,17 +32,25 @@
     >
       <v-card>
         <v-card-title v-if="removePois.length > 1">
-          Are you sure you want to delete all {{removePois.length}} poi's?
+          Are you sure you want to delete all {{ removePois.length }} poi's?
         </v-card-title>
         <v-card-title v-if="removePois.length === 1">
           Are you sure you want to delete the selected poi?
         </v-card-title>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="error darken-1" text @click="onDeletePoiClick">
+          <v-btn
+            @click="onDeletePoiClick"
+            color="error darken-1"
+            text
+          >
             Yes
           </v-btn>
-          <v-btn color="blue darken-1" text @click="deleteConfirm = false">
+          <v-btn
+            @click="deleteConfirm = false"
+            color="blue darken-1"
+            text
+          >
             Cancel
           </v-btn>
         </v-card-actions>

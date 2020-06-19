@@ -1,12 +1,12 @@
 <template>
   <v-card
+    :name="mapElName"
+    :ripple="false"
+    width="100%"
+    style="border-radius: 0"
     class="fill-height"
     fluid
     flat
-    :name="mapElName"
-    width="100%"
-    style="border-radius: 0"
-    :ripple="false"
   >
     <v-navigation-drawer
       v-model="drawer"

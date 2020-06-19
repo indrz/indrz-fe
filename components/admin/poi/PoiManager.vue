@@ -18,20 +18,29 @@
     </div>
     <div class="save-btn-panel">
       <v-btn
-        color="primary"
-        small
-        width="70px"
         :disabled="!changes"
         @click.stop.prevent="onSaveButtonClick(true)"
+        color="primary"
+        width="70px"
+        small
       >
         Save
       </v-btn>
-      <v-btn color="primary" small width="70px" @click.stop.prevent="cleanupAndRemoveInteraction">
+      <v-btn
+        @click.stop.prevent="cleanupAndRemoveInteraction"
+        color="primary"
+        width="70px"
+        small
+      >
         Cancel
       </v-btn>
     </div>
-    <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick"/>
-    <action-buttons/>
+    <floor-changer
+      ref="floorChanger"
+      :floors="floors"
+      @floorClick="onFloorClick"
+    />
+    <action-buttons />
     <v-dialog
       v-model="unsavedChanges"
       persistent
@@ -40,11 +49,19 @@
       <v-card>
         <v-card-title>There are unsaved changes. Do you want to save changes?</v-card-title>
         <v-card-actions>
-          <v-spacer/>
-          <v-btn color="error darken-1" text @click="onSaveButtonClick(false)">
+          <v-spacer />
+          <v-btn
+            @click="onSaveButtonClick(false)"
+            color="error darken-1"
+            text
+          >
             Yes
           </v-btn>
-          <v-btn color="blue darken-1" text @click="cleanUp">
+          <v-btn
+            @click="cleanUp"
+            color="blue darken-1"
+            text
+          >
             No
           </v-btn>
         </v-card-actions>

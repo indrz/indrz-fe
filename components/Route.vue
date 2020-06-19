@@ -3,27 +3,27 @@
     <campus-search
       ref="fromRoute"
       :is-route="true"
-      icon="mdi-flag"
-      route-type="from"
       :route-label="startRouteLabel"
       @selectSearhResult="onSearchSelect"
+      icon="mdi-flag"
+      route-type="from"
     />
     <campus-search
       ref="toRoute"
       :is-route="true"
-      icon="mdi-flag-checkered"
-      route-type="to"
       :route-label="endRouteLabel"
       @selectSearhResult="onSearchSelect"
+      icon="mdi-flag-checkered"
+      route-type="to"
     />
     <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" />
     <div id="route-description" />
     <v-btn
+      :disabled="!isRouteAvailable"
+      @click="onGoButtonClick"
       color="blue-grey"
       class="white--text"
       small
-      :disabled="!isRouteAvailable"
-      @click="onGoButtonClick"
     >
       <v-icon left dark>
         mdi-run
@@ -33,12 +33,12 @@
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn
-          color="blue-grey"
-          class="white--text"
-          small
           :disabled="!isRouteAvailable"
           @click="onShareRoute"
           v-on="on"
+          color="blue-grey"
+          class="white--text"
+          small
         >
           <v-icon dark>
             mdi-share
@@ -50,12 +50,12 @@
     <v-tooltip top>
       <template v-slot:activator="{ on }">
         <v-btn
-          color="blue-grey"
-          class="white--text"
-          small
           :disabled="!isRouteAvailable"
           @click="onClearRoute"
           v-on="on"
+          color="blue-grey"
+          class="white--text"
+          small
         >
           <v-icon dark>
             mdi-close
