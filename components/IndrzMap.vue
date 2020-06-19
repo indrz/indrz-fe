@@ -33,8 +33,6 @@
 </template>
 
 <script>
-import JSPDF from 'jspdf';
-import { saveAs } from 'file-saver';
 import queryString from 'query-string';
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
@@ -44,6 +42,7 @@ import InfoOverlay from '../components/infoOverlay';
 import ShareOverlay from '../components/shareOverlay';
 import 'ol/ol.css';
 import indrzConfig from '../util/indrzConfig';
+import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
 
@@ -205,134 +204,16 @@ export default {
     onMenuButtonClick (type) {
       switch (type) {
         case 'zoom-home':
-          this.view.animate({
-            center: MapUtil.getStartCenter(),
-            duration: 2000,
-            zoom: 15
-          });
+          menuHandler.handleZoomToHome(this);
           break;
         case 'download':
-          this.map.once('postcompose', function (event) {
-            const canvas = event.context.canvas;
-            const curDate = new Date();
-
-            if (canvas.toBlob) {
-              canvas.toBlob(function (blob) {
-                saveAs(blob, curDate.toLocaleDateString() + '_map.png')
-              }, 'image/png');
-            }
-          });
-          this.map.renderSync();
+          menuHandler.handleDownLoad(this);
           break;
         case 'pdf':
-          const map = this.map;
-          const activeFloorName = this.activeFloorName;
-          this.map.once('postcompose', function (event) {
-            const canvas = event.context.canvas;
-            const mapSize = MapUtil.getMapSize(map);
-
-            const canvasMapHeight = mapSize.height_px;
-            const canvasMapWidth = mapSize.width_px;
-
-            const ratio = canvasMapHeight / canvasMapWidth;
-
-            let pageOrientation = 'landscape';
-
-            if (ratio > 1) {
-              pageOrientation = 'portrait';
-            }
-
-            let today = new Date();
-            let dd = today.getDate();
-            let mm = today.getMonth() + 1; // January is 0!
-
-            const yyyy = today.getFullYear();
-            if (dd < 10) {
-              dd = '0' + dd;
-            }
-            if (mm < 10) {
-              mm = '0' + mm;
-            }
-            today = dd + '.' + mm + '.' + yyyy;
-            const todayFileName = yyyy + '-' + mm + '-' + dd;
-
-            if (canvas.toBlob) {
-              canvas.toBlob(
-                function (blob) {
-                  const doc = new JSPDF({
-                    orientation: pageOrientation,
-                    unit: 'px',
-                    format: 'a4'
-                  });
-
-                  const pdfWidth = doc.internal.pageSize.width;
-                  const pdfHeight = doc.internal.pageSize.height;
-
-                  let maxWidth;
-                  let maxHeight;
-
-                  const pdfLeftMargin = 20;
-                  const pdfRightMargin = 20;
-                  const pdfTopMargin = 40;
-                  const pdfBottomMargin = 20;
-
-                  if (ratio > 1) {
-                    // portrait
-                    maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
-                    maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
-                  } else {
-                    maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
-                    maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
-                  }
-                  const pdfMapWidth = pdfWidth - (pdfLeftMargin + pdfRightMargin);
-                  const titleXPos = pdfMapWidth / 2.4;
-                  const titleYPos = 25;
-
-                  doc.setFont('Arial');
-
-                  doc.setFontSize(22);
-
-                  doc.text('TU Campus', titleXPos, titleYPos);
-                  doc.setFontSize(12);
-
-                  const x = MapUtil.calculateAspectRatioFit(canvasMapWidth, canvasMapHeight, maxWidth,
-                    maxHeight);
-
-                  const reader = new window.FileReader();
-                  reader.readAsDataURL(blob);
-                  reader.onloadend = function () {
-                    const base64data = reader.result;
-                    if (ratio > 1) {
-                      const pdfLeftMargin = (pdfWidth - x.width) / 2;
-                      doc.text('Stockwerk:  ' + activeFloorName, 208, titleYPos + 10);
-                      doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
-                        .height);
-                      doc.text(today, 20, 617);
-                    } else {
-                      const pdfLeftMargin = (pdfWidth - x.width) / 2;
-                      doc.text('Stockwerk:  ' + activeFloorName, 300, titleYPos + 10);
-                      doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
-                        .height);
-                      doc.text(today, 20, 420);
-                    }
-                    doc.save(todayFileName + '-TU.pdf')
-                  }
-                },
-                'image/jpeg'
-              );
-            }
-          });
-          this.map.renderSync();
+          menuHandler.handlePdf(this);
           break;
         case 'share-map':
-          const url = MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
-          const shareOverlay = this.$refs.shareOverlay;
-          if (typeof url === 'object' && url.type === 'poi') {
-            shareOverlay.setPoiShareLink(url);
-          } else {
-            shareOverlay.setShareLink(location.href);
-          }
-          shareOverlay.show();
+          menuHandler.handleShare(this);
           break;
         case 'help':
           this.showHelp = true;
