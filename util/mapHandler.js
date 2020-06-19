@@ -340,51 +340,15 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     param = 'route';
   } else if (globalPopupInfo.bookId) {
     param = 'bookId';
-    // $('#ShareBookModal').modal('show');
-    // udpateUrl('bookId');
   } else if (globalSearchInfo.searchText) {
-    // $('#ShareSearchModal').modal('show');
-    // udpateUrl('search');
     param = 'search';
   } else if (globalPopupInfo.poiCatId) {
-    // $('#SharePoiModal').modal('show');
-    // udpateUrl('poiCatId');
     param = 'poiCatId';
   } else if (globalPopupInfo.src === 'wms') {
-    // $('#ShareSearchModal').modal('show');
-    // udpateUrl('wmsInfo');
     param = 'wmsInfo';
   }
   return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName);
 };
-
-/*
-const createPopupData = (globalPopupInfo, poiId) => {
-  const $ = document.getElementById;
-  const popupBuilding = $('#popupBuilding').text();
-  const popupRoomCode = $('#popupRoomCode').text();
-  const popupFloorNumber = $('#popupFloorNumber').text();
-  const popupRoomCat = $('#popupRoomCat').text();
-  let popupPoiId = '';
-
-  if (globalPopupInfo.poiId !== -1 || globalPopupInfo.poiId !== '-1') {
-    popupPoiId = globalPopupInfo.poiId;
-  } else if (poiId !== '' && poiId !== 0 && poiId !== '0') {
-    popupPoiId = poiId;
-  }
-
-  const pData = {
-    'poiId': popupPoiId,
-    'building': popupBuilding,
-    'roomcode': popupRoomCode,
-    'floor_num': popupFloorNumber,
-    'category': popupRoomCat,
-    'coords': globalPopupInfo.coords
-  };
-
-  return pData;
-};
-*/
 
 const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName) => {
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
@@ -393,7 +357,6 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   const centerX2 = centerCrd[0];
   const centerY2 = centerCrd[1];
   const buildingId = 1;
-  // const $ = document.getElementsByClassName;
 
   let url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 +
     '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
@@ -403,13 +366,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   if (mode === 'route') {
     if (globalRouteInfo.routeUrl) {
       url = globalRouteInfo.routeUrl;
-      // eslint-disable-next-line brace-style
-    } /*
-    else if (route_from_xyz !== '') {
-      url = hostUrl + req_locale + '/?start-xyz=' + route_from_xyz + '&end-xyz=' + route_to_xyz;
-    }
-    */
-    else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
+    } else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
       url = globalRouteInfo.routeUrl;
     } else if (globalPopupInfo.poiId === 'undefined' && globalPopupInfo.poiId === '' && globalPopupInfo.poiId !== 'noid') {
       url = '/?campus=' + buildingId + '&startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
@@ -417,9 +374,6 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       url = '/?campus=' + buildingId + '&startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
     }
   } else if (mode === 'search') {
-    //
-    // const popupData = createPopupData();
-
     if (globalPopupInfo.hasOwnProperty('external_id')) {
       if (globalPopupInfo.external_id === globalPopupInfo.name) {
         url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.external_id;
@@ -432,20 +386,10 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     } else {
       url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.name;
     }
-    /*
-    if (popupData.poiId) {
-      url = '/?poi-id=' + popupData.poiId + '&floor=' + popupData.floor_num;
-    }
-    */
   } else if (mode === 'map') {
     url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
   } else if (mode === 'bookId') {
     url = hostUrl + globalRouteInfo.routeUrl;
-    /*
-    $('share-link').val(url);
-    $('share-link').focus();
-    $('share-link').select();
-    */
   } else if (mode === 'poiCatId') {
     url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
     const singlePoiUrl = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
@@ -454,19 +398,8 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       singlePoiUrl,
       poiCatUrl: url
     };
-    /*
-    $('share-link').val(url);
-    $('share-link-single-poi').val(urlSinglePoi);
-    $('share-link').focus();
-    $('share-link').select();
-    */
   } else if (mode === 'wmsInfo') {
     url = hostUrl + '?campus=1&q=' + globalPopupInfo.wmsInfo;
-    /*
-    $('share-link').val(url);
-    $('share-link').focus();
-    $('share-link').select();
-    */
   } else {
     url = location.href;
   }
