@@ -6,7 +6,7 @@
     <v-card>
       <v-card-title class="headline" />
       <v-card-text>
-        <h1>Allgemeine Hinweise</h1>
+        <h1>Hilfe</h1>
         <p />
 
         <div>
@@ -41,44 +41,7 @@
             zeigt Ihnen statisch einen m&ouml;glichen Weg zum
             Zielgeb&auml;ude/Zielraum.
           </p>
-          <p>
-            <b>Haftung</b>
-          </p>
-          <p>
-            Dies ist die
-            &szlig;-Version von TUW-maps!
-          </p>
-          <p>
-            S&auml;mtliche Texte,
-            Darstellung und Wege im Rahmen des digitalen Leitsystems &bdquo;TUW-maps&ldquo;
-            wurden sorgf&auml;ltig gepr&uuml;ft. Dessen ungeachtet kann keine
-            Garantie f&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und
-            Aktualit&auml;t der Angaben &uuml;bernommen werden.
-          </p>
-          <p>
-            Eine Haftung der TU
-            Wien und / bzw. des software-Herstellers (<a href="https://www.gomogi.com">www.gomogi.com</a> GOMOGI / Michael Diener)
-            sind daherist ausgeschlossen. Im Zuge der Darstellung von Geb&auml;uden
-            und Zugangsm&ouml;glichkeiten wird versucht, auf Einschr&auml;nkungen
-            m&ouml;glichst aktuell hinzuweisen, wir bitten jedoch, stetsht&acute;s
-            auf eventuelle Hindernisse und ge&auml;nderte Beschilderungen usw.,
-            welche im Plan und den Routen noch nicht ersichtlich sind, zu achten!
-            Vor Ort ersichtlichen Einschr&auml;nkungen/Hinweisen ist jedenfalls
-            immer Folge zu leisten.
-          </p>
-          <p>
-            Die TU Wien und
-            gomogi / Michael Diener &uuml;bernehmen auch keinerlei Haftungen aus
-            in Zusammenhang mit der Nutzung und Anwendung der sSoftware. Ebenso
-            wenig wird keine Haftung f&uuml;r allf&auml;llige Sch&auml;den, die
-            durch Nutzung der vorgeschlagenen Wege entstehen, &uuml;bernommen.
-          </p>
-          <p>
-            Die Links zu anderen
-            Webseiten wurden sorgf&auml;ltig ausgew&auml;hlt. Da die TU Wien auf
-            deren Inhalt keinen Einfluss hat, &uuml;bernimmt die TU Wien daf&uuml;r
-            auch keine Verantwortung.
-          </p>
+
           <p>
             TUW-maps ist ein
             Projekt der TU Wien, eine allf&auml;llige weitergehende, insbesondere
@@ -93,6 +56,14 @@
             Wir sind dankbar f&uuml;r
             Ihre Anregungen, Erg&auml;nzungen, und Korrekturen. Senden Sie diese
             bitte an: TUW-maps@gut.tuwien.ac.at
+            <a href="https://www.tuwien.at/tu-wien/kontakt/" target="_blank">TU Wien</a>
+            <br>
+            <a href="https://www.tuwien.at/tu-wien/kontakt/impressum/" target="_blank">TU Wien Impressum </a>
+
+          </p>
+          <p>
+            An <a href="https://www.indrz.com" target="_blank">indrz.com</a> project
+            developed by <a href="https://www.gomogi.com" target="_blank">GOMOGI</a>
           </p>
         </div>
         <div>

@@ -21,8 +21,8 @@
       </a>
     </div>
     <div class="tu-logo">
-      <a href="https://www.tuwien.at" target="_blank">
-        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
+      <a :href=indrzConfig.homepageUrl target="_blank">
+        <img id="tu-logo" :src=indrzConfig.leftMenuLogo alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <v-dialog
