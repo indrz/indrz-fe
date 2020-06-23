@@ -59,7 +59,6 @@
             <a href="https://www.tuwien.at/tu-wien/kontakt/" target="_blank">TU Wien</a>
             <br>
             <a href="https://www.tuwien.at/tu-wien/kontakt/impressum/" target="_blank">TU Wien Impressum </a>
-
           </p>
           <p>
             An <a href="https://www.indrz.com" target="_blank">indrz.com</a> project

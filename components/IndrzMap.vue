@@ -20,7 +20,7 @@
         <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
       </a>
     </div>
-    <div class="tu-logo" v-if="logo.enabled">
+    <div v-if="logo.enabled" class="tu-logo">
       <a href="https://www.tuwien.at" target="_blank">
         <img id="tu-logo" :src="logo.file" alt="logo" style="width:auto; height:40px; ">
       </a>
@@ -79,6 +79,15 @@ export default {
     };
   },
 
+  computed: {
+    logo () {
+      return {
+        file: process.env.LOGO_FILE,
+        enabled: (process.env.LOGO_ENABLED === 'true')
+      };
+    }
+  },
+
   mounted () {
     const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
 
@@ -93,15 +102,6 @@ export default {
         this.map.updateSize();
       }, 500);
     };
-  },
-
-  computed: {
-    logo () {
-      return {
-        file: process.env.LOGO_FILE,
-        enabled: (process.env.LOGO_ENABLED === 'true')
-      };
-    }
   },
 
   methods: {

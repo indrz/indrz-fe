@@ -103,7 +103,6 @@
           </p>
         </div>
         <div>
-
           <p>
             <span lang="en-US"><b>Feedback
               bitte an:</b></span>
