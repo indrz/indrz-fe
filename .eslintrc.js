@@ -19,6 +19,8 @@ module.exports = {
     'semi':0,
     'no-extra-semi': 0,
     'object-shorthand': 0,
-    'unicorn/escape-case': 0
+    'unicorn/escape-case': 0,
+    'vue/require-component-is': 0,
+    'vue/no-unused-components': 0
   }
 }

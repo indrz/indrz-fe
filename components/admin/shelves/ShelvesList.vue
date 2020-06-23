@@ -18,11 +18,11 @@
         :items="shelvesListData"
         :server-items-length="total"
         :single-select="singleSelect"
-        item-key="id"
         :options.sync="pagination"
+        :loading="loading"
+        item-key="id"
         show-select
         class="elevation-1"
-        :loading="loading"
         loading-text="Loading... Please wait"
       >
         <template v-slot:top>
@@ -43,8 +43,8 @@
         </template>
         <template v-slot:item.edit="{ item }">
           <v-icon
-            small
             @click="editItem(item)"
+            small
           >
             mdi-pencil
           </v-icon>

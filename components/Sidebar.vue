@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div>
-      <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" class="left-bar-logo">
+    <div v-if="logo.enabled">
+      <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
     </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
@@ -108,6 +108,12 @@ export default {
   },
 
   computed: {
+    logo () {
+      return {
+        file: process.env.LOGO_FILE,
+        enabled: (process.env.LOGO_ENABLED === 'true')
+      };
+    },
     menuItems () {
       return [
         {
@@ -158,9 +164,9 @@ export default {
           text: this.locale.helpLegendInfos
         },
         {
-            icon: 'clipboard-text',
-            type: 'terms',
-            text: this.locale.aboutTermsConditions
+          icon: 'clipboard-text',
+          type: 'terms',
+          text: this.locale.aboutTermsConditions
         }
       ]
     }

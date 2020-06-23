@@ -13,8 +13,8 @@
       <v-form
         ref="loginForm"
         v-model="valid"
-        lazy-validation
         @submit.prevent="onSignIn"
+        lazy-validation
       >
         <v-container>
           <v-layout row wrap>
@@ -22,9 +22,9 @@
               <v-text-field
                 key="login-username"
                 v-model="username"
+                :rules="[formRules.required]"
                 name="username"
                 label="User Name"
-                :rules="[formRules.required]"
                 prepend-icon="mdi-account"
                 required
               />
@@ -34,11 +34,11 @@
               <v-text-field
                 key="login-password"
                 v-model="password"
+                :rules="[formRules.required]"
                 name="password"
                 label="Password"
                 prepend-icon="mdi-lock"
                 type="password"
-                :rules="[formRules.required]"
                 required
               />
             </v-flex>
@@ -47,7 +47,7 @@
             User name or password is not valid!
           </v-layout>
           <v-layout row wrap>
-            <v-btn type="submit" block color="primary" :disabled="!valid">
+            <v-btn :disabled="!valid" type="submit" block color="primary">
               Login
             </v-btn>
           </v-layout>

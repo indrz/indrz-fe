@@ -1,4 +1,10 @@
+import Vector from 'ol/source/Vector';
+import GeoJSON from 'ol/format/GeoJSON';
+import { getCenter } from 'ol/extent';
+import axios from 'axios';
 import indrzConfig from '~/util/indrzConfig';
+import POIHandler from '~/util/POIHandler';
+import MapUtil from '~/util/map';
 
 const hostUrl = window.location.href;
 const closeIndrzPopup = (popup, globalPopupInfo) => {
@@ -334,51 +340,15 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     param = 'route';
   } else if (globalPopupInfo.bookId) {
     param = 'bookId';
-    // $('#ShareBookModal').modal('show');
-    // udpateUrl('bookId');
   } else if (globalSearchInfo.searchText) {
-    // $('#ShareSearchModal').modal('show');
-    // udpateUrl('search');
     param = 'search';
   } else if (globalPopupInfo.poiCatId) {
-    // $('#SharePoiModal').modal('show');
-    // udpateUrl('poiCatId');
     param = 'poiCatId';
   } else if (globalPopupInfo.src === 'wms') {
-    // $('#ShareSearchModal').modal('show');
-    // udpateUrl('wmsInfo');
     param = 'wmsInfo';
   }
   return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName);
 };
-
-/*
-const createPopupData = (globalPopupInfo, poiId) => {
-  const $ = document.getElementById;
-  const popupBuilding = $('#popupBuilding').text();
-  const popupRoomCode = $('#popupRoomCode').text();
-  const popupFloorNumber = $('#popupFloorNumber').text();
-  const popupRoomCat = $('#popupRoomCat').text();
-  let popupPoiId = '';
-
-  if (globalPopupInfo.poiId !== -1 || globalPopupInfo.poiId !== '-1') {
-    popupPoiId = globalPopupInfo.poiId;
-  } else if (poiId !== '' && poiId !== 0 && poiId !== '0') {
-    popupPoiId = poiId;
-  }
-
-  const pData = {
-    'poiId': popupPoiId,
-    'building': popupBuilding,
-    'roomcode': popupRoomCode,
-    'floor_num': popupFloorNumber,
-    'category': popupRoomCat,
-    'coords': globalPopupInfo.coords
-  };
-
-  return pData;
-};
-*/
 
 const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName) => {
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
@@ -387,7 +357,6 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   const centerX2 = centerCrd[0];
   const centerY2 = centerCrd[1];
   const buildingId = 1;
-  // const $ = document.getElementsByClassName;
 
   let url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 +
     '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
@@ -397,13 +366,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   if (mode === 'route') {
     if (globalRouteInfo.routeUrl) {
       url = globalRouteInfo.routeUrl;
-      // eslint-disable-next-line brace-style
-    } /*
-    else if (route_from_xyz !== '') {
-      url = hostUrl + req_locale + '/?start-xyz=' + route_from_xyz + '&end-xyz=' + route_to_xyz;
-    }
-    */
-    else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
+    } else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
       url = globalRouteInfo.routeUrl;
     } else if (globalPopupInfo.poiId === 'undefined' && globalPopupInfo.poiId === '' && globalPopupInfo.poiId !== 'noid') {
       url = '/?campus=' + buildingId + '&startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
@@ -411,9 +374,6 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       url = '/?campus=' + buildingId + '&startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
     }
   } else if (mode === 'search') {
-    //
-    // const popupData = createPopupData();
-
     if (globalPopupInfo.hasOwnProperty('external_id')) {
       if (globalPopupInfo.external_id === globalPopupInfo.name) {
         url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.external_id;
@@ -426,20 +386,10 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     } else {
       url = '/?campus=' + buildingId + '&q=' + globalPopupInfo.name;
     }
-    /*
-    if (popupData.poiId) {
-      url = '/?poi-id=' + popupData.poiId + '&floor=' + popupData.floor_num;
-    }
-    */
   } else if (mode === 'map') {
     url = '/?campus=' + buildingId + '&centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
   } else if (mode === 'bookId') {
     url = hostUrl + globalRouteInfo.routeUrl;
-    /*
-    $('share-link').val(url);
-    $('share-link').focus();
-    $('share-link').select();
-    */
   } else if (mode === 'poiCatId') {
     url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
     const singlePoiUrl = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor;
@@ -448,19 +398,8 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       singlePoiUrl,
       poiCatUrl: url
     };
-    /*
-    $('share-link').val(url);
-    $('share-link-single-poi').val(urlSinglePoi);
-    $('share-link').focus();
-    $('share-link').select();
-    */
   } else if (mode === 'wmsInfo') {
     url = hostUrl + '?campus=1&q=' + globalPopupInfo.wmsInfo;
-    /*
-    $('share-link').val(url);
-    $('share-link').focus();
-    $('share-link').select();
-    */
   } else {
     url = location.href;
   }
@@ -471,6 +410,113 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   return location.href;
 };
 
+const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }) => {
+  if (removedItems && removedItems.length) {
+    removedItems.forEach((item) => {
+      if (POIHandler.poiExist(item, map)) {
+        POIHandler.disablePoiById(item.id, map);
+      }
+    });
+  }
+  if (oldItems && oldItems.length) {
+    oldItems.forEach((item) => {
+      POIHandler.setPoiVisibility(item, map);
+    })
+  }
+  if (newItems && newItems.length) {
+    newItems.forEach((item) => {
+      if (POIHandler.poiExist(item, map)) {
+        POIHandler.setPoiVisibility(item.id, map);
+      } else {
+        POIHandler
+          .fetchPoi(item.id, map, activeFloorName)
+          .then((poiLayer) => {
+            map.getLayers().forEach((layer) => {
+              if (layer.getProperties().id === 99999) {
+                layer.getLayers().push(poiLayer);
+              }
+            });
+          });
+      }
+    })
+  }
+};
+
+const handleMapClick = (mapInfo, evt) => {
+  const pixel = evt.pixel;
+  let feature = mapInfo.map.getFeaturesAtPixel(pixel);
+  const features = [];
+
+  mapInfo.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
+    features.push(feature);
+  });
+  feature = features[0];
+  let coordinate = mapInfo.map.getCoordinateFromPixel(pixel);
+  const properties = feature ? feature.getProperties() : null;
+
+  if (feature) {
+    const featureType = feature.getGeometry().getType().toString();
+
+    if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
+      closeIndrzPopup(mapInfo.popup, mapInfo.globalPopupInfo);
+      if (featureType === 'MultiPoint') {
+        properties.poiId = feature.getId();
+        properties.src = 'poi';
+      }
+
+      mapInfo.openIndrzPopup(properties, coordinate, feature);
+      MapUtil.activateFloor(feature, mapInfo.layers, mapInfo.map);
+    } else if (featureType === 'Point') {
+      closeIndrzPopup(mapInfo.popup, mapInfo.globalPopupInfo);
+      coordinate = mapInfo.map.getCoordinateFromPixel(pixel);
+      properties.src = 'poi';
+      if (feature.getProperties().hasOwnProperty('poi_id')) {
+        properties.poiId = feature.properties.poi_id;
+      }
+
+      mapInfo.openIndrzPopup(properties, coordinate, feature);
+      MapUtil.activateFloor(feature, mapInfo.layers, mapInfo.map);
+    }
+  } else {
+    const featuresWms = mapInfo.map.getFeaturesAtPixel(pixel);
+    const v = mapInfo.map.getView();
+    const viewResolution = /** @type {number} */ (v.getResolution());
+    const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers);
+    const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
+      'INFO_FORMAT': 'application/json',
+      'FEATURE_COUNT': 50
+    });
+
+    if (url) {
+      axios.get(url).then((response) => {
+        mapInfo.globalPopupInfo.src = 'wms';
+        const listFeatures = response.data && response.data.features ? response.data.features : [];
+        const dataProperties = {};
+
+        if (listFeatures.length > 0) {
+          listFeatures.forEach(function (feature) {
+            if (feature.properties.hasOwnProperty('space_type_id')) {
+              if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
+                const centroidSource = new Vector({
+                  features: (new GeoJSON()).readFeatures(feature)
+                });
+                const centroidCoords = getCenter(centroidSource.getExtent());
+                if (!dataProperties.properties) {
+                  dataProperties.properties = {};
+                }
+                dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
+                dataProperties.centroid = centroidCoords;
+              }
+            }
+          });
+          dataProperties.properties.src = 'wms';
+          mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
+        }
+      });
+    }
+  }
+};
+
 export default {
   closeIndrzPopup,
   openIndrzPopup,
@@ -479,5 +525,7 @@ export default {
   addPoiTableRow,
   getRoomInfo,
   handleShareClick,
-  updateUrl
+  updateUrl,
+  handlePoiLoad,
+  handleMapClick
 };

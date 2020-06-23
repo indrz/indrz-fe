@@ -7,22 +7,22 @@
         :items="searchResult"
         :loading="isLoading"
         :search-input.sync="search"
-        item-text="properties.name"
-        item-value="properties.spaceid"
         :prepend-icon="icon"
-        append-icon="mdi-magnify"
         :no-data-text="noResultText"
         :no-filter="true"
+        :label="routeLabel"
+        @click:clear="onClearClick"
+        @change="onSearchSelection"
+        item-text="properties.name"
+        item-value="properties.spaceid"
+        append-icon="mdi-magnify"
         single-line
         return-object
         flat
         hide-selected
         hide-details
         hide-no-data
-        :label="routeLabel"
         clearable
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
       />
     </template>
     <template v-else>
@@ -32,11 +32,14 @@
         :items="searchResult"
         :loading="isLoading"
         :search-input.sync="search"
+        :no-data-text="noResultText"
+        :no-filter="true"
+        :label="searchLabel"
+        @click:clear="onClearClick"
+        @change="onSearchSelection"
         item-text="properties.name"
         item-value="properties.spaceid"
         append-icon="mdi-magnify"
-        :no-data-text="noResultText"
-        :no-filter="true"
         single-line
         return-object
         solo
@@ -44,10 +47,7 @@
         hide-selected
         hide-details
         hide-no-data
-        :label="searchLabel"
         clearable
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
       />
     </template>
   </div>

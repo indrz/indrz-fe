@@ -6,9 +6,9 @@
   >
     {{ text }}
     <v-btn
+      @click="show = false"
       color="blue"
       text
-      @click="show = false"
     >
       Close
     </v-btn>
