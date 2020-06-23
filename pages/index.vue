@@ -1,13 +1,12 @@
 <template>
   <v-card
+    :name="mapElName"
+    :ripple="false"
+    width="100%"
+    style="border-radius: 0"
     class="fill-height"
     fluid
     flat
-    :name="mapElName"
-    width="100%"
-    style="border-radius: 0"
-    :ripple="false"
-    @click.stop="onMapClick($event)"
   >
     <v-navigation-drawer
       v-model="drawer"
@@ -124,12 +123,6 @@ export default {
     },
     onDrawerClick () {
       this.$emit('onDrawerClick')
-    },
-    onMapClick (e) {
-      if (e.target.getAttribute('name') !== this.mapElName) {
-        return;
-      }
-      console.log('Map Event');
     },
     onMenuButtonClick (type) {
       this.$refs.map.onMenuButtonClick(type);

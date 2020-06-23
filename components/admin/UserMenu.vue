@@ -2,9 +2,9 @@
   <v-menu offset-y>
     <template v-slot:activator="{ on }">
       <v-btn
+        v-on="on"
         text
         dark
-        v-on="on"
       >
         {{ userEmail }}
       </v-btn>

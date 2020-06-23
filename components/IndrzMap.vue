@@ -20,9 +20,9 @@
         <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
       </a>
     </div>
-    <div class="tu-logo">
+    <div class="tu-logo" v-if="logo.enabled">
       <a href="https://www.tuwien.at" target="_blank">
-        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
+        <img id="tu-logo" :src="logo.file" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
@@ -33,18 +33,6 @@
 </template>
 
 <script>
-import axios from 'axios';
-import JSPDF from 'jspdf';
-import { saveAs } from 'file-saver';
-import Overlay from 'ol/Overlay';
-import Map from 'ol/Map.js';
-import View from 'ol/View.js';
-import { defaults as defaultInteraction } from 'ol/interaction';
-import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
-import PinchZoom from 'ol/interaction/PinchZoom';
-import Vector from 'ol/source/Vector';
-import GeoJSON from 'ol/format/GeoJSON';
-import { getCenter } from 'ol/extent';
 import queryString from 'query-string';
 import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
@@ -54,6 +42,7 @@ import InfoOverlay from '../components/infoOverlay';
 import ShareOverlay from '../components/shareOverlay';
 import 'ol/ol.css';
 import indrzConfig from '../util/indrzConfig';
+import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
 
@@ -91,36 +80,12 @@ export default {
   },
 
   mounted () {
-    this.view = new View({
-      center: MapUtil.getStartCenter(),
-      zoom: 15,
-      maxZoom: 23
-    });
+    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
 
-    this.layers = MapUtil.getLayers();
-
-    this.map = new Map({
-      interactions: defaultInteraction().extend([
-        new DragRotateAndZoom(),
-        new PinchZoom({
-          constrainResolution: true
-        })
-      ]),
-      target: this.mapId,
-      controls: MapUtil.getMapControls(),
-      view: this.view,
-      layers: this.layers.layerGroups
-    });
-    this.popup = new Overlay({
-      element: document.getElementById('indrz-popup'),
-      autoPan: true,
-      autoPanAnimation: {
-        duration: 250
-      },
-      zIndex: 5,
-      name: 'indrzPopup'
-    });
-    this.map.addOverlay(this.popup);
+    this.view = view;
+    this.map = map;
+    this.layers = layers;
+    this.popup = popup;
 
     this.map.on('singleclick', this.onMapClick, this);
     window.onresize = () => {
@@ -128,6 +93,15 @@ export default {
         this.map.updateSize();
       }, 500);
     };
+  },
+
+  computed: {
+    logo () {
+      return {
+        file: process.env.LOGO_FILE,
+        enabled: (process.env.LOGO_ENABLED === 'true')
+      };
+    }
   },
 
   methods: {
@@ -171,58 +145,7 @@ export default {
     },
     async loadMapWithParams () {
       const query = queryString.parse(location.search);
-      const campusId = query.campus || 1;
-      const zoomLevel = query.zlevel || 18;
-
-      if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
-        const view = this.map.getView();
-        view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
-      }
-      if (query.floor) {
-        this.activeFloorName = query.floor;
-        MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers, this.map);
-        this.$emit('selectFloor', this.activeFloorName);
-      }
-      if (query.q && query.q.length > 3) {
-        const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, query.q, zoomLevel,
-          this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-          this.routeFromValTemp, this.activeFloorName, this.popup);
-
-        this.$root.$emit('load-search-query', query.q);
-
-        if (result.floorName) {
-          this.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
-        }
-        this.searchLayer = result.searchLayer;
-      }
-      if (query['start-spaceid'] && query['end-spaceid']) {
-        const startSpaceId = query['start-spaceid'];
-        const endSpaceId = query['end-spaceid'];
-
-        this.$emit('popupRouteClick', {
-          path: 'from',
-          data: {
-            spaceid: startSpaceId,
-            name: startSpaceId
-          }
-        });
-        this.$emit('popupRouteClick', {
-          path: 'to',
-          data: {
-            spaceid: endSpaceId,
-            name: endSpaceId
-          }
-        });
-        setTimeout(async () => {
-          this.globalRouteInfo.routeUrl = await this.routeHandler.getDirections(this.map, this.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
-        }, 600);
-      }
-      if (query['poi-cat-id']) {
-        this.$emit('openPoiTree', query['poi-cat-id']);
-      }
-      if (query['poi-id']) {
-        this.$emit('openPoiTree', query['poi-id'], true);
-      }
+      await MapUtil.loadMapWithParams(this, query);
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
@@ -257,35 +180,7 @@ export default {
       POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      if (removedItems && removedItems.length) {
-        removedItems.forEach((item) => {
-          if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.disablePoiById(item.id, this.map);
-          }
-        });
-      }
-      if (oldItems && oldItems.length) {
-        oldItems.forEach((item) => {
-          POIHandler.setPoiVisibility(item, this.map);
-        })
-      }
-      if (newItems && newItems.length) {
-        newItems.forEach((item) => {
-          if (POIHandler.poiExist(item, this.map)) {
-            POIHandler.setPoiVisibility(item.id, this.map);
-          } else {
-            POIHandler
-              .fetchPoi(item.id, this.map, this.activeFloorName)
-              .then((poiLayer) => {
-                this.map.getLayers().forEach((layer) => {
-                  if (layer.getProperties().id === 99999) {
-                    layer.getLayers().push(poiLayer);
-                  }
-                });
-              });
-          }
-        })
-      }
+      MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems });
     },
     onTermShowChange (value) {
       this.showTerms = value;
@@ -300,78 +195,7 @@ export default {
       });
     },
     onMapClick (evt) {
-      const pixel = evt.pixel;
-      let feature = this.map.getFeaturesAtPixel(pixel);
-      const features = [];
-
-      this.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
-        features.push(feature);
-      });
-      feature = features[0];
-      let coordinate = this.map.getCoordinateFromPixel(pixel);
-      const properties = feature ? feature.getProperties() : null;
-
-      if (feature) {
-        const featureType = feature.getGeometry().getType().toString();
-
-        if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
-          MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
-          if (featureType === 'MultiPoint') {
-            properties.poiId = feature.getId();
-            properties.src = 'poi';
-          }
-
-          this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers, this.map);
-        } else if (featureType === 'Point') {
-          MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
-          coordinate = this.map.getCoordinateFromPixel(pixel);
-          properties.src = 'poi';
-          if (feature.getProperties().hasOwnProperty('poi_id')) {
-            properties.poiId = feature.properties.poi_id;
-          }
-
-          this.openIndrzPopup(properties, coordinate, feature);
-          MapUtil.activateFloor(feature, this.layers, this.map);
-        }
-      } else {
-        const featuresWms = this.map.getFeaturesAtPixel(pixel);
-        const v = this.map.getView();
-        const viewResolution = /** @type {number} */ (v.getResolution());
-        const wmsSource2 = MapHandler.getRoomInfo(this.activeFloorName, this.layers);
-        const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
-          'INFO_FORMAT': 'application/json',
-          'FEATURE_COUNT': 50
-        });
-
-        if (url) {
-          axios.get(url).then((response) => {
-            this.globalPopupInfo.src = 'wms';
-            const listFeatures = response.data && response.data.features ? response.data.features : [];
-            const dataProperties = {};
-
-            if (listFeatures.length > 0) {
-              listFeatures.forEach(function (feature) {
-                if (feature.properties.hasOwnProperty('space_type_id')) {
-                  if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
-                    const centroidSource = new Vector({
-                      features: (new GeoJSON()).readFeatures(feature)
-                    });
-                    const centroidCoords = getCenter(centroidSource.getExtent());
-                    if (!dataProperties.properties) {
-                      dataProperties.properties = {};
-                    }
-                    dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
-                    dataProperties.centroid = centroidCoords;
-                  }
-                }
-              });
-              dataProperties.properties.src = 'wms';
-              this.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
-            }
-          });
-        }
-      }
+      MapHandler.handleMapClick(this, evt);
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -389,134 +213,16 @@ export default {
     onMenuButtonClick (type) {
       switch (type) {
         case 'zoom-home':
-          this.view.animate({
-            center: MapUtil.getStartCenter(),
-            duration: 2000,
-            zoom: 15
-          });
+          menuHandler.handleZoomToHome(this);
           break;
         case 'download':
-          this.map.once('postcompose', function (event) {
-            const canvas = event.context.canvas;
-            const curDate = new Date();
-
-            if (canvas.toBlob) {
-              canvas.toBlob(function (blob) {
-                saveAs(blob, curDate.toLocaleDateString() + '_map.png')
-              }, 'image/png');
-            }
-          });
-          this.map.renderSync();
+          menuHandler.handleDownLoad(this);
           break;
         case 'pdf':
-          const map = this.map;
-          const activeFloorName = this.activeFloorName;
-          this.map.once('postcompose', function (event) {
-            const canvas = event.context.canvas;
-            const mapSize = MapUtil.getMapSize(map);
-
-            const canvasMapHeight = mapSize.height_px;
-            const canvasMapWidth = mapSize.width_px;
-
-            const ratio = canvasMapHeight / canvasMapWidth;
-
-            let pageOrientation = 'landscape';
-
-            if (ratio > 1) {
-              pageOrientation = 'portrait';
-            }
-
-            let today = new Date();
-            let dd = today.getDate();
-            let mm = today.getMonth() + 1; // January is 0!
-
-            const yyyy = today.getFullYear();
-            if (dd < 10) {
-              dd = '0' + dd;
-            }
-            if (mm < 10) {
-              mm = '0' + mm;
-            }
-            today = dd + '.' + mm + '.' + yyyy;
-            const todayFileName = yyyy + '-' + mm + '-' + dd;
-
-            if (canvas.toBlob) {
-              canvas.toBlob(
-                function (blob) {
-                  const doc = new JSPDF({
-                    orientation: pageOrientation,
-                    unit: 'px',
-                    format: 'a4'
-                  });
-
-                  const pdfWidth = doc.internal.pageSize.width;
-                  const pdfHeight = doc.internal.pageSize.height;
-
-                  let maxWidth;
-                  let maxHeight;
-
-                  const pdfLeftMargin = 20;
-                  const pdfRightMargin = 20;
-                  const pdfTopMargin = 40;
-                  const pdfBottomMargin = 20;
-
-                  if (ratio > 1) {
-                    // portrait
-                    maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
-                    maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
-                  } else {
-                    maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
-                    maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
-                  }
-                  const pdfMapWidth = pdfWidth - (pdfLeftMargin + pdfRightMargin);
-                  const titleXPos = pdfMapWidth / 2.4;
-                  const titleYPos = 25;
-
-                  doc.setFont('Arial');
-
-                  doc.setFontSize(22);
-
-                  doc.text('TU Campus', titleXPos, titleYPos);
-                  doc.setFontSize(12);
-
-                  const x = MapUtil.calculateAspectRatioFit(canvasMapWidth, canvasMapHeight, maxWidth,
-                    maxHeight);
-
-                  const reader = new window.FileReader();
-                  reader.readAsDataURL(blob);
-                  reader.onloadend = function () {
-                    const base64data = reader.result;
-                    if (ratio > 1) {
-                      const pdfLeftMargin = (pdfWidth - x.width) / 2;
-                      doc.text('Stockwerk:  ' + activeFloorName, 208, titleYPos + 10);
-                      doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
-                        .height);
-                      doc.text(today, 20, 617);
-                    } else {
-                      const pdfLeftMargin = (pdfWidth - x.width) / 2;
-                      doc.text('Stockwerk:  ' + activeFloorName, 300, titleYPos + 10);
-                      doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
-                        .height);
-                      doc.text(today, 20, 420);
-                    }
-                    doc.save(todayFileName + '-TU.pdf')
-                  }
-                },
-                'image/jpeg'
-              );
-            }
-          });
-          this.map.renderSync();
+          menuHandler.handlePdf(this);
           break;
         case 'share-map':
-          const url = MapHandler.updateUrl('map', this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName);
-          const shareOverlay = this.$refs.shareOverlay;
-          if (typeof url === 'object' && url.type === 'poi') {
-            shareOverlay.setPoiShareLink(url);
-          } else {
-            shareOverlay.setShareLink(location.href);
-          }
-          shareOverlay.show();
+          menuHandler.handleShare(this);
           break;
         case 'help':
           this.showHelp = true;
