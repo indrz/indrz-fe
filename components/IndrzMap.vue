@@ -88,7 +88,7 @@ export default {
   },
 
   mounted () {
-    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, process.env.DEFAULT_CENTER_XY);
+    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, JSON.parse(process.env.DEFAULT_CENTER_XY));
 
     this.view = view;
     this.map = map;
@@ -228,7 +228,7 @@ export default {
     onMenuButtonClick (type) {
       switch (type) {
         case 'zoom-home':
-          menuHandler.handleZoomToHome(this, process.env.DEFAULT_CENTER_XY);
+          menuHandler.handleZoomToHome(this, JSON.parse(process.env.DEFAULT_CENTER_XY));
           break;
         case 'download':
           menuHandler.handleDownLoad(this);
