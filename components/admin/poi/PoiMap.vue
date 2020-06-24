@@ -21,8 +21,8 @@
       </a>
     </div>
     <div class="tu-logo">
-      <a :href="indrzConfig.homepageUrl" target="_blank">
-        <img id="tu-logo" :src="indrzConfig.leftMenuLogo" alt="logo" style="width:auto; height:40px; ">
+      <a :href="process.env.HOME_PAGE_URL" target="_blank">
+        <img id="tu-logo" :src="process.env.LOGO_FILE" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <v-dialog
@@ -72,10 +72,10 @@ import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
 import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
-import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import api from '~/util/api';
 import 'ol/ol.css';
+
 export default {
   name: 'Map',
   props: {
@@ -131,7 +131,7 @@ export default {
     },
     async initializeMap () {
       this.view = new View({
-        center: MapUtil.getStartCenter(),
+        center: process.env.DEFAULT_CENTER_XY,
         zoom: 15,
         maxZoom: 23
       });
@@ -157,19 +157,29 @@ export default {
         }, 500);
       };
 
-      const floorData = await api.request({ endPoint: 'floor/' });
+      const floorData = await api.request(
+        {
+          endPoint: 'floor/'
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
 
       if (floorData && floorData.data && floorData.data.results) {
         this.floors = floorData.data.results;
         if (this.floors && this.floors.length) {
-          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor.toLowerCase())[0];
-          this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === process.env.DEFAULT_START_FLOOR.toLowerCase())[0];
+          this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
           this.$emit('floorChange', {
             floor: this.intitialFloor,
             floors: this.floors,
             name: this.activeFloorName
           });
-          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
+            baseWmsUrl: process.env.BASE_WMS_URL,
+            geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
+            layerNamePrefix: process.env.LAYER_NAME_PREFIX
+          });
         }
         this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
         this.layers.switchableLayers = this.wmsLayerInfo.layers;
@@ -191,9 +201,9 @@ export default {
 
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
-            this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+            this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
             let onActiveLayer = true;
-            if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+            if (process.env.LAYER_NAME_PREFIX + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
               onActiveLayer = false;
             }
 
@@ -230,11 +240,11 @@ export default {
         return;
       }
 
-      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
 
       features.forEach((feature) => {
         if (feature) {
-          if (indrzConfig.layerNamePrefix + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+          if (process.env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
             onActiveLayer = false;
           }
           const featureType = feature.getGeometry().getType().toString();
@@ -248,10 +258,10 @@ export default {
     },
     clearPreviousSelection () {
       let onActiveLayer = true;
-      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
 
       if (this.selectedPoi) {
-        if (indrzConfig.layerNamePrefix + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+        if (process.env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
           onActiveLayer = false;
         }
         this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
@@ -437,7 +447,7 @@ export default {
       this.newPois.push(data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
       if (removedItems && removedItems.length) {
         removedItems.forEach((item) => {
           if (POIHandler.poiExist(item, this.map)) {
@@ -453,7 +463,11 @@ export default {
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
           POIHandler
-            .fetchPoi(item.id, this.map, this.activeFloorName)
+            .fetchPoi(item.id, this.map, this.activeFloorName, {
+              baseApiUrl: process.env.BASE_API_URL,
+              token: process.env.TOKEN,
+              layerNamePrefix: process.env.LAYER_NAME_PREFIX
+            })
             .then((poiLayer) => {
               this.map.getLayers().forEach((layer) => {
                 if (layer.getProperties().id === 99999) {

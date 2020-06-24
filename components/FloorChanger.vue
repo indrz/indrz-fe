@@ -21,7 +21,6 @@
 
 <script>
 import api from '../util/api';
-import indrzConfig from '../util/indrzConfig';
 
 export default {
   props: {
@@ -50,16 +49,19 @@ export default {
     fetchFloors () {
       return api.request({
         endPoint: 'floor/'
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       });
     },
     onFloorClick (floor, isEvent) {
-      const floorName = indrzConfig.layerNamePrefix + floor.short_name.toLowerCase();
+      const floorName = process.env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
       this.$emit('floorClick', floorName);
       this.selectFloorWithCss(floor.short_name.toLowerCase(), isEvent);
     },
     selectFloorWithCss (floorName, isEvent) {
-      if (indrzConfig.layerNamePrefix && floorName.includes(indrzConfig.layerNamePrefix)) {
-        floorName = floorName.split(indrzConfig.layerNamePrefix)[1];
+      if (process.env.LAYER_NAME_PREFIX && floorName.includes(process.env.LAYER_NAME_PREFIX)) {
+        floorName = floorName.split(process.env.LAYER_NAME_PREFIX)[1];
       }
       setTimeout(() => {
         const activeClass = 'v-list-item--active';
@@ -78,7 +80,7 @@ export default {
       }, 500);
     },
     getFloorByFloorName (floorName) {
-      const shortName = indrzConfig.layerNamePrefix ? floorName.split(indrzConfig.layerNamePrefix)[1] : floorName;
+      const shortName = process.env.LAYER_NAME_PREFIX ? floorName.split(process.env.LAYER_NAME_PREFIX)[1] : floorName;
       if (!shortName) {
         return {};
       }

@@ -1,31 +1,27 @@
 import axios from 'axios';
-import indrzConfig from '~/util/indrzConfig'
 
-const baseApiUrl = indrzConfig.baseApiUrl;
-
-const getAuthorizationHeader = () => {
-  const token = indrzConfig.token;
+const getAuthorizationHeader = (env) => {
   const header = {
     'Content-Type': 'application/json'
   };
-  if (token) {
-    header.Authorization = token;
+  if (env && env.token) {
+    header.Authorization = env.token;
   }
   return header;
 };
 
-const request = function (requestObj) {
+const request = function (requestObj, env) {
   return axios({
-    url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+    url: `${requestObj.url || env.baseApiUrl}${requestObj.endPoint || ''}`,
     method: requestObj.method || 'GET',
     headers: {
-      'Authorization': indrzConfig.token,
+      'Authorization': env.token,
       'Content-Type': 'application/json'
     }
   });
 };
 
-const postRequest = async function (requestObj) {
+const postRequest = async function (requestObj, env) {
   try {
     const formData = new FormData();
     // eslint-disable-next-line no-unused-vars
@@ -33,9 +29,9 @@ const postRequest = async function (requestObj) {
       formData.append(key, value);
     }
     return await axios({
-      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+      url: `${requestObj.url || env.baseApiUrl}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'POST',
-      headers: getAuthorizationHeader(),
+      headers: getAuthorizationHeader(env),
       data: formData
     })
   } catch (err) {
@@ -43,12 +39,12 @@ const postRequest = async function (requestObj) {
   }
 };
 
-const putRequest = async function (requestObj) {
+const putRequest = async function (requestObj, env) {
   try {
     return await axios({
-      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+      url: `${requestObj.url || env.baseApiUrl}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'PUT',
-      headers: getAuthorizationHeader(),
+      headers: getAuthorizationHeader(env),
       data: requestObj.data
     })
   } catch (err) {

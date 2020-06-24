@@ -24,12 +24,11 @@ import Overlay from 'ol/Overlay';
 import MapStyles from './mapStyles';
 import MapHandler from './mapHandler';
 import api from './api';
-import indrzConfig from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
 
-const initializeMap = (mapId) => {
+const initializeMap = (mapId, center) => {
   const view = new View({
-    center: getStartCenter(),
+    center,
     zoom: 15,
     maxZoom: 23
   });
@@ -71,11 +70,12 @@ const createWmsLayer = function (
   geoserverLayer,
   floorNumber,
   isVisible,
-  zIndexValue
+  zIndexValue,
+  env
 ) {
   return new ImageLayer({
     source: new ImageWMS({
-      url: indrzConfig.baseWmsUrl,
+      url: env.baseWmsUrl,
       params: { LAYERS: geoserverLayer, TILED: true },
       serverType: 'geoserver',
       crossOrigin: ''
@@ -83,7 +83,7 @@ const createWmsLayer = function (
     visible: isVisible,
     name: layerName,
     floorNumber: floorNumber,
-    floorName: layerName.split(indrzConfig.layerNamePrefix)[1],
+    floorName: layerName.split(env.layerNamePrefix)[1],
     type: 'floor',
     zIndex: zIndexValue,
     crossOrigin: 'anonymous'
@@ -206,11 +206,11 @@ const setLayerVisible = (layerName, switchableLayers, map) => {
   }
 };
 
-const activateFloor = (feature, layers, map) => {
+const activateFloor = (feature, layers, map, layerNamePrefix) => {
   const floorName = feature ? feature.getProperties().floorName : '';
   const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
   if (layerToActive) {
-    activateLayer(layerToActive.getProperties().name, layers.switchableLayers, map);
+    activateLayer(layerToActive.getProperties().name, layers.switchableLayers, map, layerNamePrefix);
   }
 };
 const generateResultLinks = (att, searchString, featureCenter, className, floor, fid, poiIcon) => {
@@ -345,10 +345,10 @@ const styleFunction = (feature, resolution) => {
   }
 };
 
-const searchThroughAPI = async (searchText) => {
-  const searchUrl = `${indrzConfig.searchUrl}/${searchText}`;
+const searchThroughAPI = async (searchText, searchUrl) => {
+  const _searchUrl = `${searchUrl}/${searchText}`;
   const response = await api.request({
-    url: searchUrl
+    url: _searchUrl
   });
   return response.data;
 };
@@ -356,7 +356,7 @@ const searchThroughAPI = async (searchText) => {
 const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
   popUpHomePage, currentPOIID,
   currentLocale, objCenterCoords, routeToValTemp,
-  routeFromValTemp, activeFloorName, popup, feature) => {
+  routeFromValTemp, activeFloorName, popup, feature, env) => {
   if (searchLayer) {
     map.removeLayer(searchLayer);
     clearSearchResults(map, searchLayer);
@@ -365,7 +365,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   const searchResult = [];
   let response = {};
   if (!feature) {
-    response = await searchThroughAPI(searchString);
+    response = await searchThroughAPI(searchString, env.searchUrl);
   } else {
     response = feature;
   }
@@ -435,7 +435,8 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       globalPopupInfo, popUpHomePage, currentPOIID,
       currentLocale, objCenterCoords, routeToValTemp,
       routeFromValTemp, activeFloorName, popup,
-      featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
+      featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0], null,
+      env.layerNamePrefix
     );
     zoomer(map.getView(), centerCoOrd, zoomLevel);
     /*
@@ -448,7 +449,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     floorName = featuresSearch[0].getProperties().floor_name ? featuresSearch[0].getProperties().floor_name.toLowerCase() : '';
     layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
 
-    activateFloor(layerToActive, layers, map);
+    activateFloor(layerToActive, layers, map, env.layerNamePrefix);
   } else if (featuresSearch.length === 0) {
     const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
     console.log(htmlInsert);
@@ -496,10 +497,10 @@ const zoomer = (view, coord, zoomLevel) => {
   });
 };
 
-const activateLayer = (layerName, switchableLayers, map) => {
+const activateLayer = (layerName, switchableLayers, map, layerNamePrefix) => {
   hideLayers(switchableLayers);
   setLayerVisible(layerName, switchableLayers, map);
-  POIHandler.setPoiFeatureVisibility(map, layerName);
+  POIHandler.setPoiFeatureVisibility(map, layerName, layerNamePrefix);
   // if (typeof update_url == undefined) {
   // safe to use the function
   // do we need to use that
@@ -574,9 +575,7 @@ const getLayers = () => {
       campusLocationsGroup
     ]
   }
-}
-
-const getStartCenter = () => indrzConfig.defaultCenterXY;
+};
 
 const getMapControls = () => {
   // controls
@@ -593,18 +592,19 @@ const getMapControls = () => {
   ];
 };
 
-const getWmsLayers = (floors) => {
+const getWmsLayers = (floors, env) => {
   const wmsLayers = [];
 
   floors.forEach((floor, index) => {
     const floorName = floor.short_name.toLowerCase();
-    const layerName = indrzConfig.layerNamePrefix + floorName;
+    const layerName = env.layerNamePrefix + floorName;
     const layer = createWmsLayer(
       layerName,
-      indrzConfig.geoServerLayerPrefix + layerName,
+      env.geoServerLayerPrefix + layerName,
       floor.floor_num,
       index === 0,
-      3
+      3,
+      env
     );
     wmsLayers.push(layer);
   });
@@ -618,7 +618,7 @@ const getWmsLayers = (floors) => {
   }
 };
 
-const loadMapWithParams = async (mapInfo, query) => {
+const loadMapWithParams = async (mapInfo, query, env) => {
   const campusId = query.campus || 1;
   const zoomLevel = query.zlevel || 18;
 
@@ -628,18 +628,18 @@ const loadMapWithParams = async (mapInfo, query) => {
   }
   if (query.floor) {
     mapInfo.activeFloorName = query.floor;
-    activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map);
+    activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map, env.layerNamePrefix);
     mapInfo.$emit('selectFloor', mapInfo.activeFloorName);
   }
   if (query.q && query.q.length > 3) {
     const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
       mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.currentLocale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
-      mapInfo.routeFromValTemp, mapInfo.activeFloorName, mapInfo.popup);
+      mapInfo.routeFromValTemp, mapInfo.activeFloorName, mapInfo.popup, env.searchUrl);
 
     mapInfo.$root.$emit('load-search-query', query.q);
 
     if (result.floorName) {
-      mapInfo.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
+      mapInfo.$emit('selectFloor', env.layerNamePrefix + result.floorName);
     }
     mapInfo.searchLayer = result.searchLayer;
   }
@@ -662,7 +662,7 @@ const loadMapWithParams = async (mapInfo, query) => {
       }
     });
     setTimeout(async () => {
-      mapInfo.globalRouteInfo.routeUrl = await mapInfo.routeHandler.getDirections(mapInfo.map, mapInfo.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
+      mapInfo.globalRouteInfo.routeUrl = await mapInfo.routeHandler.getDirections(mapInfo.map, mapInfo.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId', env);
     }, 600);
   }
   if (query['poi-cat-id']) {
@@ -675,7 +675,6 @@ const loadMapWithParams = async (mapInfo, query) => {
 
 export default {
   initializeMap,
-  getStartCenter,
   getMapControls,
   getWmsLayers,
   getLayers,

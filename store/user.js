@@ -2,7 +2,6 @@ import * as _ from 'lodash';
 import axios from 'axios';
 import UserService from '../service/user';
 import LocalStorageService from '../service/localStorage';
-import config from '../util/indrzConfig';
 
 export const state = () => ({
   user: null,
@@ -39,7 +38,7 @@ export const actions = {
     this.$router.push('/admin/login');
   },
   async LOAD_SHELVES ({ commit }, payload) {
-    const url = `${config.baseApiUrl}/shelf/`;
+    const url = `${process.env.BASE_API_URL}/shelf/`;
     const urlWithParams = payload ? `${url + '?' + Object.keys(payload).map(key => key + '=' + payload[key]).join('&')}` : url;
 
     try {
@@ -47,7 +46,7 @@ export const actions = {
         method: 'GET',
         url: urlWithParams,
         headers: {
-          'Authorization': config.token
+          'Authorization': process.env.TOKEN
         }
       });
 
@@ -63,14 +62,14 @@ export const actions = {
   },
 
   SAVE_SHELF ({ commit }, payload) {
-    const url = `${config.baseApiUrl}/shelf/${payload.id}/`;
+    const url = `${process.env.BASE_API_URL}/shelf/${payload.id}/`;
 
     return axios({
       method: 'PUT',
       url: url,
       data: payload,
       headers: {
-        'Authorization': config.token,
+        'Authorization': process.env.TOKEN,
         'Content-Type': 'application/json'
       }
     });

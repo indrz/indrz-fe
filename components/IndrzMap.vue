@@ -41,7 +41,6 @@ import POIHandler from '../util/POIHandler';
 import InfoOverlay from '../components/infoOverlay';
 import ShareOverlay from '../components/shareOverlay';
 import 'ol/ol.css';
-import indrzConfig from '../util/indrzConfig';
 import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
@@ -89,7 +88,7 @@ export default {
   },
 
   mounted () {
-    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
+    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, process.env.DEFAULT_CENTER_XY);
 
     this.view = view;
     this.map = map;
@@ -108,11 +107,15 @@ export default {
     loadLayers (floors) {
       this.floors = floors;
       if (this.floors && this.floors.length) {
-        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor.toLowerCase())[0];
-        this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === process.env.DEFAULT_START_FLOOR.toLowerCase())[0];
+        this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
         this.$emit('selectFloor', this.activeFloorName);
       }
-      this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+      this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
+        baseWmsUrl: process.env.BASE_WMS_URL,
+        geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+      });
       this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
@@ -127,8 +130,8 @@ export default {
       const selectedItem = selection.data;
       const floorName = selectedItem.properties.floor_name;
       if (floorName) {
-        this.$emit('selectFloor', indrzConfig.layerNamePrefix + floorName);
-        this.activeFloorName = indrzConfig.layerNamePrefix + floorName;
+        this.$emit('selectFloor', process.env.LAYER_NAME_PREFIX + floorName);
+        this.activeFloorName = process.env.LAYER_NAME_PREFIX + floorName;
       }
 
       const campusId = selectedItem.building;
@@ -140,19 +143,27 @@ export default {
 
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-        this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
+        this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem, {
+          searchUrl: process.env.SEARCH_URL,
+          layerNamePrefix: process.env.LAYER_NAME_PREFIX
+        });
       this.searchLayer = result.searchLayer;
     },
     async loadMapWithParams () {
       const query = queryString.parse(location.search);
-      await MapUtil.loadMapWithParams(this, query);
+      await MapUtil.loadMapWithParams(this, query, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN,
+        searchUrl: process.env.SEARCH_URL,
+        layerNamePrefix: process.env.layerNamePrefix
+      });
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup,
-        properties, coordinate, feature
+        properties, coordinate, feature, process.env.LAYER_NAME_PREFIX
       );
     },
     closeIndrzPopup (fromEvent) {
@@ -177,10 +188,14 @@ export default {
       shareOverlay.show();
     },
     loadSinglePoi (poiId) {
-      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName);
+      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName, process.env.LAYER_NAME_PREFIX);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems });
+      MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+      });
     },
     onTermShowChange (value) {
       this.showTerms = value;
@@ -195,7 +210,7 @@ export default {
       });
     },
     onMapClick (evt) {
-      MapHandler.handleMapClick(this, evt);
+      MapHandler.handleMapClick(this, evt, process.env.LAYER_NAME_PREFIX);
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -213,7 +228,7 @@ export default {
     onMenuButtonClick (type) {
       switch (type) {
         case 'zoom-home':
-          menuHandler.handleZoomToHome(this);
+          menuHandler.handleZoomToHome(this, process.env.DEFAULT_CENTER_XY);
           break;
         case 'download':
           menuHandler.handleDownLoad(this);
@@ -252,7 +267,9 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo () {
-      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo, {
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+      });
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map);
