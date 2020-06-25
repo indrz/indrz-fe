@@ -269,7 +269,8 @@ export default {
     async routeGo () {
       this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo, 0, {
         baseApiUrl: process.env.BASE_API_URL,
-        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX,
+        token: process.env.TOKEN
       });
     },
     clearRouteData () {
