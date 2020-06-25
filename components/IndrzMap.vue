@@ -155,7 +155,7 @@ export default {
         baseApiUrl: process.env.BASE_API_URL,
         token: process.env.TOKEN,
         searchUrl: process.env.SEARCH_URL,
-        layerNamePrefix: process.env.layerNamePrefix
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX
       });
     },
     openIndrzPopup (properties, coordinate, feature) {
