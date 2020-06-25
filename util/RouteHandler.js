@@ -15,14 +15,14 @@ import api from '~/util/api';
 let scope = null;
 let translate = null;
 
-const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
+const routeGo = async (map, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
   if (from.properties.space_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
+    routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId', env);
   } else if (from.properties.poi_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
+    routeUrl = await getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId', env);
   } else if (from.properties.poi_id && to.properties.poi_id) {
     // TODO following
     // routeToPoiFromPoi(from.poiid, to.poiid)

@@ -267,7 +267,8 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo () {
-      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo, {
+      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo, 0, {
+        baseApiUrl: process.env.BASE_API_URL,
         layerNamePrefix: process.env.LAYER_NAME_PREFIX
       });
     },

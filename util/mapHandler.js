@@ -31,7 +31,7 @@ const openIndrzPopup = (
     globalPopupInfo[member] = null
   }
   feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1;
-  offsetArray = typeof offsetArray !== 'undefined' ? offsetArray : [0, 0];
+  offsetArray = (typeof offsetArray !== 'undefined' && offsetArray !== null) ? offsetArray : [0, 0];
 
   if (properties.hasOwnProperty('poiId')) {
     globalPopupInfo.src = 'poi';
