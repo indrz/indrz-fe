@@ -148,7 +148,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
         poiProperties.poiId = poiId;
         MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', poiCoords,
           null, null, activeFloorName, popup, poiProperties, centerCoord,
-          null, offSetPos);
+          null, offSetPos, layerNamePrefix);
         MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
         globalPopupInfo.poiCatId = featuresSearch[0].getProperties().category;

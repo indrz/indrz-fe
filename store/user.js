@@ -27,7 +27,9 @@ export const mutations = {
 
 export const actions = {
   async SIGN_IN ({ commit }, payload) {
-    const userResponse = await UserService.signIn(payload);
+    const userResponse = await UserService.signIn(payload, {
+      baseApiUrl: process.env.BASE_API_URL
+    });
     if (userResponse && userResponse.data) {
       commit('SET_USER', userResponse.data);
     }

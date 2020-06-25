@@ -163,7 +163,7 @@ export default {
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup,
-        properties, coordinate, feature, process.env.LAYER_NAME_PREFIX
+        properties, coordinate, feature, null, process.env.LAYER_NAME_PREFIX
       );
     },
     closeIndrzPopup (fromEvent) {
