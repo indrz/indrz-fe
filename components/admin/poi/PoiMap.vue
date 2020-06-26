@@ -21,8 +21,8 @@
       </a>
     </div>
     <div class="tu-logo">
-      <a :href="process.env.HOME_PAGE_URL" target="_blank">
-        <img id="tu-logo" :src="process.env.LOGO_FILE" alt="logo" style="width:auto; height:40px; ">
+      <a :href="env.homePageUrl" target="_blank">
+        <img id="tu-logo" :src="env.logo" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <v-dialog
@@ -120,6 +120,16 @@ export default {
     await this.initializeMap();
     this.initializeEventHandlers();
   },
+  computed: {
+    env () {
+      return {
+        homePageUrl: process.env.HOME_PAGE_URL,
+        logo: process.env.LOGO_FILE,
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
+      }
+    }
+  },
   methods: {
     initializeEventHandlers () {
       this.$root.$on('addPoiClick', this.addInteractions);
@@ -160,10 +170,7 @@ export default {
       const floorData = await api.request(
         {
           endPoint: 'floor/'
-        }, {
-          baseApiUrl: process.env.BASE_API_URL,
-          token: process.env.TOKEN
-        });
+        }, this.env);
 
       if (floorData && floorData.data && floorData.data.results) {
         this.floors = floorData.data.results;
