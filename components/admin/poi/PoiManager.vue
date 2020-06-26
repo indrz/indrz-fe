@@ -116,7 +116,9 @@ export default {
   mounted () {
     this.$root.$on('poiLoad', (data) => {
       this.lastLoadedData = { ...data };
-      this.$refs.map.onPoiLoad(data);
+      if (this.$refs.map) {
+        this.$refs.map.onPoiLoad(data);
+      }
     });
     this.$root.$on('deletePoi', this.deletePoi);
     this.mapComp = this.$refs.map;
