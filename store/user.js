@@ -40,7 +40,7 @@ export const actions = {
     this.$router.push('/admin/login');
   },
   async LOAD_SHELVES ({ commit }, payload) {
-    const url = `${process.env.BASE_API_URL}/shelf/`;
+    const url = `${process.env.BASE_API_URL}shelf/`;
     const urlWithParams = payload ? `${url + '?' + Object.keys(payload).map(key => key + '=' + payload[key]).join('&')}` : url;
 
     try {
@@ -64,7 +64,7 @@ export const actions = {
   },
 
   SAVE_SHELF ({ commit }, payload) {
-    const url = `${process.env.BASE_API_URL}/shelf/${payload.id}/`;
+    const url = `${process.env.BASE_API_URL}shelf/${payload.id}/`;
 
     return axios({
       method: 'PUT',

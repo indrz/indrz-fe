@@ -60,16 +60,12 @@
 </template>
 
 <script>
-import Map from 'ol/Map.js';
-import View from 'ol/View.js';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
 import { Style, Icon } from 'ol/style';
-import { Draw, Modify, Snap, defaults as defaultInteraction, Translate } from 'ol/interaction';
+import { Draw, Modify, Snap, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
 import { Feature, Collection } from 'ol';
-import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
-import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
 import MapUtil from '~/util/map';
@@ -116,19 +112,23 @@ export default {
       editingVectorLayer: []
     };
   },
-  async mounted () {
-    await this.initializeMap();
-    this.initializeEventHandlers();
-  },
   computed: {
     env () {
       return {
         homePageUrl: process.env.HOME_PAGE_URL,
         logo: process.env.LOGO_FILE,
         baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN
+        token: process.env.TOKEN,
+        baseWmsUrl: process.env.BASE_WMS_URL,
+        geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX,
+        center: JSON.parse(process.env.DEFAULT_CENTER_XY)
       }
     }
+  },
+  async mounted () {
+    await this.initializeMap();
+    this.initializeEventHandlers();
   },
   methods: {
     initializeEventHandlers () {
@@ -140,27 +140,14 @@ export default {
       this.$root.$on('cancelPoiClick', this.removeInteraction)
     },
     async initializeMap () {
-      this.view = new View({
-        center: process.env.DEFAULT_CENTER_XY,
-        zoom: 15,
-        maxZoom: 23
-      });
-      this.layers = MapUtil.getLayers();
-      this.map = new Map({
-        interactions: defaultInteraction().extend([
-          new DragRotateAndZoom(),
-          new PinchZoom({
-            constrainResolution: true
-          })
-        ]),
-        target: this.mapId,
-        controls: MapUtil.getMapControls(),
-        view: this.view,
-        layers: this.layers.layerGroups
-      });
+      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
+
+      this.view = view;
+      this.map = map;
+      this.layers = layers;
+      this.popup = popup;
 
       this.map.on('singleclick', this.onMapClick, this);
-
       window.onresize = () => {
         setTimeout(() => {
           this.map.updateSize();
@@ -176,17 +163,14 @@ export default {
         this.floors = floorData.data.results;
         if (this.floors && this.floors.length) {
           this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === process.env.DEFAULT_START_FLOOR.toLowerCase())[0];
-          this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+          this.activeFloorName = this.env.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
           this.$emit('floorChange', {
             floor: this.intitialFloor,
             floors: this.floors,
             name: this.activeFloorName
           });
-          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
-            baseWmsUrl: process.env.BASE_WMS_URL,
-            geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
-            layerNamePrefix: process.env.LAYER_NAME_PREFIX
-          });
+
+          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
         }
         this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
         this.layers.switchableLayers = this.wmsLayerInfo.layers;
