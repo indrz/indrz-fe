@@ -1,5 +1,5 @@
 const baseUrl = 'https://tuw-maps.tuwien.ac.at';
-const baseApiUrl = baseUrl + '/api/v1/'
+const baseApiUrl = baseUrl + '/api/v1/';
 const homepageUrl = 'https://tuwien.at';
 const leftMenuLogo = '/images/tu-logo.png';
 
@@ -14,4 +14,4 @@ export default {
   layerNamePrefix: 'floor_', // TU
   geoServerLayerPrefix: 'indrztu:', // TU
   defaultStartFloor: 'eg' // TU
-}
+};
