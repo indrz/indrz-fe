@@ -91,7 +91,7 @@ export default {
       openedPanels: [],
       initialPoiCatId: null,
       initialPoiId: null
-    }
+    };
   },
   watch: {
     search (text) {
@@ -122,7 +122,7 @@ export default {
       });
     },
     onDrawerClick () {
-      this.$emit('onDrawerClick')
+      this.$emit('onDrawerClick');
     },
     onMenuButtonClick (type) {
       this.$refs.map.onMenuButtonClick(type);
@@ -182,7 +182,7 @@ export default {
       this.$refs.map.loadSinglePoi(poiId);
     }
   }
-}
+};
 </script>
 
 <style scoped>

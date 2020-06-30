@@ -16,7 +16,7 @@ module.exports = {
     'nuxt/no-cjs-in-config': 0,
     'vue/no-v-html': 0,
     'no-console': 0,
-    'semi':0,
+    'semi': [2, "always"],
     'no-extra-semi': 0,
     'object-shorthand': 0,
     'unicorn/escape-case': 0,

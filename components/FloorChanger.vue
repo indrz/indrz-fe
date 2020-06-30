@@ -35,7 +35,7 @@ export default {
   data () {
     return {
       setSelection: null
-    }
+    };
   },
 
   watch: {
@@ -89,7 +89,7 @@ export default {
       return {};
     }
   }
-}
+};
 </script>
 
 <style scoped>

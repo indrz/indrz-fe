@@ -12,7 +12,7 @@
                 <v-text-field ref="linkField" :value="link" hide-details outlined />
               </v-col>
               <v-col cols="2" sm="2" md="2">
-                <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text>
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick('linkField')">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -34,7 +34,7 @@
                 />
               </v-col>
               <v-col cols="2" sm="2" md="2">
-                <v-btn @click="onCopyButtonClick('singlePoi')" color="blue darken-1" text>
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick('singlePoi')">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -54,7 +54,7 @@
                 />
               </v-col>
               <v-col cols="2" sm="2" md="2">
-                <v-btn @click="onCopyButtonClick('catPoi')" color="blue darken-1" text>
+                <v-btn color="blue darken-1" text @click="onCopyButtonClick('catPoi')">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -72,7 +72,7 @@
       </v-card-text>
       <v-card-actions>
         <div class="flex-grow-1" />
-        <v-btn @click="dialog = false" color="warning" text>
+        <v-btn color="warning" text @click="dialog = false">
           Close
         </v-btn>
       </v-card-actions>
@@ -95,7 +95,7 @@ export default {
       link: '',
       copyConfirmation: '',
       copySuccess: 'Url successfully copied in to clipboard!'
-    }
+    };
   },
   watch: {
     dialog () {
@@ -128,7 +128,7 @@ export default {
       this.copyConfirmation = this.copySuccess;
     }
   }
-}
+};
 </script>
 
 <style scoped>

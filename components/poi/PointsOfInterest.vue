@@ -8,8 +8,8 @@
       />
     </div>
     <v-treeview
-      ref="poi"
       v-if="!loading"
+      ref="poi"
       v-model="tree"
       :multiple-active="multi"
       :items="poiData"
@@ -31,7 +31,7 @@
           </template>
           <span>{{ item.name }}</span>
         </v-tooltip>-->
-        <div @click="onTreeClick(item)" style="width: 100%; height: 100%">
+        <div style="width: 100%; height: 100%" @click="onTreeClick(item)">
           {{ item['name_' + $i18n.locale] }}
         </div>
       </template>
@@ -93,7 +93,7 @@ export default {
       forceReloadNode: false,
       loading: true,
       currentPoi: null
-    }
+    };
   },
 
   watch: {
@@ -128,7 +128,7 @@ export default {
         newItems,
         oldItems,
         removedItems
-      })
+      });
     }
   },
 
@@ -204,7 +204,7 @@ export default {
       return foundData;
     }
   }
-}
+};
 </script>
 
 <style>

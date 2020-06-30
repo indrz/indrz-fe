@@ -11,8 +11,6 @@
         :no-data-text="noResultText"
         :no-filter="true"
         :label="routeLabel"
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
         item-text="properties.name"
         item-value="properties.spaceid"
         append-icon="mdi-magnify"
@@ -22,7 +20,9 @@
         hide-selected
         hide-details
         hide-no-data
+        @click:clear="onClearClick"
         clearable
+        @change="onSearchSelection"
       />
     </template>
     <template v-else>
@@ -35,8 +35,6 @@
         :no-data-text="noResultText"
         :no-filter="true"
         :label="searchLabel"
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
         item-text="properties.name"
         item-value="properties.spaceid"
         append-icon="mdi-magnify"
@@ -46,7 +44,9 @@
         flat
         hide-selected
         hide-details
+        @click:clear="onClearClick"
         hide-no-data
+        @change="onSearchSelection"
         clearable
       />
     </template>
@@ -96,7 +96,7 @@ export default {
       model: null,
       search: null,
       stopSearch: false
-    }
+    };
   },
   watch: {
     search (text) {
@@ -133,7 +133,7 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
         })
         .finally(() => (this.isLoading = false));
     },
@@ -157,7 +157,7 @@ export default {
       this.search = query;
     }
   }
-}
+};
 </script>
 
 <style scoped>

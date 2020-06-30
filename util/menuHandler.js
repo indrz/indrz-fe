@@ -17,7 +17,7 @@ const handleDownLoad = (mapInfo) => {
 
     if (canvas.toBlob) {
       canvas.toBlob(function (blob) {
-        saveAs(blob, curDate.toLocaleDateString() + '_map.png')
+        saveAs(blob, curDate.toLocaleDateString() + '_map.png');
       }, 'image/png');
     }
   });
@@ -115,8 +115,8 @@ const handlePdf = (mapInfo) => {
                 .height);
               doc.text(today, 20, 420);
             }
-            doc.save(todayFileName + '-TU.pdf')
-          }
+            doc.save(todayFileName + '-TU.pdf');
+          };
         },
         'image/jpeg'
       );
@@ -140,4 +140,4 @@ export default {
   handleDownLoad,
   handlePdf,
   handleShare
-}
+};

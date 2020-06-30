@@ -5,12 +5,12 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         color="rgba(0,60,136,0.5)"
         min-width="95px"
         class="pa-2"
         small
         dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -40,16 +40,16 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            @click="onDeletePoiClick"
             color="error darken-1"
             text
+            @click="onDeletePoiClick"
           >
             Yes
           </v-btn>
           <v-btn
-            @click="deleteConfirm = false"
             color="blue darken-1"
             text
+            @click="deleteConfirm = false"
           >
             Cancel
           </v-btn>
@@ -127,7 +127,7 @@ export default {
         this.currentMode = this.mode.edit;
       });
       this.$root.$on('deletePoiClick', this.enableDeletePoi);
-      this.$root.$on('cancelPoiClick', this.removeInteraction)
+      this.$root.$on('cancelPoiClick', this.removeInteraction);
     },
     async initializeMap () {
       this.view = new View({
@@ -371,16 +371,16 @@ export default {
       this.clearEditingVectorLayer();
 
       if (this.draw) {
-        this.draw.un('drawend', this.onDrawEnd)
+        this.draw.un('drawend', this.onDrawEnd);
       }
       if (this.modify) {
-        this.modify.un('modifyend', this.onModifyEnd)
+        this.modify.un('modifyend', this.onModifyEnd);
       }
       if (this.modify) {
-        this.modify.un('modifystart', this.onModifyStart)
+        this.modify.un('modifystart', this.onModifyStart);
       }
       if (this.translate) {
-        this.translate.un('translateend')
+        this.translate.un('translateend');
       }
       // this.clearSelection();
       this.selectedPoi = null;
@@ -448,7 +448,7 @@ export default {
       if (oldItems && oldItems.length) {
         oldItems.forEach((item) => {
           POIHandler.setPoiVisibility(item, this.map);
-        })
+        });
       }
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
@@ -461,7 +461,7 @@ export default {
                 }
               });
             });
-        })
+        });
       }
     },
     getCategoryIconImage (icon) {
@@ -475,7 +475,7 @@ export default {
       });
     }
   }
-}
+};
 </script>
 
 <style scoped>

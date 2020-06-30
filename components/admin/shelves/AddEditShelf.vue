@@ -40,10 +40,10 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn :disabled="loading" @click="close" color="blue darken-1" text>
+        <v-btn :disabled="loading" color="blue darken-1" text @click="close">
           Cancel
         </v-btn>
-        <v-btn :disabled="loading" :loading="loading" @click="save" color="blue darken-1" text>
+        <v-btn :disabled="loading" :loading="loading" color="blue darken-1" text @click="save">
           Save
           <v-icon right>
             mdi-save
@@ -80,7 +80,7 @@ export default {
   data () {
     return {
       loading: false
-    }
+    };
   },
   methods: {
     close () {
@@ -100,7 +100,7 @@ export default {
         });
     }
   }
-}
+};
 </script>
 
 <style scoped>

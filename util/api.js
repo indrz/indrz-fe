@@ -1,5 +1,5 @@
 import axios from 'axios';
-import indrzConfig from '~/util/indrzConfig'
+import indrzConfig from '~/util/indrzConfig';
 
 const baseApiUrl = indrzConfig.baseApiUrl;
 
@@ -37,7 +37,7 @@ const postRequest = async function (requestObj) {
       method: requestObj.method || 'POST',
       headers: getAuthorizationHeader(),
       data: formData
-    })
+    });
   } catch (err) {
     return err;
   }
@@ -50,7 +50,7 @@ const putRequest = async function (requestObj) {
       method: requestObj.method || 'PUT',
       headers: getAuthorizationHeader(),
       data: requestObj.data
-    })
+    });
   } catch (err) {
     return err;
   }
@@ -61,7 +61,7 @@ const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
     // page,
     limit: itemsPerPage,
     offset: (page - 1) * itemsPerPage
-  }
+  };
 };
 
 export default {
@@ -69,4 +69,4 @@ export default {
   postRequest,
   putRequest,
   getPageParams
-}
+};

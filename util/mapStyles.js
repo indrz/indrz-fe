@@ -110,9 +110,9 @@ const setPoiStyleOnLayerSwitch = (iconName, visible) => {
   });
 
   if (visible) {
-    return iconActiveStyle
+    return iconActiveStyle;
   } else {
-    return iconDeactiveStyle
+    return iconDeactiveStyle;
   }
 };
 
@@ -124,4 +124,4 @@ export default {
   faFlagCheckeredStyle,
   setPoiStyleOnLayerSwitch,
   createPoiStyle
-}
+};

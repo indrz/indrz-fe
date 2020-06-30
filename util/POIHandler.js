@@ -15,7 +15,7 @@ const fetchPoi = (catId, map, activeFloorName) => {
   })
     .then((response) => {
       return createPoilayer(response.data, catId, activeFloorName);
-    })
+    });
 };
 
 const setPoiVisibility = (poiId, map) => {

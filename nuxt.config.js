@@ -78,7 +78,7 @@ export default {
         family: process.env.FONT_FAMILY, // ROBOTO is default
         size: process.env.FONT_SIZE // 16 is default
       },
-      icons: process.env.ICON_SET //mdi, md, fa, fa4
+      icons: process.env.ICON_SET // mdi, md, fa, fa4
     },
     theme: {
       dark: false,
@@ -105,4 +105,4 @@ export default {
     extend (config, ctx) {
     }
   }
-}
+};

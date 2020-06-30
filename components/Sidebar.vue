@@ -104,7 +104,7 @@ export default {
       },
       expanded: [],
       searchResult: []
-    }
+    };
   },
 
   computed: {
@@ -134,7 +134,7 @@ export default {
           title: this.locale.searchResult
         }
         */
-      ]
+      ];
     },
     menuButtons () {
       return [
@@ -168,7 +168,7 @@ export default {
           type: 'terms',
           text: this.locale.aboutTermsConditions
         }
-      ]
+      ];
     }
   },
 
@@ -207,7 +207,7 @@ export default {
       this.$emit('loadSinglePoi', poiId);
     }
   }
-}
+};
 </script>
 <style scoped>
   .left-bar-logo {

@@ -35,8 +35,8 @@
 
 <script>
 import { mapGetters } from 'vuex';
-import SideBar from '../components/admin/SideBar'
-import UserMenu from '../components/admin/UserMenu'
+import SideBar from '../components/admin/SideBar';
+import UserMenu from '../components/admin/UserMenu';
 
 export default {
   components: {
@@ -89,7 +89,7 @@ export default {
       this.drawer = drawer;
     }
   }
-}
+};
 </script>
 <style scoped>
   .admin-map-container {

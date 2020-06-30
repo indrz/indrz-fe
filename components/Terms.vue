@@ -129,14 +129,14 @@ export default {
     show: {
       type: Boolean,
       default: function () {
-        return false
+        return false;
       }
     }
   },
   data () {
     return {
       contact: this.$t('contact')
-    }
+    };
   },
   computed: {
     dialog: {
@@ -148,7 +148,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

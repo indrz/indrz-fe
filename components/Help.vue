@@ -302,12 +302,12 @@ export default {
     show: {
       type: Boolean,
       default: function () {
-        return false
+        return false;
       }
     }
   },
   data () {
-    return {}
+    return {};
   },
   computed: {
     dialog: {
@@ -319,7 +319,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>
