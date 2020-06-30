@@ -20,8 +20,8 @@
         hide-selected
         hide-details
         hide-no-data
-        @click:clear="onClearClick"
         clearable
+        @click:clear="onClearClick"
         @change="onSearchSelection"
       />
     </template>
@@ -44,10 +44,10 @@
         flat
         hide-selected
         hide-details
-        @click:clear="onClearClick"
         hide-no-data
-        @change="onSearchSelection"
         clearable
+        @click:clear="onClearClick"
+        @change="onSearchSelection"
       />
     </template>
   </div>
