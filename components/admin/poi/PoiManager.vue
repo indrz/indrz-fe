@@ -116,7 +116,9 @@ export default {
   mounted () {
     this.$root.$on('poiLoad', (data) => {
       this.lastLoadedData = { ...data };
-      this.$refs.map.onPoiLoad(data);
+      if (this.$refs.map) {
+        this.$refs.map.onPoiLoad(data);
+      }
     });
     this.$root.$on('deletePoi', this.deletePoi);
     this.mapComp = this.$refs.map;
@@ -198,6 +200,9 @@ export default {
           endPoint: `poi/`,
           method: 'POST',
           data: newPoi
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
         })
       });
       const treeComp = this.$refs.poiTree;
@@ -239,6 +244,9 @@ export default {
             endPoint: `poi/${poi.getId()}/`,
             method: 'PUT',
             data
+          }, {
+            baseApiUrl: process.env.BASE_API_URL,
+            token: process.env.TOKEN
           })
         )
       });
@@ -276,6 +284,9 @@ export default {
             endPoint: `poi/${poi.getId()}`,
             method: 'DELETE',
             data: {}
+          }, {
+            baseApiUrl: process.env.BASE_API_URL,
+            token: process.env.TOKEN
           })
         )
       });
