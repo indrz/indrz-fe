@@ -119,6 +119,9 @@ export default {
     fetchFloors () {
       return api.request({
         endPoint: 'floor/'
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       });
     },
     onDrawerClick () {

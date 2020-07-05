@@ -176,6 +176,9 @@ export default {
     fetchPoiTreeData () {
       return api.request({
         endPoint: 'poi/tree/'
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       });
     },
     findItem (itemId, data) {

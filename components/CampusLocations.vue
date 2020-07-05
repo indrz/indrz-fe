@@ -50,6 +50,9 @@ export default {
     fetchLocations () {
       return api.request({
         endPoint: 'campus/'
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       });
     }
   }

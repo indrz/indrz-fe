@@ -3,9 +3,9 @@ import JSPDF from 'jspdf';
 import MapUtil from '~/util/map';
 import MapHandler from '~/util/mapHandler';
 
-const handleZoomToHome = (mapInfo) => {
+const handleZoomToHome = (mapInfo, center) => {
   mapInfo.view.animate({
-    center: MapUtil.getStartCenter(),
+    center,
     duration: 2000,
     zoom: 15
   });

@@ -21,8 +21,8 @@
       </a>
     </div>
     <div class="tu-logo">
-      <a :href="indrzConfig.homepageUrl" target="_blank">
-        <img id="tu-logo" :src="indrzConfig.leftMenuLogo" alt="logo" style="width:auto; height:40px; ">
+      <a :href="env.homePageUrl" target="_blank">
+        <img id="tu-logo" :src="env.logo" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <v-dialog
@@ -60,22 +60,18 @@
 </template>
 
 <script>
-import Map from 'ol/Map.js';
-import View from 'ol/View.js';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
 import { Style, Icon } from 'ol/style';
-import { Draw, Modify, Snap, defaults as defaultInteraction, Translate } from 'ol/interaction';
+import { Draw, Modify, Snap, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
 import { Feature, Collection } from 'ol';
-import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
-import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
-import indrzConfig from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import api from '~/util/api';
 import 'ol/ol.css';
+
 export default {
   name: 'Map',
   props: {
@@ -116,6 +112,20 @@ export default {
       editingVectorLayer: []
     };
   },
+  computed: {
+    env () {
+      return {
+        homePageUrl: process.env.HOME_PAGE_URL,
+        logo: process.env.LOGO_FILE,
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN,
+        baseWmsUrl: process.env.BASE_WMS_URL,
+        geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX,
+        center: JSON.parse(process.env.DEFAULT_CENTER_XY)
+      }
+    }
+  },
   async mounted () {
     await this.initializeMap();
     this.initializeEventHandlers();
@@ -130,46 +140,37 @@ export default {
       this.$root.$on('cancelPoiClick', this.removeInteraction);
     },
     async initializeMap () {
-      this.view = new View({
-        center: MapUtil.getStartCenter(),
-        zoom: 15,
-        maxZoom: 23
-      });
-      this.layers = MapUtil.getLayers();
-      this.map = new Map({
-        interactions: defaultInteraction().extend([
-          new DragRotateAndZoom(),
-          new PinchZoom({
-            constrainResolution: true
-          })
-        ]),
-        target: this.mapId,
-        controls: MapUtil.getMapControls(),
-        view: this.view,
-        layers: this.layers.layerGroups
-      });
+      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
+
+      this.view = view;
+      this.map = map;
+      this.layers = layers;
+      this.popup = popup;
 
       this.map.on('singleclick', this.onMapClick, this);
-
       window.onresize = () => {
         setTimeout(() => {
           this.map.updateSize();
         }, 500);
       };
 
-      const floorData = await api.request({ endPoint: 'floor/' });
+      const floorData = await api.request(
+        {
+          endPoint: 'floor/'
+        }, this.env);
 
       if (floorData && floorData.data && floorData.data.results) {
         this.floors = floorData.data.results;
         if (this.floors && this.floors.length) {
-          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor.toLowerCase())[0];
-          this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === process.env.DEFAULT_START_FLOOR.toLowerCase())[0];
+          this.activeFloorName = this.env.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
           this.$emit('floorChange', {
             floor: this.intitialFloor,
             floors: this.floors,
             name: this.activeFloorName
           });
-          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+
+          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
         }
         this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
         this.layers.switchableLayers = this.wmsLayerInfo.layers;
@@ -191,9 +192,9 @@ export default {
 
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
-            this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+            this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
             let onActiveLayer = true;
-            if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+            if (process.env.LAYER_NAME_PREFIX + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
               onActiveLayer = false;
             }
 
@@ -230,11 +231,11 @@ export default {
         return;
       }
 
-      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
 
       features.forEach((feature) => {
         if (feature) {
-          if (indrzConfig.layerNamePrefix + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+          if (process.env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
             onActiveLayer = false;
           }
           const featureType = feature.getGeometry().getType().toString();
@@ -248,10 +249,10 @@ export default {
     },
     clearPreviousSelection () {
       let onActiveLayer = true;
-      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
 
       if (this.selectedPoi) {
-        if (indrzConfig.layerNamePrefix + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+        if (process.env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
           onActiveLayer = false;
         }
         this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
@@ -437,7 +438,7 @@ export default {
       this.newPois.push(data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      this.activeFloorName = indrzConfig.layerNamePrefix + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
       if (removedItems && removedItems.length) {
         removedItems.forEach((item) => {
           if (POIHandler.poiExist(item, this.map)) {
@@ -453,7 +454,11 @@ export default {
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
           POIHandler
-            .fetchPoi(item.id, this.map, this.activeFloorName)
+            .fetchPoi(item.id, this.map, this.activeFloorName, {
+              baseApiUrl: process.env.BASE_API_URL,
+              token: process.env.TOKEN,
+              layerNamePrefix: process.env.LAYER_NAME_PREFIX
+            })
             .then((poiLayer) => {
               this.map.getLayers().forEach((layer) => {
                 if (layer.getProperties().id === 99999) {

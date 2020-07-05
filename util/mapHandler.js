@@ -2,7 +2,6 @@ import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getCenter } from 'ol/extent';
 import axios from 'axios';
-import indrzConfig from '~/util/indrzConfig';
 import POIHandler from '~/util/POIHandler';
 import MapUtil from '~/util/map';
 
@@ -24,15 +23,15 @@ const closeIndrzPopup = (popup, globalPopupInfo) => {
 const openIndrzPopup = (
   globalPopupInfo, popUpHomePage, currentPOIID, currentLocale,
   objCenterCoords, routeToValTemp, routeFromValTemp,
-  activeFloorName, popup, properties, coordinate, feature, offsetArray) => {
-  const floorName = activeFloorName.split(indrzConfig.layerNamePrefix)[1].toUpperCase();
+  activeFloorName, popup, properties, coordinate, feature, offsetArray, layerNamePrefix) => {
+  const floorName = activeFloorName.split(layerNamePrefix)[1].toUpperCase();
   const popupContent = document.getElementById('popup-content');
 
   for (const member in globalPopupInfo) {
     globalPopupInfo[member] = null;
   }
   feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1;
-  offsetArray = typeof offsetArray !== 'undefined' ? offsetArray : [0, 0];
+  offsetArray = (typeof offsetArray !== 'undefined' && offsetArray !== null) ? offsetArray : [0, 0];
 
   if (properties.hasOwnProperty('poiId')) {
     globalPopupInfo.src = 'poi';
@@ -321,12 +320,12 @@ const addPoiTableRow = (row1, row2, idname) => {
   cell2.setAttribute('id', idname);
 };
 
-const getRoomInfo = (floor, layers) => {
+const getRoomInfo = (floor, layers, layerNamePrefix) => {
   const availableWmsLayers = layers.switchableLayers;
   let newel;
 
   availableWmsLayers.forEach(function (element) {
-    if (floor.toLowerCase() === (indrzConfig.layerNamePrefix + element.getProperties().floorName).toLowerCase()) {
+    if (floor.toLowerCase() === (layerNamePrefix + element.getProperties().floorName).toLowerCase()) {
       newel = element.getSource();
     }
   });
@@ -410,7 +409,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   return location.href;
 };
 
-const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }) => {
+const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }, env) => {
   if (removedItems && removedItems.length) {
     removedItems.forEach((item) => {
       if (POIHandler.poiExist(item, map)) {
@@ -429,7 +428,7 @@ const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems 
         POIHandler.setPoiVisibility(item.id, map);
       } else {
         POIHandler
-          .fetchPoi(item.id, map, activeFloorName)
+          .fetchPoi(item.id, map, activeFloorName, env)
           .then((poiLayer) => {
             map.getLayers().forEach((layer) => {
               if (layer.getProperties().id === 99999) {
@@ -442,7 +441,7 @@ const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems 
   }
 };
 
-const handleMapClick = (mapInfo, evt) => {
+const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
   const pixel = evt.pixel;
   let feature = mapInfo.map.getFeaturesAtPixel(pixel);
   const features = [];
@@ -481,7 +480,7 @@ const handleMapClick = (mapInfo, evt) => {
     const featuresWms = mapInfo.map.getFeaturesAtPixel(pixel);
     const v = mapInfo.map.getView();
     const viewResolution = /** @type {number} */ (v.getResolution());
-    const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers);
+    const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers, layerNamePrefix);
     const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
       'INFO_FORMAT': 'application/json',
       'FEATURE_COUNT': 50

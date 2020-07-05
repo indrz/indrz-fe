@@ -122,6 +122,9 @@ export default {
 
       api.request({
         endPoint: 'search/' + term
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       })
         .then((response) => {
           if (!response || !response.data) {

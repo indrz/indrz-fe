@@ -10,20 +10,19 @@ import Icon from 'ol/style/Icon';
 import MapStyles from './mapStyles';
 import MapUtil from './map';
 import api from '~/util/api';
-import indrzConfig from '~/util/indrzConfig';
 
 // let store = null;
 let scope = null;
 let translate = null;
 
-const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
+const routeGo = async (map, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
   if (from.properties.space_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
+    routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId', env);
   } else if (from.properties.poi_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
+    routeUrl = await getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId', env);
   } else if (from.properties.poi_id && to.properties.poi_id) {
     // TODO following
     // routeToPoiFromPoi(from.poiid, to.poiid)
@@ -48,9 +47,9 @@ const clearRouteData = (map) => {
   });
 };
 
-const getDirections = async (map, layers, startSearchText, endSearchText, routeType, searchType) => {
+const getDirections = async (map, layers, startSearchText, endSearchText, routeType, searchType, env) => {
   clearRouteData(map);
-  const baseApiRoutingUrl = indrzConfig.baseApiUrl + 'directions/';
+  const baseApiRoutingUrl = env.baseApiUrl + 'directions/';
   let startName = '';
   let endName = '';
   let geoJsonUrl = '';
@@ -73,7 +72,7 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
   try {
     routeUrl = await api.request({
       url: geoJsonUrl
-    }).then(function (response) {
+    }, env).then(function (response) {
       if (!response) {
         // store.commit('SET_SNACKBAR', 'test message');
         return;
@@ -114,7 +113,7 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
       if (typeof (features[0]) !== 'undefined') {
         floorName = features[0].getProperties().floor_name;
         if (floorName) {
-          MapUtil.activateLayer(indrzConfig.layerNamePrefix + floorName, layers.switchableLayers, map);
+          MapUtil.activateLayer(env.layerNamePrefix + floorName, layers.switchableLayers, map);
         }
       }
       // TODO Following to check later
