@@ -123,7 +123,7 @@ export default {
         geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
         layerNamePrefix: process.env.LAYER_NAME_PREFIX,
         center: JSON.parse(process.env.DEFAULT_CENTER_XY)
-      }
+      };
     }
   },
   async mounted () {

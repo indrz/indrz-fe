@@ -1,5 +1,4 @@
 import axios from 'axios';
-import indrzConfig from '~/util/indrzConfig';
 
 const getAuthorizationHeader = (env) => {
   const header = {
