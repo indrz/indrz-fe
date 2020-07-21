@@ -18,18 +18,11 @@
       <v-spacer />
       <user-menu />
     </v-app-bar>
-    <v-main class="fill-height">
-      <v-container
-        class="fill-height"
-        :class="isPoiManager ? 'admin-map-container' : ''"
-        fluid
-      >
+    <v-main>
+      <v-container :class="isPoiManager ? 'admin-map-container' : ''">
         <nuxt />
       </v-container>
     </v-main>
-    <!--<v-footer color="indigo" app>
-      <span class="white&#45;&#45;text">Powered by indrz</span>
-    </v-footer>-->
   </v-app>
 </template>
 

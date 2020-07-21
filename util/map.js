@@ -174,7 +174,7 @@ const createWmtsLayer = function (layerSrcName, type, isVisible, sourceName) {
     type: 'background'
   });
   return wmtsLayer;
-}
+};
 
 const hideLayers = (layers) => {
   layers.forEach(layer => layer.setVisible(false));
@@ -201,7 +201,7 @@ const setLayerVisible = (layerName, switchableLayers, map) => {
             }
           });
         }
-      })
+      });
     }
   }
 };
@@ -222,7 +222,7 @@ const generateResultLinks = (att, searchString, featureCenter, className, floor,
 
   const poiId = fid;
   if (fid === 0) {
-    elId = 'searchResListItem_' + att
+    elId = 'searchResListItem_' + att;
   } else {
     elId = 'searchResListItem_' + att + '-' + poiId;
     poiIconHtml = '<img src="' + poiIcon + '" alt="POI" style="height: 25px; padding-right:5px;">';
@@ -393,9 +393,9 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     let someThing = '';
 
     if (att !== roomCode) {
-      someThing = ' (' + roomCode + ')'
+      someThing = ' (' + roomCode + ')';
     } else {
-      someThing = ''
+      someThing = '';
     }
     let featureId = '';
     let poiIconPath = '';
@@ -404,10 +404,10 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       featureId = feature.get('poi_id');
       poiIconPath = feature.get('icon');
       globalPopupInfo.poiId = feature.get('poi_id');
-      globalPopupInfo.src = feature.get('src')
+      globalPopupInfo.src = feature.get('src');
     } else {
       globalPopupInfo.poiId = 'noid';
-      globalPopupInfo.src = feature.get('src')
+      globalPopupInfo.src = feature.get('src');
     }
     const attributeInfo = '"' + att + '"';
 
@@ -451,7 +451,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
 
     activateFloor(layerToActive, layers, map, env.layerNamePrefix);
   } else if (featuresSearch.length === 0) {
-    const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
+    const htmlInsert = '<p href=\'#\' class=\'list - group - item indrz - search - res\'> Sorry nothing found</p>';
     console.log(htmlInsert);
     // todo: handle such jquery things
     // $('#search-results-list').append(htmlInsert);
@@ -521,7 +521,7 @@ const getMapSize = (map) => {
     'height_px': mapHeightPixels,
     'new_width': newWidth,
     'new_height': newHeight
-  }
+  };
 };
 
 const calculateAspectRatioFit = (srcWidth, srcHeight, maxWidth, maxHeight) => {
@@ -574,7 +574,7 @@ const getLayers = () => {
       poiLayerGroup,
       campusLocationsGroup
     ]
-  }
+  };
 };
 
 const getMapControls = () => {
@@ -615,7 +615,7 @@ const getWmsLayers = (floors, env) => {
   return {
     layers: wmsLayers,
     layerGroup: wmsFloorLayerGroup
-  }
+  };
 };
 
 const loadMapWithParams = async (mapInfo, query, env) => {
