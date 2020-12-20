@@ -13,16 +13,13 @@ $('#ShareRouteModal').on('shown.bs.modal', function () {
 })
 
 $('#ShareSearchModal').on('shown.bs.modal', function () {
-
   if (globalPopupInfo.hasOwnProperty('wmsInfo')) {
-
     if (globalPopupInfo.wmsInfo) {
       update_url('wmsInfo')
       $('.share-link').val(location.href)
       $('.share-link').focus()
       $('.share-link').select()
     }
-
   }
 
   if (globalSearchInfo.searchText) {
@@ -30,9 +27,7 @@ $('#ShareSearchModal').on('shown.bs.modal', function () {
     $('.share-link').val(location.href)
     $('.share-link').focus()
     $('.share-link').select()
-
   }
-
 })
 
 $('#sharePoiModal').on('shown.bs.modal', function () {
@@ -41,4 +36,3 @@ $('#sharePoiModal').on('shown.bs.modal', function () {
   $('.share-link').focus()
   $('.share-link').select()
 })
-

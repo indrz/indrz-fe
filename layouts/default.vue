@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     getLocale () {
-      return navigator.language || navigator.browserLanguage || (navigator.languages || [ 'en' ])[ 0 ];
+      return navigator.language || navigator.browserLanguage || (navigator.languages || ['en'])[0];
     }
   }
 }

@@ -412,24 +412,24 @@ export default {
       }
       const coordinate = drawEvent.feature.getGeometry().getCoordinates();
       const data = {
-        'floor': 1,
-        'name': this.selectedPoiCategory.name,
-        'description': '',
-        'enabled': true,
-        'name_en': this.selectedPoiCategory.name_en,
-        'name_de': this.selectedPoiCategory.name_de,
-        'floor_num': this.activeFloor.floor_num,
-        'floor_name': this.activeFloor.short_name,
-        'category': this.selectedPoiCategory.id,
-        'geom': JSON.stringify({
-          'type': 'MultiPoint',
-          'coordinates': [
+        floor: 1,
+        name: this.selectedPoiCategory.name,
+        description: '',
+        enabled: true,
+        name_en: this.selectedPoiCategory.name_en,
+        name_de: this.selectedPoiCategory.name_de,
+        floor_num: this.activeFloor.floor_num,
+        floor_name: this.activeFloor.short_name,
+        category: this.selectedPoiCategory.id,
+        geom: JSON.stringify({
+          type: 'MultiPoint',
+          coordinates: [
             coordinate
           ],
-          'crs': {
-            'type': 'name',
-            'properties': {
-              'name': 'EPSG:3857'
+          crs: {
+            type: 'name',
+            properties: {
+              name: 'EPSG:3857'
             }
           }
         })

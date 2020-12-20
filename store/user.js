@@ -47,7 +47,7 @@ export const actions = {
         method: 'GET',
         url: urlWithParams,
         headers: {
-          'Authorization': config.token
+          Authorization: config.token
         }
       });
 
@@ -70,7 +70,7 @@ export const actions = {
       url: url,
       data: payload,
       headers: {
-        'Authorization': config.token,
+        Authorization: config.token,
         'Content-Type': 'application/json'
       }
     });
