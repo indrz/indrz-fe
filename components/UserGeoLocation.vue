@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="indrz-geolocation" class="ol-control ol-unselectable geolocation">
-      <button class="default" title="Locate me"></button>
+      <button class="default" title="Locate me" />
     </div>
   </div>
 </template>
@@ -26,7 +26,23 @@ export default {
     }
   },
   data () {
-    return {};
+    return {
+      source: null,
+      layer: null,
+      watchId: null
+    };
+  },
+  computed: {
+    locationButton () {
+      const container = document.getElementById('indrz-geolocation');
+      const button = container.getElementsByTagName('button');
+      const classList = button[0].classList;
+      return {
+        container,
+        button,
+        classList
+      }
+    }
   },
   watch: {
     map: function (newValue) {
@@ -35,44 +51,55 @@ export default {
   },
   methods: {
     addControl () {
-      const source = new VectorSource();
-      const layer = new VectorLayer({
-        source: source
-      });
-      const locationButtonContainer = document.getElementById('indrz-geolocation');
-      const locationButton = locationButtonContainer.getElementsByTagName('button');
-
-      this.map.addLayer(layer);
-
-      navigator.geolocation.watchPosition((pos) => {
-        const coords = [pos.coords.longitude, pos.coords.latitude];
-        const accuracy = circular(coords, pos.coords.accuracy);
-
-        source.clear(true);
-        source.addFeatures([
-          new Feature(accuracy.transform('EPSG:4326', this.map.getView().getProjection())),
-          new Feature(new Point(fromLonLat(coords)))
-        ]);
-        locationButton[0].classList.add('active');
-      }, function (error) {
-        alert(`ERROR: ${error.message}`);
-        locationButton[0].classList.remove('active');
-      }, {
-        enableHighAccuracy: true
+      this.source = new VectorSource();
+      this.layer = new VectorLayer({
+        source: this.source
       });
 
-      locationButtonContainer.addEventListener('click', () => {
-        if (!source.isEmpty()) {
-          this.map.getView().fit(source.getExtent(), {
-            maxZoom: 18,
-            duration: 500
-          });
+      this.map.addLayer(this.layer);
+      this.locationButton.container.addEventListener('click', () => {
+        const isActiveButton = this.locationButton.classList.contains('active');
+
+        this.clearWatch();
+        if (!isActiveButton) {
+          this.addToWatch();
         }
       });
 
       this.map.addControl(new Control({
-        element: locationButtonContainer
+        element: this.locationButton.container
       }));
+    },
+
+    clearWatch () {
+      this.source.clear(true);
+      this.locationButton.classList.remove('active');
+
+      if (this.watchId) {
+        navigator.geolocation.clearWatch(this.watchId);
+      }
+    },
+
+    addToWatch () {
+      this.watchId = navigator.geolocation.watchPosition((pos) => {
+        const coords = [pos.coords.longitude, pos.coords.latitude];
+        const accuracy = circular(coords, pos.coords.accuracy);
+
+        this.source.addFeatures([
+          new Feature(accuracy.transform('EPSG:4326', this.map.getView().getProjection())),
+          new Feature(new Point(fromLonLat(coords)))
+        ]);
+        this.map.getView().fit(this.source.getExtent(), {
+          maxZoom: 18,
+          duration: 500
+        });
+        this.locationButton.classList.add('active');
+      }, function (error) {
+        alert(`ERROR: ${error.message}`);
+        this.locationButton.classList.remove('active');
+      }, {
+        enableHighAccuracy: true
+      });
     }
   }
 }
