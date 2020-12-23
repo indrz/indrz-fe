@@ -10,10 +10,14 @@
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import Feature from 'ol/Feature';
-import { circular } from 'ol/geom/Polygon';
+// import { circular } from 'ol/geom/Polygon';
 import Point from 'ol/geom/Point';
 import Control from 'ol/control/Control';
 import { fromLonLat } from 'ol/proj';
+import Style from 'ol/style/Style';
+import CircleStyle from 'ol/style/Circle';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
 
 export default {
   name: 'UserGeoLocation',
@@ -83,11 +87,12 @@ export default {
     addToWatch () {
       this.watchId = navigator.geolocation.watchPosition((pos) => {
         const coords = [pos.coords.longitude, pos.coords.latitude];
-        const accuracy = circular(coords, pos.coords.accuracy);
+        // const accuracy = circular(coords, pos.coords.accuracy);
 
         this.source.addFeatures([
-          new Feature(accuracy.transform('EPSG:4326', this.map.getView().getProjection())),
-          new Feature(new Point(fromLonLat(coords)))
+          // new Feature(accuracy.transform('EPSG:4326', this.map.getView().getProjection())),
+          // new Feature(new Point(fromLonLat(coords)))
+          this.getPositionFeature(fromLonLat(coords))
         ]);
         this.map.getView().fit(this.source.getExtent(), {
           maxZoom: 18,
@@ -100,6 +105,26 @@ export default {
       }, {
         enableHighAccuracy: true
       });
+    },
+
+    getPositionFeature (coordinates) {
+      const positionFeature = new Feature();
+      positionFeature.setStyle(
+        new Style({
+          image: new CircleStyle({
+            radius: 6,
+            fill: new Fill({
+              color: '#3399CC'
+            }),
+            stroke: new Stroke({
+              color: '#fff',
+              width: 2
+            })
+          })
+        })
+      );
+      positionFeature.setGeometry(coordinates ? new Point(coordinates) : null);
+      return positionFeature;
     }
   }
 }
