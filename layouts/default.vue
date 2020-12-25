@@ -1,13 +1,13 @@
 <template>
   <v-app dark>
-    <v-content>
+    <v-main>
       <v-container
         class="fill-height pa-0"
         fluid
       >
         <nuxt />
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 
@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     getLocale () {
-      return navigator.language || navigator.browserLanguage || (navigator.languages || [ 'en' ])[ 0 ];
+      return navigator.language || navigator.browserLanguage || (navigator.languages || ['en'])[0];
     }
   }
 }

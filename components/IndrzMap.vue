@@ -29,6 +29,7 @@
     <share-overlay ref="shareOverlay" />
     <terms :show="showTerms" @termsShow="onTermShowChange" />
     <help :show="showHelp" @helpShow="onHelpShowChange" />
+    <UserGeoLocation :map="map" class="indrz-geolocation" />
   </div>
 </template>
 
@@ -45,13 +46,15 @@ import indrzConfig from '../util/indrzConfig';
 import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
+import UserGeoLocation from './UserGeoLocation';
 
 export default {
   components: {
     Help,
     InfoOverlay,
     ShareOverlay,
-    Terms
+    Terms,
+    UserGeoLocation
   },
   data () {
     return {

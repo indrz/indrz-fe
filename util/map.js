@@ -263,25 +263,25 @@ const image = new Icon(/** @type {olx.style.IconOptions} */ ({
   src: '/static/homepage/img/other.png'
 }));
 const styles = {
-  'Point': [new Style({
+  Point: [new Style({
     image: image
   })],
-  'LineString': [new Style({
+  LineString: [new Style({
     stroke: new Stroke({
       color: '#68ff5b',
       width: 1
     })
   })],
-  'MultiLineString': [new Style({
+  MultiLineString: [new Style({
     stroke: new Stroke({
       color: '#68ff5b',
       width: 1
     })
   })],
-  'MultiPoint': [new Style({
+  MultiPoint: [new Style({
     image: image
   })],
-  'MultiPolygon': [new Style({
+  MultiPolygon: [new Style({
     stroke: new Stroke({
       color: '#4ff0ff',
       width: 3
@@ -290,7 +290,7 @@ const styles = {
       color: 'rgba(38, 215, 255, 0.4)'
     })
   })],
-  'Polygon': [new Style({
+  Polygon: [new Style({
     stroke: new Stroke({
       color: '#4ff0ff',
       width: 3
@@ -299,7 +299,7 @@ const styles = {
       color: 'rgba(38, 215, 255, 0.4)'
     })
   })],
-  'GeometryCollection': [new Style({
+  GeometryCollection: [new Style({
     stroke: new Stroke({
       color: 'magenta',
       width: 2
@@ -315,7 +315,7 @@ const styles = {
       })
     })
   })],
-  'Circle': [new Style({
+  Circle: [new Style({
     stroke: new Stroke({
       color: 'red',
       width: 2
@@ -450,7 +450,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
 
     activateFloor(layerToActive, layers, map);
   } else if (featuresSearch.length === 0) {
-    const htmlInsert = `<p href='#' class='list - group - item indrz - search - res'> Sorry nothing found</p>`;
+    const htmlInsert = '<p href=\'#\' class=\'list - group - item indrz - search - res\'> Sorry nothing found</p>';
     console.log(htmlInsert);
     // todo: handle such jquery things
     // $('#search-results-list').append(htmlInsert);
@@ -516,10 +516,10 @@ const getMapSize = (map) => {
   const newHeight = mapHeightPixels / floors;
 
   return {
-    'width_px': mapWidthPixels,
-    'height_px': mapHeightPixels,
-    'new_width': newWidth,
-    'new_height': newHeight
+    width_px: mapWidthPixels,
+    height_px: mapHeightPixels,
+    new_width: newWidth,
+    new_height: newHeight
   }
 };
 

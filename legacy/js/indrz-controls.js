@@ -1,6 +1,6 @@
-var map_type = true
+let map_type = true
 
-var full_screen_control = new ol.control.FullScreen({
+const full_screen_control = new ol.control.FullScreen({
   label: 'Go Full Screen',
   className: 'btn-fullscreen',
   target: document.getElementById('id-fullscreen')
@@ -17,7 +17,6 @@ $('#id-map-switcher').on('click', function (evt) {
     // wmsOutdoorMap.setVisible(true);
 
     // setLayerVisible(1);
-
   } else {
     $(this).text('Map')
     ortho30cm_bmapat.setVisible(true)
@@ -27,35 +26,29 @@ $('#id-map-switcher').on('click', function (evt) {
   }
 })
 
-var panToCampus = document.getElementById('id-zoom-to-campus')
+const panToCampus = document.getElementById('id-zoom-to-campus')
 
 panToCampus.addEventListener('click', function () {
-
   view.animate({
     center: CampusZoom,
     duration: 2000,
     zoom: 17
   })
-
 }, false)
 
 function zoomToCampusLocation (campusId) {
-
   // TODO if campus location point exists simply hide /show
   // ie do not re-create the geojson on every click
 
-  var locationsUrl = baseApiUrl + 'campus/locations/?format=json'
+  const locationsUrl = baseApiUrl + 'campus/locations/?format=json'
 
   $('#campusLocations li').removeClass('active')
 
   $('#campusid-' + campusId).addClass('active')
 
   indrzApiCall(locationsUrl).then(function (response) {
-
     response.features.forEach(function (feature) {
-
       if (parseInt(campusId) === feature.properties.id) {
-
         view.animate({
           center: feature.geometry.coordinates,
           duration: 2000,
@@ -63,12 +56,7 @@ function zoomToCampusLocation (campusId) {
         })
 
         open_popup(feature.properties, feature.geometry.coordinates, feature)
-
       }
-
     })
-
   })
-
 }
-

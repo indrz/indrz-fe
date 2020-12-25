@@ -19,7 +19,7 @@ const request = function (requestObj) {
     url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
     method: requestObj.method || 'GET',
     headers: {
-      'Authorization': indrzConfig.token,
+      Authorization: indrzConfig.token,
       'Content-Type': 'application/json'
     }
   });

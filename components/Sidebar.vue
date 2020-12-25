@@ -69,19 +69,19 @@ export default {
     SearchResult
   },
   props: {
-    'openedPanels': {
+    openedPanels: {
       type: Array,
       default: function () {
         return [];
       }
     },
-    'initialPoiCatId': {
+    initialPoiCatId: {
       type: String,
       default: function () {
         return null;
       }
     },
-    'initialPoiId': {
+    initialPoiId: {
       type: String,
       default: function () {
         return null;

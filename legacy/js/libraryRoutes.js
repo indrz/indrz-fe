@@ -1,266 +1,243 @@
 
+function library_book_position (rvk_key) {
+  return $.ajax({
+    dataType: 'json',
+    url: '/indrz/api/v1/library/location/' + rvk_key
+  }).done(function (data) {
+    // If successful
+    // console.log('got book data', data);
+    globalBookInfo[rvk_key.toUpperCase()] = data;
 
-function library_book_position(rvk_key) {
+    routeLocalData.start = {};
+    routeLocalData.start.xcoord = 1826545.2173675;
+    routeLocalData.start.ycoord = 6142423.4241214;
+    routeLocalData.start.floor = 0;
+    const routeStartValue = routeLocalData.start.xcoord + ',' + routeLocalData.start.ycoord + ',' + routeLocalData.start.floor;
 
-    return $.ajax({
-        dataType: 'json',
-        url: '/indrz/api/v1/library/location/' + rvk_key
-    }).done(function (data) {
-        // If successful
-        // console.log('got book data', data);
-        globalBookInfo[rvk_key.toUpperCase()] = data;
+    routeLocalData.start.routeValue = routeStartValue;
+    routeLocalData.end = {};
+    // console.log(JSON.stringify(data));
+    routeLocalData.end.xcoord = data.geometry.coordinates[0];
+    routeLocalData.end.ycoord = data.geometry.coordinates[1];
+    routeLocalData.end.floor = data.properties.floor_num;
 
-        routeLocalData.start = {};
-        routeLocalData.start.xcoord = 1826545.2173675;
-        routeLocalData.start.ycoord = 6142423.4241214;
-        routeLocalData.start.floor = 0;
-        var routeStartValue = routeLocalData.start.xcoord + "," + routeLocalData.start.ycoord + "," + routeLocalData.start.floor;
+    const routeEndValue = routeLocalData.end.xcoord + ',' + routeLocalData.end.ycoord + ',' + routeLocalData.end.floor;
 
-        routeLocalData.start.routeValue = routeStartValue;
-        routeLocalData.end = {};
-        // console.log(JSON.stringify(data));
-        routeLocalData.end.xcoord = data.geometry.coordinates[0];
-        routeLocalData.end.ycoord = data.geometry.coordinates[1];
-        routeLocalData.end.floor = data.properties.floor_num;
+    routeLocalData.end.routeValue = routeEndValue;
 
-        var routeEndValue = routeLocalData.end.xcoord + "," + routeLocalData.end.ycoord + "," + routeLocalData.end.floor;
+    routeToBook('LC Eingang', data.properties.name, routeStartValue, routeEndValue, 0);
 
-        routeLocalData.end.routeValue = routeEndValue;
+    const libraryData = {};
+    libraryData.route_info = { walk_time: 123.23 };
 
-        routeToBook("LC Eingang", data.properties.name, routeStartValue, routeEndValue, 0);
+    const popup_location = [data.geometry.coordinates[0]];
+    popup_location.push(data.geometry.coordinates[1]);
 
-        var libraryData = {};
-        libraryData.route_info = {"walk_time":123.23};
+    globalPopupInfo.bookId = data.properties.name;
+    globalPopupInfo.bookCoords = routeLocalData.end.xcoord + ',' + routeLocalData.end.ycoord;
 
-        var popup_location = [data.geometry.coordinates[0]];
-        popup_location.push(data.geometry.coordinates[1]);
+    // globalRouteInfo.routeUrl = '?campus=1&key=' + rvk_key;
 
-        globalPopupInfo.bookId = data.properties.name;
-        globalPopupInfo.bookCoords = routeLocalData.end.xcoord + "," + routeLocalData.end.ycoord;
+    // console.log("popuploacation is : " + popup_location);
+    // console.log("coords  is : " + data.geometry.coordiantes);
+    // console.log("props  is : " + data.properties);
 
-        // globalRouteInfo.routeUrl = '?campus=1&key=' + rvk_key;
+    // TODO make library popup look good
+    // uncomment to activate it works but looks bad
+    open_popup(data.properties, popup_location, data.properties.name);
 
-        // console.log("popuploacation is : " + popup_location);
-        // console.log("coords  is : " + data.geometry.coordiantes);
-        // console.log("props  is : " + data.properties);
-
-        // TODO make library popup look good
-        // uncomment to activate it works but looks bad
-        open_popup(data.properties, popup_location, data.properties.name );
-
-        $("#clearRoute").removeClass("hide");
-        $("#shareRoute").removeClass("hide");
-        $("#routeText").removeClass("hide");
-        $('#collapseRouting').collapse('show');
-        $('#collapsePoi').collapse('hide');
-
-
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        // If fail
-        //console.log(textStatus + ': ' + errorThrown);
-    });
+    $('#clearRoute').removeClass('hide');
+    $('#shareRoute').removeClass('hide');
+    $('#routeText').removeClass('hide');
+    $('#collapseRouting').collapse('show');
+    $('#collapsePoi').collapse('hide');
+  }).fail(function (jqXHR, textStatus, errorThrown) {
+    // If fail
+    // console.log(textStatus + ': ' + errorThrown);
+  });
 }
 
+function routeToBook (startName, endName, startCoords, EndCoords, routeType) {
+  if (routeLayer) {
+    map.removeLayer(routeLayer);
+    // map.removeLayer(markerLayer);
+    clearRouteDescription();
+    // map.getLayers().pop();
+  }
 
+  // if(markerLayer){
+  //     map.removeLayer(markerLayer);
+  // }
 
-function routeToBook(startName, endName, startCoords, EndCoords, routeType) {
+  if (routeNearestPoiLayer) {
+    map.removeLayer(routeNearestPoiLayer);
+  }
 
+  const geoJsonUrl = baseApiRoutingUrl + startCoords + '&' + EndCoords + '&' + routeType + '/?format=json';
 
-    if (routeLayer) {
-        map.removeLayer(routeLayer);
-        // map.removeLayer(markerLayer);
-        clearRouteDescription();
-        //map.getLayers().pop();
+  // var geoJsonUrl = baseApiRoutingUrl + "startstr=" + startSearchText + "&" + "endstr=" + endSearchText + '/?format=json';
+  const startingLevel = routeType;
+
+  const source = new ol.source.Vector();
+  $.ajax({ url: geoJsonUrl }).then(function (response) {
+    // console.log("response", response);
+    const geojsonFormat = new ol.format.GeoJSON();
+    const features = geojsonFormat.readFeatures(response,
+      { featureProjection: 'EPSG:4326' });
+    source.addFeatures(features);
+    //
+    //
+    const routeJson = JSON.stringify(response);
+    const routeData = JSON.parse(routeJson);
+
+    document.getElementById('route-to').value = endName;
+    document.getElementById('route-from').value = startName;
+
+    insertRouteDescriptionText(startName, endName, routeData, false);
+
+    addLibraryMarkers(features, routeData.route_info);
+
+    let start_floor = 0;
+    // active the floor of the start point
+    if (typeof (features[0]) !== 'undefined') {
+      start_floor = features[0].getProperties().floor;
     }
 
-    // if(markerLayer){
-    //     map.removeLayer(markerLayer);
-    // }
-
-    if (routeNearestPoiLayer){
-        map.removeLayer(routeNearestPoiLayer);
+    if (library_key !== 'nokey') {
+      start_floor = routeLocalData.end.floor;
     }
 
-    var geoJsonUrl = baseApiRoutingUrl + startCoords + "&" + EndCoords + "&" + routeType + '/?format=json';
+    for (let i = 0; i < floor_layers.length; i++) {
+      if (start_floor == floor_layers[i].floor_num) {
+        activateLayer(i);
+      }
+    }
 
-    // var geoJsonUrl = baseApiRoutingUrl + "startstr=" + startSearchText + "&" + "endstr=" + endSearchText + '/?format=json';
-    var startingLevel = routeType;
+    // center up the route
+    const extent = source.getExtent();
+    map.getView().fit(extent);
 
-    var source = new ol.source.Vector();
-    $.ajax({url:geoJsonUrl}).then(function (response) {
-        //console.log("response", response);
-        var geojsonFormat = new ol.format.GeoJSON();
-        var features = geojsonFormat.readFeatures(response,
-            {featureProjection: 'EPSG:4326'});
-        source.addFeatures(features);
-        //
-        //
-        var routeJson = JSON.stringify(response);
-        var routeData = JSON.parse(routeJson);
+    globalRouteInfo.startName = startName;
+    globalRouteInfo.endName = endName;
+    globalRouteInfo.startPoiId = 'noid';
+    globalRouteInfo.endPoiId = 'noid';
+    globalRouteInfo.routeUrl = '?campus=1&key=' + endName;
+  });
 
-        document.getElementById('route-to').value = endName;
-        document.getElementById('route-from').value = startName;
+  libraryRouteLayer = new ol.layer.Vector({
+    // url: geoJsonUrl,
+    // format: new ol.format.GeoJSON(),
+    source: source,
+    style: function (feature, resolution) {
+      const feature_floor = feature.getProperties().floor;
+      if (feature_floor == active_floor_num) {
+        feature.setStyle(route_active_style);
+      } else {
+        feature.setStyle(route_inactive_style);
+      }
+    },
+    title: 'RouteToBook',
+    name: 'RouteToBook',
+    visible: true,
+    layer_id: 3000,
+    zIndex: 4
+  });
 
-        insertRouteDescriptionText(startName, endName, routeData, false);
+  // routeLayerGroup.getLayers().push(libraryRouteLayer);
+  map.addLayer(libraryRouteLayer);
 
-        addLibraryMarkers(features, routeData.route_info);
+  $('#clearRoute').removeClass('hide');
+  $('#shareRoute').removeClass('hide');
+  $('#routeText').removeClass('hide');
+  $('#RouteDescription').removeClass('hide');
 
-        var start_floor = 0;
-        // active the floor of the start point
-        if(typeof(features[0]) !== 'undefined') {
-            start_floor = features[0].getProperties().floor;
-        }
+  window.location.href = '#map';
 
-        if (library_key !== "nokey") {
-            start_floor = routeLocalData.end.floor;
-        }
-
-        for (var i = 0; i < floor_layers.length; i++) {
-            if (start_floor == floor_layers[i].floor_num) {
-                activateLayer(i);
-            }
-        }
-
-
-        // center up the route
-        var extent = source.getExtent();
-        map.getView().fit(extent);
-
-
-        globalRouteInfo.startName = startName;
-        globalRouteInfo.endName = endName;
-        globalRouteInfo.startPoiId = "noid";
-        globalRouteInfo.endPoiId = "noid";
-        globalRouteInfo.routeUrl = "?campus=1&key=" + endName;
-
-
-    });
-
-    libraryRouteLayer = new ol.layer.Vector({
-        //url: geoJsonUrl,
-        //format: new ol.format.GeoJSON(),
-        source: source,
-        style: function (feature, resolution) {
-            var feature_floor = feature.getProperties().floor;
-            if (feature_floor == active_floor_num) {
-                feature.setStyle(route_active_style);
-            } else {
-                feature.setStyle(route_inactive_style);
-            }
-        },
-        title: "RouteToBook",
-        name: "RouteToBook",
-        visible: true,
-        layer_id: 3000,
-        zIndex: 4
-    });
-
-
-    // routeLayerGroup.getLayers().push(libraryRouteLayer);
-    map.addLayer(libraryRouteLayer);
-
-    $("#clearRoute").removeClass("hide");
-    $("#shareRoute").removeClass("hide");
-    $("#routeText").removeClass("hide");
-    $("#RouteDescription").removeClass("hide");
-
-    window.location.href = "#map";
-
-    $('html,body').animate({
-            scrollTop: $("#map").offset().top
-        },
-        'slow');
-
+  $('html,body').animate({
+    scrollTop: $('#map').offset().top
+  },
+  'slow');
 }
 
-function addLibraryMarkers(route_features, r_info) {
+function addLibraryMarkers (route_features, r_info) {
+  const marker_features = [];
+  const lengthList = [];
+  const floorList = [];
+  let prevFloorNum = -99;
+  let index = -1;
+  const nFeatures = route_features.length;
+  let distance = 0;
 
-    var marker_features = [];
-    var lengthList = [];
-    var floorList = [];
-    var prevFloorNum = -99;
-    var index = -1;
-    var nFeatures = route_features.length;
-    var distance = 0;
-
-    if (nFeatures == 0) return;
-    // add middle icons
-    for (var i = 0; i < nFeatures; i++) {
-        var floor_num = route_features[i].getProperties().floor;
-        if (prevFloorNum != floor_num) {
-            floorList.push(floor_num);
-            index++;
-            prevFloorNum = floor_num;
-            if (!lengthList[index]) lengthList[index] = 0;
-        }
-        lengthList[index] += route_features[i].getGeometry().getLength();
+  if (nFeatures == 0) { return; }
+  // add middle icons
+  for (var i = 0; i < nFeatures; i++) {
+    var floor_num = route_features[i].getProperties().floor;
+    if (prevFloorNum != floor_num) {
+      floorList.push(floor_num);
+      index++;
+      prevFloorNum = floor_num;
+      if (!lengthList[index]) { lengthList[index] = 0; }
     }
+    lengthList[index] += route_features[i].getGeometry().getLength();
+  }
 
+  index = 0;
+  for (i = 0; i < nFeatures; i++) {
+    var floor_num = route_features[i].getProperties().floor;
 
-    index = 0;
-    for (i = 0; i < nFeatures; i++) {
-        var floor_num = route_features[i].getProperties().floor;
+    if (floorList[index] === floor_num) { distance += route_features[i].getGeometry().getLength(); }
+    if (floorList[index] === floor_num && lengthList[index] / 2 < distance) {
+      const line_extent = route_features[i].getGeometry().getExtent();
+      const middleCoordinate = ol.extent.getCenter(line_extent);
+      const middlePoint = new ol.geom.Point(route_features[i].getGeometry().getClosestPoint(middleCoordinate));
 
-        if (floorList[index] === floor_num)
-            distance += route_features[i].getGeometry().getLength();
-        if (floorList[index] === floor_num && lengthList[index] / 2 < distance) {
-            var line_extent = route_features[i].getGeometry().getExtent();
-            var middleCoordinate = ol.extent.getCenter(line_extent);
-            var middlePoint = new ol.geom.Point(route_features[i].getGeometry().getClosestPoint(middleCoordinate));
+      const middleFeature = new ol.Feature({
+        geometry: middlePoint
+      });
+      const floor_num_style = new ol.style.Style({
+        image: new ol.style.Icon({
+          src: '/static/img/route_floor_' + floor_num + '.png'
+        })
+      });
 
+      middleFeature.setStyle(floor_num_style);
+      marker_features.push(middleFeature);
 
-            var middleFeature = new ol.Feature({
-                geometry: middlePoint
-            });
-            var floor_num_style = new ol.style.Style({
-                image: new ol.style.Icon({
-                    src: '/static/img/route_floor_' + floor_num + '.png'
-                })
-            });
-
-
-            middleFeature.setStyle(floor_num_style);
-            marker_features.push(middleFeature);
-
-            index++;
-            distance = 0;
-        }
-
+      index++;
+      distance = 0;
     }
+  }
 
+  const start_point = new ol.geom.Point(route_features[0].getGeometry().getFirstCoordinate());
+  const end_point = new ol.geom.Point(route_features[route_features.length - 1].getGeometry().getFirstCoordinate());
 
-        var start_point = new ol.geom.Point(route_features[0].getGeometry().getFirstCoordinate());
-        var end_point = new ol.geom.Point(route_features[route_features.length -1].getGeometry().getFirstCoordinate());
+  const startMarker = new ol.Feature({
+    geometry: start_point
+  });
+  startMarker.setStyle(route_marker_A_style);
 
-        var startMarker = new ol.Feature({
-            geometry: start_point
-        });
-        startMarker.setStyle(route_marker_A_style);
+  const endMarker = new ol.Feature({
+    geometry: end_point
+  });
+  endMarker.setGeometry(end_point);
+  endMarker.setStyle(route_marker_B_style);
 
-        var endMarker = new ol.Feature({
-            geometry: end_point
-        });
-        endMarker.setGeometry(end_point);
-        endMarker.setStyle(route_marker_B_style);
+  marker_features.push(startMarker);
+  marker_features.push(endMarker);
 
+  libraryMarkerLayer = new ol.layer.Vector({
+    source: new ol.source.Vector({
+      features: marker_features
+    }),
+    title: 'RouteLibraryMarkers',
+    name: 'RouteLibraryMarkers',
+    visible: true,
+    layer_id: 20020,
+    zIndex: 6
+  });
 
-        marker_features.push(startMarker);
-        marker_features.push(endMarker);
-
-    libraryMarkerLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: marker_features
-        }),
-        title: "RouteLibraryMarkers",
-        name: "RouteLibraryMarkers",
-        visible: true,
-        layer_id: 20020,
-        zIndex: 6
-    });
-
-    map.getLayers().push(libraryMarkerLayer);
+  map.getLayers().push(libraryMarkerLayer);
 }
-
 
 // var createLibraryPopup = function (geometry, floor, building, fachboden, shelfID, rvk_key) {
 //     //replace %20 with space
@@ -395,7 +372,6 @@ function addLibraryMarkers(route_features, r_info) {
 //     //hide unpin tool
 //     popup.tools.unpin.hide();
 // };
-
 
 /*
  returns a new geom with pixel offset. has to be in 900973 format

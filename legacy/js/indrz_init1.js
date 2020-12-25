@@ -1,110 +1,104 @@
-if (typeof console === "undefined" || console.log === undefined || console.info === undefined || console
-.error === undefined) {
-var console = {
+if (typeof console === 'undefined' || console.log === undefined || console.info === undefined || console
+  .error === undefined) {
+  var console = {
     log: function () {},
     info: function () {},
     error: function () {}
-};
+  };
 }
 
-function indrzGetJson(geoJsonUrl) {
-return $.getJSON(geoJsonUrl, function (data) {
-        // console.log( "success" );
-    })
+function indrzGetJson (geoJsonUrl) {
+  return $.getJSON(geoJsonUrl, function (data) {
+    // console.log( "success" );
+  })
     .done(function (data) {
 
     })
     .fail(function () {
-        console.log("error getting json from url" + geoJsonUrl);
+      console.log('error getting json from url' + geoJsonUrl);
     });
 }
 
+function getResultFromURL (url) {
+  let retStr = '';
 
-function getResultFromURL(url) {
-var retStr = "";
-
-$.ajax({
+  $.ajax({
     url: url,
     success: function (response) {
-        retStr = response;
+      retStr = response;
     },
     error: function (e) {
-        res = null;
-        console.error("Failed to call " + url);
+      res = null;
+      console.error('Failed to call ' + url);
     },
     async: false,
     timeout: 7500 // 7.5 seconds
-});
+  });
 
-return retStr;
+  return retStr;
 }
 
-function indrzApiCall(url, callback) {
-
-var respObj = $.ajax({
+function indrzApiCall (url, callback) {
+  const respObj = $.ajax({
     url: url,
     beforeSend: function (xhr) {
-        /* Authorization header */
-        xhr.setRequestHeader("Authorization", indrzApiToken);
-        xhr.setRequestHeader("X-Mobile", "false");
+      /* Authorization header */
+      xhr.setRequestHeader('Authorization', indrzApiToken);
+      xhr.setRequestHeader('X-Mobile', 'false');
     },
-    //data: JSON.stringify(data),
-    //data: data,
+    // data: JSON.stringify(data),
+    // data: data,
     // type: 'POST',
-    dataType: "json",
+    dataType: 'json',
     // contentType: 'application/json; charset=UTF-8',
     success: function (jsonObj) {
-        // callback(jsonObj);
+      // callback(jsonObj);
     },
     error: function (e) {
-        // console.error("Failed to do json rpc call to " + url );
-        // callback(null);
+      // console.error("Failed to do json rpc call to " + url );
+      // callback(null);
     },
     async: true,
     timeout: 7500 // 7.5 seconds
-});
+  });
 
-return respObj;
+  return respObj;
 }
 
+function jsonRpcCall (url, methodName, parameters, callback) {
+  data = '{"method": "' + methodName + '", "id": "labla", "params": [' + parameters + '], "jsonrpc":"2.0"}';
 
-
-function jsonRpcCall(url, methodName, parameters, callback) {
-data = '{"method": "' + methodName + '", "id": "labla", "params": [' + parameters + '], "jsonrpc":"2.0"}';
-
-jQuery.ajax({
+  jQuery.ajax({
     url: url,
-    //data: JSON.stringify(data),
+    // data: JSON.stringify(data),
     data: data,
     type: 'POST',
-    dataType: "json",
+    dataType: 'json',
     contentType: 'application/json; charset=UTF-8',
     success: function (jsonObj) {
-        callback(jsonObj.result);
+      callback(jsonObj.result);
     },
     error: function (e) {
-        console.error("Failed to do json rpc call to " + url + " with methodName " +
+      console.error('Failed to do json rpc call to ' + url + ' with methodName ' +
             methodName);
-        callback(null);
+      callback(null);
     },
     async: true,
     timeout: 7500 // 7.5 seconds
-});
+  });
 }
 
-function getResultFromURLWithCallback(url, callback) {
-
-jQuery.ajax({
+function getResultFromURLWithCallback (url, callback) {
+  jQuery.ajax({
     url: url,
     success: function (response) {
-        callback(response);
+      callback(response);
     },
     error: function (e) {
-        console.error("Failed to call " + url);
-        callback(null);
+      console.error('Failed to call ' + url);
+      callback(null);
     },
     async: true,
     timeout: 7500 // 7.5 seconds
-});
-
+  });
 }
