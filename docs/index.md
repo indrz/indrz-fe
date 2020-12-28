@@ -19,9 +19,9 @@ You can customize the design of the following elements:
 1. Header, Footer
 
 ### Fonts
-The font library (default google material icons) We can add the material design icons as plugin under plugins directory. Read from config
+The font library (default google material icons)
 
-Vuetify 2+
+Vuetify 2+  how to change the font
 ```javascript
 
 @import url('https://fonts.googleapis.com/css? family=Oxygen:300,400,700&display=swap');
@@ -41,20 +41,51 @@ $title-font: 'Comfortaa';
 
 
 ### Logos and Favicon
-Logos are possible in the following locations:
-1. logo upper right shown on map logoPath = ./somepath/logo.png  shouldShowLogo = true
+Logos are located in the following locations:
+1. logo upper right shown on map
 1. logo top left menu panel
 1. favicon faviconIcon = ./somepath/logo.png
+
+To change the logo and favicon you need to use  `thisfile.vue ` 
+
+```javascript
+    logoOnMap = "somepath"
+    logoOnLeftMenu = "somepath"
+    favicon = "somepath"
+```
+
+
 
 ### Floor Changer
 On the right side you can style the floor changer by changing the file.....add..file..here...
 
+To change the floor changer design you need to use  `thisfile.vue ` 
+
+```javascript
+
+    something = "something"
+```
+
 ### Header
 At the top you can add an optional header that will appear above the map.
 
-`options:  showHeader = False  (default: False)`
+To add a header you need to use  `thisfile.vue ` 
+
+```javascript
+
+    something = "something"
+    showHeader = False  (default: False)
+```
+
 
 ### Footer
 Below the map window you can have an optional Footer.
 
-`options:  showFooter = False  (default: False)`
+To add a header you need to use  `thisfile.vue ` 
+
+```javascript
+ 
+    something = "something"
+    showFooter = False  //(default: False)
+```
+
