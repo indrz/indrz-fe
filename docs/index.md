@@ -2,7 +2,21 @@
 
 
 ## How to customize the design
-You can customize the design
+You can customize the design of the following elements:
+
+1. font
+1. logos, favicon
+   1. upper right shown on map logoPath = ./somepath/logo.png shouldShowLogo = true
+   1. logo top left menu panel
+    1. favicon faviconIcon = ./somepath/logo.png
+1. buttons left menue
+    1. show all locations
+    1. Share map
+    1. Download Map as Image
+    1. Download Map as PDF
+    1. About / Terms and Conditions
+1. Floor Changer
+1. Header, Footer
 
 ### Fonts
 The font library (default google material icons) We can add the material design icons as plugin under plugins directory. Read from config
