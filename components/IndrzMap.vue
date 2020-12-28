@@ -96,6 +96,9 @@ export default {
         this.map.updateSize();
       }, 500);
     };
+    this.map.on('moveend', (e) => {
+      this.$root.$emit('map-moved', e.map.getView().getCenter());
+    });
   },
 
   methods: {
