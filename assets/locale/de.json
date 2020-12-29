@@ -19,5 +19,6 @@
   "about": "Über uns/AGBs",
   "no_route_found": "Sorry, keine Route gefunden.",
   "help_legend_infos": "-Help, Legend, Infos",
-  "about_terms_conditions": "-About/Terms Conditions"
+  "about_terms_conditions": "-About/Terms Conditions",
+  "scan_qr_show_my_location": "Scan QR (show my location)"
 }

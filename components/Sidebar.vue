@@ -100,7 +100,8 @@ export default {
         download: this.$t('download'),
         pdf: this.$t('pdf'),
         helpLegendInfos: this.$t('help_legend_infos'),
-        aboutTermsConditions: this.$t('about_terms_conditions')
+        aboutTermsConditions: this.$t('about_terms_conditions'),
+        scanQRShowMyLocation: this.$t('scan_qr_show_my_location')
       },
       expanded: [],
       searchResult: []
@@ -161,6 +162,11 @@ export default {
           icon: 'clipboard-text',
           type: 'terms',
           text: this.locale.aboutTermsConditions
+        },
+        {
+          icon: 'qrcode-scan',
+          type: 'qrcode',
+          text: this.locale.scanQRShowMyLocation
         }
       ]
     }
