@@ -6,8 +6,11 @@
     <v-card>
       <v-card-title class="headline" />
       <v-card-text>
-        <div>
+        <div v-if="!error">
           <qrcode-stream :camera="camera" @decode="onDecode" @init="onInit" />
+        </div>
+        <div v-if="error">
+          <span class="subtitle-1">Try room-code instead?</span>
         </div>
       </v-card-text>
       <v-card-actions>
@@ -41,7 +44,8 @@ export default {
   },
   data () {
     return {
-      camera: 'off'
+      camera: 'off',
+      error: false
     }
   },
   computed: {
@@ -65,7 +69,11 @@ export default {
   },
   methods: {
     onDecode (decodedString) {
-      console.log(decodedString)
+      if (decodedString && decodedString.includes('?')) {
+        this.$emit('qrCodeScanned', decodedString.split('?')[1]);
+        this.turnCameraOff();
+        this.emitCloseEvent();
+      }
     },
     turnCameraOn () {
       this.camera = 'auto'
@@ -84,26 +92,27 @@ export default {
 
         switch (error.name) {
           case 'NotAllowedError':
-            errorMessage = 'ERROR: you need to grant camera access permisson'
+            errorMessage = 'ERROR: you need to grant camera access permisson';
             break;
           case 'NotFoundError':
-            errorMessage = 'ERROR: no camera on this device'
+            errorMessage = 'ERROR: no camera on this device';
             break;
           case 'NotSupportedError':
-            errorMessage = 'ERROR: secure context required (HTTPS, localhost)'
+            errorMessage = 'ERROR: secure context required (HTTPS, localhost)';
             break;
           case 'NotReadableError':
-            errorMessage = 'ERROR: is the camera already in use?'
+            errorMessage = 'ERROR: is the camera already in use?';
             break;
           case 'OverconstrainedError':
-            errorMessage = 'ERROR: installed cameras are not suitable'
+            errorMessage = 'ERROR: installed cameras are not suitable';
             break;
           case 'StreamApiNotSupportedError':
-            errorMessage = 'ERROR: Stream API is not supported in this browser'
+            errorMessage = 'ERROR: Stream API is not supported in this browser';
             break;
         }
         alert(errorMessage);
-        this.emitCloseEvent();
+        this.error = true;
+        // this.emitCloseEvent();
       }
     }
   }
