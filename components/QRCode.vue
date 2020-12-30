@@ -10,7 +10,7 @@
           <qrcode-stream :camera="camera" @decode="onDecode" @init="onInit" />
         </div>
         <div v-if="error">
-          <span class="subtitle-1">Try room-code instead?</span>
+          <span class="subtitle-1">{{ locale.cameraFallbackMessage }}</span>
         </div>
       </v-card-text>
       <v-card-actions>
@@ -45,7 +45,10 @@ export default {
   data () {
     return {
       camera: 'off',
-      error: false
+      error: false,
+      locale: {
+        cameraFallbackMessage: this.$t('qr_camera_fallback_message')
+      }
     }
   },
   computed: {
