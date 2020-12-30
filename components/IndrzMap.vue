@@ -25,7 +25,7 @@
         <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
-    <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
+    <info-overlay-container @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
     <share-overlay ref="shareOverlay" />
     <terms :show="showTerms" @termsShow="onTermShowChange" />
     <help :show="showHelp" @helpShow="onHelpShowChange" />
@@ -39,7 +39,6 @@ import MapUtil from '../util/map';
 import MapHandler from '../util/mapHandler';
 import RouteHandler from '../util/RouteHandler';
 import POIHandler from '../util/POIHandler';
-import InfoOverlay from '../components/infoOverlay';
 import ShareOverlay from '../components/shareOverlay';
 import 'ol/ol.css';
 import indrzConfig from '../util/indrzConfig';
@@ -47,11 +46,12 @@ import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
 import UserGeoLocation from './UserGeoLocation';
+import InfoOverlayContainer from './popup/InfoOverlayContainer';
 
 export default {
   components: {
+    InfoOverlayContainer,
     Help,
-    InfoOverlay,
     ShareOverlay,
     Terms,
     UserGeoLocation
