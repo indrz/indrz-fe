@@ -1,7 +1,14 @@
 <template>
   <div>
     <div>
-      <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" class="left-bar-logo">
+      <v-row no-gutters>
+        <v-col :cols="2" class="pa-2">
+          <v-app-bar-nav-icon @click.stop="onNavbarClick" />
+        </v-col>
+        <v-col :cols="8" align-self="center">
+          <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" class="left-bar-logo">
+        </v-col>
+      </v-row>
     </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
@@ -199,6 +206,9 @@ export default {
     },
     loadSinglePoi (poiId) {
       this.$emit('loadSinglePoi', poiId);
+    },
+    onNavbarClick () {
+      this.$emit('hideSidebar');
     }
   }
 }
