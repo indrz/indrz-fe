@@ -1,12 +1,21 @@
 <template>
   <v-app dark>
     <v-main>
-      <v-container
-        class="fill-height pa-0"
-        fluid
-      >
-        <nuxt />
-      </v-container>
+      <div class="box">
+        <div class="header">
+          <p><b>header</b>
+            <br />
+            <br />(sized to content)</p>
+        </div>
+        <v-container
+          class="content"
+        >
+          <nuxt />
+        </v-container>
+        <div class="footer">
+          <p><b>footer</b> (fixed height)</p>
+        </div>
+      </div>
     </v-main>
   </v-app>
 </template>
@@ -45,3 +54,27 @@ export default {
   }
 }
 </script>
+
+<style>
+  .box {
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
+
+  .box .header {
+    flex: 0 1 auto;
+  }
+
+  .box .content {
+    flex: 1 1 auto;
+    max-width: 100%;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .box .footer {
+    flex: 0 1 40px;
+  }
+
+</style>
