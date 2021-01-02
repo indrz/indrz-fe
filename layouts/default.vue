@@ -3,9 +3,7 @@
     <v-main>
       <div class="box">
         <div class="header">
-          <p><b>header</b>
-            <br />
-            <br />(sized to content)</p>
+          <!-- Any code below will show up on Header -->
         </div>
         <v-container
           class="content"
@@ -13,7 +11,7 @@
           <nuxt />
         </v-container>
         <div class="footer">
-          <p><b>footer</b> (fixed height)</p>
+          <!-- Any code below will show up on Footer -->
         </div>
       </div>
     </v-main>
@@ -74,7 +72,7 @@ export default {
   }
 
   .box .footer {
-    flex: 0 1 40px;
+    flex: 0 1 auto;
   }
 
 </style>
