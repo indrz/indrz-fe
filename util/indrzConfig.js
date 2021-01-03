@@ -1,13 +1,13 @@
-const baseUrl = 'https://tuw-maps.tuwien.ac.at';
+const baseUrl = 'https://example.com';
 const baseApiUrl = baseUrl + '/api/v1/'
 
 export default {
   baseApiUrl,
-  defaultCenterXY: [1823820.8003225543, 6138685.150457315], // TU
-  baseWmsUrl: 'https://tuw-maps.tuwien.ac.at/geoserver/wms',
+  defaultCenterXY: [1823820.8003225543, 6138685.150457315], // demo
+  baseWmsUrl: 'https://example.com/geoserver/wms',
   searchUrl: baseApiUrl + 'search',
-  token: 'Token 42519ebe7bada4d7a151c76832b94614ea5b198d', // TU
-  layerNamePrefix: 'floor_', // TU
-  geoServerLayerPrefix: 'indrztu:', // TU
-  defaultStartFloor: 'eg' // TU
+  token: 'Token abc123', // demo
+  layerNamePrefix: 'floor_', // demo
+  geoServerLayerPrefix: 'indrz:', // demo
+  defaultStartFloor: 'EG' // demo
 }
