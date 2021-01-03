@@ -74,15 +74,18 @@ export default {
     onDecode (decodedString) {
       if (decodedString && decodedString.includes('?')) {
         this.$emit('qrCodeScanned', decodedString.split('?')[1]);
-        this.turnCameraOff();
         this.emitCloseEvent();
+      } else {
+        this.error = true;
       }
+      this.turnCameraOff();
     },
     turnCameraOn () {
-      this.camera = 'auto'
+      this.camera = 'auto';
+      this.error = false;
     },
     turnCameraOff () {
-      this.camera = 'off'
+      this.camera = 'off';
     },
     emitCloseEvent () {
       this.$emit('qrCodeShow', false);
