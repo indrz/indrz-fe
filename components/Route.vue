@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="route-room-to-room">
     <campus-search
       ref="fromRoute"
       :is-route="true"
