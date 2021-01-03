@@ -29,6 +29,7 @@
         @shareClick="onShareClick"
         @poiLoad="onPoiLoad"
         @loadSinglePoi="loadSinglePoi"
+        @hideSidebar="drawer = false"
       />
     </v-navigation-drawer>
     <v-toolbar
