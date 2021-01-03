@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="logo.enabled">
-      <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
+      <img id="logo" :src="logo.file" alt="logo" class="left-bar-logo">
     </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
@@ -48,7 +48,7 @@
     </v-list>
     <div>
       <p class="font-weight-regular caption" style="padding: 8px 16px">
-        Powered by <a href="https://www.indrz.com/#contact" target="_blank">www.indrz.com</a>
+        Powered by <a href="https://indrz.com/#contact" target="_blank">indrz.com</a>
       </p>
     </div>
   </div>
