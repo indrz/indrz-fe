@@ -83,9 +83,30 @@ Below the map window you can have an optional Footer.
 
 To add a header you need to use  `thisfile.vue ` 
 
-```javascript
+```js
  
     something = "something"
     showFooter = False  //(default: False)
 ```
+
+## Localization Translations
+The localization is handled using [vue-i18n](https://kazupon.github.io/vue-i18n)
+
+here an example if you want to change languages with a button for example
+```js
+const i18n = new VueI18n({
+  locale: 'de', // set locale
+  ...
+})
+
+// create root Vue instance
+new Vue({
+  i18n,
+  ...
+}).$mount('#app')
+
+// change other locale
+i18n.locale = 'en'
+```
+
 
