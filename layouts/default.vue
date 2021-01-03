@@ -2,7 +2,7 @@
   <v-app dark>
     <v-main>
       <div class="box">
-        <div class="header">
+        <div :id="headerId" class="header">
           <!-- Any code below will show up on Header -->
         </div>
         <v-container
@@ -10,7 +10,7 @@
         >
           <nuxt />
         </v-container>
-        <div class="footer">
+        <div :id="footerId" class="footer">
           <!-- Any code below will show up on Footer -->
         </div>
       </div>
@@ -20,12 +20,16 @@
 
 <script>
 
+import queryString from 'query-string';
+
 export default {
   data () {
     return {
       clipped: false,
       drawer: false,
       fixed: false,
+      headerId: 'indrz-header-container',
+      footerId: 'indrz-footer-container',
       items: [
         {
           icon: 'mdi-apps',
@@ -45,9 +49,22 @@ export default {
     }
     this.$i18n.locale = defaultLocale;
   },
+  mounted () {
+    const query = queryString.parse(location.search);
+
+    this.showHideHeaderFooter(query);
+  },
   methods: {
     getLocale () {
       return navigator.language || navigator.browserLanguage || (navigator.languages || ['en'])[0];
+    },
+    showHideHeaderFooter (query) {
+      if (query.hideHeader && query.hideHeader === 'true') {
+        document.getElementById(this.headerId).style.display = 'none';
+      }
+      if (query.hideFooter && query.hideFooter === 'true') {
+        document.getElementById(this.footerId).style.display = 'none';
+      }
     }
   }
 }
