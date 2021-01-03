@@ -181,7 +181,7 @@ function createWmtsLayerIndrz (name, layerSrcName, floorNumber, isVisible, zInde
   const matrixIds = new Array(23);
   for (let z = 0; z < 23; ++z) {
     // generate resolutions and matrixIds arrays for this WMTS
-    resolutions[z] = size / Math.pow(2, z);
+    resolutions[z] = size / 2 ** z;
     matrixIds[z] = z;
   }
 
@@ -223,7 +223,7 @@ function createWmtsLayerIndrz (name, layerSrcName, floorNumber, isVisible, zInde
 function createImageWms (geoserverLayer) {
   const wmsSource2 = new ol.source.ImageWMS({
     url: baseGeoserverUrl + 'indrz/wms',
-    params: { LAYERS: 'indrz:' + geoserverlayer, 'FORMAT': 'image/png', 'VERSION': '1.1.1', STYLES: '' },
+    params: { LAYERS: 'indrz:' + geoserverlayer, FORMAT: 'image/png', VERSION: '1.1.1', STYLES: '' },
     serverType: 'geoserver',
     crossOrigin: 'anonymous'
   });
@@ -259,7 +259,7 @@ function createWmsLayer (layerName, geoserverLayer, floorNumber, isVisible, zInd
   const newWmsLayer = new ol.layer.Image({
     source: new ol.source.ImageWMS({
       url: baseGeoserverUrl + 'indrz/wms',
-      params: { 'LAYERS': geoserverLayer, 'TILED': true },
+      params: { LAYERS: geoserverLayer, TILED: true },
       serverType: 'geoserver',
       crossOrigin: ''
     }),

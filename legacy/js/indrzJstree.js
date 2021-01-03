@@ -1,13 +1,13 @@
 $(function () {
   // 6 create an instance when the DOM is ready
   $('#jstree').jstree({
-    'checkbox': {
-      'keep_selected_style': true,
-      'visible': false,
-      'three_state': true,
-      'cascade': 'down'
+    checkbox: {
+      keep_selected_style: true,
+      visible: false,
+      three_state: true,
+      cascade: 'down'
     },
-    'plugins': ['checkbox', 'wholerow']
+    plugins: ['checkbox', 'wholerow']
   });
 
   // $('#jstree').on("changed.jstree", function (e, data) {

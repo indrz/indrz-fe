@@ -1,7 +1,7 @@
 const switchableLayers = [wmsE00, wmsE01, wmsE02, wmsE03];
 
 function getActiveFloorNum () {
-  return active_floor_num;
+  return active_floor_num
 }
 
 function waitForFloors (space_floor_id) {

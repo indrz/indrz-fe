@@ -44,25 +44,25 @@ const hide_search_style = new ol.style.Style({
 });
 
 const styles = {
-  'Point': [new ol.style.Style({
+  Point: [new ol.style.Style({
     image: image
   })],
-  'LineString': [new ol.style.Style({
+  LineString: [new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: '#68ff5b',
       width: 1
     })
   })],
-  'MultiLineString': [new ol.style.Style({
+  MultiLineString: [new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: '#68ff5b',
       width: 1
     })
   })],
-  'MultiPoint': [new ol.style.Style({
+  MultiPoint: [new ol.style.Style({
     image: image
   })],
-  'MultiPolygon': [new ol.style.Style({
+  MultiPolygon: [new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: '#4ff0ff',
       width: 3
@@ -71,7 +71,7 @@ const styles = {
       color: 'rgba(38, 215, 255, 0.4)'
     })
   })],
-  'Polygon': [new ol.style.Style({
+  Polygon: [new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: '#4ff0ff',
       width: 3
@@ -80,7 +80,7 @@ const styles = {
       color: 'rgba(38, 215, 255, 0.4)'
     })
   })],
-  'GeometryCollection': [new ol.style.Style({
+  GeometryCollection: [new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: 'magenta',
       width: 2
@@ -96,7 +96,7 @@ const styles = {
       })
     })
   })],
-  'Circle': [new ol.style.Style({
+  Circle: [new ol.style.Style({
     stroke: new ol.style.Stroke({
       color: 'red',
       width: 2
@@ -191,7 +191,7 @@ function searchType (obj) {
 
     if (props.hasOwnProperty('poi_id')) {
       indrzType = 'poi';
-      return indrzType;
+      return indrzType
     } else if (props.hasOwnProperty('poi_id')) {
 
     }
@@ -206,7 +206,7 @@ function zoomToFeature (source) {
   const feature = source.getFeatures()[0];
   const polygon = /** @type {ol.geom.SimpleGeometry} */ (feature.getGeometry());
   const size = /** @type {ol.Size} */ (map.getSize());
-  view.fit(polygon, size, { padding: [170, 50, 30, 150], constrainResolution: false });
+  view.fit(polygon, size, { padding: [170, 50, 30, 150], constrainResolution: false })
 
   // view.fit(polygon, size, {padding: [170, 50, 30, 150], nearest: true})}
   // view.fit(point, size, {padding: [170, 50, 30, 150], minResolution: 50})}
@@ -315,7 +315,7 @@ function generateResultLinks (att, searchString, f_center, className, floor, fid
 
   const poiId = fid;
   if (fid === 0) {
-    var elId = 'searchResListItem_' + att;
+    var elId = 'searchResListItem_' + att
   } else {
     var elId = 'searchResListItem_' + att + '-' + poiId;
     poi_icon_html = '<img src=\"' + poi_icon + '" alt=\"POI\" style=\"height: 25px; padding-right:5px;\">';
@@ -366,7 +366,7 @@ function searchIndrz (campusId, searchString, zoomLevel) {
       if (searchString === f_name) {
         att = searchString;
       } else {
-        att = f_name;
+        att = f_name
       }
 
       const full_name = att;
@@ -379,9 +379,9 @@ function searchIndrz (campusId, searchString, zoomLevel) {
       let somethin = '';
 
       if (att !== roomcode) {
-        somethin = ' (' + roomcode + ')';
+        somethin = ' (' + roomcode + ')'
       } else {
-        somethin = '';
+        somethin = ''
       }
 
       let f_id = '';
@@ -391,10 +391,10 @@ function searchIndrz (campusId, searchString, zoomLevel) {
         f_id = feature.get('poi_id');
         poiIconPath = feature.get('icon');
         globalPopupInfo.poiId = feature.get('poi_id');
-        globalPopupInfo.src = feature.get('src');
+        globalPopupInfo.src = feature.get('src')
       } else {
         globalPopupInfo.poiId = 'noid';
-        globalPopupInfo.src = feature.get('src');
+        globalPopupInfo.src = feature.get('src')
       }
 
       const infoo = "'" + att + "'";
@@ -402,13 +402,13 @@ function searchIndrz (campusId, searchString, zoomLevel) {
 
       if (roomcat !== '' && typeof roomcat !== 'undefined') {
         const resultListName = full_name + ' (' + roomcat + ')';
-        var htmlInsert = generateResultLinks(att, infoo, f_center, resultListName, floor, f_id, poiIconPath);
+        var htmlInsert = generateResultLinks(att, infoo, f_center, resultListName, floor, f_id, poiIconPath)
       } else if (roomcode !== '' && typeof roomcode !== 'undefined') {
         var className = full_name + somethin;
-        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath);
+        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath)
       } else {
         var className = full_name;
-        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath);
+        var htmlInsert = generateResultLinks(att, infoo, f_center, className, floor, f_id, poiIconPath)
       }
 
       $('#search-results-list').append(htmlInsert);
@@ -718,9 +718,9 @@ function getCoordinatesFromResult (result) {
       xCoord: coordinates[0],
       yCoord: coordinates[1],
       floorNum: result[0].features[0].properties.floor_num
-    };
+    }
   } else {
-    console.log('no data from result', result);
+    console.log('no data from result', result)
   }
 
   return processedResult;
@@ -737,7 +737,7 @@ function getCoordinatesFromGlobalRouteInfo (point) {
       ) {
         processedResult = {
           poiId: globalRouteInfo.startPoiId
-        };
+        }
       } else if (globalRouteInfo.startCoord) {
         processedResult = {
           xCoord: globalRouteInfo.startCoord[0],
@@ -753,7 +753,7 @@ function getCoordinatesFromGlobalRouteInfo (point) {
       ) {
         processedResult = {
           poiId: globalRouteInfo.endPoiId
-        };
+        }
       } else if (globalRouteInfo.endCoord) {
         processedResult = {
           xCoord: globalRouteInfo.endCoord[0],
@@ -904,5 +904,5 @@ function getAllSearchResultFeaturesNames () {
   for (i = 0; i < all_feats.length; i++) {
     names.push(all_feats[i].getProperties().name);
   }
-  return names;
+  return names
 }

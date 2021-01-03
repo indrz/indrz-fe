@@ -482,8 +482,8 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
     const viewResolution = /** @type {number} */ (v.getResolution());
     const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers, layerNamePrefix);
     const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
-      'INFO_FORMAT': 'application/json',
-      'FEATURE_COUNT': 50
+      INFO_FORMAT: 'application/json',
+      FEATURE_COUNT: 50
     });
 
     if (url) {

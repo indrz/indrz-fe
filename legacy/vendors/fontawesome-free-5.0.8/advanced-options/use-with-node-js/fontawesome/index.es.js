@@ -512,10 +512,10 @@ function makeInlineSvgAbstract (params) {
     attributes: _extends({}, extra.attributes, {
       'data-prefix': prefix,
       'data-icon': iconName,
-      'class': attrClass,
-      'role': 'img',
-      'xmlns': 'http://www.w3.org/2000/svg',
-      'viewBox': '0 0 ' + width + ' ' + height
+      class: attrClass,
+      role: 'img',
+      xmlns: 'http://www.w3.org/2000/svg',
+      viewBox: '0 0 ' + width + ' ' + height
     })
   };
 
@@ -559,8 +559,8 @@ function makeLayersTextAbstract (params) {
   const _params$watchable2 = params.watchable;
   const watchable = _params$watchable2 === undefined ? false : _params$watchable2;
 
-  const attributes = _extends({}, extra.attributes, title ? { 'title': title } : {}, {
-    'class': extra.classes.join(' ')
+  const attributes = _extends({}, extra.attributes, title ? { title: title } : {}, {
+    class: extra.classes.join(' ')
   });
 
   if (watchable) {
@@ -1170,10 +1170,10 @@ const styles = namespace.styles;
 const LAYERS_TEXT_CLASSNAME = 'fa-layers-text';
 const FONT_FAMILY_PATTERN = /Font Awesome 5 (Solid|Regular|Light|Brands)/;
 const STYLE_TO_PREFIX = {
-  'Solid': 'fas',
-  'Regular': 'far',
-  'Light': 'fal',
-  'Brands': 'fab'
+  Solid: 'fas',
+  Regular: 'far',
+  Light: 'fal',
+  Brands: 'fab'
 };
 
 function findIcon (iconName, prefix) {

@@ -22,7 +22,7 @@ function testCreatePoi (layername) {
     title: layername
   });
 
-  poiLayerGroup.getLayers().push(vectorLayer);
+  poiLayerGroup.getLayers().push(vectorLayer)
 
   return vectorLayer;
 }
@@ -223,9 +223,9 @@ function setPoiStyleOnLayerSwitch (iconName, visible) {
   });
 
   if (visible == true) {
-    return iconActiveStyle;
+    return iconActiveStyle
   } else {
-    return iconDeactiveStyle;
+    return iconDeactiveStyle
   }
 }
 
@@ -306,7 +306,7 @@ function createPoiStyle (poiIconName, active, floorNum) {
   const poiIconImageHidden = '/static/homepage/img/other.png';
   const poiIconImage = '/static/homepage/img/' + poiIconName + '.png';
   let srcImage;
-  const mainPoiIcons = ['education_active', 'access_active', 'security_active', 'infrastructure_active', 'services_active'];
+  const mainPoiIcons = ['education_active', 'access_active', 'security_active', 'infrastructure_active', 'services_active']
 
   const floorNumber = floorNum.toString();
 
@@ -377,7 +377,7 @@ function findNode (id, currentNode) {
         if (result.id === id) {
           // console.log(result.text);
 
-          return result;
+          return result
         }
 
         // // Return the result if the node has been found
@@ -399,7 +399,7 @@ function showPoiTree (poiName, poiCatId) {
     for (i = 0; i < poiCatId.length; i++) {
       const currentPoiCatId = poiCatId[i];
 
-      const test = findNode(currentPoiCatId, { 'id': -1, 'nodes': poiTreeData });
+      const test = findNode(currentPoiCatId, { id: -1, nodes: poiTreeData });
 
       const x = $('#indrzPoiTree').treeview('search', [test.text, {
         ignoreCase: false, // case insensitive
@@ -483,7 +483,7 @@ function showSinglePoi (poiId, zlevel) {
   globalPopupInfo.poiId = poiId;
 
   if (poiSingleLayer) {
-    map.removeLayer(poiSingleLayer);
+    map.removeLayer(poiSingleLayer)
   }
 
   let poi_title = '';
@@ -507,7 +507,7 @@ function showSinglePoi (poiId, zlevel) {
     if (featuresSearch.length === 1) {
       const offSetPos = [0, -35];
 
-      const poi_properties = featuresSearch[0].getProperties();
+      const poi_properties = featuresSearch[0].getProperties()
       poi_properties.poiId = poiId;
 
       open_popup(poi_properties, centerCoord, -1, offSetPos);
@@ -529,7 +529,7 @@ function showSinglePoi (poiId, zlevel) {
       if (req_locale === 'de') {
         poi_title = feature.getProperties().name_de;
       } else {
-        poi_title;
+        poi_title
         poi_title = feature.getProperties().name;
       }
 

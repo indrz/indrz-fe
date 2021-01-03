@@ -79,7 +79,7 @@ function update_url (mode) {
     $('.share-link').focus();
     $('.share-link').select();
   } else {
-    url = 'woops';
+    url = 'woops'
   }
 
   data.extent = current_extent2;

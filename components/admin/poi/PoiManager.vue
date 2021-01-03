@@ -165,14 +165,14 @@ export default {
       });
       if (foundPoi) {
         foundPoi.geom = JSON.stringify({
-          'type': 'MultiPoint',
-          'coordinates': [
+          type: 'MultiPoint',
+          coordinates: [
             editingPoi.newCoord
           ],
-          'crs': {
-            'type': 'name',
-            'properties': {
-              'name': 'EPSG:3857'
+          crs: {
+            type: 'name',
+            properties: {
+              name: 'EPSG:3857'
             }
           }
         });
@@ -226,14 +226,14 @@ export default {
         delete properties.geometry;
 
         const data = {
-          'category': poi.getProperties().category,
-          'geometry': {
-            'type': 'MultiPoint',
-            'coordinates': poi.getGeometry().getCoordinates(),
-            'crs': {
-              'type': 'name',
-              'properties': {
-                'name': 'EPSG:3857'
+          category: poi.getProperties().category,
+          geometry: {
+            type: 'MultiPoint',
+            coordinates: poi.getGeometry().getCoordinates(),
+            crs: {
+              type: 'name',
+              properties: {
+                name: 'EPSG:3857'
               }
             }
           },

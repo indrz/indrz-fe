@@ -44,11 +44,11 @@ function getMapSize () {
   // console.log("new height is : " +  newheight);
 
   return {
-    'width_px': mapWidthPixels,
-    'height_px': mapHeightPixels,
-    'new_width': newwidth,
-    'new_height': newheight
-  };
+    width_px: mapWidthPixels,
+    height_px: mapHeightPixels,
+    new_width: newwidth,
+    new_height: newheight
+  }
 }
 
 function getBase64Image (img) {
@@ -196,8 +196,8 @@ function map2pdf () {
               // doc.addImage(wulogo_dataurl, 'png', title_x_pos-30, title_y_pos-4, 15, 10);
             }
 
-            doc.save(todayFileName + '-TU.pdf');
-          };
+            doc.save(todayFileName + '-TU.pdf')
+          }
           /* ... */
         },
         'image/jpeg'

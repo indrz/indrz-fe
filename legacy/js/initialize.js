@@ -96,7 +96,7 @@ $(document).ready(function () {
 
   function loadShare () {
     if (search_text !== '' && search_text.length > 3) {
-      searchIndrz(1, search_text, zoom_level);
+      searchIndrz(1, search_text, zoom_level)
     }
   }
 
@@ -148,18 +148,18 @@ $(document).ready(function () {
 
   if (route_from_xyz !== '' && route_to_xyz !== '') {
     $.when(getDirections2(route_from_xyz, route_to_xyz, route_type, 'coords')).then(function (a, b) {
-      $('#route-from').val(route_from_xyz);
-      $('#route-to').val(route_to_xyz);
-      $('#collapseRouting').collapse('show');
-      $('#collapsePoi').collapse('hide');
-      $('#collapseCampus').collapse('hide');
-    });
+      $('#route-from').val(route_from_xyz)
+      $('#route-to').val(route_to_xyz)
+      $('#collapseRouting').collapse('show')
+      $('#collapsePoi').collapse('hide')
+      $('#collapseCampus').collapse('hide')
+    })
   }
 
   if (route_from_spaceid !== '0' && route_to_spaceid !== '0') {
     $.when(getDirections2(route_from_spaceid, route_to_spaceid, route_type, 'spaceIdToSpaceId')).then(function (a) {
 
-    });
+    })
   }
 
   //   if (poi_start_id !== '0' && route_to_spaceid !== '0' && poi_start_id !== -1) {

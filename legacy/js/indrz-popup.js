@@ -131,38 +131,38 @@ const displayFeatureInfo = function (pixel) {
       coordinate = map.getCoordinateFromPixel(pixel);
       properties = feature.getProperties();
 
-      properties.src = 'poi';
+      properties.src = 'poi'
 
       if (feature.getProperties().hasOwnProperty('poi_id')) {
-        properties.poiId = feature.properties.poi_id;
+        properties.poiId = feature.properties.poi_id
       }
 
       open_popup(properties, coordinate, feature);
       activateFloor(feature);
     }
   } else {
-    const featuresWms = map.getFeaturesAtPixel(pixel);
+    const featuresWms = map.getFeaturesAtPixel(pixel)
 
-    coordinate = map.getCoordinateFromPixel(pixel);
+    coordinate = map.getCoordinateFromPixel(pixel)
 
-    floorNum = active_floor_num;
+    floorNum = active_floor_num
 
     // document.getElementById('info').innerHTML = '';
-    const v = map.getView();
-    const viewResolution = /** @type {number} */ (v.getResolution());
+    const v = map.getView()
+    const viewResolution = /** @type {number} */ (v.getResolution())
 
-    const wmsSource2 = getRoomInfo(active_floor_num);
+    const wmsSource2 = getRoomInfo(active_floor_num)
 
     const url = wmsSource2.getGetFeatureInfoUrl(
       coordinate, viewResolution, 'EPSG:3857',
-      { 'INFO_FORMAT': 'application/json', 'FEATURE_COUNT': 50 });
+      { INFO_FORMAT: 'application/json', FEATURE_COUNT: 50 })
 
     if (url) {
       $.ajax(url).then(function (response) {
-        globalPopupInfo.src = 'wms';
-        const listFeatures = response.features;
-        const propertiesPresent = response.features && response.features[0] && response.features[0].properties;
-        const data_properties = {};
+        globalPopupInfo.src = 'wms'
+        const listFeatures = response.features
+        const propertiesPresent = response.features && response.features[0] && response.features[0].properties
+        const data_properties = {}
 
         if (listFeatures.length > 0) {
           listFeatures.forEach(function (feature) {
@@ -170,21 +170,21 @@ const displayFeatureInfo = function (pixel) {
               if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
                 const centroidSource = new ol.source.Vector({
                   features: (new ol.format.GeoJSON()).readFeatures(feature)
-                });
+                })
 
-                const centroid_coords = ol.extent.getCenter(centroidSource.getExtent());
+                const centroid_coords = ol.extent.getCenter(centroidSource.getExtent())
 
-                data_properties.properties = feature.properties;
-                data_properties.centroid = centroid_coords;
+                data_properties.properties = feature.properties
+                data_properties.centroid = centroid_coords
               }
             }
-          });
+          })
 
-          data_properties.properties.src = 'wms';
+          data_properties.properties.src = 'wms'
 
-          open_popup(data_properties.properties, data_properties.centroid, featuresWms);
+          open_popup(data_properties.properties, data_properties.centroid, featuresWms)
         }
-      });
+      })
     }
   }
 };
@@ -208,7 +208,7 @@ function getTitle (properties) {
   if (properties.hasOwnProperty('name')) {
     if (properties.name) {
       name = properties.name;
-      return name;
+      return name
     }
   }
 
@@ -216,10 +216,10 @@ function getTitle (properties) {
     if (properties.name_de) {
       if (req_locale === 'de') {
         name = properties.name_de;
-        return name;
+        return name
       } else {
         name = properties.name;
-        return name;
+        return name
       }
     }
   }
@@ -227,10 +227,10 @@ function getTitle (properties) {
   if (properties.hasOwnProperty('short_name')) {
     if (properties.short_name) {
       name = properties.short_name;
-      return name;
+      return name
     } else if (popup_roomcode) {
       name = popup_roomcode;
-      return name;
+      return name
     }
   }
 
@@ -240,7 +240,7 @@ function getTitle (properties) {
       return name;
     } else if (popup_roomcode) {
       name = popup_roomcode;
-      return name;
+      return name
     }
   }
 
@@ -250,7 +250,7 @@ function getTitle (properties) {
       return name;
     } else if (popup_roomcode) {
       name = popup_roomcode;
-      return name;
+      return name
     }
   }
 
@@ -260,7 +260,7 @@ function getTitle (properties) {
       return name;
     } else if (popup_roomcode) {
       name = popup_roomcode;
-      return name;
+      return name
     }
   }
 
@@ -287,7 +287,7 @@ function getBuildingLetter (p) {
   if (p.hasOwnProperty('roomcode')) {
     if (p.roomcode) {
       buildingLetter = p.roomcode.split('.')[0];
-      return buildingLetter;
+      return buildingLetter
     }
   } else if (p.hasOwnProperty('building_name')) {
     if (p.building_name !== null || p.building_name !== '' || typeof p.building_name !== 'undefined') {
@@ -296,7 +296,7 @@ function getBuildingLetter (p) {
     }
   } else {
     const empty = '';
-    return empty;
+    return empty
   }
 }
 
@@ -333,14 +333,14 @@ let floorNum;
 
 function open_popup (properties, coordinate, feature, offsetArray) {
   // TODO reset globalPopInfo values all to null on start !
-  for (const member in globalPopupInfo) { globalPopupInfo[member] = null; }
+  for (const member in globalPopupInfo) { globalPopupInfo[member] = null }
 
-  feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1;
-  offsetArray = typeof offsetArray !== 'undefined' ? offsetArray : [0, 0];
+  feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1
+  offsetArray = typeof offsetArray !== 'undefined' ? offsetArray : [0, 0]
 
-  const name_popup = properties.name;
+  const name_popup = properties.name
 
-  const indrzLibraryShelf = '';
+  const indrzLibraryShelf = ''
 
   if (properties.hasOwnProperty('poiId')) {
     globalPopupInfo.src = 'poi';
@@ -353,46 +353,46 @@ function open_popup (properties, coordinate, feature, offsetArray) {
   }
 
   if (properties.hasOwnProperty('spaceid')) {
-    globalPopupInfo.spaceid = properties.spaceid;
+    globalPopupInfo.spaceid = properties.spaceid
   }
 
-  let popup_homepage = null;
+  let popup_homepage = null
 
   if (properties.hasOwnProperty('homepage')) {
     if (properties.homepage) {
-      popup_homepage = properties.homepage;
+      popup_homepage = properties.homepage
     }
   }
 
   if (properties.hasOwnProperty('src')) {
     if (properties.src) {
-      globalPopupInfo.src = properties.src;
+      globalPopupInfo.src = properties.src
     }
   }
 
   if (properties.hasOwnProperty('space_type_id')) {
     if (properties.hasOwnProperty('src')) {
       if (properties.src) {
-        globalPopupInfo.src = properties.src;
+        globalPopupInfo.src = properties.src
       } else {
-        globalPopupInfo.src = 'wms';
+        globalPopupInfo.src = 'wms'
       }
     }
 
     if (properties.hasOwnProperty('id')) {
-      globalPopupInfo.spaceid = properties.id;
+      globalPopupInfo.spaceid = properties.id
     }
 
     if (properties.hasOwnProperty('room_external_id')) {
       if (properties.room_external_id) {
-        globalPopupInfo.external_id = properties.room_external_id;
+        globalPopupInfo.external_id = properties.room_external_id
       }
     }
   }
 
   if (properties.hasOwnProperty('room_code')) {
-    globalPopupInfo.wmsInfo = properties.room_code;
-    properties.roomcode = properties.room_code;
+    globalPopupInfo.wmsInfo = properties.room_code
+    properties.roomcode = properties.room_code
   }
 
   if (properties.hasOwnProperty('poi_id')) {
@@ -442,7 +442,7 @@ function open_popup (properties, coordinate, feature, offsetArray) {
   objCenterCoords = coordinate;
 
   if (objCenterCoords || objCenterCoords !== '') {
-    objCenterCoords = coordinate;
+    objCenterCoords = coordinate
   } else {
     objCenterCoords = properties.centerGeometry.coordinates;
   }
@@ -587,7 +587,7 @@ function open_popup (properties, coordinate, feature, offsetArray) {
   if (globalPopupInfo.roomcode) {
     routeFromValTemp = globalPopupInfo.roomcode;
   } else if (roomcode) {
-    routeFromValTemp = roomcode;
+    routeFromValTemp = roomcode
   } else if (globalPopupInfo.name) {
     routeFromValTemp = globalPopupInfo.name;
   } else if (titlePopup) {
@@ -620,7 +620,7 @@ $(function () {
       globalRouteInfo.startPoiId = globalPopupInfo.poiId;
     }
 
-    globalRouteInfo.startName = routeFromValTemp;
+    globalRouteInfo.startName = routeFromValTemp
 
     $('#collapseRouting').collapse('show');
     $('#collapsePoi').collapse('hide');
@@ -648,7 +648,7 @@ $(function () {
     $('#collapsePoi').collapse('hide');
     routeToPoiIdTemp = globalPopupInfo.poiId;
   }
-  );
+  )
 });
 
 function createPopupData () {
@@ -665,12 +665,12 @@ function createPopupData () {
   }
 
   const pData = {
-    'poiId': popupPoiId,
-    'building': popupBuilding,
-    'roomcode': popupRoomCode,
-    'floor_num': popupFloorNumber,
-    'category': popupRoomCat,
-    'coords': objCenterCoords
+    poiId: popupPoiId,
+    building: popupBuilding,
+    roomcode: popupRoomCode,
+    floor_num: popupFloorNumber,
+    category: popupRoomCat,
+    coords: objCenterCoords
   };
 
   return pData;
@@ -711,7 +711,7 @@ $(function () {
     $('#collapseRouting').collapse('show');
     $('#collapsePoi').collapse('hide');
   }
-  );
+  )
 });
 
 $(function () {
@@ -731,7 +731,7 @@ $(function () {
 
     // closeIndrzPopup();
   }
-  );
+  )
 });
 
 $('#routeToDefi').click(function () {

@@ -59,7 +59,7 @@ const removeMarkerItem = {
 };
 
 indrzcontextmenu.on('open', function (evt) {
-  const feature =	map.forEachFeatureAtPixel(evt.pixel, function (ft) { return ft; });
+  const feature =	map.forEachFeatureAtPixel(evt.pixel, function (ft) { return ft });
 
   if (feature && feature.get('type') === 'removable') {
     indrzcontextmenu.clear();

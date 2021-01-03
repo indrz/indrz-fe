@@ -1,6 +1,6 @@
 <template>
   <v-app dark>
-    <v-main class="fill-height">
+    <v-main>
       <v-container
         class="fill-height pa-0"
         fluid
@@ -27,7 +27,7 @@ export default {
         }
       ],
       miniVariant: false
-    };
+    }
   },
   created: function () {
     const currentLocale = this.getLocale();
@@ -43,5 +43,5 @@ export default {
       return navigator.language || navigator.browserLanguage || (navigator.languages || ['en'])[0];
     }
   }
-};
+}
 </script>

@@ -1,27 +1,31 @@
 import axios from 'axios';
+import indrzConfig from '~/util/indrzConfig'
 
-const getAuthorizationHeader = (env) => {
+const baseApiUrl = indrzConfig.baseApiUrl;
+
+const getAuthorizationHeader = () => {
+  const token = indrzConfig.token;
   const header = {
     'Content-Type': 'application/json'
   };
-  if (env && env.token) {
-    header.Authorization = env.token;
+  if (token) {
+    header.Authorization = token;
   }
   return header;
 };
 
-const request = function (requestObj, env) {
+const request = function (requestObj) {
   return axios({
-    url: `${requestObj.url || env.baseApiUrl}${requestObj.endPoint || ''}`,
+    url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
     method: requestObj.method || 'GET',
     headers: {
-      'Authorization': env.token,
+      Authorization: indrzConfig.token,
       'Content-Type': 'application/json'
     }
   });
 };
 
-const postRequest = async function (requestObj, env) {
+const postRequest = async function (requestObj) {
   try {
     const formData = new FormData();
     // eslint-disable-next-line no-unused-vars
@@ -29,24 +33,24 @@ const postRequest = async function (requestObj, env) {
       formData.append(key, value);
     }
     return await axios({
-      url: `${requestObj.url || env.baseApiUrl}${requestObj.endPoint || ''}`,
+      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'POST',
-      headers: getAuthorizationHeader(env),
+      headers: getAuthorizationHeader(),
       data: formData
-    });
+    })
   } catch (err) {
     return err;
   }
 };
 
-const putRequest = async function (requestObj, env) {
+const putRequest = async function (requestObj) {
   try {
     return await axios({
-      url: `${requestObj.url || env.baseApiUrl}${requestObj.endPoint || ''}`,
+      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'PUT',
-      headers: getAuthorizationHeader(env),
+      headers: getAuthorizationHeader(),
       data: requestObj.data
-    });
+    })
   } catch (err) {
     return err;
   }
@@ -57,7 +61,7 @@ const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
     // page,
     limit: itemsPerPage,
     offset: (page - 1) * itemsPerPage
-  };
+  }
 };
 
 export default {
@@ -65,4 +69,4 @@ export default {
   postRequest,
   putRequest,
   getPageParams
-};
+}

@@ -56,19 +56,19 @@ import api from '../../util/api';
 export default {
   name: 'PointsOfInterest',
   props: {
-    'initialPoiCatId': {
+    initialPoiCatId: {
       type: String,
       default: function () {
         return null;
       }
     },
-    'initialPoiId': {
+    initialPoiId: {
       type: String,
       default: function () {
         return null;
       }
     },
-    'multi': {
+    multi: {
       type: Boolean,
       default: function () {
         return true;

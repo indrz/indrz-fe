@@ -28,7 +28,7 @@ function library_book_position (rvk_key) {
     routeToBook('LC Eingang', data.properties.name, routeStartValue, routeEndValue, 0);
 
     const libraryData = {};
-    libraryData.route_info = { 'walk_time': 123.23 };
+    libraryData.route_info = { walk_time: 123.23 };
 
     const popup_location = [data.geometry.coordinates[0]];
     popup_location.push(data.geometry.coordinates[1]);

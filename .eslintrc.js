@@ -16,13 +16,11 @@ module.exports = {
     'nuxt/no-cjs-in-config': 0,
     'vue/no-v-html': 0,
     'no-console': 0,
-    'semi': [2, "always"],
+    semi: 0,
     'no-extra-semi': 0,
     'object-shorthand': 0,
     'unicorn/escape-case': 0,
     'vue/require-component-is': 0,
-    'vue/no-unused-components': 0,
-    'no-prototype-builtins': 'off',
-    'quote-props': 'off'
+    'vue/no-unused-components': 0
   }
-};
+}

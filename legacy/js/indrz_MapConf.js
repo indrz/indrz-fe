@@ -33,8 +33,8 @@ const route_from_spaceid = '0';
 const route_to_spaceid = '0';
 const route_from_xyz = '';
 const route_to_xyz = '';
-const route_to_poi_id = '0';
-const route_from_poi_id = '0';
+const route_to_poi_id = '0'
+const route_from_poi_id = '0'
 const route_type = '0';
 const centerx = '0';
 const centery = '0';
@@ -53,35 +53,35 @@ const library_key = 'nokey';
 const foo = {};
 const globalBookInfo = {};
 const globalPopupInfo = {
-  'poiId': 'noid',
-  'poiCatId': 'noid',
-  'poiIdPopup': null,
-  'poiCatName': null,
-  'poiCatShareUrl': null,
-  'bookId': false,
-  'bookCoords': false,
-  'name': false,
-  'roomcode': null,
-  'src': null,
-  'floor': null,
-  'coords': null,
-  'spaceid': null,
-  'wmsInfo': null
+  poiId: 'noid',
+  poiCatId: 'noid',
+  poiIdPopup: null,
+  poiCatName: null,
+  poiCatShareUrl: null,
+  bookId: false,
+  bookCoords: false,
+  name: false,
+  roomcode: null,
+  src: null,
+  floor: null,
+  coords: null,
+  spaceid: null,
+  wmsInfo: null
 };
 const globalRouteInfo = {
-  'routeUrl': null,
-  'endSpaceId': null,
-  'startSpaceId': null,
-  'endPoiId': null,
-  'startPoiId': null,
-  'bookUrl': null,
-  'startCoord': null,
-  'endCoord': null
+  routeUrl: null,
+  endSpaceId: null,
+  startSpaceId: null,
+  endPoiId: null,
+  startPoiId: null,
+  bookUrl: null,
+  startCoord: null,
+  endCoord: null
 };
 const globalSearchInfo = {
-  'searchText': false,
-  'searchResult': false
-};
+  searchText: false,
+  searchResult: false
+}
 const temp_route_data = {};
 const current_poi_id = 0;
 
@@ -114,10 +114,10 @@ const searchValues = new Bloodhound({
   remote: {
     url: hostUrl + req_locale + '/autocomplete/',
     prepare: function (query, settings) {
-      settings.url = settings.url + query + '?format=json';
+      settings.url = settings.url + query + '?format=json'
       settings.headers = {
-        'Authorization': indrzApiToken
-      };
+        Authorization: indrzApiToken
+      }
       return settings;
     },
     wildcard: '%QUERY'
@@ -213,7 +213,7 @@ $('#search-input').typeahead(null, {
   templates: {
     empty: 'Sorry nothing found',
     suggestion: function (data) {
-      return styleIndrzAutocomplete(data);
+      return styleIndrzAutocomplete(data)
     }
   }
 
@@ -286,7 +286,7 @@ $('#prefetch-start-location .typeahead').typeahead(null, {
       if (data.src === 'bach') {
 
       }
-      return styleIndrzAutocomplete(data);
+      return styleIndrzAutocomplete(data)
     }
   }
 });
@@ -305,7 +305,7 @@ $('#prefetch-end-location .typeahead').typeahead(null, {
       if (data.src === 'bach') {
 
       }
-      return styleIndrzAutocomplete(data);
+      return styleIndrzAutocomplete(data)
     }
   }
 });
@@ -375,11 +375,11 @@ $('#enterRoute').on('click', function (event) {
 
   if (globalRouteInfo.startSpaceId && globalRouteInfo.endSpaceId) {
     getDirections2(globalRouteInfo.startSpaceId, globalRouteInfo.endSpaceId, '0',
-      'spaceIdToSpaceId');
+      'spaceIdToSpaceId')
   } else if (globalRouteInfo.startPoiId && globalRouteInfo.endSpaceId) {
-    getDirections2(globalRouteInfo.endSpaceId, globalRouteInfo.startPoiId, '0', 'spaceIdToPoiId');
+    getDirections2(globalRouteInfo.endSpaceId, globalRouteInfo.startPoiId, '0', 'spaceIdToPoiId')
   } else if (globalRouteInfo.startPoiId && globalRouteInfo.endPoiId) {
-    routeToPoiFromPoi(globalRouteInfo.startPoiId, globalRouteInfo.endPoiId);
+    routeToPoiFromPoi(globalRouteInfo.startPoiId, globalRouteInfo.endPoiId)
   } else if (parseFloat(startSearchText.split(',')[0]) || parseFloat(endSearchText.split(',')[0])) {
     // then start and end are coordinates
 
@@ -399,10 +399,10 @@ $('#enterRoute').on('click', function (event) {
       const startSpaceId = a[0].features[0].properties.spaceid;
       const endSpaceId = b[0].features[0].properties.spaceid;
 
-      console.log(a[0].features[0].properties.spaceid);
+      console.log(a[0].features[0].properties.spaceid)
 
       if (startSpaceId && endSpaceId) {
-        getDirections2(startSpaceId, endSpaceId, '0', 'spaceIdToSpaceId');
+        getDirections2(startSpaceId, endSpaceId, '0', 'spaceIdToSpaceId')
         globalRouteInfo.startSpaceId = startSpaceId;
         globalRouteInfo.endSpaceId = endSpaceId;
       } else if (!startSpaceId && !endSpaceId) {
