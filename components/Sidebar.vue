@@ -235,6 +235,7 @@ export default {
   Style for Route Room to Room
    */
   .route-room-to-room {
+    margin-right: 10px;
     ::v-deep .v-label {
       /*
       font-family: "Roboto", sans-serif;
