@@ -22,7 +22,7 @@ You need a static webserver such as nginx or apache, google-storage, s3 bucket, 
 ## Development
 serve with hot reload at localhost:3000
 
-`$ yarn dev`
+`$ yarn run dev`
 
 ## build for production and launch server
 ```

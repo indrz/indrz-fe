@@ -29,6 +29,7 @@
     <share-overlay ref="shareOverlay" />
     <terms :show="showTerms" @termsShow="onTermShowChange" />
     <help :show="showHelp" @helpShow="onHelpShowChange" />
+    <QRCode :show="showQrCode" @qrCodeShow="onQrCodeShow" @qrCodeScanned="loadMapWithParams" />
     <UserGeoLocation :map="map" class="indrz-geolocation" />
   </div>
 </template>
@@ -47,9 +48,11 @@ import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
 import UserGeoLocation from './UserGeoLocation';
+import QRCode from './QRCode';
 
 export default {
   components: {
+    QRCode,
     Help,
     InfoOverlay,
     ShareOverlay,
@@ -63,6 +66,7 @@ export default {
       view: null,
       showTerms: false,
       showHelp: false,
+      showQrCode: false,
       isSatelliteMap: true,
       layers: [],
       popup: null,
@@ -140,8 +144,8 @@ export default {
         this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
       this.searchLayer = result.searchLayer;
     },
-    async loadMapWithParams () {
-      const query = queryString.parse(location.search);
+    async loadMapWithParams (searchString) {
+      const query = queryString.parse(searchString || location.search);
       await MapUtil.loadMapWithParams(this, query);
     },
     openIndrzPopup (properties, coordinate, feature) {
@@ -185,6 +189,9 @@ export default {
     onHelpShowChange (value) {
       this.showHelp = value;
     },
+    onQrCodeShow (value) {
+      this.showQrCode = value;
+    },
     onPopupRouteClick (path) {
       this.$emit('popupRouteClick', {
         path,
@@ -226,6 +233,9 @@ export default {
           break;
         case 'terms':
           this.showTerms = true;
+          break;
+        case 'qrcode':
+          this.showQrCode = true;
           break;
         default:
           break;
