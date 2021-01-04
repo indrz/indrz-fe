@@ -1,5 +1,5 @@
-import api from '../util/api';
+import config from '../util/indrzConfig';
 
 export default ({ app }) => {
-  api.setEnv(app.$config);
+  config.set(app.$config);
 }

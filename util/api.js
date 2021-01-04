@@ -1,6 +1,7 @@
 import axios from 'axios';
+import config from './indrzConfig';
 
-let env = {};
+const { env } = config;
 
 const getAuthorizationHeader = () => {
   const header = {
@@ -62,14 +63,9 @@ const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
   }
 };
 
-const setEnv = (processEnv) => {
-  env = processEnv;
-};
-
 export default {
   request,
   postRequest,
   putRequest,
-  getPageParams,
-  setEnv
+  getPageParams
 }

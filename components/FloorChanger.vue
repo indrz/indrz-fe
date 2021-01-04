@@ -21,7 +21,9 @@
 
 <script>
 import api from '../util/api';
-import indrzConfig from '../util/indrzConfig';
+import config from '../util/indrzConfig';
+
+const { env } = config;
 
 export default {
   props: {
@@ -53,13 +55,13 @@ export default {
       });
     },
     onFloorClick (floor, isEvent) {
-      const floorName = indrzConfig.layerNamePrefix + floor.short_name.toLowerCase();
+      const floorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
       this.$emit('floorClick', floorName);
       this.selectFloorWithCss(floor.short_name.toLowerCase(), isEvent);
     },
     selectFloorWithCss (floorName, isEvent) {
-      if (indrzConfig.layerNamePrefix && floorName.includes(indrzConfig.layerNamePrefix)) {
-        floorName = floorName.split(indrzConfig.layerNamePrefix)[1];
+      if (env.LAYER_NAME_PREFIX && floorName.includes(env.LAYER_NAME_PREFIX)) {
+        floorName = floorName.split(env.LAYER_NAME_PREFIX)[1];
       }
       setTimeout(() => {
         const activeClass = 'v-list-item--active';
@@ -78,7 +80,7 @@ export default {
       }, 500);
     },
     getFloorByFloorName (floorName) {
-      const shortName = indrzConfig.layerNamePrefix ? floorName.split(indrzConfig.layerNamePrefix)[1] : floorName;
+      const shortName = env.LAYER_NAME_PREFIX ? floorName.split(env.LAYER_NAME_PREFIX)[1] : floorName;
       if (!shortName) {
         return {};
       }
