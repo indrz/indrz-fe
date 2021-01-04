@@ -39,7 +39,10 @@ export default {
       'auth'
     ]
   },
-  plugins: ['~/plugins/i18n.js'],
+  plugins: [
+    '~/plugins/i18n.js',
+    '~/plugins/env.js'
+  ],
   // generate: {
   //   routes: ['/', '/about', '/fr', '/fr/about']
   // },
@@ -63,6 +66,21 @@ export default {
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
+  publicRuntimeConfig: {
+    BASE_URL:process.env.BASE_URL,
+    BASE_API_URL:process.env.BASE_API_URL,
+    BASE_WMS_URL:process.env.BASE_WMS_URL,
+    SEARCH_URL:process.env.SEARCH_URL,
+    HOME_PAGE_URL:process.env.HOME_PAGE_URL,
+    DEFAULT_CENTER_XY:process.env.DEFAULT_CENTER_XY,
+    LAYER_NAME_PREFIX:process.env.LAYER_NAME_PREFIX,
+    GEO_SERVER_LAYER_PREFIX:process.env.GEO_SERVER_LAYER_PREFIX,
+    DEFAULT_START_FLOOR:process.env.DEFAULT_START_FLOOR,
+    TOKEN: process.env.TOKEN
+  },
+  privateRuntimeConfig: {
+    TOKEN: process.env.TOKEN
+  },
   axios: {
   },
   /*

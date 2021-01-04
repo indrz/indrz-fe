@@ -21,6 +21,7 @@ module.exports = {
     'object-shorthand': 0,
     'unicorn/escape-case': 0,
     'vue/require-component-is': 0,
-    'vue/no-unused-components': 0
+    'vue/no-unused-components': 0,
+    'vue/comment-directive': 0
   }
 }
