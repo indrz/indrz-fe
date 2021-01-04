@@ -1,5 +1,6 @@
 <template>
   <v-card
+    id="floorList"
     class="mx-auto floor-changer"
     max-height="400px"
   >
@@ -72,7 +73,8 @@ export default {
         if (listItems.length && floorIndex > -1) {
           listItems[floorIndex].classList.add(activeClass, linkClass);
           if (!isEvent) {
-            listItems[floorIndex].scrollIntoView();
+            const list = document.getElementById('floorList');
+            list.scrollTo({ top: (40 * floorIndex), behavior: 'smooth' });
           }
         }
       }, 500);
