@@ -4,15 +4,22 @@
       <v-card-title>
         <span class="headline">{{ title }}</span>
       </v-card-title>
-      <v-card-text class="pb-0">
-        <v-container class="pt-0 pb-0">
+      <v-card-text class="mb-5">
+        <v-container>
           <template v-if="link">
-            <v-row>
-              <v-col cols="10" sm="10" md="10">
+            <v-row class="pl-0 ml-0">
+              <v-col cols="12" xs="12" sm="10" md="10">
                 <v-text-field ref="linkField" :value="link" hide-details outlined />
               </v-col>
-              <v-col cols="2" sm="2" md="2">
-                <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text>
+              <v-col
+                cols="12"
+                xs="12"
+                sm="2"
+                md="2"
+                align="end"
+                class="pt-5"
+              >
+                <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text class="pa-0">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -22,8 +29,8 @@
             </v-row>
           </template>
           <template v-else>
-            <v-row>
-              <v-col cols="10" sm="10" md="10">
+            <v-row class="pl-0 ml-0">
+              <v-col cols="12" xs="12" sm="10" md="10">
                 <v-text-field
                   ref="singlePoi"
                   :value="poiSingleShareLink"
@@ -33,8 +40,14 @@
                   readonly
                 />
               </v-col>
-              <v-col cols="2" sm="2" md="2">
-                <v-btn @click="onCopyButtonClick('singlePoi')" color="blue darken-1" text>
+              <v-col
+                cols="12"
+                xs="12"
+                sm="2"
+                md="2"
+                align="end"
+              >
+                <v-btn @click="onCopyButtonClick('singlePoi')" color="blue darken-1" text class="pa-0">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -42,8 +55,8 @@
                 </v-btn>
               </v-col>
             </v-row>
-            <v-row>
-              <v-col cols="10" sm="10" md="10">
+            <v-row class="pl-0 ml-0 mt-10">
+              <v-col cols="12" xs="12" sm="10" md="10">
                 <v-text-field
                   ref="catPoi"
                   :value="poiCatShareLink"
@@ -53,8 +66,14 @@
                   readonly
                 />
               </v-col>
-              <v-col cols="2" sm="2" md="2">
-                <v-btn @click="onCopyButtonClick('catPoi')" color="blue darken-1" text>
+              <v-col
+                cols="12"
+                xs="12"
+                sm="2"
+                md="2"
+                align="end"
+              >
+                <v-btn @click="onCopyButtonClick('catPoi')" color="blue darken-1" text class="pa-0">
                   <v-icon dark>
                     mdi-content-copy
                   </v-icon>
@@ -70,6 +89,7 @@
           </v-row>
         </v-container>
       </v-card-text>
+      <v-divider />
       <v-card-actions>
         <div class="flex-grow-1" />
         <v-btn @click="dialog = false" color="warning" text>
