@@ -43,12 +43,14 @@ import POIHandler from '../util/POIHandler';
 import InfoOverlay from '../components/infoOverlay';
 import ShareOverlay from '../components/shareOverlay';
 import 'ol/ol.css';
-import indrzConfig from '../util/indrzConfig';
+import config from '../util/indrzConfig';
 import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
 import UserGeoLocation from './UserGeoLocation';
 import QRCode from './QRCode';
+
+const { env } = config;
 
 export default {
   components: {
@@ -109,8 +111,8 @@ export default {
     loadLayers (floors) {
       this.floors = floors;
       if (this.floors && this.floors.length) {
-        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === indrzConfig.defaultStartFloor.toLowerCase())[0];
-        this.activeFloorName = indrzConfig.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
+        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
         this.$emit('selectFloor', this.activeFloorName);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
@@ -128,8 +130,8 @@ export default {
       const selectedItem = selection.data;
       const floorName = selectedItem.properties.floor_name;
       if (floorName) {
-        this.$emit('selectFloor', indrzConfig.layerNamePrefix + floorName);
-        this.activeFloorName = indrzConfig.layerNamePrefix + floorName;
+        this.$emit('selectFloor', env.LAYER_NAME_PREFIX + floorName);
+        this.activeFloorName = env.LAYER_NAME_PREFIX + floorName;
       }
 
       const campusId = selectedItem.building;

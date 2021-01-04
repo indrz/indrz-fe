@@ -6,9 +6,10 @@ import { getCenter } from 'ol/extent';
 import MapStyles from './mapStyles';
 import MapUtil from './map';
 import MapHandler from './mapHandler';
-import indrzConfig from './indrzConfig';
+import config from './indrzConfig';
 import api from './api';
 
+const { env } = config;
 const fetchPoi = (catId, map, activeFloorName) => {
   return api.request({
     endPoint: `poi/cat/${catId}/?format=json`
@@ -101,7 +102,7 @@ const createPoilayer = (data, poiCatId, activeFloorName) => {
       */
       poiTitle = feature.getProperties().name_en;
       const icon = feature.getProperties().icon;
-      if (indrzConfig.layerNamePrefix + (poiFeatureFloor).toLowerCase() === activeFloorName) {
+      if (env.LAYER_NAME_PREFIX + (poiFeatureFloor).toLowerCase() === activeFloorName) {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'y', poiFeatureFloor));
       } else {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'n', poiFeatureFloor));
@@ -170,7 +171,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
 
             const cssName = feature.getProperties().category_icon_css_name;
 
-            if (indrzConfig.layerNamePrefix + (poiFeatureFloor).toLowerCase() === activeFloorName) {
+            if (env.LAYER_NAME_PREFIX + (poiFeatureFloor).toLowerCase() === activeFloorName) {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
             } else {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'n', poiFeatureFloor));
@@ -197,7 +198,7 @@ const setPoiFeatureVisibility = (map, activeFloorName) => {
       if (layer.getProperties().name === 'poi group' || layer.getProperties().name === 'POI-Gruppe') {
         layer.getLayers().forEach(function (sublayer, i) {
           sublayer.getSource().forEachFeature(function (feature, i) {
-            if (indrzConfig.layerNamePrefix + (feature.getProperties().floor_name).toLowerCase() !== activeFloorName) {
+            if (env.LAYER_NAME_PREFIX + (feature.getProperties().floor_name).toLowerCase() !== activeFloorName) {
               feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, false));
             } else {
               feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, true));

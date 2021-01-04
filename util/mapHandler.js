@@ -2,9 +2,11 @@ import Vector from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
 import { getCenter } from 'ol/extent';
 import axios from 'axios';
-import indrzConfig from '~/util/indrzConfig';
+import config from '~/util/indrzConfig';
 import POIHandler from '~/util/POIHandler';
 import MapUtil from '~/util/map';
+
+const { env } = config;
 
 const hostUrl = window.location.href;
 const closeIndrzPopup = (popup, globalPopupInfo) => {
@@ -25,7 +27,7 @@ const openIndrzPopup = (
   globalPopupInfo, popUpHomePage, currentPOIID, currentLocale,
   objCenterCoords, routeToValTemp, routeFromValTemp,
   activeFloorName, popup, properties, coordinate, feature, offsetArray) => {
-  const floorName = activeFloorName.split(indrzConfig.layerNamePrefix)[1].toUpperCase();
+  const floorName = activeFloorName.split(env.LAYER_NAME_PREFIX)[1].toUpperCase();
   const popupContent = document.getElementById('popup-content');
 
   for (const member in globalPopupInfo) {
@@ -326,7 +328,7 @@ const getRoomInfo = (floor, layers) => {
   let newel;
 
   availableWmsLayers.forEach(function (element) {
-    if (floor.toLowerCase() === (indrzConfig.layerNamePrefix + element.getProperties().floorName).toLowerCase()) {
+    if (floor.toLowerCase() === (env.LAYER_NAME_PREFIX + element.getProperties().floorName).toLowerCase()) {
       newel = element.getSource();
     }
   });
