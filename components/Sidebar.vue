@@ -12,7 +12,9 @@
     </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
-        <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
+        <v-expansion-panel-header class="sidebar-expansion-header">
+          {{ menuItem.title }}
+        </v-expansion-panel-header>
         <v-expansion-panel-content>
           <component
             :is="menuItem.type"
@@ -219,7 +221,8 @@ export default {
   }
 }
 </script>
-<style scoped>
+
+<style lang="scss" scoped>
   .left-bar-logo {
     width: auto;
     height: 40px;
@@ -227,5 +230,43 @@ export default {
     vertical-align: middle;
     display: block;
     margin: 5px auto;
+  }
+  /*
+  Style for Route Room to Room
+   */
+  .route-room-to-room {
+    ::v-deep .v-label {
+      /*
+      font-family: "Roboto", sans-serif;
+      font-size: .8125rem !important;
+      */
+    }
+  }
+  /*
+  Style for Tree
+   */
+  ::v-deep .v-treeview-node__label {
+    /*
+    font-family: "Roboto", sans-serif;
+    font-size: .8125rem !important;
+    */
+  }
+  /*
+  Style for Menu items
+   */
+  ::v-deep .v-list-item__title {
+    /*
+    font-family: "Roboto", sans-serif;
+    font-size: .8125rem !important;
+    */
+  }
+  /*
+  Style for Menu expansion header
+   */
+  .sidebar-expansion-header {
+    /*
+    font-family: "Roboto", sans-serif;
+    font-size: 0.9375rem !important;
+    */
   }
 </style>
