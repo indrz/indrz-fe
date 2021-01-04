@@ -1,25 +1,24 @@
 import axios from 'axios';
-import indrzConfig from '~/util/indrzConfig'
+import config from './indrzConfig';
 
-const baseApiUrl = indrzConfig.baseApiUrl;
+const { env } = config;
 
 const getAuthorizationHeader = () => {
-  const token = indrzConfig.token;
   const header = {
     'Content-Type': 'application/json'
   };
-  if (token) {
-    header.Authorization = token;
+  if (env.TOKEN) {
+    header.Authorization = env.TOKEN;
   }
   return header;
 };
 
 const request = function (requestObj) {
   return axios({
-    url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+    url: `${requestObj.url || env.BASE_API_URL}${requestObj.endPoint || ''}`,
     method: requestObj.method || 'GET',
     headers: {
-      Authorization: indrzConfig.token,
+      Authorization: env.TOKEN,
       'Content-Type': 'application/json'
     }
   });
@@ -33,7 +32,7 @@ const postRequest = async function (requestObj) {
       formData.append(key, value);
     }
     return await axios({
-      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+      url: `${requestObj.url || env.BASE_API_URL}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'POST',
       headers: getAuthorizationHeader(),
       data: formData
@@ -46,7 +45,7 @@ const postRequest = async function (requestObj) {
 const putRequest = async function (requestObj) {
   try {
     return await axios({
-      url: `${requestObj.url || baseApiUrl}${requestObj.endPoint || ''}`,
+      url: `${requestObj.url || env.BASE_API_URL}${requestObj.endPoint || ''}`,
       method: requestObj.method || 'PUT',
       headers: getAuthorizationHeader(),
       data: requestObj.data

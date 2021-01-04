@@ -24,9 +24,10 @@ import Overlay from 'ol/Overlay';
 import MapStyles from './mapStyles';
 import MapHandler from './mapHandler';
 import api from './api';
-import indrzConfig from '~/util/indrzConfig'
+import config from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
 
+const { env } = config;
 const initializeMap = (mapId) => {
   const view = new View({
     center: getStartCenter(),
@@ -75,7 +76,7 @@ const createWmsLayer = function (
 ) {
   return new ImageLayer({
     source: new ImageWMS({
-      url: indrzConfig.baseWmsUrl,
+      url: env.BASE_WMS_URL,
       params: { LAYERS: geoserverLayer, TILED: true },
       serverType: 'geoserver',
       crossOrigin: ''
@@ -83,7 +84,7 @@ const createWmsLayer = function (
     visible: isVisible,
     name: layerName,
     floorNumber: floorNumber,
-    floorName: layerName.split(indrzConfig.layerNamePrefix)[1],
+    floorName: layerName.split(env.LAYER_NAME_PREFIX)[1],
     type: 'floor',
     zIndex: zIndexValue,
     crossOrigin: 'anonymous'
@@ -346,7 +347,7 @@ const styleFunction = (feature, resolution) => {
 };
 
 const searchThroughAPI = async (searchText) => {
-  const searchUrl = `${indrzConfig.searchUrl}/${searchText}`;
+  const searchUrl = `${env.SEARCH_URL}/${searchText}`;
   const response = await api.request({
     url: searchUrl
   });
@@ -576,7 +577,7 @@ const getLayers = () => {
   }
 }
 
-const getStartCenter = () => indrzConfig.defaultCenterXY;
+const getStartCenter = () => env.DEFAULT_CENTER_XY;
 
 const getMapControls = () => {
   // controls
@@ -598,10 +599,10 @@ const getWmsLayers = (floors) => {
 
   floors.forEach((floor, index) => {
     const floorName = floor.short_name.toLowerCase();
-    const layerName = indrzConfig.layerNamePrefix + floorName;
+    const layerName = env.LAYER_NAME_PREFIX + floorName;
     const layer = createWmsLayer(
       layerName,
-      indrzConfig.geoServerLayerPrefix + layerName,
+      env.GEO_SERVER_LAYER_PREFIX + layerName,
       floor.floor_num,
       index === 0,
       3
@@ -639,7 +640,7 @@ const loadMapWithParams = async (mapInfo, query) => {
     mapInfo.$root.$emit('load-search-query', query.q);
 
     if (result.floorName) {
-      mapInfo.$emit('selectFloor', indrzConfig.layerNamePrefix + result.floorName);
+      mapInfo.$emit('selectFloor', env.LAYER_NAME_PREFIX + result.floorName);
     }
     mapInfo.searchLayer = result.searchLayer;
   }
