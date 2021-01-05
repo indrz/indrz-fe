@@ -6,7 +6,7 @@
           <!-- Any code below will show up on Header -->
         </div>
         <v-container class="box-row content">
-          <nuxt/>
+          <nuxt />
         </v-container>
         <div :id="footerId" class="box-row footer">
           <!-- Any code below will show up on Footer -->
