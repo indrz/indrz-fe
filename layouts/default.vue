@@ -12,7 +12,7 @@
             <div class="nav-left">
                 <ul>
                     <li class="logo-container"><a href="http://campus.wu.ac.at/">
-                        <img id="wulogo" src="/static/homepage/wu-neu/sitelogo-md.png" class="logo" alt=""></a>
+                        <img id="wulogo" src="/static/images/logo-left-panel.png" class="logo" alt=""></a>
                     </li>
                     <!--li class="brandname slideout"><a>CAMPUS</a></li-->
                     <li class="active" style="background: #009bb8;">
