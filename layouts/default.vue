@@ -11,8 +11,8 @@
         <div class="container-fluid" style="background: #000;">
             <div class="nav-left">
                 <ul>
-                    <li class="logo-container"><a href="http://campus.wu.ac.at/">
-                        <img id="wulogo" src="/static/images/logo-left-panel.png" class="logo" alt=""></a>
+                    <li class="logo-container"><a href="https://indrz.com/">
+                        <img id="logo-left-panel" src="/static/images/logo-left-panel.png" class="logo" alt=""></a>
                     </li>
                     <!--li class="brandname slideout"><a>CAMPUS</a></li-->
                     <li class="active" style="background: #009bb8;">
