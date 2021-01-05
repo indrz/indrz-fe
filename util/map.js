@@ -36,10 +36,8 @@ const initializeMap = (mapId) => {
   });
 
   const layers = getLayers();
-  const headerEl = document.getElementById('indrz-header-container');
-  const footerEl = document.getElementById('indrz-footer-container');
-  const mapContainer = document.getElementById(mapId);
-  mapContainer.style.height = window.innerHeight - (headerEl.offsetHeight + footerEl.offsetHeight) + 'px';
+
+  handleWindowResize(mapId);
 
   const map = new Map({
     interactions: defaultInteraction().extend([
@@ -69,6 +67,13 @@ const initializeMap = (mapId) => {
   return {
     view, map, layers, popup
   };
+};
+
+const handleWindowResize = function (mapId) {
+  const headerEl = document.getElementById('indrz-header-container');
+  const footerEl = document.getElementById('indrz-footer-container');
+  const mapContainer = document.getElementById(mapId);
+  mapContainer.style.height = window.innerHeight - (headerEl.offsetHeight + footerEl.offsetHeight) + 'px';
 };
 
 const createWmsLayer = function (
@@ -692,5 +697,6 @@ export default {
   zoomer,
   getMapSize,
   calculateAspectRatioFit,
-  loadMapWithParams
+  loadMapWithParams,
+  handleWindowResize
 };

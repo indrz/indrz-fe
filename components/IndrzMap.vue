@@ -105,6 +105,7 @@ export default {
     window.onresize = () => {
       setTimeout(() => {
         this.map.updateSize();
+        MapUtil.handleWindowResize(this.mapId);
       }, 500);
     };
     this.map.on('moveend', (e) => {
