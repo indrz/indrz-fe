@@ -21,7 +21,6 @@
         flat
         hide-selected
         hide-details
-        hide-no-data
         clearable
       />
     </template>
@@ -46,7 +45,6 @@
         flat
         hide-selected
         hide-details
-        hide-no-data
         clearable
       />
     </template>
@@ -128,6 +126,7 @@ export default {
             return;
           }
           this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
+
           if (this.searchResult.length > 100) {
             this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
           }
