@@ -1,6 +1,6 @@
 <template>
-  <div class="fill-height">
-    <div :id="mapId" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+  <div>
+    <div :id="mapId" class="width='100%' style='border-radius: 0" />
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
       <v-btn
@@ -84,11 +84,16 @@ export default {
       routeToValTemp: '',
       routeFromValTemp: '',
       hostUrl: window.location.href,
-      routeHandler: RouteHandler(this.$store, this.$t, this)
+      routeHandler: RouteHandler(this.$store, this.$t, this),
+      headerId: 'indrz-header-container',
+      footerId: 'indrz-footer-container'
     };
   },
 
   mounted () {
+    const query = queryString.parse(location.search);
+    this.showHideHeaderFooter(query);
+
     const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
 
     this.view = view;
@@ -100,6 +105,7 @@ export default {
     window.onresize = () => {
       setTimeout(() => {
         this.map.updateSize();
+        MapUtil.handleWindowResize(this.mapId);
       }, 500);
     };
     this.map.on('moveend', (e) => {
@@ -265,6 +271,14 @@ export default {
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map);
+    },
+    showHideHeaderFooter (query) {
+      if (query.hideHeader && query.hideHeader === 'true') {
+        document.getElementById(this.headerId).style.display = 'none';
+      }
+      if (query.hideFooter && query.hideFooter === 'true') {
+        document.getElementById(this.footerId).style.display = 'none';
+      }
     }
   }
 };
