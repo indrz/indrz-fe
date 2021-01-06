@@ -21,9 +21,15 @@
         flat
         hide-selected
         hide-details
-        hide-no-data
         clearable
-      />
+      >
+        <template v-slot:item="{ item }">
+          <v-list-item-content>
+            <v-list-item-title v-text="item.properties.name"></v-list-item-title>
+            <v-list-item-subtitle v-text="item.properties.roomcode"></v-list-item-subtitle>
+          </v-list-item-content>
+        </template>
+      </v-autocomplete>
     </template>
     <template v-else>
       <v-autocomplete
@@ -46,9 +52,15 @@
         flat
         hide-selected
         hide-details
-        hide-no-data
         clearable
-      />
+      >
+        <template v-slot:item="{ item }">
+          <v-list-item-content>
+            <v-list-item-title v-text="item.properties.name"></v-list-item-title>
+            <v-list-item-subtitle v-text="item.properties.roomcode"></v-list-item-subtitle>
+          </v-list-item-content>
+        </template>
+      </v-autocomplete>
     </template>
   </div>
 </template>
