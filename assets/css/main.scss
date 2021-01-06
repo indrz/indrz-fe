@@ -9,12 +9,20 @@ body {
   z-index: 5;
 }
 
+.indrz-powered-logo {
+  position: absolute; /* or absolute */
+  bottom: 1%;
+  left: calc(50% - 45px);
+  z-index: 5;
+  width: 90px;
+}
+
 .tu-logo-sidepanel{
   position:absolute;
   left: 50%;
 }
 
-.tu-logo {
+.logo-on-map {
   position: absolute; /* or absolute */
   top: 1%;
   right: 10px;

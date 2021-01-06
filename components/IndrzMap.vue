@@ -14,14 +14,14 @@
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
-    <div class="indrz-logo">
+    <div class="indrz-powered-logo">
       <a href="https://www.indrz.com" target="_blank">
-        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
+        <img id="indrz-powered-logo" src="/images/powered-by-indrz-blue-transparent-text+logo.png" alt="indrz logo">
       </a>
     </div>
-    <div class="tu-logo">
-      <a href="https://www.tuwien.at" target="_blank">
-        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
+    <div class="logo-on-map">
+      <a href="https://indrz.com" target="_blank">
+        <img id="logo-on-map" src="/images/indrz-logo-v3_50x50px.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
