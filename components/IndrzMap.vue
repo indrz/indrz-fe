@@ -1,28 +1,27 @@
 <template>
-  <div class="fill-height">
-    <div :id="mapId" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+  <div>
+    <div :id="mapId" class="width='100%' style='border-radius: 0" />
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
         @click="onMapSwitchClick"
-        color="rgba(0,60,136,0.5)"
         min-width="95px"
-        class="pa-2"
+        class="pa-2 map-switcher"
         small
         dark
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
-    <div class="indrz-logo">
+    <div class="indrz-powered-logo">
       <a href="https://www.indrz.com" target="_blank">
-        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
+        <img id="indrz-powered-logo" src="/images/powered-by-indrz-blue-transparent-text+logo.png" alt="indrz logo">
       </a>
     </div>
-    <div class="tu-logo">
-      <a href="https://www.tuwien.at" target="_blank">
-        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
+    <div class="logo-on-map">
+      <a href="https://indrz.com" target="_blank">
+        <img id="logo-on-map" src="/images/indrz-logo-v3_50x50px.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
@@ -84,11 +83,16 @@ export default {
       routeToValTemp: '',
       routeFromValTemp: '',
       hostUrl: window.location.href,
-      routeHandler: RouteHandler(this.$store, this.$t, this)
+      routeHandler: RouteHandler(this.$store, this.$t, this),
+      headerId: 'indrz-header-container',
+      footerId: 'indrz-footer-container'
     };
   },
 
   mounted () {
+    const query = queryString.parse(location.search);
+    this.showHideHeaderFooter(query);
+
     const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
 
     this.view = view;
@@ -100,6 +104,7 @@ export default {
     window.onresize = () => {
       setTimeout(() => {
         this.map.updateSize();
+        MapUtil.handleWindowResize(this.mapId);
       }, 500);
     };
     this.map.on('moveend', (e) => {
@@ -265,6 +270,14 @@ export default {
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map);
+    },
+    showHideHeaderFooter (query) {
+      if (query.hideHeader && query.hideHeader === 'true') {
+        document.getElementById(this.headerId).style.display = 'none';
+      }
+      if (query.hideFooter && query.hideFooter === 'true') {
+        document.getElementById(this.footerId).style.display = 'none';
+      }
     }
   }
 };
