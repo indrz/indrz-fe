@@ -22,5 +22,6 @@
   "about_terms_conditions": "About/Terms Conditions",
   "scan_qr_show_my_location": "Scan QR (show my location)",
   "qr_camera_fallback_message": "Sorry looks like we could not scan that code, please use the search function and enter a room code to find your current location.",
-  "no_result_found": "No results found"
+  "no_result_found": "No results found",
+  "min_search_character_length_message": "Type at least 3 characters to search"
 }

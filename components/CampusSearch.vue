@@ -8,7 +8,6 @@
         :loading="isLoading"
         :search-input.sync="search"
         :prepend-icon="icon"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="routeLabel"
         @click:clear="onClearClick"
@@ -22,7 +21,27 @@
         hide-selected
         hide-details
         clearable
-      />
+      >
+        <template v-slot:no-data>
+          <div class="v-list-item">
+            <div class="v-list-item__content">
+              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
+                <template v-if="!search || search.length < 3">
+                  {{ minSearchCharacterLengthMessage }}
+                </template>
+                <v-progress-circular
+                  v-else-if="search && search.length && isLoading"
+                  indeterminate
+                  color="primary"
+                />
+                <template v-else-if="search && search.length && !isLoading && !searchResult.length">
+                  {{ noResultText }}
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </v-autocomplete>
     </template>
     <template v-else>
       <v-autocomplete
@@ -31,7 +50,6 @@
         :items="searchResult"
         :loading="isLoading"
         :search-input.sync="search"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="searchLabel"
         @click:clear="onClearClick"
@@ -46,7 +64,27 @@
         hide-selected
         hide-details
         clearable
-      />
+      >
+        <template v-slot:no-data>
+          <div class="v-list-item">
+            <div class="v-list-item__content">
+              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
+                <template v-if="!search || search.length < 3">
+                  {{ minSearchCharacterLengthMessage }}
+                </template>
+                <v-progress-circular
+                  v-else-if="search && search.length && isLoading"
+                  indeterminate
+                  color="primary"
+                />
+                <template v-else-if="search && search.length && !isLoading && !searchResult.length">
+                  {{ noResultText }}
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+      </v-autocomplete>
     </template>
   </div>
 </template>
@@ -86,6 +124,7 @@ export default {
   data () {
     return {
       searchLabel: this.$t('search_our_campus'),
+      minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
       noResultText: 'No result found',
       serachItemLimit: 100,
       searchResult: [],
