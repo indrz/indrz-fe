@@ -5,11 +5,11 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         min-width="95px"
         class="pa-2 map-switcher"
         small
         dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -21,7 +21,7 @@
     </div>
     <div class="logo-on-map">
       <a href="https://indrz.com" target="_blank">
-        <img id="logo-on-map" src="/images/indrz-logo-v3_50x50px.png" alt="tulogo" style="width:auto; height:40px; ">
+        <img id="logo-on-map" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
