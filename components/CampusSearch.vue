@@ -133,11 +133,15 @@ export default {
     this
       .term$
       .pipe(
-        filter(term => term && term.length > 2 && !this.stopSearch),
+        filter(term => (term && term.length > 2 && !this.stopSearch) || term === null),
         debounceTime(500),
         distinctUntilChanged()
       )
-      .subscribe(term => this.apiSearch(term));
+      .subscribe((term) => {
+        if (term !== null) {
+          return this.apiSearch(term);
+        }
+      });
     this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
 
