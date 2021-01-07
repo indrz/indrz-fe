@@ -13,8 +13,8 @@
         :label="routeLabel"
         @click:clear="onClearClick"
         @change="onSearchSelection"
-        item-text="properties.name"
-        item-value="properties.spaceid"
+        item-text="name"
+        item-value="spaceid"
         append-icon="mdi-magnify"
         single-line
         return-object
@@ -25,8 +25,8 @@
       >
         <template v-slot:item="{ item }">
           <v-list-item-content>
-            <v-list-item-title v-text="item.properties.name"></v-list-item-title>
-            <v-list-item-subtitle v-text="item.properties.roomcode"></v-list-item-subtitle>
+            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
       </v-autocomplete>
@@ -43,8 +43,8 @@
         :label="searchLabel"
         @click:clear="onClearClick"
         @change="onSearchSelection"
-        item-text="properties.name"
-        item-value="properties.spaceid"
+        item-text="name"
+        item-value="spaceid"
         append-icon="mdi-magnify"
         single-line
         return-object
@@ -56,8 +56,8 @@
       >
         <template v-slot:item="{ item }">
           <v-list-item-content>
-            <v-list-item-title v-text="item.properties.name"></v-list-item-title>
-            <v-list-item-subtitle v-text="item.properties.roomcode"></v-list-item-subtitle>
+            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
       </v-autocomplete>
@@ -103,6 +103,7 @@ export default {
       noResultText: 'No result found',
       serachItemLimit: 100,
       searchResult: [],
+      apiResponse: [],
       isLoading: false,
       term$: new Subject(),
       model: null,
@@ -139,10 +140,26 @@ export default {
           if (!response || !response.data) {
             return;
           }
-          this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
-          if (this.searchResult.length > 100) {
-            this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
+          this.apiResponse = response.data.features.filter(feature => feature.properties && feature.properties.name);
+
+          if (this.apiResponse.length > 100) {
+            this.apiResponse = this.apiResponse.slice(0, this.serachItemLimit);
           }
+
+          this.searchResult = this.apiResponse.map(({ properties }) => {
+            let code = properties.roomcode;
+
+            if (code.toLowerCase() === this.search.toLowerCase()) {
+              code = properties.room_category || properties.external_id || code;
+            }
+
+            return {
+              name: properties.name,
+              floorNum: properties.floor_num,
+              roomCode: properties.roomcode,
+              code
+            }
+          });
         })
         .catch((err) => {
           console.log(err)
@@ -150,8 +167,14 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     onSearchSelection (selection) {
+      let data = null;
+
+      if (selection) {
+        data = this.apiResponse.find(responseData => responseData.properties.roomcode === selection.roomCode);
+      }
+
       this.$emit('selectSearhResult', {
-        data: selection,
+        data: data,
         routeType: this.routeType
       });
     },

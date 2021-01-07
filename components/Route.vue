@@ -127,9 +127,16 @@ export default {
         geometry: {}
       };
       const field = this.$refs[routeInfo.path + 'Route'];
+      const model = {
+        name: data.properties.name,
+        floorNum: data.properties.floor_num || data.properties.floor,
+        roomCode: data.properties.roomcode,
+        code: data.properties.roomcode
+      };
       field.stopSearch = true;
-      field.searchResult = [data];
-      field.model = data;
+      field.apiResponse = [data];
+      field.searchResult = [model];
+      field.model = model;
       this[routeInfo.path + 'Route'] = data;
       this.$emit('setGlobalRoute', {
         data,
