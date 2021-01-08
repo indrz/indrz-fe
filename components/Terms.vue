@@ -249,7 +249,7 @@
             Stockwerk liegenden R&auml;ume anzuzeigen.
           </p>
           <p>
-            <img src="../static/images/help/" align="bottom">
+            <img src="../static/images/help/floor-changer.jpg" align="bottom">
           </p>
           <p>
             Durch Klick auf das
