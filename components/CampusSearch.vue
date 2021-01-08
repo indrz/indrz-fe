@@ -8,26 +8,29 @@
         :loading="isLoading"
         :search-input.sync="search"
         :prepend-icon="icon"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="routeLabel"
         @click:clear="onClearClick"
         @change="onSearchSelection"
-        item-text="name"
-        item-value="spaceid"
-        append-icon="mdi-magnify"
+        item-text="properties.name"
+        item-value="properties.spaceid"
+        append-icon=""
         single-line
         return-object
         flat
         hide-selected
         hide-details
-        clearable
+        hide-no-data
       >
-        <template v-slot:item="{ item }">
-          <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
-            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
-          </v-list-item-content>
+        <template v-slot:append>
+          <v-icon class="search-btn">
+            mdi-magnify
+          </v-icon>
+        </template>
+        <template v-slot:append-outer>
+          <v-icon :color="activeClearColor" @click.stop="onClearClick">
+            mdi-close
+          </v-icon>
         </template>
       </v-autocomplete>
     </template>
@@ -38,27 +41,30 @@
         :items="searchResult"
         :loading="isLoading"
         :search-input.sync="search"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="searchLabel"
         @click:clear="onClearClick"
         @change="onSearchSelection"
-        item-text="name"
-        item-value="spaceid"
-        append-icon="mdi-magnify"
+        item-text="properties.name"
+        item-value="properties.spaceid"
+        append-icon=""
         single-line
         return-object
         solo
         flat
         hide-selected
         hide-details
-        clearable
+        hide-no-data
       >
-        <template v-slot:item="{ item }">
-          <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
-            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
-          </v-list-item-content>
+        <template v-slot:append>
+          <v-icon class="search-btn">
+            mdi-magnify
+          </v-icon>
+        </template>
+        <template v-slot:append-outer>
+          <v-icon :color="activeClearColor" @click.stop="onClearClick">
+            mdi-close
+          </v-icon>
         </template>
       </v-autocomplete>
     </template>
@@ -100,6 +106,7 @@ export default {
   data () {
     return {
       searchLabel: this.$t('search_our_campus'),
+      minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
       noResultText: 'No result found',
       serachItemLimit: 100,
       searchResult: [],
@@ -109,6 +116,11 @@ export default {
       model: null,
       search: null,
       stopSearch: false
+    }
+  },
+  computed: {
+    activeClearColor () {
+      return this.search && this.search.length ? 'blue darken-2' : 'grey';
     }
   },
   watch: {
@@ -121,11 +133,15 @@ export default {
     this
       .term$
       .pipe(
-        filter(term => term && term.length > 2 && !this.stopSearch),
+        filter(term => (term && term.length > 2 && !this.stopSearch) || term === null),
         debounceTime(500),
         distinctUntilChanged()
       )
-      .subscribe(term => this.apiSearch(term));
+      .subscribe((term) => {
+        if (term !== null) {
+          return this.apiSearch(term);
+        }
+      });
     this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
 
@@ -140,10 +156,10 @@ export default {
           if (!response || !response.data) {
             return;
           }
-          this.apiResponse = response.data.features.filter(feature => feature.properties && feature.properties.name);
+          this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
 
-          if (this.apiResponse.length > 100) {
-            this.apiResponse = this.apiResponse.slice(0, this.serachItemLimit);
+          if (this.searchResult.length > 100) {
+            this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
           }
 
           this.searchResult = this.apiResponse.map(({ properties }) => {
@@ -179,7 +195,11 @@ export default {
       });
     },
     onClearClick () {
-      this.$refs.searchField.blur();
+      this.$nextTick(() => {
+        this.search = '';
+        this.searchResult = [];
+        this.$refs.searchField.blur();
+      });
     },
     getValue () {
       return this.model;
@@ -196,4 +216,11 @@ export default {
 </script>
 
 <style scoped>
+  .search-btn {
+    border-right: 1px solid #d3d3d3;
+    padding-right: 5px
+  }
+  ::v-deep .v-input__slot {
+    padding-right: 0px !important;
+  }
 </style>

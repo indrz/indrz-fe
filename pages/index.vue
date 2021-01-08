@@ -2,8 +2,6 @@
   <v-card
     :name="mapElName"
     :ripple="false"
-    width="100%"
-    height="100%"
     style="border-radius: 0"
     fluid
     flat

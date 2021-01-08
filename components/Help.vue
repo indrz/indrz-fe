@@ -11,16 +11,16 @@
 
         <div>
           <p>
-            TUW-maps bietet eine
+            INDRZ bietet eine
             einfache grafische Darstellung und begleitende Informationen zu
             Geb&auml;uden, R&auml;umen und Serviceangeboten der Technischen
             Universit&auml;t Wien. Die Applikation arbeitet nicht mit Ihrem
             Standort, sondern basiert ausschlie&szlig;lich auf dem vorhanden
-            Kartenmaterial der TU Wien: &Uuml;bersichtspl&auml;ne der
+            Kartenmaterial der IHRE_CAMPUS_NAME: &Uuml;bersichtspl&auml;ne der
             verschiedenen Campus-Areale, Etagengrundrisse bis hin zu
             Rauminformationen und Belegungspl&auml;nen f&uuml;r H&ouml;rs&auml;le
-            und Seminarr&auml;ume, welche mit Daten aus TISS
-            <a href="https://tiss.tuwien.ac.at/">https://tiss.tuwien.ac.at/</a>
+            und Seminarr&auml;ume, welche mit Daten aus IHRE_CAMPUS_NAME
+            <a href="https://example.com/">https://example.com/</a>
             erg&auml;nzt werden.
           </p>
           <p>
@@ -32,7 +32,7 @@
           </p>
           <p>
             Mobilit&auml;tseingeschr&auml;nkte
-            Personen finden mit &bdquo;TUW-maps&ldquo; leicht zu den
+            Personen finden mit &bdquo;INDRZ&ldquo; leicht zu den
             barrierefreien Zugangsm&ouml;glichkeiten, Aufz&uuml;gen und , Rampen,
             und Sanit&auml;ranlagen, welche in den Darstellungen abgebildet sind.
           </p>
@@ -46,18 +46,18 @@
           </p>
           <p>
             Dies ist die
-            &szlig;-Version von TUW-maps!
+            &szlig;-Version von INDRZ!
           </p>
           <p>
             S&auml;mtliche Texte,
-            Darstellung und Wege im Rahmen des digitalen Leitsystems &bdquo;TUW-maps&ldquo;
+            Darstellung und Wege im Rahmen des digitalen Leitsystems &bdquo;INDRZ&ldquo;
             wurden sorgf&auml;ltig gepr&uuml;ft. Dessen ungeachtet kann keine
             Garantie f&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und
             Aktualit&auml;t der Angaben &uuml;bernommen werden.
           </p>
           <p>
-            Eine Haftung der TU
-            Wien und / bzw. des software-Herstellers (<a href="https://www.gomogi.com">www.gomogi.com</a> GOMOGI / Michael Diener)
+            Eine Haftung der IHRE_CAMPUS_NAME
+            und / bzw. des software-Herstellers (<a href="https://www.gomogi.com">www.gomogi.com</a> GOMOGI / Michael Diener)
             sind daherist ausgeschlossen. Im Zuge der Darstellung von Geb&auml;uden
             und Zugangsm&ouml;glichkeiten wird versucht, auf Einschr&auml;nkungen
             m&ouml;glichst aktuell hinzuweisen, wir bitten jedoch, stetsht&acute;s
@@ -67,24 +67,24 @@
             immer Folge zu leisten.
           </p>
           <p>
-            Die TU Wien und
-            gomogi / Michael Diener &uuml;bernehmen auch keinerlei Haftungen aus
+            Die IHRE_CAMPUS_NAME und
+            GOMOGI / Michael Diener &uuml;bernehmen auch keinerlei Haftungen aus
             in Zusammenhang mit der Nutzung und Anwendung der sSoftware. Ebenso
             wenig wird keine Haftung f&uuml;r allf&auml;llige Sch&auml;den, die
             durch Nutzung der vorgeschlagenen Wege entstehen, &uuml;bernommen.
           </p>
           <p>
             Die Links zu anderen
-            Webseiten wurden sorgf&auml;ltig ausgew&auml;hlt. Da die TU Wien auf
-            deren Inhalt keinen Einfluss hat, &uuml;bernimmt die TU Wien daf&uuml;r
+            Webseiten wurden sorgf&auml;ltig ausgew&auml;hlt. Da die IHRE_CAMPUS_NAME auf
+            deren Inhalt keinen Einfluss hat, &uuml;bernimmt die IHRE_CAMPUS_NAME daf&uuml;r
             auch keine Verantwortung.
           </p>
           <p>
-            TUW-maps ist ein
-            Projekt der TU Wien, eine allf&auml;llige weitergehende, insbesondere
+            INDRZ ist ein
+            Projekt der IHRE_CAMPUS_NAME, eine allf&auml;llige weitergehende, insbesondere
             gewerbliche Nutzung der verwendeten Karten, Darstellungen usw. von
-            TUW-maps bed&uuml;rfen bedarf der vorhergehenden schriftlichen
-            Zustimmung durch die TU Wien.
+            INDRZ bed&uuml;rfen bedarf der vorhergehenden schriftlichen
+            Zustimmung durch die IHRE_CAMPUS_NAME.
           </p>
           <p>
             <b>Kontakt</b>
@@ -92,7 +92,7 @@
           <p>
             Wir sind dankbar f&uuml;r
             Ihre Anregungen, Erg&auml;nzungen, und Korrekturen. Senden Sie diese
-            bitte an: TUW-maps@gut.tuwien.ac.at
+            bitte an: admin@example.com
           </p>
         </div>
         <div>
@@ -101,7 +101,7 @@
           </p>
           <p>
             Die Karte zeigt
-            s&auml;mtlichen Standorte der TU Wien im Stadtgebiet von Wien.
+            s&auml;mtlichen Standorte der IHRE_CAMPUS_NAME im Stadtgebiet von Wien.
           </p>
           <p>
             Um auf der Karte zu
@@ -116,7 +116,7 @@
             <b>Sie suchen Suche</b>
           </p>
           <p>
-            <img src="../static/images/tu-help/search.jpg" align="bottom">
+            <img src="../static/images/help/search.jpg" align="bottom">
           </p>
           <p>
             Um die Suchfunktion
@@ -133,7 +133,7 @@
             <b>Routing/Wegbeschreibung</b>
           </p>
           <p>
-            <img src="../static/images/tu-help/routing.jpg" align="bottom">
+            <img src="../static/images/help/routing.jpg" align="bottom">
           </p>
           <p>
             &Uuml;ber die
@@ -165,7 +165,7 @@
             <b>POIs</b>
           </p>
           <p>
-            <img src="../static/images/tu-help/poi.jpg" align="bottom">
+            <img src="../static/images/help/poi.jpg" align="bottom">
           </p>
           <p>
             POIs&ldquo; -
@@ -220,7 +220,7 @@
             <b>Werkzeugleiste</b>
           </p>
           <p>
-            <img src="../static/images/tu-help/share.jpg" alt="" align="bottom">
+            <img src="../static/images/help/share.jpg" alt="" align="bottom">
           </p>
           <p>
             Die Werkzeugleiste,
@@ -249,7 +249,7 @@
             Stockwerk liegenden R&auml;ume anzuzeigen.
           </p>
           <p>
-            <img src="../static/images/tu-help/floor-changer.jpg" align="bottom">
+            <img src="../static/images/help/floor-changer.jpg" align="bottom">
           </p>
           <p>
             Durch Klick auf das
@@ -269,7 +269,7 @@
             <b>ZOOM </b>
           </p>
           <p>
-            <img src="../static/images/tu-help/zoom.jpg" align="bottom">
+            <img src="../static/images/help/zoom.jpg" align="bottom">
           </p>
           <p>
             Zus&auml;tzlich
@@ -305,8 +305,8 @@
               bitte an:</b></span>
           </p>
           <p>
-            <span lang="en-US">TUW-maps@gut.tuwien.ac.at
-              (mailto: TUW-maps@gut.tuwien.ac.at).</span>
+            <span lang="en-US">office@example.com
+              (mailto: office@example.com).</span>
           </p>
           <p lang="en-US">
             <br>

@@ -2,13 +2,13 @@
   <v-app dark>
     <v-main>
       <div class="box">
-        <div :id="headerId" class="header">
+        <div :id="headerId" class="box-row header">
           <!-- Any code below will show up on Header -->
         </div>
-        <v-container class="content">
+        <v-container class="box-row content">
           <nuxt />
         </v-container>
-        <div :id="footerId" class="footer">
+        <div :id="footerId" class="box-row footer">
           <!-- Any code below will show up on Footer -->
         </div>
       </div>
@@ -17,7 +17,6 @@
 </template>
 
 <script>
-import queryString from 'query-string';
 
 export default {
   data () {
@@ -46,10 +45,6 @@ export default {
     }
     this.$i18n.locale = defaultLocale;
   },
-  mounted () {
-    const query = queryString.parse(location.search);
-    this.showHideHeaderFooter(query);
-  },
   methods: {
     getLocale () {
       return (
@@ -57,14 +52,6 @@ export default {
         navigator.browserLanguage ||
         (navigator.languages || ['en'])[0]
       );
-    },
-    showHideHeaderFooter (query) {
-      if (query.hideHeader && query.hideHeader === 'true') {
-        document.getElementById(this.headerId).style.display = 'none';
-      }
-      if (query.hideFooter && query.hideFooter === 'true') {
-        document.getElementById(this.footerId).style.display = 'none';
-      }
     }
   }
 };
