@@ -1,13 +1,30 @@
-const baseUrl = 'https://example.com';
-const baseApiUrl = baseUrl + '/api/v1/'
+const env = {};
+
+const set = (processEnv) => {
+  Object.assign(env, processEnv);
+};
+
+const get = () => {
+  const maxTry = 100;
+  let tryCount = 0;
+
+  return new Promise((resolve) => {
+    const interval = setInterval(() => {
+      ++tryCount;
+
+      if (env) {
+        clearInterval(interval);
+        resolve(env);
+      }
+    }, 50);
+    if (tryCount === maxTry) {
+      clearInterval(interval);
+    }
+  });
+};
 
 export default {
-  baseApiUrl,
-  defaultCenterXY: [1823820.8003225543, 6138685.150457315], // demo
-  baseWmsUrl: 'https://example.com/geoserver/wms',
-  searchUrl: baseApiUrl + 'search',
-  token: 'Token abc123', // demo
-  layerNamePrefix: 'floor_', // demo
-  geoServerLayerPrefix: 'indrz:', // demo
-  defaultStartFloor: 'EG' // demo
+  env,
+  set,
+  get
 }

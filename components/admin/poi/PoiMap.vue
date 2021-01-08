@@ -5,12 +5,12 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
+        @click="onMapSwitchClick"
         color="rgba(0,60,136,0.5)"
         min-width="95px"
         class="pa-2"
         small
         dark
-        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -40,16 +40,16 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
+            @click="onDeletePoiClick"
             color="error darken-1"
             text
-            @click="onDeletePoiClick"
           >
             Yes
           </v-btn>
           <v-btn
+            @click="deleteConfirm = false"
             color="blue darken-1"
             text
-            @click="deleteConfirm = false"
           >
             Cancel
           </v-btn>
@@ -68,9 +68,12 @@ import { Point } from 'ol/geom';
 import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
+import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import api from '~/util/api';
 import 'ol/ol.css';
+
+const { env } = config;
 
 export default {
   name: 'Map',
@@ -162,8 +165,8 @@ export default {
       if (floorData && floorData.data && floorData.data.results) {
         this.floors = floorData.data.results;
         if (this.floors && this.floors.length) {
-          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === process.env.DEFAULT_START_FLOOR.toLowerCase())[0];
-          this.activeFloorName = this.env.layerNamePrefix + this.intitialFloor.short_name.toLowerCase();
+          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
+          this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
           this.$emit('floorChange', {
             floor: this.intitialFloor,
             floors: this.floors,
@@ -192,9 +195,9 @@ export default {
 
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
-            this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+            this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
             let onActiveLayer = true;
-            if (process.env.LAYER_NAME_PREFIX + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+            if (env.LAYER_NAME_PREFIX + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
               onActiveLayer = false;
             }
 
@@ -231,11 +234,11 @@ export default {
         return;
       }
 
-      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
 
       features.forEach((feature) => {
         if (feature) {
-          if (process.env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+          if (env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
             onActiveLayer = false;
           }
           const featureType = feature.getGeometry().getType().toString();
@@ -249,10 +252,10 @@ export default {
     },
     clearPreviousSelection () {
       let onActiveLayer = true;
-      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
 
       if (this.selectedPoi) {
-        if (process.env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+        if (env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
           onActiveLayer = false;
         }
         this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
@@ -438,7 +441,7 @@ export default {
       this.newPois.push(data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
       if (removedItems && removedItems.length) {
         removedItems.forEach((item) => {
           if (POIHandler.poiExist(item, this.map)) {

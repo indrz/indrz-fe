@@ -1,11 +1,20 @@
 <template>
   <div>
-    <div v-if="logo.enabled">
-      <img id="logo" :src="logo.file" alt="logo" class="left-bar-logo">
+    <div>
+      <v-row no-gutters>
+        <v-col :cols="2" class="pa-2">
+          <v-app-bar-nav-icon @click.stop="onNavbarClick" />
+        </v-col>
+        <v-col :cols="8" align-self="center">
+          <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" class="left-bar-logo">
+        </v-col>
+      </v-row>
     </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
-        <v-expansion-panel-header>{{ menuItem.title }}</v-expansion-panel-header>
+        <v-expansion-panel-header class="sidebar-expansion-header">
+          {{ menuItem.title }}
+        </v-expansion-panel-header>
         <v-expansion-panel-content>
           <component
             :is="menuItem.type"
@@ -100,7 +109,8 @@ export default {
         download: this.$t('download'),
         pdf: this.$t('pdf'),
         helpLegendInfos: this.$t('help_legend_infos'),
-        aboutTermsConditions: this.$t('about_terms_conditions')
+        aboutTermsConditions: this.$t('about_terms_conditions'),
+        scanQRShowMyLocation: this.$t('scan_qr_show_my_location')
       },
       expanded: [],
       searchResult: []
@@ -167,6 +177,11 @@ export default {
           icon: 'clipboard-text',
           type: 'terms',
           text: this.locale.aboutTermsConditions
+        },
+        {
+          icon: 'qrcode-scan',
+          type: 'qrcode',
+          text: this.locale.scanQRShowMyLocation
         }
       ];
     }
@@ -205,11 +220,15 @@ export default {
     },
     loadSinglePoi (poiId) {
       this.$emit('loadSinglePoi', poiId);
+    },
+    onNavbarClick () {
+      this.$emit('hideSidebar');
     }
   }
 };
 </script>
-<style scoped>
+
+<style lang="scss" scoped>
   .left-bar-logo {
     width: auto;
     height: 40px;
@@ -217,5 +236,44 @@ export default {
     vertical-align: middle;
     display: block;
     margin: 5px auto;
+  }
+  /*
+  Style for Route Room to Room
+   */
+  .route-room-to-room {
+    margin-right: 10px;
+    ::v-deep .v-label {
+      /*
+      font-family: "Roboto", sans-serif;
+      font-size: .8125rem !important;
+      */
+    }
+  }
+  /*
+  Style for Tree
+   */
+  ::v-deep .v-treeview-node__label {
+    /*
+    font-family: "Roboto", sans-serif;
+    font-size: .8125rem !important;
+    */
+  }
+  /*
+  Style for Menu items
+   */
+  ::v-deep .v-list-item__title {
+    /*
+    font-family: "Roboto", sans-serif;
+    font-size: .8125rem !important;
+    */
+  }
+  /*
+  Style for Menu expansion header
+   */
+  .sidebar-expansion-header {
+    /*
+    font-family: "Roboto", sans-serif;
+    font-size: 0.9375rem !important;
+    */
   }
 </style>

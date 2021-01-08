@@ -10,6 +10,9 @@ import Icon from 'ol/style/Icon';
 import MapStyles from './mapStyles';
 import MapUtil from './map';
 import api from '~/util/api';
+import config from '~/util/indrzConfig';
+
+const { env } = config;
 
 // let store = null;
 let scope = null;
@@ -49,7 +52,7 @@ const clearRouteData = (map) => {
 
 const getDirections = async (map, layers, startSearchText, endSearchText, routeType, searchType, env) => {
   clearRouteData(map);
-  const baseApiRoutingUrl = env.baseApiUrl + 'directions/';
+  const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
   let startName = '';
   let endName = '';
   let geoJsonUrl = '';
@@ -113,7 +116,7 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
       if (typeof (features[0]) !== 'undefined') {
         floorName = features[0].getProperties().floor_name;
         if (floorName) {
-          MapUtil.activateLayer(env.layerNamePrefix + floorName, layers.switchableLayers, map);
+          MapUtil.activateLayer(env.LAYER_NAME_PREFIX + floorName, layers.switchableLayers, map);
         }
       }
       // TODO Following to check later

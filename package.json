@@ -22,7 +22,8 @@
     "query-string": "^6.8.3",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.5.3",
-    "vue-i18n": "^8.14.0"
+    "vue-i18n": "^8.14.0",
+    "vue-qrcode-reader": "^2.3.16"
   },
   "devDependencies": {
     "@nuxtjs/dotenv": "^1.4.1",

@@ -1,5 +1,6 @@
 <template>
   <v-card
+    id="floorList"
     class="mx-auto floor-changer"
     max-height="400px"
   >
@@ -21,6 +22,9 @@
 
 <script>
 import api from '../util/api';
+import config from '../util/indrzConfig';
+
+const { env } = config;
 
 export default {
   props: {
@@ -55,13 +59,13 @@ export default {
       });
     },
     onFloorClick (floor, isEvent) {
-      const floorName = process.env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
+      const floorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
       this.$emit('floorClick', floorName);
       this.selectFloorWithCss(floor.short_name.toLowerCase(), isEvent);
     },
     selectFloorWithCss (floorName, isEvent) {
-      if (process.env.LAYER_NAME_PREFIX && floorName.includes(process.env.LAYER_NAME_PREFIX)) {
-        floorName = floorName.split(process.env.LAYER_NAME_PREFIX)[1];
+      if (env.LAYER_NAME_PREFIX && floorName.includes(env.LAYER_NAME_PREFIX)) {
+        floorName = floorName.split(env.LAYER_NAME_PREFIX)[1];
       }
       setTimeout(() => {
         const activeClass = 'v-list-item--active';
@@ -74,13 +78,14 @@ export default {
         if (listItems.length && floorIndex > -1) {
           listItems[floorIndex].classList.add(activeClass, linkClass);
           if (!isEvent) {
-            listItems[floorIndex].scrollIntoView();
+            const list = document.getElementById('floorList');
+            list.scrollTo({ top: (40 * floorIndex), behavior: 'smooth' });
           }
         }
       }, 500);
     },
     getFloorByFloorName (floorName) {
-      const shortName = process.env.LAYER_NAME_PREFIX ? floorName.split(process.env.LAYER_NAME_PREFIX)[1] : floorName;
+      const shortName = env.LAYER_NAME_PREFIX ? floorName.split(env.LAYER_NAME_PREFIX)[1] : floorName;
       if (!shortName) {
         return {};
       }

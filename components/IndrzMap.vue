@@ -1,34 +1,34 @@
 <template>
-  <div class="fill-height">
-    <div :id="mapId" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+  <div>
+    <div :id="mapId" class="width='100%' style='border-radius: 0" />
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        color="rgba(0,60,136,0.5)"
+        @click="onMapSwitchClick"
         min-width="95px"
-        class="pa-2"
+        class="pa-2 map-switcher"
         small
         dark
-        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
     </div>
-    <div class="indrz-logo">
+    <div class="indrz-powered-logo">
       <a href="https://www.indrz.com" target="_blank">
-        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
+        <img id="indrz-powered-logo" src="/images/powered-by-indrz-blue-transparent-text+logo.png" alt="indrz logo">
       </a>
     </div>
-    <div v-if="logo.enabled" class="logo">
+    <div class="logo-on-map">
       <a href="https://indrz.com" target="_blank">
-        <img id="logo" :src="logo.file" alt="logo" style="width:auto; height:40px; ">
+        <img id="logo-on-map" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
     <share-overlay ref="shareOverlay" />
     <terms :show="showTerms" @termsShow="onTermShowChange" />
     <help :show="showHelp" @helpShow="onHelpShowChange" />
+    <QRCode :show="showQrCode" @qrCodeShow="onQrCodeShow" @qrCodeScanned="loadMapWithParams" />
     <UserGeoLocation :map="map" class="indrz-geolocation" />
   </div>
 </template>
@@ -42,13 +42,18 @@ import POIHandler from '../util/POIHandler';
 import InfoOverlay from '../components/infoOverlay';
 import ShareOverlay from '../components/shareOverlay';
 import 'ol/ol.css';
+import config from '../util/indrzConfig';
 import menuHandler from '../util/menuHandler';
 import Terms from './Terms';
 import Help from './Help';
 import UserGeoLocation from './UserGeoLocation';
+import QRCode from './QRCode';
+
+const { env } = config;
 
 export default {
   components: {
+    QRCode,
     Help,
     InfoOverlay,
     ShareOverlay,
@@ -62,6 +67,7 @@ export default {
       view: null,
       showTerms: false,
       showHelp: false,
+      showQrCode: false,
       isSatelliteMap: true,
       layers: [],
       popup: null,
@@ -77,7 +83,9 @@ export default {
       routeToValTemp: '',
       routeFromValTemp: '',
       hostUrl: window.location.href,
-      routeHandler: RouteHandler(this.$store, this.$t, this)
+      routeHandler: RouteHandler(this.$store, this.$t, this),
+      headerId: 'indrz-header-container',
+      footerId: 'indrz-footer-container'
     };
   },
 
@@ -91,7 +99,10 @@ export default {
   },
 
   mounted () {
-    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, JSON.parse(process.env.DEFAULT_CENTER_XY));
+    const query = queryString.parse(location.search);
+    this.showHideHeaderFooter(query);
+
+    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
 
     this.view = view;
     this.map = map;
@@ -102,6 +113,7 @@ export default {
     window.onresize = () => {
       setTimeout(() => {
         this.map.updateSize();
+        MapUtil.handleWindowResize(this.mapId);
       }, 500);
     };
     this.map.on('moveend', (e) => {
@@ -113,8 +125,8 @@ export default {
     loadLayers (floors) {
       this.floors = floors;
       if (this.floors && this.floors.length) {
-        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === process.env.DEFAULT_START_FLOOR.toLowerCase())[0];
-        this.activeFloorName = process.env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
+        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
         this.$emit('selectFloor', this.activeFloorName);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
@@ -136,8 +148,8 @@ export default {
       const selectedItem = selection.data;
       const floorName = selectedItem.properties.floor_name;
       if (floorName) {
-        this.$emit('selectFloor', process.env.LAYER_NAME_PREFIX + floorName);
-        this.activeFloorName = process.env.LAYER_NAME_PREFIX + floorName;
+        this.$emit('selectFloor', env.LAYER_NAME_PREFIX + floorName);
+        this.activeFloorName = env.LAYER_NAME_PREFIX + floorName;
       }
 
       const campusId = selectedItem.building;
@@ -155,14 +167,9 @@ export default {
         });
       this.searchLayer = result.searchLayer;
     },
-    async loadMapWithParams () {
-      const query = queryString.parse(location.search);
-      await MapUtil.loadMapWithParams(this, query, {
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN,
-        searchUrl: process.env.SEARCH_URL,
-        layerNamePrefix: process.env.LAYER_NAME_PREFIX
-      });
+    async loadMapWithParams (searchString) {
+      const query = queryString.parse(searchString || location.search);
+      await MapUtil.loadMapWithParams(this, query);
     },
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
@@ -209,6 +216,9 @@ export default {
     onHelpShowChange (value) {
       this.showHelp = value;
     },
+    onQrCodeShow (value) {
+      this.showQrCode = value;
+    },
     onPopupRouteClick (path) {
       this.$emit('popupRouteClick', {
         path,
@@ -251,6 +261,9 @@ export default {
         case 'terms':
           this.showTerms = true;
           break;
+        case 'qrcode':
+          this.showQrCode = true;
+          break;
         default:
           break;
       }
@@ -281,6 +294,14 @@ export default {
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map);
+    },
+    showHideHeaderFooter (query) {
+      if (query.hideHeader && query.hideHeader === 'true') {
+        document.getElementById(this.headerId).style.display = 'none';
+      }
+      if (query.hideFooter && query.hideFooter === 'true') {
+        document.getElementById(this.footerId).style.display = 'none';
+      }
     }
   }
 };

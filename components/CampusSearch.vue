@@ -8,22 +8,29 @@
         :loading="isLoading"
         :search-input.sync="search"
         :prepend-icon="icon"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="routeLabel"
         item-text="properties.name"
         item-value="properties.spaceid"
-        append-icon="mdi-magnify"
+        append-icon=""
         single-line
         return-object
         flat
         hide-selected
         hide-details
         hide-no-data
-        clearable
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
-      />
+      >
+        <template v-slot:append>
+          <v-icon class="search-btn">
+            mdi-magnify
+          </v-icon>
+        </template>
+        <template v-slot:append-outer>
+          <v-icon :color="activeClearColor" @click.stop="onClearClick">
+            mdi-close
+          </v-icon>
+        </template>
+      </v-autocomplete>
     </template>
     <template v-else>
       <v-autocomplete
@@ -32,23 +39,38 @@
         :items="searchResult"
         :loading="isLoading"
         :search-input.sync="search"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="searchLabel"
         item-text="properties.name"
         item-value="properties.spaceid"
-        append-icon="mdi-magnify"
+        append-icon=""
+        @click:clear="onClearClick"
         single-line
+        @change="onSearchSelection"
         return-object
         solo
         flat
         hide-selected
         hide-details
         hide-no-data
+        <<<<<<<
+        h-e-a-d
         clearable
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
       />
+      =======
+      >
+      <template v-slot:append>
+        <v-icon class="search-btn">
+          mdi-magnify
+        </v-icon>
+      </template>
+      <template v-slot:append-outer>
+        <v-icon :color="activeClearColor" @click.stop="onClearClick">
+          mdi-close
+        </v-icon>
+      </template>
+      </v-autocomplete>
+      >>>>>>> development
     </template>
   </div>
 </template>
@@ -88,15 +110,22 @@ export default {
   data () {
     return {
       searchLabel: this.$t('search_our_campus'),
+      minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
       noResultText: 'No result found',
       serachItemLimit: 100,
       searchResult: [],
+      apiResponse: [],
       isLoading: false,
       term$: new Subject(),
       model: null,
       search: null,
       stopSearch: false
     };
+  },
+  computed: {
+    activeClearColor () {
+      return this.search && this.search.length ? 'blue darken-2' : 'grey';
+    }
   },
   watch: {
     search (text) {
@@ -108,11 +137,15 @@ export default {
     this
       .term$
       .pipe(
-        filter(term => term && term.length > 2 && !this.stopSearch),
+        filter(term => (term && term.length > 2 && !this.stopSearch) || term === null),
         debounceTime(500),
         distinctUntilChanged()
       )
-      .subscribe(term => this.apiSearch(term));
+      .subscribe((term) => {
+        if (term !== null) {
+          return this.apiSearch(term);
+        }
+      });
     this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
 
@@ -131,9 +164,25 @@ export default {
             return;
           }
           this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
+
           if (this.searchResult.length > 100) {
             this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
           }
+
+          this.searchResult = this.apiResponse.map(({ properties }) => {
+            let code = properties.roomcode;
+
+            if (code.toLowerCase() === this.search.toLowerCase()) {
+              code = properties.room_category || properties.external_id || code;
+            }
+
+            return {
+              name: properties.name,
+              floorNum: properties.floor_num,
+              roomCode: properties.roomcode,
+              code
+            }
+          });
         })
         .catch((err) => {
           console.log(err);
@@ -141,13 +190,23 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     onSearchSelection (selection) {
+      let data = null;
+
+      if (selection) {
+        data = this.apiResponse.find(responseData => responseData.properties.roomcode === selection.roomCode);
+      }
+
       this.$emit('selectSearhResult', {
-        data: selection,
+        data: data,
         routeType: this.routeType
       });
     },
     onClearClick () {
-      this.$refs.searchField.blur();
+      this.$nextTick(() => {
+        this.search = '';
+        this.searchResult = [];
+        this.$refs.searchField.blur();
+      });
     },
     getValue () {
       return this.model;
@@ -164,4 +223,11 @@ export default {
 </script>
 
 <style scoped>
+  .search-btn {
+    border-right: 1px solid #d3d3d3;
+    padding-right: 5px
+  }
+  ::v-deep .v-input__slot {
+    padding-right: 0px !important;
+  }
 </style>
