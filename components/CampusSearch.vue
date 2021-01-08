@@ -14,32 +14,23 @@
         @change="onSearchSelection"
         item-text="properties.name"
         item-value="properties.spaceid"
-        append-icon="mdi-magnify"
+        append-icon=""
         single-line
         return-object
         flat
         hide-selected
         hide-details
-        clearable
+        hide-no-data
       >
-        <template v-slot:no-data>
-          <div class="v-list-item">
-            <div class="v-list-item__content">
-              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
-                <template v-if="!search || search.length < 3">
-                  {{ minSearchCharacterLengthMessage }}
-                </template>
-                <v-progress-circular
-                  v-else-if="search && search.length && isLoading"
-                  indeterminate
-                  color="primary"
-                />
-                <template v-else-if="search && search.length && !isLoading && !searchResult.length">
-                  {{ noResultText }}
-                </template>
-              </div>
-            </div>
-          </div>
+        <template v-slot:append>
+          <v-icon class="search-btn">
+            mdi-magnify
+          </v-icon>
+        </template>
+        <template v-slot:append-outer>
+          <v-icon :color="activeClearColor" @click.stop="onClearClick">
+            mdi-close
+          </v-icon>
         </template>
       </v-autocomplete>
     </template>
@@ -56,33 +47,24 @@
         @change="onSearchSelection"
         item-text="properties.name"
         item-value="properties.spaceid"
-        append-icon="mdi-magnify"
+        append-icon=""
         single-line
         return-object
         solo
         flat
         hide-selected
         hide-details
-        clearable
+        hide-no-data
       >
-        <template v-slot:no-data>
-          <div class="v-list-item">
-            <div class="v-list-item__content">
-              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
-                <template v-if="!search || search.length < 3">
-                  {{ minSearchCharacterLengthMessage }}
-                </template>
-                <v-progress-circular
-                  v-else-if="search && search.length && isLoading"
-                  indeterminate
-                  color="primary"
-                />
-                <template v-else-if="search && search.length && !isLoading && !searchResult.length">
-                  {{ noResultText }}
-                </template>
-              </div>
-            </div>
-          </div>
+        <template v-slot:append>
+          <v-icon class="search-btn">
+            mdi-magnify
+          </v-icon>
+        </template>
+        <template v-slot:append-outer>
+          <v-icon :color="activeClearColor" @click.stop="onClearClick">
+            mdi-close
+          </v-icon>
         </template>
       </v-autocomplete>
     </template>
@@ -135,6 +117,11 @@ export default {
       stopSearch: false
     }
   },
+  computed: {
+    activeClearColor () {
+      return this.search && this.search.length ? 'blue darken-2' : 'grey';
+    }
+  },
   watch: {
     search (text) {
       this.term$.next(text);
@@ -145,11 +132,15 @@ export default {
     this
       .term$
       .pipe(
-        filter(term => term && term.length > 2 && !this.stopSearch),
+        filter(term => (term && term.length > 2 && !this.stopSearch) || term === null),
         debounceTime(500),
         distinctUntilChanged()
       )
-      .subscribe(term => this.apiSearch(term));
+      .subscribe((term) => {
+        if (term !== null) {
+          return this.apiSearch(term);
+        }
+      });
     this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
 
@@ -182,7 +173,11 @@ export default {
       });
     },
     onClearClick () {
-      this.$refs.searchField.blur();
+      this.$nextTick(() => {
+        this.search = '';
+        this.searchResult = [];
+        this.$refs.searchField.blur();
+      });
     },
     getValue () {
       return this.model;
@@ -199,4 +194,11 @@ export default {
 </script>
 
 <style scoped>
+  .search-btn {
+    border-right: 1px solid #d3d3d3;
+    padding-right: 5px
+  }
+  ::v-deep .v-input__slot {
+    padding-right: 0px !important;
+  }
 </style>
