@@ -8,7 +8,6 @@
         :loading="isLoading"
         :search-input.sync="search"
         :prepend-icon="icon"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="routeLabel"
         @click:clear="onClearClick"
@@ -42,7 +41,6 @@
         :items="searchResult"
         :loading="isLoading"
         :search-input.sync="search"
-        :no-data-text="noResultText"
         :no-filter="true"
         :label="searchLabel"
         @click:clear="onClearClick"
@@ -108,6 +106,7 @@ export default {
   data () {
     return {
       searchLabel: this.$t('search_our_campus'),
+      minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
       noResultText: 'No result found',
       serachItemLimit: 100,
       searchResult: [],
@@ -157,6 +156,7 @@ export default {
             return;
           }
           this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
+
           if (this.searchResult.length > 100) {
             this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
           }
