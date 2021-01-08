@@ -110,6 +110,7 @@ export default {
       noResultText: 'No result found',
       serachItemLimit: 100,
       searchResult: [],
+      apiResponse: [],
       isLoading: false,
       term$: new Subject(),
       model: null,
@@ -160,6 +161,21 @@ export default {
           if (this.searchResult.length > 100) {
             this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
           }
+
+          this.searchResult = this.apiResponse.map(({ properties }) => {
+            let code = properties.roomcode;
+
+            if (code.toLowerCase() === this.search.toLowerCase()) {
+              code = properties.room_category || properties.external_id || code;
+            }
+
+            return {
+              name: properties.name,
+              floorNum: properties.floor_num,
+              roomCode: properties.roomcode,
+              code
+            }
+          });
         })
         .catch((err) => {
           console.log(err)
@@ -167,8 +183,14 @@ export default {
         .finally(() => (this.isLoading = false));
     },
     onSearchSelection (selection) {
+      let data = null;
+
+      if (selection) {
+        data = this.apiResponse.find(responseData => responseData.properties.roomcode === selection.roomCode);
+      }
+
       this.$emit('selectSearhResult', {
-        data: selection,
+        data: data,
         routeType: this.routeType
       });
     },
