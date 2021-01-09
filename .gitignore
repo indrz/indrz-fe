@@ -92,3 +92,10 @@ sw.*
 
 # Vim swap files
 *.swp
+env-tu-local.env
+env-wu-local.env
+local-dev.env
+local-WU.env
+production-tu.env
+production-wu.env
+yarn.lock
