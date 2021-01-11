@@ -10,15 +10,16 @@
         :prepend-icon="icon"
         :no-filter="true"
         :label="routeLabel"
-        item-text="properties.name"
-        item-value="properties.spaceid"
+        @click:clear="onClearClick"
+        @change="onSearchSelection"
+        item-text="name"
+        item-value="spaceid"
         append-icon=""
         single-line
         return-object
         flat
         hide-selected
         hide-details
-        hide-no-data
       >
         <template v-slot:append>
           <v-icon class="search-btn">
@@ -29,6 +30,31 @@
           <v-icon :color="activeClearColor" @click.stop="onClearClick">
             mdi-close
           </v-icon>
+        </template>
+        <template v-slot:no-data>
+          <div class="v-list-item">
+            <div class="v-list-item__content">
+              <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-list-item__title">
+                <template v-if="!search || search.length < 3">
+                  {{ minSearchCharacterLengthMessage }}
+                </template>
+                <v-progress-circular
+                  v-else-if="search && search.length && isLoading"
+                  indeterminate
+                  color="primary"
+                />
+                <template v-else-if="search && search.length && !isLoading && !searchResult.length">
+                  {{ noResultText }}
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-slot:item="{ item }">
+          <v-list-item-content>
+            <v-list-item-title v-text="item.name" />
+            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
+          </v-list-item-content>
         </template>
       </v-autocomplete>
     </template>
@@ -41,34 +67,53 @@
         :search-input.sync="search"
         :no-filter="true"
         :label="searchLabel"
-        item-text="properties.name"
-        item-value="properties.spaceid"
-        append-icon=""
         @click:clear="onClearClick"
-        single-line
         @change="onSearchSelection"
+        item-text="name"
+        item-value="spaceid"
+        append-icon=""
+        single-line
         return-object
         solo
         flat
         hide-selected
         hide-details
-        hide-no-data
-        <<<<<<<
-        h-e-a-d
-        clearable
-      />
-      =======
       >
-      <template v-slot:append>
-        <v-icon class="search-btn">
-          mdi-magnify
-        </v-icon>
-      </template>
-      <template v-slot:append-outer>
-        <v-icon :color="activeClearColor" @click.stop="onClearClick">
-          mdi-close
-        </v-icon>
-      </template>
+        <template v-slot:append>
+          <v-icon class="search-btn">
+            mdi-magnify
+          </v-icon>
+        </template>
+        <template v-slot:append-outer>
+          <v-icon :color="activeClearColor" @click.stop="onClearClick">
+            mdi-close
+          </v-icon>
+        </template>
+        <template v-slot:no-data>
+          <div class="v-list-item">
+            <div class="v-list-item__content">
+              <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-list-item__title">
+                <template v-if="!search || search.length < 3">
+                  {{ minSearchCharacterLengthMessage }}
+                </template>
+                <v-progress-circular
+                  v-else-if="search && search.length && isLoading"
+                  indeterminate
+                  color="primary"
+                />
+                <template v-else-if="search && search.length && !isLoading && !searchResult.length">
+                  {{ noResultText }}
+                </template>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-slot:item="{ item }">
+          <v-list-item-content>
+            <v-list-item-title v-text="item.name" />
+            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
+          </v-list-item-content>
+        </template>
       </v-autocomplete>
       >>>>>>> development
     </template>
@@ -163,10 +208,10 @@ export default {
           if (!response || !response.data) {
             return;
           }
-          this.searchResult = response.data.features.filter(feature => feature.properties && feature.properties.name);
+          this.apiResponse = response.data.features.filter(feature => feature.properties && feature.properties.name);
 
-          if (this.searchResult.length > 100) {
-            this.searchResult = this.searchResult.slice(0, this.serachItemLimit);
+          if (this.apiResponse.length > 100) {
+            this.apiResponse = this.apiResponse.slice(0, this.serachItemLimit);
           }
 
           this.searchResult = this.apiResponse.map(({ properties }) => {
