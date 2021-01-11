@@ -43,7 +43,7 @@
             {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
           </v-icon>
           <v-icon v-else>
-            mdi-{{ item.icon) }}
+            mdi-{{ item.icon }}
           </v-icon>
         </div>
       </template>
