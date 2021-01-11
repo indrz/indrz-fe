@@ -180,6 +180,14 @@ export default {
       treeComp.emitSelected();
     },
     onTreeParentNodeClick (node, treeComp) {
+      if (!treeComp.nodes[node.id].parent) {
+        this.expandCollapseNode(node.id, treeComp);
+        return;
+      }
+
+      if (!treeComp.nodes[node.id].isOpen) {
+        this.expandCollapseNode(node.id, treeComp);
+      }
       const shouldAdd = !treeComp.activeCache.has(node.id);
 
       node.children.forEach(childNode => this.onLeafNodeClick(childNode, treeComp, shouldAdd));
@@ -187,6 +195,11 @@ export default {
       treeComp.updateActive(node.id, (this.multi === false ? true : shouldAdd));
 
       treeComp.emitActive();
+    },
+    expandCollapseNode (nodeId, treeComp) {
+      const isOpened = treeComp.nodes[nodeId].isOpen;
+      treeComp.updateOpen(nodeId, !isOpened);
+      treeComp.emitOpen();
     },
     onLocationClick (location) {
       this.$emit('locationClick', location.centroid);
