@@ -36,14 +36,16 @@
         </div>
       </template>
       <template v-slot:prepend="{ item, open, active }">
-        <img v-if="active" :src="(item.icon.replace('.', '_active.'))" @click="onTreeClick(item)">
-        <img v-else :src="item.icon" @click="onTreeClick(item)">
-        <v-icon v-if="!item.icon">
-          {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-        </v-icon>
-        <v-icon v-else>
-          mdi-{{ item.icon }}
-        </v-icon>
+        <div @click="onTreeClick(item)">
+          <img v-if="active" :src="(item.icon.replace('.', '_active.'))">
+          <img v-else :src="item.icon">
+          <v-icon v-if="!item.icon">
+            {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+          </v-icon>
+          <v-icon v-else>
+            mdi-{{ item.icon) }}
+          </v-icon>
+        </div>
       </template>
     </v-treeview>
   </div>
@@ -160,15 +162,32 @@ export default {
       }
       this.loading = false;
     },
-    onTreeClick (item) {
+    onTreeClick (node) {
       const treeComp = this.$refs.poi;
-      const shouldAdd = !treeComp.selectedCache.has(item.id);
 
-      treeComp.updateSelected(item.id, (this.multi === false ? true : shouldAdd));
-      treeComp.updateActive(item.id, (this.multi === false ? true : shouldAdd));
-      this.currentPoi = item.children || [item];
-      this.$emit('selectPoiCategory', item);
+      const handler = node.children ? this.onTreeParentNodeClick : this.onLeafNodeClick;
+
+      handler(node, treeComp);
+    },
+    onLeafNodeClick (node, treeComp, forceSelect) {
+      const shouldAdd = (forceSelect === undefined ? !treeComp.selectedCache.has(node.id) : forceSelect);
+
+      treeComp.updateSelected(node.id, (this.multi === false ? true : shouldAdd));
+      treeComp.updateActive(node.id, (this.multi === false ? true : shouldAdd));
+
+      this.currentPoi = node.children || [node];
+
+      this.$emit('selectPoiCategory', node);
       treeComp.emitSelected();
+    },
+    onTreeParentNodeClick (node, treeComp) {
+      const shouldAdd = !treeComp.activeCache.has(node.id);
+
+      node.children.forEach(childNode => this.onLeafNodeClick(childNode, treeComp, shouldAdd));
+
+      treeComp.updateActive(node.id, (this.multi === false ? true : shouldAdd));
+
+      treeComp.emitActive();
     },
     onLocationClick (location) {
       this.$emit('locationClick', location.centroid);
