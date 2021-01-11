@@ -14,7 +14,6 @@
       :multiple-active="multi"
       :items="poiData"
       selected-color="indigo"
-      open-on-click
       selectable
       return-object
       item-key="id"
