@@ -7,8 +7,13 @@ import POIHandler from '~/util/POIHandler';
 import MapUtil from '~/util/map';
 
 const { env } = config;
-
+let translate = null;
 const hostUrl = window.location.href;
+
+const setI18n = (i18n) => {
+  translate = i18n;
+};
+
 const closeIndrzPopup = (popup, globalPopupInfo) => {
   popup.setPosition(undefined);
   for (const member in globalPopupInfo) {
@@ -155,13 +160,13 @@ const openIndrzPopup = (
   popupContent.innerHTML += '<div><p>';
   popupContent.innerHTML += tb;
 
-  const labelRoomCode = 'Room Code';
-  const labelFloorName = 'Floor Name';
-  const labelBuildingName = 'Building Name';
-  const labelCategory = 'Category';
-  const labelPoiName = 'Nearest Entrance';
-  const labelRoomId = 'Room Id';
-  const labelCapacity = 'Capacity';
+  const labelRoomCode = translate.t('label_room_code');
+  const labelFloorName = translate.t('label_floor_name');
+  const labelBuildingName = translate.t('label_building_name');
+  const labelCategory = translate.t('label_category');
+  const labelPoiName = translate.t('label_nearest_entrance');
+  const labelRoomId = translate.t('label_room_id');
+  const labelCapacity = translate.t('label_capacity');
 
   if (properties.roomcode) {
     addPoiTableRow(labelRoomCode, properties.roomcode, 'popup_room_code');
@@ -451,5 +456,6 @@ export default {
   handleShareClick,
   updateUrl,
   handlePoiLoad,
-  handleMapClick
+  handleMapClick,
+  setI18n
 };
