@@ -323,7 +323,11 @@ export default {
 
       this.source = new VectorSource();
 
-      const icon = this.selectedPoiCategory.icon.replace('.', '_pin.');
+      let { icon } = this.selectedPoiCategory;
+      const extension = icon.substring(icon.lastIndexOf('.'));
+
+      icon = icon.replace(extension, '_pin' + extension);
+
       this.vectorInteractionLayer = new VectorLayer({
         source: this.source,
         zIndex: 35,
