@@ -170,7 +170,9 @@ export default {
       term$: new Subject(),
       model: null,
       search: null,
-      stopSearch: false
+      stopSearch: false,
+      iconNames: ['book', 'department', 'person', 'poi', 'room'],
+      iconPath: '/images/icons/search/'
     }
   },
   computed: {
@@ -268,7 +270,10 @@ export default {
       this.search = query;
     },
     getIconUrl (iconName) {
-      return `/images/icons/search/${iconName}`;
+      if (this.iconNames.includes(iconName)) {
+        return `${this.iconPath}/${iconName}.png`;
+      }
+      return `${this.iconPath}/poi.png`;
     }
   }
 }
