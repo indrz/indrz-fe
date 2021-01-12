@@ -228,7 +228,7 @@ export default {
               name: properties.name,
               floorNum: properties.floor_num,
               roomCode: properties.roomcode,
-              src_icon: properties.roomcode,
+              src_icon: properties.src_icon,
               code
             }
           });
