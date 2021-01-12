@@ -7,8 +7,13 @@ import POIHandler from '~/util/POIHandler';
 import MapUtil from '~/util/map';
 
 const { env } = config;
-
+let translate = null;
 const hostUrl = window.location.href;
+
+const setI18n = (i18n) => {
+  translate = i18n;
+};
+
 const closeIndrzPopup = (popup, globalPopupInfo) => {
   popup.setPosition(undefined);
   for (const member in globalPopupInfo) {
@@ -118,22 +123,12 @@ const openIndrzPopup = (
   } else {
     objCenterCoords = properties.centerGeometry.coordinates;
   }
+
   let titlePopup = '';
-  const titleBuildingName = 'Building: ';
-  const titleFloorNumber = 'Floor Name: ';
-  const titleRoomcode = 'Room Number: ';
-  const titleRoomCapacity = 'Capacity: ';
-  const titleRoomCat = 'Category: ';
+
   const buildingName = getBuildingLetter(properties);
   let roomCode = null;
   let roomCat = null;
-  let roomCapacity = null;
-
-  if (properties.hasOwnProperty('capacity')) {
-    if (properties.capacity) {
-      roomCapacity = properties.capacity
-    }
-  }
 
   if (properties.hasOwnProperty('category_de')) {
     if (properties.category_de) {
@@ -152,11 +147,8 @@ const openIndrzPopup = (
   if (properties.hasOwnProperty('room_code')) {
     properties.roomcode = properties.room_code;
   }
-  titlePopup = getTitle(properties, currentLocale);
-  routeToValTemp = titlePopup;
-  if (properties.hasOwnProperty('centroid') === true) {
-    routeToValTemp = properties.centroid;
-  }
+  titlePopup = getTitle(properties);
+
   if (typeof properties.label !== 'undefined') {
     roomCode = properties.roomcode;
   } else {
@@ -168,40 +160,38 @@ const openIndrzPopup = (
   popupContent.innerHTML += '<div><p>';
   popupContent.innerHTML += tb;
 
-  if (properties.hasOwnProperty('campus_name')) {
-    // $('#popup-links').hide();
-  } else {
-    // $('#popup-links').show();
-    if (typeof properties.building_name !== 'undefined' && properties.building_name !== '') {
-      addPoiTableRow(titleBuildingName, buildingName, 'popupBuilding');
-    }
-    if (properties.hasOwnProperty('shelfID')) {
-      addPoiTableRow(titleBuildingName, properties.building, 'popupBuilding');
-    }
-    if (roomCapacity) {
-      addPoiTableRow(titleRoomCapacity, roomCapacity, 'popupRoomCapacity');
-    }
-    if (roomCode) {
-      addPoiTableRow(titleRoomcode, roomCode, 'popupRoomCode');
-    }
-    if (roomCat) {
-      addPoiTableRow(titleRoomCat, roomCat, 'popupRoomCat');
-    }
-    if (properties.room_external_id) {
-      addPoiTableRow('Room Code', properties.room_external_id, 'popupSpaceAks');
-    }
-    addPoiTableRow(titleFloorNumber, floorName, 'popupFloorNumber');
+  const labelRoomCode = translate.t('label_room_code');
+  const labelFloorName = translate.t('label_floor_name');
+  const labelBuildingName = translate.t('label_building_name');
+  const labelCategory = translate.t('label_category');
+  const labelPoiName = translate.t('label_nearest_entrance');
+  const labelRoomId = translate.t('label_room_id');
+  const labelCapacity = translate.t('label_capacity');
+
+  if (properties.roomcode) {
+    addPoiTableRow(labelRoomCode, properties.roomcode, 'popup_room_code');
   }
-  if (globalPopupInfo.roomcode) {
-    routeFromValTemp = globalPopupInfo.roomcode;
-  } else if (roomCode) {
-    routeFromValTemp = roomCode
-  } else if (globalPopupInfo.name) {
-    routeFromValTemp = globalPopupInfo.name;
-  } else if (titlePopup) {
-    routeFromValTemp = titlePopup;
+  if (floorName) {
+    addPoiTableRow(labelFloorName, floorName, 'popup_floor_name');
   }
+  if (properties.building_name) {
+    addPoiTableRow(labelBuildingName, buildingName, 'popup_building_name');
+  }
+  if (roomCat) {
+    addPoiTableRow(labelCategory, roomCat, 'popup_room_cat');
+  }
+  if (properties.nearest_entrance) {
+    addPoiTableRow(labelPoiName, properties.nearest_entrance, 'popup_nearest_entrance');
+  }
+  if (properties.room_external_id) {
+    addPoiTableRow(labelRoomId, properties.room_external_id, 'popup_room_external_id');
+  }
+  if (properties.capacity) {
+    addPoiTableRow(labelCapacity, properties.capacity, 'popup_room_capacity');
+  }
+
   popupContent.innerHTML += '</p></div>';
+
   globalPopupInfo.name = titlePopup;
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorName;
@@ -210,83 +200,20 @@ const openIndrzPopup = (
   popup.setOffset(offsetArray);
 };
 
-const getTitle = (properties, currentLocale) => {
-  let name = '';
-  let popUpRoomCode = '';
-
-  if (properties.hasOwnProperty('room_code')) {
-    if (properties.room_code) {
-      popUpRoomCode = properties.room_code;
-      name = properties.room_code;
-    }
-  }
-  if (properties.hasOwnProperty('name')) {
-    if (properties.name) {
-      name = properties.name;
-      return name
-    }
-  }
-  if (properties.hasOwnProperty('name_de')) {
-    if (properties.name_de) {
-      if (currentLocale === 'de') {
-        name = properties.name_de;
-        return name
-      } else {
-        name = properties.name || properties.name_en;
-        return name
-      }
-    }
-  }
-  if (properties.hasOwnProperty('short_name')) {
-    if (properties.short_name) {
-      name = properties.short_name;
-      return name
-    } else if (popUpRoomCode) {
-      name = popUpRoomCode;
-      return name
-    }
-  }
-  if (properties.hasOwnProperty('label')) {
-    if (properties.label) {
-      name = properties.label;
-      return name;
-    } else if (popUpRoomCode) {
-      name = popUpRoomCode;
-      return name
-    }
-  }
-  if (properties.hasOwnProperty('key')) {
-    if (properties.key) {
-      name = properties.key;
-      return name;
-    } else if (popUpRoomCode) {
-      name = popUpRoomCode;
-      return name
-    }
-  }
-  if (properties.hasOwnProperty('campus_name')) {
-    if (properties.campus_name) {
-      name = properties.campus_name;
-      return name;
-    } else if (popUpRoomCode) {
-      name = popUpRoomCode;
-      return name
-    }
-  }
-  if (properties.hasOwnProperty('room_external_id')) {
-    if (properties.room_external_id) {
-      if (!name) {
-        name = properties.room_external_id;
-        return name;
-      }
-    }
+const getTitle = (properties) => {
+  if (properties.name) {
+    return properties.name;
   }
   if (properties.room_code) {
-    name = properties.room_code;
-    return name;
-  } else {
-    return name;
+    return properties.room_code;
   }
+  if (properties.label) {
+    return properties.label;
+  }
+  if (properties.room_external_id) {
+    return properties.room_external_id;
+  }
+  return '';
 };
 
 const getBuildingLetter = (p) => {
@@ -305,19 +232,19 @@ const getBuildingLetter = (p) => {
   return '';
 };
 
-const addPoiTableRow = (row1, row2, idname) => {
+const addPoiTableRow = (label, value, idname) => {
   const table = document.getElementById('popupTable');
 
   if (idname === 'popupHomepage') {
-    row2 = '<a target="_blank" href="' + row2 + '">' + row2 + '</a>';
+    value = '<a target="_blank" href="' + value + '">' + value + '</a>';
   }
 
-  const row = table.insertRow(0);
+  const row = table.insertRow(-1);
   const cell1 = row.insertCell(0);
   const cell2 = row.insertCell(1);
 
-  cell1.innerHTML = row1;
-  cell2.innerHTML = row2;
+  cell1.innerHTML = label + ': ';
+  cell2.innerHTML = value;
 
   cell1.setAttribute('class', 'no-wrap');
   cell2.setAttribute('id', idname);
@@ -529,5 +456,6 @@ export default {
   handleShareClick,
   updateUrl,
   handlePoiLoad,
-  handleMapClick
+  handleMapClick,
+  setI18n
 };
