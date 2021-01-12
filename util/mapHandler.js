@@ -513,6 +513,10 @@ const handleMapClick = (mapInfo, evt) => {
           });
           dataProperties.properties.src = 'wms';
           mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
+        } else {
+          mapInfo.openIndrzPopup({
+            xy: coordinate
+          }, coordinate, null)
         }
       });
     }
