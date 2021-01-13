@@ -6,7 +6,9 @@ import MultiPoint from 'ol/geom/MultiPoint';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
 import Style from 'ol/style/Style';
-import Icon from 'ol/style/Icon';
+import Stroke from 'ol/style/Stroke';
+import Circle from 'ol/style/Circle';
+import Text from 'ol/style/Text';
 import MapStyles from './mapStyles';
 import MapUtil from './map';
 import api from '~/util/api';
@@ -225,10 +227,23 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const middleFeature = new Feature({
         geometry: middlePoint
       });
-      // TODO create icon based on font with circle as background and number in front
+
       const floorNumberStyle = new Style({
-        image: new Icon({
-          src: '/media/route_floor_' + floorNumber + '.png'
+        image: new Circle({
+          radius: 12,
+          fill: null,
+          stroke: new Stroke({
+            color: 'rgb(34,38,42)',
+            width: 3
+          })
+        }),
+        text: new Text({
+          text: '1',
+          fill: null,
+          stroke: new Stroke({
+            color: 'rgb(34,38,42)',
+            width: 3
+          })
         })
       });
 
