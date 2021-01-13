@@ -109,6 +109,13 @@
           </div>
         </template>
         <template v-slot:item="{ item }">
+          <v-list-item-icon style="margin-right: 16px">
+            <v-img
+              max-height="24"
+              max-width="24"
+              :src="getIconUrl(item.src_icon)"
+            />
+          </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title v-text="item.name"></v-list-item-title>
             <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
@@ -163,7 +170,9 @@ export default {
       term$: new Subject(),
       model: null,
       search: null,
-      stopSearch: false
+      stopSearch: false,
+      iconNames: ['book', 'department', 'person', 'poi', 'room'],
+      iconPath: '/images/icons/search/'
     }
   },
   computed: {
@@ -221,6 +230,7 @@ export default {
               name: properties.name,
               floorNum: properties.floor_num,
               roomCode: properties.roomcode,
+              src_icon: properties.src_icon,
               code
             }
           });
@@ -258,6 +268,12 @@ export default {
     onLoadSearchQuery (query) {
       this.$refs.searchField.focus();
       this.search = query;
+    },
+    getIconUrl (iconName) {
+      if (this.iconNames.includes(iconName)) {
+        return `${this.iconPath}/${iconName}.png`;
+      }
+      return `${this.iconPath}/poi.png`;
     }
   }
 }
