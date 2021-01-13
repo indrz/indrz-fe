@@ -57,7 +57,7 @@
     </v-list>
     <div>
       <p class="font-weight-regular caption" style="padding: 8px 16px">
-        Powered by <a href="https://www.indrz.com/#contact" target="_blank">www.indrz.com</a>
+        Powered by <a href="https://indrz.com/#contact" target="_blank">indrz.com</a>
       </p>
     </div>
   </div>
@@ -114,10 +114,16 @@ export default {
       },
       expanded: [],
       searchResult: []
-    }
+    };
   },
 
   computed: {
+    logo () {
+      return {
+        file: process.env.LOGO_FILE,
+        enabled: (process.env.LOGO_ENABLED === 'true')
+      };
+    },
     menuItems () {
       return [
         {
@@ -138,7 +144,7 @@ export default {
           title: this.locale.searchResult
         }
         */
-      ]
+      ];
     },
     menuButtons () {
       return [
@@ -177,7 +183,7 @@ export default {
           type: 'qrcode',
           text: this.locale.scanQRShowMyLocation
         }
-      ]
+      ];
     }
   },
 
@@ -219,7 +225,7 @@ export default {
       this.$emit('hideSidebar');
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

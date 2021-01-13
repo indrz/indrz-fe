@@ -43,8 +43,8 @@
         </template>
         <template v-slot:item.edit="{ item }">
           <v-icon
-            @click="editItem(item)"
             small
+            @click="editItem(item)"
           >
             mdi-pencil
           </v-icon>
@@ -139,7 +139,7 @@ export default {
         system_from: null,
         system_to: null
       }
-    }
+    };
   },
   computed: {
     ...mapState({
@@ -151,7 +151,7 @@ export default {
       }
     }),
     formTitle () {
-      return this.editedIndex === -1 ? 'New Shelf' : 'Edit Shelf'
+      return this.editedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
     }
   },
   watch: {
@@ -159,7 +159,7 @@ export default {
       this.term$.next(text);
     },
     dialog (val) {
-      val || this.close()
+      val || this.close();
     },
     pagination: {
       handler () {
@@ -200,7 +200,7 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-        })
+        });
     },
 
     editItem (item) {
@@ -213,7 +213,7 @@ export default {
       this.dialog = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1
+        this.editedIndex = -1;
       }, 300);
     },
 
@@ -230,7 +230,7 @@ export default {
       this.close();
     }
   }
-}
+};
 </script>
 
 <style scoped>

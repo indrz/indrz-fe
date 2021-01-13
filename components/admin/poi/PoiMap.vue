@@ -20,9 +20,9 @@
         <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
       </a>
     </div>
-    <div class="tu-logo">
-      <a href="https://www.tuwien.at" target="_blank">
-        <img id="tu-logo" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
+    <div class="logo">
+      <a :href="env.homePageUrl" target="_blank">
+        <img id="logo" :src="env.logo" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <v-dialog
@@ -60,16 +60,12 @@
 </template>
 
 <script>
-import Map from 'ol/Map.js';
-import View from 'ol/View.js';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
 import { Style, Icon } from 'ol/style';
-import { Draw, Modify, Snap, defaults as defaultInteraction, Translate } from 'ol/interaction';
+import { Draw, Modify, Snap, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
 import { Feature, Collection } from 'ol';
-import DragRotateAndZoom from 'ol/interaction/DragRotateAndZoom';
-import PinchZoom from 'ol/interaction/PinchZoom';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
 import config from '~/util/indrzConfig';
@@ -119,6 +115,20 @@ export default {
       editingVectorLayer: []
     };
   },
+  computed: {
+    env () {
+      return {
+        homePageUrl: process.env.HOME_PAGE_URL,
+        logo: process.env.LOGO_FILE,
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN,
+        baseWmsUrl: process.env.BASE_WMS_URL,
+        geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX,
+        center: JSON.parse(process.env.DEFAULT_CENTER_XY)
+      };
+    }
+  },
   async mounted () {
     await this.initializeMap();
     this.initializeEventHandlers();
@@ -130,37 +140,27 @@ export default {
         this.currentMode = this.mode.edit;
       });
       this.$root.$on('deletePoiClick', this.enableDeletePoi);
-      this.$root.$on('cancelPoiClick', this.removeInteraction)
+      this.$root.$on('cancelPoiClick', this.removeInteraction);
     },
     async initializeMap () {
-      this.view = new View({
-        center: MapUtil.getStartCenter(),
-        zoom: 15,
-        maxZoom: 23
-      });
-      this.layers = MapUtil.getLayers();
-      this.map = new Map({
-        interactions: defaultInteraction().extend([
-          new DragRotateAndZoom(),
-          new PinchZoom({
-            constrainResolution: true
-          })
-        ]),
-        target: this.mapId,
-        controls: MapUtil.getMapControls(),
-        view: this.view,
-        layers: this.layers.layerGroups
-      });
+      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
+
+      this.view = view;
+      this.map = map;
+      this.layers = layers;
+      this.popup = popup;
 
       this.map.on('singleclick', this.onMapClick, this);
-
       window.onresize = () => {
         setTimeout(() => {
           this.map.updateSize();
         }, 500);
       };
 
-      const floorData = await api.request({ endPoint: 'floor/' });
+      const floorData = await api.request(
+        {
+          endPoint: 'floor/'
+        }, this.env);
 
       if (floorData && floorData.data && floorData.data.results) {
         this.floors = floorData.data.results;
@@ -172,7 +172,8 @@ export default {
             floors: this.floors,
             name: this.activeFloorName
           });
-          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+
+          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
         }
         this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
         this.layers.switchableLayers = this.wmsLayerInfo.layers;
@@ -378,16 +379,16 @@ export default {
       this.clearEditingVectorLayer();
 
       if (this.draw) {
-        this.draw.un('drawend', this.onDrawEnd)
+        this.draw.un('drawend', this.onDrawEnd);
       }
       if (this.modify) {
-        this.modify.un('modifyend', this.onModifyEnd)
+        this.modify.un('modifyend', this.onModifyEnd);
       }
       if (this.modify) {
-        this.modify.un('modifystart', this.onModifyStart)
+        this.modify.un('modifystart', this.onModifyStart);
       }
       if (this.translate) {
-        this.translate.un('translateend')
+        this.translate.un('translateend');
       }
       // this.clearSelection();
       this.selectedPoi = null;
@@ -455,12 +456,16 @@ export default {
       if (oldItems && oldItems.length) {
         oldItems.forEach((item) => {
           POIHandler.setPoiVisibility(item, this.map);
-        })
+        });
       }
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
           POIHandler
-            .fetchPoi(item.id, this.map, this.activeFloorName)
+            .fetchPoi(item.id, this.map, this.activeFloorName, {
+              baseApiUrl: process.env.BASE_API_URL,
+              token: process.env.TOKEN,
+              layerNamePrefix: process.env.LAYER_NAME_PREFIX
+            })
             .then((poiLayer) => {
               this.map.getLayers().forEach((layer) => {
                 if (layer.getProperties().id === 99999) {
@@ -468,7 +473,7 @@ export default {
                 }
               });
             });
-        })
+        });
       }
     },
     getCategoryIconImage (icon) {
@@ -482,7 +487,7 @@ export default {
       });
     }
   }
-}
+};
 </script>
 
 <style scoped>

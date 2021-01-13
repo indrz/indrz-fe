@@ -19,18 +19,18 @@
     <div class="save-btn-panel">
       <v-btn
         :disabled="!changes"
-        @click.stop.prevent="onSaveButtonClick(true)"
         color="primary"
         width="70px"
         small
+        @click.stop.prevent="onSaveButtonClick(true)"
       >
         Save
       </v-btn>
       <v-btn
-        @click.stop.prevent="cleanupAndRemoveInteraction"
         color="primary"
         width="70px"
         small
+        @click.stop.prevent="cleanupAndRemoveInteraction"
       >
         Cancel
       </v-btn>
@@ -51,16 +51,16 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            @click="onSaveButtonClick(false)"
             color="error darken-1"
             text
+            @click="onSaveButtonClick(false)"
           >
             Yes
           </v-btn>
           <v-btn
-            @click="cleanUp"
             color="blue darken-1"
             text
+            @click="cleanUp"
           >
             No
           </v-btn>
@@ -116,7 +116,9 @@ export default {
   mounted () {
     this.$root.$on('poiLoad', (data) => {
       this.lastLoadedData = { ...data };
-      this.$refs.map.onPoiLoad(data);
+      if (this.$refs.map) {
+        this.$refs.map.onPoiLoad(data);
+      }
     });
     this.$root.$on('deletePoi', this.deletePoi);
     this.mapComp = this.$refs.map;
@@ -198,7 +200,10 @@ export default {
           endPoint: 'poi/',
           method: 'POST',
           data: newPoi
-        })
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
       });
       const treeComp = this.$refs.poiTree;
       treeComp.forceReloadNode = force;
@@ -239,8 +244,11 @@ export default {
             endPoint: `poi/${poi.getId()}/`,
             method: 'PUT',
             data
+          }, {
+            baseApiUrl: process.env.BASE_API_URL,
+            token: process.env.TOKEN
           })
-        )
+        );
       });
       Promise.all(functions)
         .then((response) => {
@@ -276,8 +284,11 @@ export default {
             endPoint: `poi/${poi.getId()}`,
             method: 'DELETE',
             data: {}
+          }, {
+            baseApiUrl: process.env.BASE_API_URL,
+            token: process.env.TOKEN
           })
-        )
+        );
       });
       Promise.all(functions)
         .then((response) => {
@@ -299,7 +310,7 @@ export default {
       this.$refs.map.onPoiLoad(this.lastLoadedData);
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

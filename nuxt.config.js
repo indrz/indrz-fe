@@ -1,5 +1,5 @@
-import colors from 'vuetify/es5/util/colors'
-
+import colors from 'vuetify/es5/util/colors';
+require('dotenv').config();
 export default {
   mode: 'spa',
   /*
@@ -14,7 +14,7 @@ export default {
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: process.env.FAVICON_ICON }
     ]
   },
   /*
@@ -53,7 +53,8 @@ export default {
   buildModules: [
     // Doc: https://github.com/nuxt-community/eslint-module
     '@nuxtjs/eslint-module',
-    '@nuxtjs/vuetify'
+    '@nuxtjs/vuetify',
+    '@nuxtjs/dotenv'
   ],
   /*
   ** Nuxt.js modules
@@ -90,6 +91,14 @@ export default {
   */
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
+    treeShake: true,
+    defaultAssets: {
+      font: {
+        family: process.env.FONT_FAMILY, // ROBOTO is default
+        size: process.env.FONT_SIZE // 16 is default
+      },
+      icons: process.env.ICON_SET // mdi, md, fa, fa4
+    },
     theme: {
       dark: false,
       themes: {
@@ -115,4 +124,4 @@ export default {
     extend (config, ctx) {
     }
   }
-}
+};

@@ -34,7 +34,7 @@
         <template v-slot:no-data>
           <div class="v-list-item">
             <div class="v-list-item__content">
-              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
+              <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-list-item__title">
                 <template v-if="!search || search.length < 3">
                   {{ minSearchCharacterLengthMessage }}
                 </template>
@@ -52,7 +52,7 @@
         </template>
         <template v-slot:item="{ item }">
           <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-title v-text="item.name" />
             <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
@@ -92,7 +92,7 @@
         <template v-slot:no-data>
           <div class="v-list-item">
             <div class="v-list-item__content">
-              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
+              <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-list-item__title">
                 <template v-if="!search || search.length < 3">
                   {{ minSearchCharacterLengthMessage }}
                 </template>
@@ -117,11 +117,12 @@
             />
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-title v-text="item.name" />
             <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
       </v-autocomplete>
+      >>>>>>> development
     </template>
   </div>
 </template>
@@ -208,6 +209,9 @@ export default {
 
       api.request({
         endPoint: 'search/' + term
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       })
         .then((response) => {
           if (!response || !response.data) {
@@ -236,7 +240,7 @@ export default {
           });
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
         })
         .finally(() => (this.isLoading = false));
     },
@@ -276,7 +280,7 @@ export default {
       return `${this.iconPath}/poi.png`;
     }
   }
-}
+};
 </script>
 
 <style scoped>

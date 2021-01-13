@@ -6,9 +6,9 @@
   >
     {{ text }}
     <v-btn
-      @click="show = false"
       color="blue"
       text
+      @click="show = false"
     >
       Close
     </v-btn>
@@ -23,7 +23,7 @@ export default {
     timeout: {
       type: Number,
       default: function () {
-        return 2000
+        return 2000;
       }
     }
   },
@@ -31,7 +31,7 @@ export default {
     return {
       show: false,
       text: ''
-    }
+    };
   },
   created () {
     this.$store.watch(state => state.snackBar, () => {
@@ -44,7 +44,7 @@ export default {
       }
     });
   }
-}
+};
 </script>
 
 <style scoped>

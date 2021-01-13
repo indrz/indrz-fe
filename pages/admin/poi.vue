@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import PoiManager from '../../components/admin/poi/PoiManager'
+import PoiManager from '../../components/admin/poi/PoiManager';
 import SnackBar from '../../components/SnackBar';
 export default {
   layout: 'admin',
@@ -14,7 +14,7 @@ export default {
     PoiManager,
     SnackBar
   }
-}
+};
 </script>
 
 <style scoped>

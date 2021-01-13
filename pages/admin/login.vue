@@ -13,8 +13,8 @@
       <v-form
         ref="loginForm"
         v-model="valid"
-        @submit.prevent="onSignIn"
         lazy-validation
+        @submit.prevent="onSignIn"
       >
         <v-container>
           <v-layout row wrap>
@@ -73,7 +73,7 @@ export default {
       formRules: {
         required: value => !!value || 'This is a required field.'
       }
-    }
+    };
   },
 
   mounted () {
@@ -104,11 +104,11 @@ export default {
         }
         this.noUser = true;
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

@@ -2,9 +2,9 @@
   <v-menu offset-y>
     <template v-slot:activator="{ on }">
       <v-btn
-        v-on="on"
         text
         dark
+        v-on="on"
       >
         {{ userEmail }}
       </v-btn>
@@ -37,7 +37,7 @@ export default {
       this.$store.dispatch('user/SIGN_OUT');
     }
   }
-}
+};
 </script>
 
 <style scoped>
