@@ -5,10 +5,7 @@ import Point from 'ol/geom/Point';
 import MultiPoint from 'ol/geom/MultiPoint';
 import Feature from 'ol/Feature';
 import GeoJSON from 'ol/format/GeoJSON';
-import Style from 'ol/style/Style';
-import Stroke from 'ol/style/Stroke';
-import Circle from 'ol/style/Circle';
-import Text from 'ol/style/Text';
+import { Style, Stroke, Circle, Text, Fill } from 'ol/style';
 import MapStyles from './mapStyles';
 import MapUtil from './map';
 import api from '~/util/api';
@@ -191,6 +188,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
   const markerFeatures = [];
   const lengthList = [];
   const floorList = [];
+  const fontColor = 'rgb(34,38,42)';
   let prevFloorNum = -99;
   let index = -1;
   const nFeatures = routeFeatures.length;
@@ -231,18 +229,23 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const floorNumberStyle = new Style({
         image: new Circle({
           radius: 12,
-          fill: null,
+          fill: new Fill({
+            color: 'rgba(255, 255, 255, 0.5)'
+          }),
           stroke: new Stroke({
-            color: 'rgb(34,38,42)',
+            color: 'rgba(186, 70, 130, 1)',
             width: 3
           })
         }),
         text: new Text({
-          text: '1',
-          fill: null,
+          font: '18px sans-serif',
+          text: floorNumber.toString(),
+          fill: new Fill({
+            color: fontColor
+          }),
           stroke: new Stroke({
-            color: 'rgb(34,38,42)',
-            width: 3
+            color: fontColor,
+            width: 1
           })
         })
       });
