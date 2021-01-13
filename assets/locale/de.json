@@ -23,6 +23,13 @@
   "scan_qr_show_my_location": "Scan QR (show my location)",
   "qr_camera_fallback_message": "Sorry looks like we could not scan that code, please use the search function and enter a room code to find your current location.",
   "no_result_found": "No results found",
-  "min_search_character_length_message": "Type at least 3 characters to search"
+  "min_search_character_length_message": "Type at least 3 characters to search",
+  "label_room_code": "Room Code DE",
+  "label_floor_name": "Floor Name",
+  "label_building_name": "Building Name",
+  "label_category": "Category",
+  "label_nearest_entrance": "Nearest Entrance",
+  "label_room_id": "Room Id",
+  "label_capacity": "Capacity"
 
 }
