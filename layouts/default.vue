@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import mapHandler from '~/util/mapHandler';
 
 export default {
   data () {
@@ -44,6 +45,8 @@ export default {
       defaultLocale = 'de';
     }
     this.$i18n.locale = defaultLocale;
+
+    mapHandler.setI18n(this.$i18n);
   },
   methods: {
     getLocale () {

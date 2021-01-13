@@ -45,7 +45,11 @@ const routeInactiveStyle = new Style({
 });
 
 const createPoiStyle = (poiIconName, active) => {
-  const poiIconImage = poiIconName.replace('.', '_pin.');
+  let icon = `${poiIconName}`;
+  const extension = icon.substring(icon.lastIndexOf('.'));
+
+  icon = icon.replace(extension, '_pin' + extension);
+
   const mainPoiIcons = ['education_active', 'access_active', 'security_active', 'infrastructure_active', 'services_active'];
 
   const iconDeactiveStyle = new Style({
@@ -54,7 +58,7 @@ const createPoiStyle = (poiIconName, active) => {
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
       opacity: 0.4,
-      src: poiIconImage
+      src: icon
     }))
   });
 
@@ -63,7 +67,7 @@ const createPoiStyle = (poiIconName, active) => {
       anchor: [0.5, 46],
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
-      src: poiIconImage
+      src: icon
     }))
   });
 
@@ -75,9 +79,12 @@ const createPoiStyle = (poiIconName, active) => {
 };
 
 const setPoiStyleOnLayerSwitch = (iconName, visible) => {
-  const poiIconImage = iconName ? iconName.replace('.', '_pin.') : '';
+  let icon = `${iconName}` || '';
+  const extension = icon.substring(icon.lastIndexOf('.'));
 
-  if (!poiIconImage) {
+  icon = icon.replace(extension, '_pin' + extension);
+
+  if (!icon) {
     return new Style({
       image: new Icon(/** @type {olx.style.IconOptions} */ ({
         anchor: [0.5, 46],
@@ -95,7 +102,7 @@ const setPoiStyleOnLayerSwitch = (iconName, visible) => {
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
       opacity: 0.4,
-      src: poiIconImage
+      src: icon
     }))
   });
 
@@ -105,7 +112,7 @@ const setPoiStyleOnLayerSwitch = (iconName, visible) => {
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
       opacity: 1,
-      src: poiIconImage
+      src: icon
     }))
   });
 
