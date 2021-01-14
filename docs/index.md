@@ -38,7 +38,10 @@ $title-font: 'Comfortaa';
     }
  }
 ```
-
+Using local fonts
+```javascript
+https://nuxtjs.org/docs/2.x/directory-structure/assets#fonts
+```
 
 ### Logos and Favicon
 Logos are located in the following locations:
