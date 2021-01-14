@@ -23,12 +23,41 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
   const { from, to } = globalRouteInfo;
 
   if (from.properties.space_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
+    routeUrl = await getDirections(
+      map,
+      layers,
+      from.properties.space_id,
+      from.properties.floor,
+      to.properties.space_id,
+      to.properties.floor,
+      '0',
+      'spaceIdToSpaceId'
+    );
   } else if (from.properties.poi_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
+    routeUrl = await getDirections(
+      map,
+      layers,
+      from.properties.poi_id,
+      from.properties.floor,
+      to.properties.space_id,
+      to.properties.floor,
+      '0',
+      'spaceIdToPoiId'
+    );
   } else if (from.properties.poi_id && to.properties.poi_id) {
     // TODO following
     // routeToPoiFromPoi(from.poiid, to.poiid)
+  } else if (from.properties.coords) {
+    routeUrl = await getDirections(
+      map,
+      layers,
+      from.properties.coords,
+      from.properties.floor,
+      to.properties.coords,
+      to.properties.floor,
+      '0',
+      'coords'
+    );
   }
   return routeUrl;
 };
@@ -50,7 +79,7 @@ const clearRouteData = (map) => {
   });
 };
 
-const getDirections = async (map, layers, startSearchText, endSearchText, routeType, searchType) => {
+const getDirections = async (map, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType) => {
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
   let startName = '';
@@ -59,7 +88,7 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
   let routeUrl = '';
 
   if (searchType === 'coords') {
-    geoJsonUrl = baseApiRoutingUrl + startSearchText + '&' + endSearchText + '&' + routeType + '/?format=json'
+    geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}&${routeType}/?format=json`;
   } else if (searchType === 'string') {
     geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText + '&type=' + routeType + '/?format=json'
   } else if (searchType === 'poiToCoords') {

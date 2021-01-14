@@ -171,7 +171,7 @@ const openIndrzPopup = (
   if (properties.roomcode) {
     addPoiTableRow(labelRoomCode, properties.roomcode, 'popup_room_code');
   }
-  if (floorName) {
+  if (floorName && !properties.xy) {
     addPoiTableRow(labelFloorName, floorName, 'popup_floor_name');
   }
   if (properties.building_name) {
@@ -189,10 +189,14 @@ const openIndrzPopup = (
   if (properties.capacity) {
     addPoiTableRow(labelCapacity, properties.capacity, 'popup_room_capacity');
   }
+  if (properties.xy) {
+    addPoiTableRow('X', properties.xy[0].toFixed(3), 'popup_xy_x');
+    addPoiTableRow('Y', properties.xy[1].toFixed(3), 'popup_xy_Y');
+  }
 
   popupContent.innerHTML += '</p></div>';
 
-  globalPopupInfo.name = titlePopup;
+  globalPopupInfo.name = properties.xy ? translate.t('xy_location') : titlePopup;
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorName;
   globalPopupInfo.roomcode = roomCode;
@@ -212,6 +216,9 @@ const getTitle = (properties) => {
   }
   if (properties.room_external_id) {
     return properties.room_external_id;
+  }
+  if (properties.xy) {
+    return translate.t('directions');
   }
   return '';
 };

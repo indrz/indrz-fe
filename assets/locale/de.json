@@ -30,6 +30,8 @@
   "label_category": "Category",
   "label_nearest_entrance": "Nearest Entrance",
   "label_room_id": "Room Id",
-  "label_capacity": "Capacity"
+  "label_capacity": "Capacity",
+  "directions": "Directions",
+  "xy_location": "XY Location"
 
 }
