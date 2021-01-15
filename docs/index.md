@@ -49,9 +49,9 @@ Logos are located in the following locations:
 To change the logo and favicon you need to use  `thisfile.vue ` 
 
 ```javascript
-    logoOnMap = "somepath"
-    logoOnLeftMenu = "somepath"
-    favicon = "somepath"
+    logoOnMap = "components/IndrzMap.vue"
+    logoOnLeftMenu = "components/Sidebar.vue"
+    favicon = "nuxt.config.js"
 ```
 
 
@@ -59,7 +59,7 @@ To change the logo and favicon you need to use  `thisfile.vue `
 ### Floor Changer
 On the right side you can style the floor changer by changing the file.....add..file..here...
 
-To change the floor changer design you need to use  `thisfile.vue ` 
+To change the floor changer design you need to use  `components/FloorChanger.vue ` 
 
 ```javascript
 
@@ -69,7 +69,7 @@ To change the floor changer design you need to use  `thisfile.vue `
 ### Header
 At the top you can add an optional header that will appear above the map.
 
-To add a header you need to use  `thisfile.vue ` 
+To add a header you need to use  `layouts/default.vue ` 
 
 ```javascript
 
@@ -81,7 +81,7 @@ To add a header you need to use  `thisfile.vue `
 ### Footer
 Below the map window you can have an optional Footer.
 
-To add a header you need to use  `thisfile.vue ` 
+To add a header you need to use  `layouts/default.vue ` 
 
 ```js
  
