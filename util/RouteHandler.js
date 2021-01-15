@@ -34,8 +34,8 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
       'spaceIdToSpaceId'
     );
   } else if (
-    from.properties.poi_id && to.properties.space_id ||
-    from.properties.space_id && to.properties.poi_id
+    (from.properties.poi_id && to.properties.space_id) ||
+    (from.properties.space_id && to.properties.poi_id)
   ) {
     routeUrl = await getDirections(
       map,
@@ -59,8 +59,8 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
       'poiIdToPoiId'
     );
   } else if (
-    from.properties.coords && to.properties.poi_id ||
-    from.properties.poi_id && to.properties.coords
+    (from.properties.coords && to.properties.poi_id) ||
+    (from.properties.poi_id && to.properties.coords)
   ) {
     routeUrl = await getDirections(
       map,
