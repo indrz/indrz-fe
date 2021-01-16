@@ -94,7 +94,7 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
       } else if (searchType === 'spaceIdToSpaceId') {
         startName = routeData.route_info.start_name;
         endName = routeData.route_info.end_name;
-        routeUrl = '/?campus=1&start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
+        routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
 
         // TODO:: Show hide things
         /*
