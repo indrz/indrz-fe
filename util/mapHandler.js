@@ -200,6 +200,7 @@ const openIndrzPopup = (
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorName;
   globalPopupInfo.roomcode = roomCode;
+  globalPopupInfo.floorNum = properties.floor_num;
   popup.setPosition(coordinate);
   popup.setOffset(offsetArray);
 };
@@ -448,8 +449,12 @@ const handleMapClick = (mapInfo, evt) => {
           dataProperties.properties.src = 'wms';
           mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
         } else {
+          const floorName = mapInfo.activeFloorName.split(env.LAYER_NAME_PREFIX)[1].toUpperCase();
+          const floor = mapInfo.floors.find(floor => floor.short_name === floorName);
+
           mapInfo.openIndrzPopup({
-            xy: coordinate
+            xy: coordinate,
+            floor_num: floor.floor_num
           }, coordinate, null)
         }
       });

@@ -27,9 +27,9 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
       map,
       layers,
       from.properties.space_id,
-      from.properties.floor,
+      from.properties.floorNum,
       to.properties.space_id,
-      to.properties.floor,
+      to.properties.floorNum,
       '0',
       'spaceIdToSpaceId'
     );
@@ -41,9 +41,9 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
       map,
       layers,
       (from.properties.space_id || to.properties.space_id),
-      from.properties.floor,
+      from.properties.floorNum,
       (from.properties.poi_id || to.properties.poi_id),
-      to.properties.floor,
+      to.properties.floorNum,
       '0',
       'spaceIdToPoiId'
     );
@@ -52,9 +52,9 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
       map,
       layers,
       from.properties.poi_id,
-      from.properties.floor,
+      from.properties.floorNum,
       to.properties.poi_id,
-      to.properties.floor,
+      to.properties.floorNum,
       '0',
       'poiIdToPoiId'
     );
@@ -68,7 +68,7 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
       (from.properties.poi_id || to.properties.poi_id),
       null,
       (from.properties.coords || to.properties.coords),
-      (from.properties.coords ? from.properties.floor : to.properties.floor),
+      (from.properties.coords ? from.properties.floorNum : to.properties.floorNum),
       '0',
       'poiToCoords'
     );
@@ -77,9 +77,9 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
       map,
       layers,
       from.properties.coords,
-      from.properties.floor,
+      from.properties.floorNum,
       to.properties.coords,
-      to.properties.floor,
+      to.properties.floorNum,
       '0',
       'coords'
     );

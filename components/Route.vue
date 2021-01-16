@@ -129,7 +129,7 @@ export default {
       const field = this.$refs[routeInfo.path + 'Route'];
       const model = {
         name: data.properties.name,
-        floorNum: data.properties.floor_num || data.properties.floor,
+        floorNum: data.properties.floorNum || data.properties.floor,
         roomCode: data.properties.roomcode,
         code: data.properties.roomcode
       };
