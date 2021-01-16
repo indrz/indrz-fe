@@ -172,7 +172,7 @@ export default {
       model: null,
       search: null,
       stopSearch: false,
-      iconNames: ['book', 'department', 'person', 'poi', 'room'],
+      iconNames: ['book', 'department', 'person', 'poi', 'space'],
       iconPath: '/images/icons/search/'
     }
   },
