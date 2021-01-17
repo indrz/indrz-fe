@@ -257,6 +257,7 @@ export default {
         this.search = '';
         this.searchResult = [];
         this.$refs.searchField.blur();
+        this.$emit('clearClicked');
       });
     },
     getValue () {
