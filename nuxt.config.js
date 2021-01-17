@@ -29,7 +29,8 @@ export default {
     '@/assets/css/main.css',
     // SCSS file in the project
     '@/assets/css/main.scss',
-    '@/assets/css/ol.scss'
+    '@/assets/css/ol.scss',
+    '@/assets/css/popup.scss'
   ],
   /*
   ** Plugins to load before mounting the App
