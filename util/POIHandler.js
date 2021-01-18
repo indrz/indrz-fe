@@ -13,10 +13,10 @@ const { env } = config;
 const fetchPoi = (catId, map, activeFloorName) => {
   return api.request({
     endPoint: `poi/cat/${catId}/?format=json`
-  })
+  }, env)
     .then((response) => {
-      return createPoilayer(response.data, catId, activeFloorName);
-    })
+      return createPoilayer(response.data, catId, activeFloorName, env.layerNamePrefix);
+    });
 };
 
 const setPoiVisibility = (poiId, map) => {
@@ -82,7 +82,7 @@ const poiExist = (poiItem, map) => {
   return isExists;
 };
 
-const createPoilayer = (data, poiCatId, activeFloorName) => {
+const createPoilayer = (data, poiCatId, activeFloorName, layerNamePrefix) => {
   let poiTitle = '';
   const poiSource = new SourceVector();
   const geojsonFormat3 = new GeoJSON();
@@ -122,7 +122,7 @@ const createPoilayer = (data, poiCatId, activeFloorName) => {
   return poiVectorLayer;
 };
 
-const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorName) => {
+const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorName, layerNamePrefix) => {
   globalPopupInfo.poiId = poiId;
   // map.getLayers().getArray()[0].getProperties()
   const poiSingleLayer = map
@@ -150,7 +150,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
         poiProperties.poiId = poiId;
         MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', poiCoords,
           null, null, activeFloorName, popup, poiProperties, centerCoord,
-          null, offSetPos);
+          null, offSetPos, layerNamePrefix);
         MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
         globalPopupInfo.poiCatId = featuresSearch[0].getProperties().category;
@@ -192,7 +192,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
     });
 };
 
-const setPoiFeatureVisibility = (map, activeFloorName) => {
+const setPoiFeatureVisibility = (map, activeFloorName, layerNamePrefix) => {
   map.getLayers().forEach(function (layer, i) {
     if (layer instanceof Group) {
       if (layer.getProperties().name === 'poi group' || layer.getProperties().name === 'POI-Gruppe') {

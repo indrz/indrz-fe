@@ -18,21 +18,18 @@
       <v-spacer />
       <user-menu />
     </v-app-bar>
-    <v-content>
+    <v-main>
       <v-container :class="isPoiManager ? 'admin-map-container' : ''">
         <nuxt />
       </v-container>
-    </v-content>
-    <!--<v-footer color="indigo" app>
-      <span class="white&#45;&#45;text">Powered by indrz</span>
-    </v-footer>-->
+    </v-main>
   </v-app>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import SideBar from '../components/admin/SideBar'
-import UserMenu from '../components/admin/UserMenu'
+import SideBar from '../components/admin/SideBar';
+import UserMenu from '../components/admin/UserMenu';
 
 export default {
   components: {
@@ -85,7 +82,7 @@ export default {
       this.drawer = drawer;
     }
   }
-}
+};
 </script>
 <style scoped>
   .admin-map-container {

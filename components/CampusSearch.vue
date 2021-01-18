@@ -122,6 +122,7 @@
           </v-list-item-content>
         </template>
       </v-autocomplete>
+      >>>>>>> development
     </template>
   </div>
 </template>
@@ -208,6 +209,9 @@ export default {
 
       api.request({
         endPoint: 'search/' + term
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       })
         .then((response) => {
           if (!response || !response.data) {
@@ -236,7 +240,7 @@ export default {
           });
         })
         .catch((err) => {
-          console.log(err)
+          console.log(err);
         })
         .finally(() => (this.isLoading = false));
     },
@@ -277,7 +281,7 @@ export default {
       return `${this.iconPath}/poi.png`;
     }
   }
-}
+};
 </script>
 
 <style scoped>

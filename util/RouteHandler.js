@@ -17,7 +17,7 @@ const { env } = config;
 let scope = null;
 let translate = null;
 
-const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
+const routeGo = async (map, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
@@ -99,7 +99,7 @@ const clearRouteData = (map) => {
       if (layer && layerName === layer.get('name')) {
         map.removeLayer(layer);
       }
-    })
+    });
   });
 };
 
@@ -140,7 +140,7 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
   try {
     routeUrl = await api.request({
       url: geoJsonUrl
-    }).then(function (response) {
+    }, env).then(function (response) {
       if (!response) {
         // store.commit('SET_SNACKBAR', 'test message');
         return;
@@ -155,8 +155,8 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
       addMarkers(map, features, routeData.route_info);
 
       if (searchType === 'coords') {
-        startName = routeData.route_info.start_name
-        endName = routeData.route_info.end_name
+        startName = routeData.route_info.start_name;
+        endName = routeData.route_info.end_name;
       } else if (searchType === 'spaceIdToSpaceId') {
         startName = routeData.route_info.start_name;
         endName = routeData.route_info.end_name;
@@ -173,9 +173,9 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
         */
       }
       if (routeData.route_info.mid_name !== '') {
-        insertRouteDescriptionText(startName, endName, routeData, true)
+        insertRouteDescriptionText(startName, endName, routeData, true);
       } else {
-        insertRouteDescriptionText(startName, endName, routeData, false)
+        insertRouteDescriptionText(startName, endName, routeData, false);
       }
 
       if (typeof (features[0]) !== 'undefined') {
@@ -205,7 +205,7 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
       }
       */
       return routeUrl;
-    })
+    });
   } catch ({ response }) {
     if ((response && response.status === 404) || (response.data.error && response.data.error === 'no geometry')) {
       setNoRouteFoundText();
@@ -221,9 +221,9 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
     style: function (feature, resolution) {
       const featureFloor = feature.getProperties().floor_name;
       if (featureFloor === floorName) {
-        feature.setStyle(MapStyles.routeActiveStyle)
+        feature.setStyle(MapStyles.routeActiveStyle);
       } else {
-        feature.setStyle(MapStyles.routeInactiveStyle)
+        feature.setStyle(MapStyles.routeInactiveStyle);
       }
     },
     title: 'RouteFromSearch',
@@ -274,7 +274,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
         lengthList[index] = 0;
       }
     }
-    lengthList[index] += routeFeatures[i].getGeometry().getLength()
+    lengthList[index] += routeFeatures[i].getGeometry().getLength();
   }
 
   index = 0;
@@ -336,9 +336,9 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           mid = true;
 
           if (ll[i].geometry.type === 'MultiPoint') {
-            frontOfficeGeometry = new MultiPoint(ll[i].geometry.coordinates)
+            frontOfficeGeometry = new MultiPoint(ll[i].geometry.coordinates);
           } else if (ll[i].geometry.type === 'Point') {
-            frontOfficeGeometry = new Point(ll[i].geometry.coordinates)
+            frontOfficeGeometry = new Point(ll[i].geometry.coordinates);
           }
           const frontOfficeMarker = new Feature({
             geometry: frontOfficeGeometry
@@ -351,25 +351,25 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           let startPoint;
 
           if (ll[i].geometry.type === 'MultiPoint') {
-            startPoint = new MultiPoint(ll[i].geometry.coordinates)
+            startPoint = new MultiPoint(ll[i].geometry.coordinates);
           }
           if (ll[i].geometry.type === 'Point') {
-            startPoint = new Point(ll[i].geometry.coordinates)
+            startPoint = new Point(ll[i].geometry.coordinates);
           }
           const startMarker = new Feature({
             geometry: startPoint
           });
           startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
-          markerFeatures.push(startMarker)
+          markerFeatures.push(startMarker);
         }
 
         if ('end' in ll[i].properties) {
           let endPoint;
           if (ll[i].geometry.type === 'MultiPoint') {
-            endPoint = new MultiPoint(ll[i].geometry.coordinates)
+            endPoint = new MultiPoint(ll[i].geometry.coordinates);
           }
           if (ll[i].geometry.type === 'Point') {
-            endPoint = new Point(ll[i].geometry.coordinates)
+            endPoint = new Point(ll[i].geometry.coordinates);
           }
           const endMarker = new Feature({
             geometry: endPoint
@@ -379,9 +379,9 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           markerFeatures.push(endMarker);
 
           if (mid === true) {
-            endMarker.setStyle(MapStyles.routeMarkerCStyle)
+            endMarker.setStyle(MapStyles.routeMarkerCStyle);
           } else {
-            endMarker.setStyle([MapStyles.faFlagCheckeredStyle])
+            endMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
           }
         }
       }
@@ -576,8 +576,8 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, f
          <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span>${routeData.route_info.route_length} m</li>'
          <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
     } else {
-      startSearchText = routeData.route_info.start_name
-      endSearchText = routeData.route_info.end_name
+      startSearchText = routeData.route_info.start_name;
+      endSearchText = routeData.route_info.end_name;
       routeInfo =
         `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText}</li>
         <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText}</li>
@@ -600,5 +600,5 @@ export default function (_store, _$t, _scope) {
     routeToPoiFromPoi,
     clearRouteData,
     insertRouteDescriptionText
-  }
+  };
 }

@@ -38,7 +38,7 @@ export default {
   data () {
     return {
       setSelection: null
-    }
+    };
   },
 
   watch: {
@@ -53,6 +53,9 @@ export default {
     fetchFloors () {
       return api.request({
         endPoint: 'floor/'
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       });
     },
     onFloorClick (floor, isEvent) {
@@ -93,7 +96,7 @@ export default {
       return {};
     }
   }
-}
+};
 </script>
 
 <style scoped>

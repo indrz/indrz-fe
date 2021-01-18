@@ -7,11 +7,11 @@ export const state = () => ({
 export const mutations = {
   SET_LANG (state, locale) {
     if (state.locales.includes(locale)) {
-      state.locale = locale
+      state.locale = locale;
     }
   },
   SET_SNACKBAR: function (state, val) {
-    state.snackBar = val
+    state.snackBar = val;
   }
 };
 

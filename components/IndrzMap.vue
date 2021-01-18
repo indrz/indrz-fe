@@ -89,6 +89,15 @@ export default {
     };
   },
 
+  computed: {
+    logo () {
+      return {
+        file: process.env.LOGO_FILE,
+        enabled: (process.env.LOGO_ENABLED === 'true')
+      };
+    }
+  },
+
   mounted () {
     const query = queryString.parse(location.search);
     this.showHideHeaderFooter(query);
@@ -120,7 +129,11 @@ export default {
         this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
         this.$emit('selectFloor', this.activeFloorName);
       }
-      this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors);
+      this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
+        baseWmsUrl: process.env.BASE_WMS_URL,
+        geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+      });
       this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
@@ -148,7 +161,10 @@ export default {
 
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-        this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem);
+        this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem, {
+          searchUrl: process.env.SEARCH_URL,
+          layerNamePrefix: process.env.LAYER_NAME_PREFIX
+        });
       this.searchLayer = result.searchLayer;
     },
     async loadMapWithParams (searchString) {
@@ -160,7 +176,7 @@ export default {
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup,
-        properties, coordinate, feature
+        properties, coordinate, feature, null, process.env.LAYER_NAME_PREFIX
       );
     },
     closeIndrzPopup (fromEvent) {
@@ -185,10 +201,14 @@ export default {
       shareOverlay.show();
     },
     loadSinglePoi (poiId) {
-      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName);
+      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName, process.env.LAYER_NAME_PREFIX);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems });
+      MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+      });
     },
     onTermShowChange (value) {
       this.showTerms = value;
@@ -206,7 +226,7 @@ export default {
       });
     },
     onMapClick (evt) {
-      MapHandler.handleMapClick(this, evt);
+      MapHandler.handleMapClick(this, evt, process.env.LAYER_NAME_PREFIX);
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -224,7 +244,7 @@ export default {
     onMenuButtonClick (type) {
       switch (type) {
         case 'zoom-home':
-          menuHandler.handleZoomToHome(this);
+          menuHandler.handleZoomToHome(this, JSON.parse(process.env.DEFAULT_CENTER_XY));
           break;
         case 'download':
           menuHandler.handleDownLoad(this);
@@ -266,7 +286,11 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo () {
-      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo);
+      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo, 0, {
+        baseApiUrl: process.env.BASE_API_URL,
+        layerNamePrefix: process.env.LAYER_NAME_PREFIX,
+        token: process.env.TOKEN
+      });
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map);

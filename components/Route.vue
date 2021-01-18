@@ -8,6 +8,7 @@
       @clearClicked="onClearSearchField('from')"
       icon="mdi-flag"
       route-type="from"
+      @selectSearhResult="onSearchSelect"
     />
     <campus-search
       ref="toRoute"
@@ -17,15 +18,16 @@
       @clearClicked="onClearSearchField('to')"
       icon="mdi-flag-checkered"
       route-type="to"
+      @selectSearhResult="onSearchSelect"
     />
     <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" />
     <div id="route-description" />
     <v-btn
       :disabled="!isRouteAvailable"
-      @click="onGoButtonClick"
       color="blue-grey"
       class="white--text"
       small
+      @click="onGoButtonClick"
     >
       <v-icon left dark>
         mdi-run
@@ -36,11 +38,11 @@
       <template v-slot:activator="{ on }">
         <v-btn
           :disabled="!isRouteAvailable"
-          @click="onShareRoute"
-          v-on="on"
           color="blue-grey"
           class="white--text"
           small
+          @click="onShareRoute"
+          v-on="on"
         >
           <v-icon dark>
             mdi-share
@@ -53,11 +55,11 @@
       <template v-slot:activator="{ on }">
         <v-btn
           :disabled="!isRouteAvailable"
-          @click="onClearRoute"
-          v-on="on"
           color="blue-grey"
           class="white--text"
           small
+          @click="onClearRoute"
+          v-on="on"
         >
           <v-icon dark>
             mdi-close
@@ -86,7 +88,7 @@ export default {
       shareRoute: this.$t('shareRoute'),
       fromRoute: null,
       toRoute: null
-    }
+    };
   },
   computed: {
     isRouteAvailable () {

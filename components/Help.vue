@@ -6,7 +6,7 @@
     <v-card>
       <v-card-title class="headline" />
       <v-card-text>
-        <h1>Allgemeine Hinweise</h1>
+        <h1>Hilfe</h1>
         <p />
 
         <div>
@@ -332,12 +332,12 @@ export default {
     show: {
       type: Boolean,
       default: function () {
-        return false
+        return false;
       }
     }
   },
   data () {
-    return {}
+    return {};
   },
   computed: {
     dialog: {
@@ -349,7 +349,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

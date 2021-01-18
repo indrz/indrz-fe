@@ -115,7 +115,7 @@ export default {
       link: '',
       copyConfirmation: '',
       copySuccess: 'Url successfully copied in to clipboard!'
-    }
+    };
   },
   watch: {
     dialog () {
@@ -148,7 +148,7 @@ export default {
       this.copyConfirmation = this.copySuccess;
     }
   }
-}
+};
 </script>
 
 <style scoped>

@@ -1,14 +1,14 @@
 <template>
   <div id="indrz-popup" title="indrz info" class="ol-popup indrz-popup">
-    <a id="popup-closer" @click.stop="onPopupCloseClick" href="#" class="ol-popup-closer" />
+    <a id="popup-closer" href="#" class="ol-popup-closer" @click.stop="onPopupCloseClick" />
     <div id="popup-content" />
     <div id="popup-links">
-      <v-btn @click.stop="onRouteClick('from')" text color="primary" small>
+      <v-btn text color="primary" small @click.stop="onRouteClick('from')">
         <v-icon left>
           mdi-map-marker
         </v-icon> Route from here
       </v-btn>
-      <v-btn @click.stop="onRouteClick('to')" text color="primary" small>
+      <v-btn text color="primary" small @click.stop="onRouteClick('to')">
         <v-icon left>
           mdi-map-marker
         </v-icon> Route to here
@@ -16,7 +16,7 @@
       <br>
       <v-tooltip top>
         <template v-slot:activator="{ on }">
-          <v-btn @click.stop="onShareButtonClick" v-on="on" color="primary" icon>
+          <v-btn color="primary" icon @click.stop="onShareButtonClick" v-on="on">
             <v-icon>mdi-share-variant</v-icon>
           </v-btn>
         </template>
@@ -40,7 +40,7 @@ export default {
       this.$emit('popupRouteClick', path);
     }
   }
-}
+};
 </script>
 
 <style scoped>

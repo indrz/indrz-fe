@@ -209,6 +209,7 @@
           </ul>
           <p>
             <br>
+            <a href="https://www.tuwien.at/tu-wien/kontakt/impressum/" target="_blank">TU Wien Impressum </a>
           </p>
           <p>
             Um ein Symbol ein-
@@ -300,6 +301,8 @@
             Barrierefreie Routen
             werden durch den Parameter &quot;type=1&quot; erzeugt.
           </p>
+        </div>
+        <div>
           <p>
             <span lang="en-US"><b>Feedback
               bitte an:</b></span>
@@ -307,13 +310,6 @@
           <p>
             <span lang="en-US">office@gomogi.com
               (mailto: office@gomogi.com).</span>
-          </p>
-          <p lang="en-US">
-            <br>
-          </p>
-          <p>
-            <img src="" align="bottom">
-            <!-- Wohin sollen diese Links zeigen? -->
           </p>
           <p>
             <br>
@@ -332,14 +328,14 @@ export default {
     show: {
       type: Boolean,
       default: function () {
-        return false
+        return false;
       }
     }
   },
   data () {
     return {
       contact: this.$t('contact')
-    }
+    };
   },
   computed: {
     dialog: {
@@ -351,7 +347,7 @@ export default {
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>
