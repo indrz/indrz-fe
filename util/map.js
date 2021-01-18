@@ -672,7 +672,16 @@ const loadMapWithParams = async (mapInfo, query) => {
       }
     });
     setTimeout(async () => {
-      mapInfo.globalRouteInfo.routeUrl = await mapInfo.routeHandler.getDirections(mapInfo.map, mapInfo.layers, query['start-spaceid'], query['end-spaceid'], '0', 'spaceIdToSpaceId');
+      mapInfo.globalRouteInfo.routeUrl = await mapInfo.routeHandler.getDirections(
+        mapInfo.map,
+        mapInfo.layers,
+        query['start-spaceid'],
+        null,
+        query['end-spaceid'],
+        null,
+        '0',
+        'spaceIdToSpaceId'
+      );
     }, 600);
   }
   if (query['poi-cat-id']) {

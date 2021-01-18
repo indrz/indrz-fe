@@ -22,12 +22,66 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0) => {
   const { from, to } = globalRouteInfo;
 
   if (from.properties.space_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.space_id, to.properties.space_id, '0', 'spaceIdToSpaceId');
-  } else if (from.properties.poi_id && to.properties.space_id) {
-    routeUrl = await getDirections(map, layers, from.properties.poi_id, to.properties.space_id, '0', 'spaceIdToPoiId');
+    routeUrl = await getDirections(
+      map,
+      layers,
+      from.properties.space_id,
+      from.properties.floorNum,
+      to.properties.space_id,
+      to.properties.floorNum,
+      '0',
+      'spaceIdToSpaceId'
+    );
+  } else if (
+    (from.properties.poi_id && to.properties.space_id) ||
+    (from.properties.space_id && to.properties.poi_id)
+  ) {
+    routeUrl = await getDirections(
+      map,
+      layers,
+      (from.properties.space_id || to.properties.space_id),
+      from.properties.floorNum,
+      (from.properties.poi_id || to.properties.poi_id),
+      to.properties.floorNum,
+      '0',
+      'spaceIdToPoiId'
+    );
   } else if (from.properties.poi_id && to.properties.poi_id) {
-    // TODO following
-    // routeToPoiFromPoi(from.poiid, to.poiid)
+    routeUrl = await getDirections(
+      map,
+      layers,
+      from.properties.poi_id,
+      from.properties.floorNum,
+      to.properties.poi_id,
+      to.properties.floorNum,
+      '0',
+      'poiIdToPoiId'
+    );
+  } else if (
+    (from.properties.coords && to.properties.poi_id) ||
+    (from.properties.poi_id && to.properties.coords)
+  ) {
+    routeUrl = await getDirections(
+      map,
+      layers,
+      (from.properties.poi_id || to.properties.poi_id),
+      null,
+      (from.properties.coords || to.properties.coords),
+      (from.properties.coords ? from.properties.floorNum : to.properties.floorNum),
+      '0',
+      'poiToCoords'
+    );
+  } else if (from.properties.coords && to.properties.coords) {
+    routeUrl = await getDirections(
+      map,
+      layers,
+      from.properties.coords,
+      from.properties.floorNum,
+      to.properties.coords,
+      to.properties.floorNum,
+      '0',
+      'coords'
+    );
   }
   return routeUrl;
 };
@@ -49,7 +103,7 @@ const clearRouteData = (map) => {
   });
 };
 
-const getDirections = async (map, layers, startSearchText, endSearchText, routeType, searchType) => {
+const getDirections = async (map, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType) => {
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
   let startName = '';
@@ -57,17 +111,29 @@ const getDirections = async (map, layers, startSearchText, endSearchText, routeT
   let geoJsonUrl = '';
   let routeUrl = '';
 
-  if (searchType === 'coords') {
-    geoJsonUrl = baseApiRoutingUrl + startSearchText + '&' + endSearchText + '&' + routeType + '/?format=json'
-  } else if (searchType === 'string') {
-    geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText + '&type=' + routeType + '/?format=json'
-  } else if (searchType === 'poiToCoords') {
-    geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&reversed=' + false + '/?format=json'
-  } else if (searchType === 'spaceIdToPoiId') {
-    geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText + '&type=' + routeType + '/?format=json'
-  } else if (searchType === 'spaceIdToSpaceId') {
-    geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText + '&type=' + routeType + '/?format=json'
+  switch (searchType) {
+    case 'coords':
+      geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}&${routeType}&reversed=false`;
+      break;
+    case 'string':
+      geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText + '&type=' + routeType;
+      break;
+    case 'poiToCoords':
+      geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&z_floor=' + endFloor + '&reversed=' + false;
+      break;
+    case 'spaceIdToPoiId':
+      geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText + '&type=' + routeType;
+      break;
+    case 'spaceIdToSpaceId':
+      geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText + '&type=' + routeType;
+      break;
+    case 'poiIdToPoiId':
+      geoJsonUrl = baseApiRoutingUrl + 'start-poi-id=' + startSearchText + '&' + 'end-poi-id=' + endSearchText;
+      break;
+    default:
+      break;
   }
+
   const source = new SourceVector();
   let floorName = '';
 

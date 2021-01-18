@@ -5,11 +5,11 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
+        @click="onMapSwitchClick"
         min-width="95px"
         class="pa-2 map-switcher"
         small
         dark
-        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>

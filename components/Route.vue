@@ -5,6 +5,7 @@
       :is-route="true"
       :route-label="startRouteLabel"
       @selectSearhResult="onSearchSelect"
+      @clearClicked="onClearSearchField('from')"
       icon="mdi-flag"
       route-type="from"
     />
@@ -13,6 +14,7 @@
       :is-route="true"
       :route-label="endRouteLabel"
       @selectSearhResult="onSearchSelect"
+      @clearClicked="onClearSearchField('to')"
       icon="mdi-flag-checkered"
       route-type="to"
     />
@@ -102,6 +104,9 @@ export default {
     onShareRoute () {
       this.$emit('shareClick');
     },
+    onClearSearchField (routeType) {
+      this[routeType + 'Route'] = null;
+    },
     onClearRoute () {
       this.$refs.fromRoute.clearSearch();
       this.fromRoute = null;
@@ -129,7 +134,7 @@ export default {
       const field = this.$refs[routeInfo.path + 'Route'];
       const model = {
         name: data.properties.name,
-        floorNum: data.properties.floor_num || data.properties.floor,
+        floorNum: data.properties.floorNum || data.properties.floor,
         roomCode: data.properties.roomcode,
         code: data.properties.roomcode
       };
@@ -144,6 +149,9 @@ export default {
       });
       setTimeout(() => {
         field.stopSearch = false;
+        if (this.fromRoute && this.toRoute) {
+          this.onGoButtonClick();
+        }
       }, 1000);
     }
   }

@@ -34,7 +34,7 @@
         <template v-slot:no-data>
           <div class="v-list-item">
             <div class="v-list-item__content">
-              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
+              <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-list-item__title">
                 <template v-if="!search || search.length < 3">
                   {{ minSearchCharacterLengthMessage }}
                 </template>
@@ -52,7 +52,7 @@
         </template>
         <template v-slot:item="{ item }">
           <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-title v-text="item.name" />
             <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
@@ -92,7 +92,7 @@
         <template v-slot:no-data>
           <div class="v-list-item">
             <div class="v-list-item__content">
-              <div class="v-list-item__title" :style="{'text-align': (isLoading) ? 'center' : 'left'}">
+              <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-list-item__title">
                 <template v-if="!search || search.length < 3">
                   {{ minSearchCharacterLengthMessage }}
                 </template>
@@ -111,13 +111,13 @@
         <template v-slot:item="{ item }">
           <v-list-item-icon style="margin-right: 16px">
             <v-img
+              :src="getIconUrl(item.src_icon)"
               max-height="24"
               max-width="24"
-              :src="getIconUrl(item.src_icon)"
             />
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title v-text="item.name"></v-list-item-title>
+            <v-list-item-title v-text="item.name" />
             <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
@@ -257,6 +257,7 @@ export default {
         this.search = '';
         this.searchResult = [];
         this.$refs.searchField.blur();
+        this.$emit('clearClicked');
       });
     },
     getValue () {
