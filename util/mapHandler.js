@@ -36,10 +36,10 @@ const openIndrzPopup = (
   const popupContent = document.getElementById('popup-content');
 
   for (const member in globalPopupInfo) {
-    globalPopupInfo[member] = null;
+    globalPopupInfo[member] = null
   }
   feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1;
-  offsetArray = (typeof offsetArray !== 'undefined' && offsetArray !== null) ? offsetArray : [0, 0];
+  offsetArray = typeof offsetArray !== 'undefined' ? offsetArray : [0, 0];
 
   if (properties.hasOwnProperty('poiId')) {
     globalPopupInfo.src = 'poi';
@@ -50,38 +50,38 @@ const openIndrzPopup = (
     globalPopupInfo.poiCatId = properties.category;
   }
   if (properties.hasOwnProperty('spaceid')) {
-    globalPopupInfo.spaceid = properties.spaceid;
+    globalPopupInfo.spaceid = properties.spaceid
   }
   if (properties.hasOwnProperty('homepage')) {
     if (properties.homepage) {
-      popUpHomePage = properties.homepage;
+      popUpHomePage = properties.homepage
     }
   }
   if (properties.hasOwnProperty('src')) {
     if (properties.src) {
-      globalPopupInfo.src = properties.src;
+      globalPopupInfo.src = properties.src
     }
   }
   if (properties.hasOwnProperty('space_type_id')) {
     if (properties.hasOwnProperty('src')) {
       if (properties.src) {
-        globalPopupInfo.src = properties.src;
+        globalPopupInfo.src = properties.src
       } else {
-        globalPopupInfo.src = 'wms';
+        globalPopupInfo.src = 'wms'
       }
     }
     if (properties.hasOwnProperty('id')) {
-      globalPopupInfo.spaceid = properties.id;
+      globalPopupInfo.spaceid = properties.id
     }
     if (properties.hasOwnProperty('room_external_id')) {
       if (properties.room_external_id) {
-        globalPopupInfo.external_id = properties.room_external_id;
+        globalPopupInfo.external_id = properties.room_external_id
       }
     }
   }
   if (properties.hasOwnProperty('room_code')) {
-    globalPopupInfo.wmsInfo = properties.room_code;
-    properties.roomcode = properties.room_code;
+    globalPopupInfo.wmsInfo = properties.room_code
+    properties.roomcode = properties.room_code
   }
   if (properties.hasOwnProperty('poi_id')) {
     currentPOIID = properties.poi_id;
@@ -119,16 +119,26 @@ const openIndrzPopup = (
   }
   objCenterCoords = coordinate;
   if (objCenterCoords || objCenterCoords !== '') {
-    objCenterCoords = coordinate;
+    objCenterCoords = coordinate
   } else {
     objCenterCoords = properties.centerGeometry.coordinates;
   }
-
   let titlePopup = '';
-
+  const titleBuildingName = 'Building: ';
+  const titleFloorNumber = 'Floor Name: ';
+  const titleRoomcode = 'Room Number: ';
+  const titleRoomCapacity = 'Capacity: ';
+  const titleRoomCat = 'Category: ';
   const buildingName = getBuildingLetter(properties);
   let roomCode = null;
   let roomCat = null;
+  let roomCapacity = null;
+
+  if (properties.hasOwnProperty('capacity')) {
+    if (properties.capacity) {
+      roomCapacity = properties.capacity
+    }
+  }
 
   if (properties.hasOwnProperty('category_de')) {
     if (properties.category_de) {
@@ -147,8 +157,11 @@ const openIndrzPopup = (
   if (properties.hasOwnProperty('room_code')) {
     properties.roomcode = properties.room_code;
   }
-  titlePopup = getTitle(properties);
-
+  titlePopup = getTitle(properties, currentLocale);
+  routeToValTemp = titlePopup;
+  if (properties.hasOwnProperty('centroid') === true) {
+    routeToValTemp = properties.centroid;
+  }
   if (typeof properties.label !== 'undefined') {
     roomCode = properties.roomcode;
   } else {
@@ -250,7 +263,7 @@ const addPoiTableRow = (label, value, idname) => {
   cell2.setAttribute('id', idname);
 };
 
-const getRoomInfo = (floor, layers, layerNamePrefix) => {
+const getRoomInfo = (floor, layers) => {
   const availableWmsLayers = layers.switchableLayers;
   let newel;
 
@@ -339,7 +352,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   return location.href;
 };
 
-const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }, env) => {
+const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }) => {
   if (removedItems && removedItems.length) {
     removedItems.forEach((item) => {
       if (POIHandler.poiExist(item, map)) {
@@ -350,7 +363,7 @@ const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems 
   if (oldItems && oldItems.length) {
     oldItems.forEach((item) => {
       POIHandler.setPoiVisibility(item, map);
-    });
+    })
   }
   if (newItems && newItems.length) {
     newItems.forEach((item) => {
@@ -358,7 +371,7 @@ const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems 
         POIHandler.setPoiVisibility(item.id, map);
       } else {
         POIHandler
-          .fetchPoi(item.id, map, activeFloorName, env)
+          .fetchPoi(item.id, map, activeFloorName)
           .then((poiLayer) => {
             map.getLayers().forEach((layer) => {
               if (layer.getProperties().id === 99999) {
@@ -367,11 +380,11 @@ const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems 
             });
           });
       }
-    });
+    })
   }
 };
 
-const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
+const handleMapClick = (mapInfo, evt) => {
   const pixel = evt.pixel;
   let feature = mapInfo.map.getFeaturesAtPixel(pixel);
   const features = [];
@@ -410,7 +423,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
     const featuresWms = mapInfo.map.getFeaturesAtPixel(pixel);
     const v = mapInfo.map.getView();
     const viewResolution = /** @type {number} */ (v.getResolution());
-    const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers, layerNamePrefix);
+    const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers);
     const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
       INFO_FORMAT: 'application/json',
       FEATURE_COUNT: 50
@@ -439,7 +452,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
             }
           });
           dataProperties.properties.src = 'wms';
-          mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms);
+          mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
         }
       });
     }
@@ -456,6 +469,5 @@ export default {
   handleShareClick,
   updateUrl,
   handlePoiLoad,
-  handleMapClick,
-  setI18n
+  handleMapClick
 };
