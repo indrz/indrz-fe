@@ -19,7 +19,7 @@
     "jspdf": "^1.5.3",
     "lodash": "^4.17.15",
     "nuxt": "^2.0.0",
-    "ol": "^5.3.3",
+    "ol": "6.3.1",
     "query-string": "^6.8.3",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.5.3",
@@ -27,13 +27,14 @@
     "vue-qrcode-reader": "^2.3.16"
   },
   "devDependencies": {
-    "@nuxtjs/eslint-config": "^1.0.1",
-    "@nuxtjs/eslint-module": "^1.0.0",
+    "@nuxtjs/dotenv":"^1.4.1",
+    "@nuxtjs/eslint-config": "3.0.0",
+    "@nuxtjs/eslint-module": "2.0.0",
     "@nuxtjs/vuetify": "^1.0.0",
     "@vue/test-utils": "^1.0.0-beta.27",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^24.1.0",
-    "eslint": "6.1.0",
+    "eslint": "^6.1.0",
     "eslint-plugin-nuxt": ">=0.4.2",
     "jest": "^24.1.0",
     "vue-jest": "^4.0.0-0"
