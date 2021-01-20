@@ -123,12 +123,9 @@ const openIndrzPopup = (
   } else {
     objCenterCoords = properties.centerGeometry.coordinates;
   }
+
   let titlePopup = '';
-  const titleBuildingName = 'Building: ';
-  const titleFloorNumber = 'Floor Name: ';
-  const titleRoomcode = 'Room Number: ';
-  const titleRoomCapacity = 'Capacity: ';
-  const titleRoomCat = 'Category: ';
+
   const buildingName = getBuildingLetter(properties);
   let roomCode = null;
   let roomCat = null;
@@ -157,11 +154,8 @@ const openIndrzPopup = (
   if (properties.hasOwnProperty('room_code')) {
     properties.roomcode = properties.room_code;
   }
-  titlePopup = getTitle(properties, currentLocale);
-  routeToValTemp = titlePopup;
-  if (properties.hasOwnProperty('centroid') === true) {
-    routeToValTemp = properties.centroid;
-  }
+  titlePopup = getTitle(properties);
+
   if (typeof properties.label !== 'undefined') {
     roomCode = properties.roomcode;
   } else {
@@ -469,5 +463,6 @@ export default {
   handleShareClick,
   updateUrl,
   handlePoiLoad,
-  handleMapClick
+  handleMapClick,
+  setI18n
 };
