@@ -26,29 +26,29 @@
         </v-btn>
       </template>
       <v-btn
+        @click.stop.prevent="onEditPoiClick"
         color="green"
         fab
         dark
         small
-        @click.stop.prevent="onEditPoiClick"
       >
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
       <v-btn
+        @click.stop.prevent="onAddPoiClick"
         color="indigo"
         fab
         dark
         small
-        @click.stop.prevent="onAddPoiClick"
       >
         <v-icon>mdi-plus</v-icon>
       </v-btn>
       <v-btn
+        @click.stop.prevent="onDeletePoiClick"
         color="red"
         fab
         dark
         small
-        @click.stop.prevent="onDeletePoiClick"
       >
         <v-icon>mdi-delete</v-icon>
       </v-btn>

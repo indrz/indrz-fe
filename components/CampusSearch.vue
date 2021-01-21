@@ -122,7 +122,6 @@
           </v-list-item-content>
         </template>
       </v-autocomplete>
-      >>>>>>> development
     </template>
   </div>
 </template>

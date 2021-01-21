@@ -40,10 +40,10 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn :disabled="loading" color="blue darken-1" text @click="close">
+        <v-btn :disabled="loading" @click="close" color="blue darken-1" text>
           Cancel
         </v-btn>
-        <v-btn :disabled="loading" :loading="loading" color="blue darken-1" text @click="save">
+        <v-btn :disabled="loading" :loading="loading" @click="save" color="blue darken-1" text>
           Save
           <v-icon right>
             mdi-save

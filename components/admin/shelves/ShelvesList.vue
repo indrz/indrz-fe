@@ -43,8 +43,8 @@
         </template>
         <template v-slot:item.edit="{ item }">
           <v-icon
-            small
             @click="editItem(item)"
+            small
           >
             mdi-pencil
           </v-icon>

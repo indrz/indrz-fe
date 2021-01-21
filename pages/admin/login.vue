@@ -13,8 +13,8 @@
       <v-form
         ref="loginForm"
         v-model="valid"
-        lazy-validation
         @submit.prevent="onSignIn"
+        lazy-validation
       >
         <v-container>
           <v-layout row wrap>

@@ -19,18 +19,18 @@
     <div class="save-btn-panel">
       <v-btn
         :disabled="!changes"
+        @click.stop.prevent="onSaveButtonClick(true)"
         color="primary"
         width="70px"
         small
-        @click.stop.prevent="onSaveButtonClick(true)"
       >
         Save
       </v-btn>
       <v-btn
+        @click.stop.prevent="cleanupAndRemoveInteraction"
         color="primary"
         width="70px"
         small
-        @click.stop.prevent="cleanupAndRemoveInteraction"
       >
         Cancel
       </v-btn>
@@ -51,16 +51,16 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
+            @click="onSaveButtonClick(false)"
             color="error darken-1"
             text
-            @click="onSaveButtonClick(false)"
           >
             Yes
           </v-btn>
           <v-btn
+            @click="cleanUp"
             color="blue darken-1"
             text
-            @click="cleanUp"
           >
             No
           </v-btn>
