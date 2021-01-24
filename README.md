@@ -10,6 +10,13 @@ You need a static webserver such as nginx or apache, google-storage, s3 bucket, 
 1. ``yarn install``
 1. ``yarn run dev``
 
+If you have issues with your install these three little steps usually help
+```bash
+rm -rf node_modules
+rm yarn.lock
+yarn clean cache
+yarn install
+```
 
 ## Create production build
 ```
