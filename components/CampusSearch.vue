@@ -270,8 +270,17 @@ export default {
       this.model = null;
     },
     onLoadSearchQuery (query) {
-      this.$refs.searchField.focus();
+      const searchField = this.$refs.searchField;
+
       this.search = query;
+      searchField.focus();
+      searchField
+        .$el
+        .querySelector('input')
+        .dispatchEvent(
+          new KeyboardEvent('keydown', {
+            keyCode: 13
+          }));
     },
     getIconUrl (iconName) {
       if (this.iconNames.includes(iconName)) {
