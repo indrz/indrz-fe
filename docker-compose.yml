@@ -1,8 +1,10 @@
 version: "3"
 
 services:
-  nuxt:
-    build: ./app/
+  indrz_fe_nuxt:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     container_name: indrz-fe
     restart: always
     ports:
@@ -10,12 +12,12 @@ services:
     command:
       "npm run start"
 
-  nginx:
-    image: nginx:1.13
+  nginx_fe:
+    image: nginx:1.19
     container_name: indrz-nginx
     ports:
       - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d
     depends_on:
-      - nuxt
+      - indrz_fe_nuxt
