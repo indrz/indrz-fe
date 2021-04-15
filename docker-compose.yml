@@ -1,18 +1,18 @@
 version: "3"
 
 services:
-  indrz_fe_nuxt:
+  indrz-client:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    container_name: indrz-fe
+    container_name: indrz-client
     restart: always
     ports:
       - "3000:3000"
     command:
       "npm run start"
 
-  nginx_fe:
+  indrz-nginx-client:
     image: nginx:1.19
     container_name: indrz-nginx
     ports:
@@ -20,4 +20,4 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d
     depends_on:
-      - indrz_fe_nuxt
+      - indrz-client
