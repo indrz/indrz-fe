@@ -10,7 +10,7 @@ documentation project here [indrz Docs](https://gitlab.com/indrz/indrz-doc) in t
 ----------------------
 > Indrz is a web application for indoor wayfinding, mapping and routing. The platform is for example used by a University that wants to provide its guests, staff and students a web map platform to allow them to find anything on campus.
 
-## Quick setup for developers
+## Quick setup for development
 The running frontend code is of no real use without it's best friend the
 [BACKEND API](https://gitlab.com/indrz/indrz-backend). Head over to get it
 started.
@@ -29,7 +29,7 @@ yarn install
 
 ## Create production build
 ```
-yarn build
+yarn run generate
 ```
-Now just copy the dist folder to your favourite webserver to serve it up using
+Now just copy the `/dist` folder to your favourite webserver or static file server to serve it up using
 nginx, S3, GCP cloud storage, Netlify, you name it.
