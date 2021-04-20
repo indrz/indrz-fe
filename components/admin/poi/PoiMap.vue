@@ -152,9 +152,8 @@ export default {
 
       this.map.on('singleclick', this.onMapClick, this);
       window.onresize = () => {
-        setTimeout(() => {
-          this.map.updateSize();
-        }, 500);
+        this.map.updateSize();
+        MapUtil.handleWindowResize(this.mapId);
       };
 
       const floorData = await api.request(
