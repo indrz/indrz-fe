@@ -1,4 +1,4 @@
-import { Zoom, Attribution, ScaleLine } from 'ol/control.js';
+import { defaults as defaultControls, Zoom, Attribution, ScaleLine } from 'ol/control.js';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
 import ImageWMS from 'ol/source/ImageWMS';
@@ -47,7 +47,10 @@ const initializeMap = (mapId) => {
       })
     ]),
     target: mapId,
-    controls: getMapControls(),
+    controls: defaultControls({
+      attribution: false,
+      zoom: false
+    }).extend(getMapControls()),
     view,
     layers: layers.layerGroups
   });
@@ -589,7 +592,6 @@ const getLayers = () => {
 const getStartCenter = () => env.DEFAULT_CENTER_XY;
 
 const getMapControls = () => {
-  // controls
   const attributionControl = new Attribution({
     collapsible: false
   });
