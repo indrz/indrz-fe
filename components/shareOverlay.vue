@@ -1,93 +1,117 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <v-card>
-      <v-card-title>
-        <span class="headline">{{ title }}</span>
-      </v-card-title>
-      <v-card-text class="mb-5">
-        <v-container>
-          <template v-if="link">
-            <v-row class="pl-0 ml-0">
-              <v-col cols="12" xs="12" sm="10" md="10">
-                <v-text-field ref="linkField" :value="link" hide-details outlined />
-              </v-col>
-              <v-col
-                cols="12"
-                xs="12"
-                sm="2"
-                md="2"
-                align="end"
-                class="pt-5"
-              >
-                <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text class="pa-0">
-                  <v-icon dark>
-                    mdi-content-copy
-                  </v-icon>
-                  Copy
-                </v-btn>
-              </v-col>
-            </v-row>
-          </template>
-          <template v-else>
-            <v-row class="pl-0 ml-0">
-              <v-col cols="12" xs="12" sm="10" md="10">
-                <v-text-field
-                  ref="singlePoi"
-                  :value="poiSingleShareLink"
-                  :label="poiSingleShareTitle"
-                  hide-details
-                  outlined
-                  readonly
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                xs="12"
-                sm="2"
-                md="2"
-                align="end"
-              >
-                <v-btn @click="onCopyButtonClick('singlePoi')" color="blue darken-1" text class="pa-0">
-                  <v-icon dark>
-                    mdi-content-copy
-                  </v-icon>
-                  Copy
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row class="pl-0 ml-0 mt-10">
-              <v-col cols="12" xs="12" sm="10" md="10">
-                <v-text-field
-                  ref="catPoi"
-                  :value="poiCatShareLink"
-                  :label="poiCatShareTitle"
-                  hide-details
-                  outlined
-                  readonly
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                xs="12"
-                sm="2"
-                md="2"
-                align="end"
-              >
-                <v-btn @click="onCopyButtonClick('catPoi')" color="blue darken-1" text class="pa-0">
-                  <v-icon dark>
-                    mdi-content-copy
-                  </v-icon>
-                  Copy
-                </v-btn>
-              </v-col>
-            </v-row>
-          </template>
-          <v-row>
-            <v-col v-if="copyConfirmation" cols="12" sm="8" md="8">
-              {{ copyConfirmation }}
-            </v-col>
-          </v-row>
-        </v-container>
+      <v-toolbar flat>
+        <v-toolbar-title>{{ title }}</v-toolbar-title>
+      </v-toolbar>
+      <v-card-text class="">
+        <v-tabs
+          v-model="tab"
+          grow
+        >
+          <v-tab
+            v-for="item in items"
+            :key="item"
+          >
+            {{ item }}
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab">
+          <v-tab-item>
+            <v-card flat>
+              <v-card-text>
+                <template v-if="link">
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12" xs="12" sm="10" md="10">
+                        <v-text-field ref="linkField" :value="link" hide-details outlined />
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        xs="12"
+                        sm="2"
+                        md="2"
+                        align="end"
+                        class="pt-5"
+                      >
+                        <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text class="pa-0">
+                          <v-icon dark>
+                            mdi-content-copy
+                          </v-icon>
+                          Copy
+                        </v-btn>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </template>
+                <template v-else>
+                  <v-row class="pl-0 ml-0">
+                    <v-col cols="12" xs="12" sm="10" md="10">
+                      <v-text-field
+                        ref="singlePoi"
+                        :value="poiSingleShareLink"
+                        :label="poiSingleShareTitle"
+                        hide-details
+                        outlined
+                        readonly
+                      />
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      xs="12"
+                      sm="2"
+                      md="2"
+                      align="end"
+                    >
+                      <v-btn @click="onCopyButtonClick('singlePoi')" color="blue darken-1" text class="pa-0">
+                        <v-icon dark>
+                          mdi-content-copy
+                        </v-icon>
+                        Copy
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                  <v-row class="pl-0 ml-0 mt-10">
+                    <v-col cols="12" xs="12" sm="10" md="10">
+                      <v-text-field
+                        ref="catPoi"
+                        :value="poiCatShareLink"
+                        :label="poiCatShareTitle"
+                        hide-details
+                        outlined
+                        readonly
+                      />
+                    </v-col>
+                    <v-col
+                      cols="12"
+                      xs="12"
+                      sm="2"
+                      md="2"
+                      align="end"
+                    >
+                      <v-btn @click="onCopyButtonClick('catPoi')" color="blue darken-1" text class="pa-0">
+                        <v-icon dark>
+                          mdi-content-copy
+                        </v-icon>
+                        Copy
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </template>
+                <v-row>
+                  <v-col v-if="copyConfirmation" cols="12" sm="8" md="8">
+                    {{ copyConfirmation }}
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item eager>
+            <v-card flat>
+              <img ref="shareQrCode" src="" alt="">
+            </v-card>
+          </v-tab-item>
+        </v-tabs-items>
       </v-card-text>
       <v-divider />
       <v-card-actions>
@@ -101,6 +125,9 @@
 </template>
 
 <script>
+
+import QRCode from 'qrcode'
+
 export default {
   name: 'ShareOverlay',
   data () {
@@ -114,7 +141,11 @@ export default {
       poiCatShareLink: '',
       link: '',
       copyConfirmation: '',
-      copySuccess: 'Url successfully copied in to clipboard!'
+      copySuccess: 'Url successfully copied in to clipboard!',
+      tab: null,
+      items: [
+        'Link', 'QR Code'
+      ]
     };
   },
   watch: {
@@ -134,10 +165,28 @@ export default {
       this.title = '';
       this.poiSingleShareLink = url.singlePoiUrl;
       this.poiCatShareLink = url.poiCatUrl;
+      this.setQRCode(this.poiSingleShareLink);
     },
     setShareLink (link) {
       this.title = this.searchShareTitle;
       this.link = link;
+      this.setQRCode(link);
+    },
+    setQRCode (link) {
+      const opts = {
+        errorCorrectionLevel: 'H',
+        type: 'image/jpeg',
+        quality: 0.3,
+        margin: 1
+      };
+      this.$nextTick(() => {
+        QRCode.toDataURL(link, opts, (err, url) => {
+          if (err) {
+            throw err;
+          }
+          this.$refs.shareQrCode.src = url;
+        })
+      });
     },
     onCopyButtonClick (fieldRef) {
       const copyTextField = this.$refs[fieldRef];
