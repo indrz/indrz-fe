@@ -4,10 +4,9 @@
       <v-toolbar flat>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
       </v-toolbar>
-      <v-card-text class="">
+      <v-card-text class="pr-0 pl-0">
         <v-tabs
           v-model="tab"
-          grow
         >
           <v-tab
             v-for="item in items"
@@ -16,6 +15,7 @@
             {{ item }}
           </v-tab>
         </v-tabs>
+        <v-divider />
         <v-tabs-items v-model="tab">
           <v-tab-item>
             <v-card flat>
@@ -107,9 +107,38 @@
             </v-card>
           </v-tab-item>
           <v-tab-item eager>
-            <v-card flat>
-              <img ref="shareQrCode" src="" alt="">
-            </v-card>
+            <v-row justify="center">
+              <v-col cols="12" sm="12" md="12" style="max-width: 220px">
+                <v-card flat max-width="220" class="mt-5">
+                  <div class="share-qr">
+                    <div class="share-qr-img-container">
+                      <img ref="shareQrCode" src="" alt="" class="share-qr-img">
+                    </div>
+                    <div class="share-qr-logo-container">
+                      <img src="/images/powered-by-indrz-blue-transparent-text+logo.png" alt="indrz logo">
+                    </div>
+                  </div>
+                  <v-row class="mt-1">
+                    <v-col cols="6" sm="6" md="6">
+                      <v-btn text x-small>
+                        <v-icon small>
+                          mdi-download
+                        </v-icon>
+                        Download
+                      </v-btn>
+                    </v-col>
+                    <v-col cols="6" sm="6" md="6">
+                      <v-btn text x-small @click="onTestLinkButtonClick">
+                        <v-icon small>
+                          mdi-share
+                        </v-icon>
+                        Share URL
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-card>
+              </v-col>
+            </v-row>
           </v-tab-item>
         </v-tabs-items>
       </v-card-text>
@@ -139,6 +168,7 @@ export default {
       poiCatShareTitle: 'Share the POI category',
       poiSingleShareLink: '',
       poiCatShareLink: '',
+      qrLink: '',
       link: '',
       copyConfirmation: '',
       copySuccess: 'Url successfully copied in to clipboard!',
@@ -173,11 +203,12 @@ export default {
       this.setQRCode(link);
     },
     setQRCode (link) {
+      this.qrLink = link;
       const opts = {
         errorCorrectionLevel: 'H',
         type: 'image/jpeg',
         quality: 0.3,
-        margin: 1
+        margin: 3
       };
       this.$nextTick(() => {
         QRCode.toDataURL(link, opts, (err, url) => {
@@ -195,16 +226,31 @@ export default {
       inputField.setSelectionRange(0, 99999);
       document.execCommand('copy');
       this.copyConfirmation = this.copySuccess;
+    },
+    onTestLinkButtonClick () {
+      window.open(this.qrLink, '_blank');
     }
   }
 };
 </script>
 
 <style scoped>
-  .row {
-    padding-left: 15px;
+  .share-qr {
+    border: 4px solid black;
+    border-radius: 12px !important;
   }
-
+  .share-qr-img-container {
+    margin: 0px auto;
+    width: 172px
+  }
+  .share-qr-img {
+    width: 172px;
+    height: 172px;
+  }
+  .share-qr-logo-container {
+    margin: 5px auto 0px;
+    width: 89px;
+  }
   .container, .container-fluid {
     padding-left: 0px;
   }
