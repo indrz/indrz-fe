@@ -18,127 +18,16 @@
         <v-divider />
         <v-tabs-items v-model="tab">
           <v-tab-item>
-            <v-card flat>
-              <v-card-text>
-                <template v-if="link">
-                  <v-container>
-                    <v-row>
-                      <v-col cols="12" xs="12" sm="10" md="10">
-                        <v-text-field ref="linkField" :value="link" hide-details outlined />
-                      </v-col>
-                      <v-col
-                        cols="12"
-                        xs="12"
-                        sm="2"
-                        md="2"
-                        align="end"
-                        class="pt-5"
-                      >
-                        <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text class="pa-0">
-                          <v-icon dark>
-                            mdi-content-copy
-                          </v-icon>
-                          Copy
-                        </v-btn>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </template>
-                <template v-else>
-                  <v-row class="pl-0 ml-0">
-                    <v-col cols="12" xs="12" sm="10" md="10">
-                      <v-text-field
-                        ref="singlePoi"
-                        :value="poiSingleShareLink"
-                        :label="poiSingleShareTitle"
-                        hide-details
-                        outlined
-                        readonly
-                      />
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      xs="12"
-                      sm="2"
-                      md="2"
-                      align="end"
-                    >
-                      <v-btn @click="onCopyButtonClick('singlePoi')" color="blue darken-1" text class="pa-0">
-                        <v-icon dark>
-                          mdi-content-copy
-                        </v-icon>
-                        Copy
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                  <v-row class="pl-0 ml-0 mt-10">
-                    <v-col cols="12" xs="12" sm="10" md="10">
-                      <v-text-field
-                        ref="catPoi"
-                        :value="poiCatShareLink"
-                        :label="poiCatShareTitle"
-                        hide-details
-                        outlined
-                        readonly
-                      />
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      xs="12"
-                      sm="2"
-                      md="2"
-                      align="end"
-                    >
-                      <v-btn @click="onCopyButtonClick('catPoi')" color="blue darken-1" text class="pa-0">
-                        <v-icon dark>
-                          mdi-content-copy
-                        </v-icon>
-                        Copy
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </template>
-                <v-row>
-                  <v-col v-if="copyConfirmation" cols="12" sm="8" md="8">
-                    {{ copyConfirmation }}
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+            <share-link
+              :link="link"
+              :poi-single-share-link="poiSingleShareLink"
+              :poi-cat-share-link="poiCatShareLink"
+              :copyConfirmation="copyConfirmation"
+              @copy="copyConfirmation = true"
+            />
           </v-tab-item>
           <v-tab-item eager>
-            <v-row justify="center">
-              <v-col cols="12" sm="12" md="12" style="max-width: 220px">
-                <v-card flat max-width="220" class="mt-5">
-                  <div class="share-qr">
-                    <div class="share-qr-img-container">
-                      <img ref="shareQrCode" src="" alt="" class="share-qr-img">
-                    </div>
-                    <div class="share-qr-logo-container">
-                      <img src="/images/powered-by-indrz-blue-transparent-text+logo.png" alt="indrz logo">
-                    </div>
-                  </div>
-                  <v-row class="mt-1">
-                    <v-col cols="6" sm="6" md="6">
-                      <v-btn text x-small>
-                        <v-icon small>
-                          mdi-download
-                        </v-icon>
-                        Download
-                      </v-btn>
-                    </v-col>
-                    <v-col cols="6" sm="6" md="6">
-                      <v-btn text x-small @click="onTestLinkButtonClick">
-                        <v-icon small>
-                          mdi-share
-                        </v-icon>
-                        Share URL
-                      </v-btn>
-                    </v-col>
-                  </v-row>
-                </v-card>
-              </v-col>
-            </v-row>
+            <share-q-r ref="qrLink" />
           </v-tab-item>
         </v-tabs-items>
       </v-card-text>
@@ -154,24 +43,21 @@
 </template>
 
 <script>
-
-import QRCode from 'qrcode'
+import ShareLink from './ShareLink';
+import ShareQR from './ShareQR';
 
 export default {
   name: 'ShareOverlay',
+  components: { ShareQR, ShareLink },
   data () {
     return {
       dialog: false,
       title: '',
-      searchShareTitle: 'Share search result',
-      poiSingleShareTitle: 'Share the POI',
-      poiCatShareTitle: 'Share the POI category',
+      link: '',
       poiSingleShareLink: '',
       poiCatShareLink: '',
-      qrLink: '',
-      link: '',
-      copyConfirmation: '',
-      copySuccess: 'Url successfully copied in to clipboard!',
+      copyConfirmation: false,
+      searchShareTitle: 'Share search result',
       tab: null,
       items: [
         'Link', 'QR Code'
@@ -179,8 +65,10 @@ export default {
     };
   },
   watch: {
-    dialog () {
-      this.copyConfirmation = '';
+    dialog (flag) {
+      if (flag) {
+        this.copyConfirmation = !flag;
+      }
     }
   },
   methods: {
@@ -203,58 +91,18 @@ export default {
       this.setQRCode(link);
     },
     setQRCode (link) {
-      this.qrLink = link;
-      const opts = {
-        errorCorrectionLevel: 'H',
-        type: 'image/jpeg',
-        quality: 0.3,
-        margin: 3
-      };
       this.$nextTick(() => {
-        QRCode.toDataURL(link, opts, (err, url) => {
-          if (err) {
-            throw err;
-          }
-          this.$refs.shareQrCode.src = url;
-        })
+        this.$refs.qrLink.setQRCode(link);
       });
-    },
-    onCopyButtonClick (fieldRef) {
-      const copyTextField = this.$refs[fieldRef];
-      const inputField = copyTextField.$el.querySelector('input');
-      inputField.select();
-      inputField.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      this.copyConfirmation = this.copySuccess;
-    },
-    onTestLinkButtonClick () {
-      window.open(this.qrLink, '_blank');
     }
   }
 };
 </script>
 
 <style scoped>
-  .share-qr {
-    border: 4px solid black;
-    border-radius: 12px !important;
-  }
-  .share-qr-img-container {
-    margin: 0px auto;
-    width: 172px
-  }
-  .share-qr-img {
-    width: 172px;
-    height: 172px;
-  }
-  .share-qr-logo-container {
-    margin: 5px auto 0px;
-    width: 89px;
-  }
   .container, .container-fluid {
     padding-left: 0px;
   }
-
   body {
     position: absolute;
     top: 0;
