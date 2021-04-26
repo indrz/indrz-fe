@@ -21,11 +21,15 @@
               </v-btn>
             </v-col>
             <v-col cols="6" sm="6" md="6">
-              <v-btn text x-small @click="onTestLinkButtonClick">
+              <v-btn
+                @click="onTestLinkButtonClick"
+                text
+                x-small
+              >
                 <v-icon small>
                   mdi-share
                 </v-icon>
-                Share URL
+                Test Link
               </v-btn>
             </v-col>
           </v-row>

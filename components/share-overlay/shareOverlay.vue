@@ -58,6 +58,7 @@ export default {
       poiCatShareLink: '',
       copyConfirmation: false,
       searchShareTitle: 'Share search result',
+      sharePOITitle: 'Share POI',
       tab: null,
       items: [
         'Link', 'QR Code'
@@ -80,7 +81,7 @@ export default {
     },
     setPoiShareLink (url) {
       this.link = '';
-      this.title = '';
+      this.title = this.sharePOITitle;
       this.poiSingleShareLink = url.singlePoiUrl;
       this.poiCatShareLink = url.poiCatUrl;
       this.setQRCode(this.poiSingleShareLink);

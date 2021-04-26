@@ -15,6 +15,10 @@ const fetchPoi = (catId, map, activeFloorName) => {
     endPoint: `poi/cat/${catId}/?format=json`
   }, env)
     .then((response) => {
+      // debugger;
+      response.data.features.forEach((feature) => {
+        feature.properties.icon = feature.properties.icon.replace('8000', '3000')
+      });
       return createPoilayer(response.data, catId, activeFloorName, env.layerNamePrefix);
     });
 };
