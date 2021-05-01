@@ -5,11 +5,11 @@
         <v-text-field ref="linkField" :value="link" hide-details outlined />
       </v-col>
       <v-col
-          cols="3"
-          sm="2"
-          md="2"
-          align="end"
-          class="pt-2"
+        cols="3"
+        sm="2"
+        md="2"
+        align="end"
+        class="pt-2"
       >
         <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text class="pa-0">
           <v-icon dark>
