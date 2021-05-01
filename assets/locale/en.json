@@ -32,5 +32,12 @@
   "label_room_id": "Room Id",
   "label_capacity": "Capacity",
   "directions": "Directions",
-  "xy_location": "XY Location"
+  "xy_location": "XY Location",
+  "copy": "Copy",
+  "copy_to_clipboard": "Url successfully copied to clipboard!",
+  "share_poi_category": "Share POI Category",
+  "share_search_result": "Share search result",
+  "share_poi": "Share POI",
+  "link": "Link",
+  "qr_code": "QR Code"
 }
