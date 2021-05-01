@@ -15,7 +15,7 @@
           <v-icon dark>
             mdi-content-copy
           </v-icon>
-          Copy
+          {{ copy }}
         </v-btn>
       </v-col>
     </v-row>
@@ -29,6 +29,11 @@ export default {
     link: {
       type: String,
       default: ''
+    }
+  },
+  data () {
+    return {
+      copy: this.$t('copy')
     }
   },
   methods: {

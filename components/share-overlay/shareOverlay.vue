@@ -70,15 +70,14 @@ export default {
       poiSingleShareLink: '',
       poiCatShareLink: '',
       copyConfirmation: false,
-      searchShareTitle: 'Share search result',
-      sharePOITitle: 'Share POI',
+      searchShareTitle: this.$t('share_search_result'),
+      sharePOITitle: this.$t('share_poi'),
       tab: null,
       items: [
-        'Link', 'QR Code'
+        this.$t('link'), this.$t('qr_code')
       ],
-      copySuccess: 'Url successfully copied in to clipboard!',
-      poiSingleShareTitle: 'Share the POI',
-      poiCatShareTitle: 'Share POI Category',
+      copySuccess: this.$t('copy_to_clipboard'),
+      poiCatShareTitle: this.$t('share_poi_category'),
       expansionPanel: 0
     };
   },
