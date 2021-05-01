@@ -1,35 +1,44 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <v-card>
-      <v-toolbar flat>
+      <v-toolbar v-if="link" flat>
         <v-toolbar-title>{{ title }}</v-toolbar-title>
       </v-toolbar>
-      <v-card-text class="pr-0 pl-0">
-        <v-tabs
-          v-model="tab"
+      <v-card-text class="pa-0">
+        <v-expansion-panels
+            v-model="expansionPanel"
         >
-          <v-tab
-            v-for="item in items"
-            :key="item"
-          >
-            {{ item }}
-          </v-tab>
-        </v-tabs>
-        <v-divider />
-        <v-tabs-items v-model="tab">
-          <v-tab-item>
-            <share-link
-              :link="link"
-              :poi-single-share-link="poiSingleShareLink"
-              :poi-cat-share-link="poiCatShareLink"
-              :copyConfirmation="copyConfirmation"
-              @copy="copyConfirmation = true"
-            />
-          </v-tab-item>
-          <v-tab-item eager>
-            <share-q-r ref="qrLink" />
-          </v-tab-item>
-        </v-tabs-items>
+          <v-expansion-panel>
+            <v-expansion-panel-header v-if="!link" class="expansion-title">{{title}}</v-expansion-panel-header>
+            <v-expansion-panel-content eager>
+              <v-tabs
+                  v-model="tab"
+              >
+                <v-tab
+                    v-for="item in items"
+                    :key="item"
+                >
+                  {{ item }}
+                </v-tab>
+              </v-tabs>
+              <v-divider />
+              <v-tabs-items v-model="tab">
+                <v-tab-item>
+                  <copy-field :link="link || poiSingleShareLink" @share-copy="showCopyConfirmation" />
+                </v-tab-item>
+                <v-tab-item eager>
+                  <share-q-r ref="qrLink" />
+                </v-tab-item>
+              </v-tabs-items>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel v-if="poiCatShareLink">
+            <v-expansion-panel-header class="expansion-title">{{poiCatShareTitle}}</v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <copy-field :link="poiCatShareLink" @share-copy="showCopyConfirmation" />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-card-text>
       <v-divider />
       <v-card-actions>
@@ -45,10 +54,11 @@
 <script>
 import ShareLink from './ShareLink';
 import ShareQR from './ShareQR';
+import CopyField from './CopyField';
 
 export default {
   name: 'ShareOverlay',
-  components: { ShareQR, ShareLink },
+  components: { CopyField, ShareQR, ShareLink },
   data () {
     return {
       dialog: false,
@@ -62,7 +72,11 @@ export default {
       tab: null,
       items: [
         'Link', 'QR Code'
-      ]
+      ],
+      copySuccess: 'Url successfully copied in to clipboard!',
+      poiSingleShareTitle: 'Share the POI',
+      poiCatShareTitle: 'Share POI Category',
+      expansionPanel: 0
     };
   },
   watch: {
@@ -75,6 +89,7 @@ export default {
   methods: {
     show () {
       this.dialog = true;
+      this.expansionPanel = 0;
     },
     close () {
       this.dialog = false;
@@ -89,18 +104,27 @@ export default {
     setShareLink (link) {
       this.title = this.searchShareTitle;
       this.link = link;
+      this.poiSingleShareLink = '';
+      this.poiCatShareLink = '';
       this.setQRCode(link);
     },
     setQRCode (link) {
       this.$nextTick(() => {
         this.$refs.qrLink.setQRCode(link);
       });
+    },
+    showCopyConfirmation () {
+      this.$store.commit('SET_SNACKBAR', this.copySuccess);
     }
   }
 };
 </script>
 
 <style scoped>
+  .expansion-title {
+    font-size: 1.25rem !important;
+    line-height: 1.5 !important;
+  }
   .container, .container-fluid {
     padding-left: 0px;
   }
