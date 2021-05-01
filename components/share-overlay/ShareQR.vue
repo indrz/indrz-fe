@@ -8,7 +8,7 @@
               <img ref="shareQrCode" src="" alt="" class="share-qr-img">
             </div>
             <div class="share-qr-logo-container">
-              <img src="/images/powered-by-indrz-blue-transparent-text+logo.png" alt="indrz logo">
+              <img src="/images/logo-indrz-with-name.png" alt="indrz logo">
             </div>
           </div>
           <v-row class="mt-1">
@@ -59,7 +59,7 @@ export default {
         errorCorrectionLevel: 'H',
         type: 'image/jpeg',
         quality: 0.3,
-        margin: 3
+        margin: 1
       };
       this.$nextTick(() => {
         QRCode.toDataURL(link, opts, (err, url) => {
@@ -74,13 +74,13 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .share-qr {
     border: 4px solid black;
     border-radius: 12px !important;
   }
   .share-qr-img-container {
-    margin: 0px auto;
+    margin: 8px auto 0px;
     width: 172px
   }
   .share-qr-img {
@@ -88,7 +88,10 @@ export default {
     height: 172px;
   }
   .share-qr-logo-container {
-    margin: 5px auto 0px;
-    width: 89px;
+    margin: 0px auto;
+    width: 50px;
+    img {
+      width: 50px;
+    }
   }
 </style>
