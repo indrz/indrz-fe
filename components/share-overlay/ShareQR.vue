@@ -13,7 +13,12 @@
           </div>
           <v-row class="mt-1">
             <v-col cols="6" sm="6" md="6">
-              <v-btn text x-small>
+              <v-btn
+                @click="onDownloadButtonClick"
+                :loading="isDownloadingQR"
+                text
+                x-small
+              >
                 <v-icon small>
                   mdi-download
                 </v-icon>
@@ -41,15 +46,38 @@
 
 <script>
 import QRCode from 'qrcode';
+import html2canvas from 'html2canvas';
 
 export default {
   name: 'ShareQR',
   data () {
     return {
-      qrLink: ''
+      qrLink: '',
+      isDownloadingQR: false
     }
   },
   methods: {
+    onDownloadButtonClick () {
+      this.isDownloadingQR = true;
+      const qrImageArea = document.querySelector('.share-qr');
+      html2canvas(qrImageArea)
+        .then((canvas) => {
+          document.body.appendChild(canvas);
+          canvas.style.display = 'none';
+          return canvas;
+        })
+        .then((canvas) => {
+          const image = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+          const a = document.createElement('a');
+          a.setAttribute('download', `${this.qrLink}.png`);
+          a.setAttribute('href', image);
+          a.click();
+          canvas.remove();
+        })
+        .finally(() => {
+          this.isDownloadingQR = false;
+        })
+    },
     onTestLinkButtonClick () {
       window.open(this.qrLink, '_blank');
     },
@@ -79,17 +107,21 @@ export default {
     border: 4px solid black;
     border-radius: 12px !important;
   }
+
   .share-qr-img-container {
     margin: 8px auto 0px;
     width: 172px
   }
+
   .share-qr-img {
     width: 172px;
     height: 172px;
   }
+
   .share-qr-logo-container {
     margin: 0px auto;
     width: 50px;
+
     img {
       width: 50px;
     }
