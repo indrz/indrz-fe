@@ -17,10 +17,13 @@
                 v-model="tab"
               >
                 <v-tab
-                  v-for="item in items"
-                  :key="item"
+                  v-for="item in tabItems"
+                  :key="item.name"
                 >
-                  {{ item }}
+                  <v-icon left>
+                    {{ item.icon }}
+                  </v-icon>
+                  {{ item.name }}
                 </v-tab>
               </v-tabs>
               <v-divider />
@@ -73,8 +76,14 @@ export default {
       searchShareTitle: this.$t('share_search_result'),
       sharePOITitle: this.$t('share_poi'),
       tab: null,
-      items: [
-        this.$t('link'), this.$t('qr_code')
+      tabItems: [
+        {
+          name: this.$t('link'),
+          icon: 'mdi-share-variant'
+        }, {
+          name: this.$t('qr_code'),
+          icon: 'mdi-qrcode'
+        }
       ],
       copySuccess: this.$t('copy_to_clipboard'),
       poiCatShareTitle: this.$t('share_poi_category'),
