@@ -23,7 +23,7 @@ If you have issues with your install these three little steps usually help
 ```bash
 rm -rf node_modules
 rm yarn.lock
-yarn clean cache
+yarn cache clean
 yarn install
 ```
 
