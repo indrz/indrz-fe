@@ -1,93 +1,51 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="600px">
     <v-card>
-      <v-card-title>
-        <span class="headline">{{ title }}</span>
-      </v-card-title>
-      <v-card-text class="mb-5">
-        <v-container>
-          <template v-if="link">
-            <v-row class="pl-0 ml-0">
-              <v-col cols="12" xs="12" sm="10" md="10">
-                <v-text-field ref="linkField" :value="link" hide-details outlined />
-              </v-col>
-              <v-col
-                cols="12"
-                xs="12"
-                sm="2"
-                md="2"
-                align="end"
-                class="pt-5"
+      <v-toolbar v-if="link" flat>
+        <v-toolbar-title>{{ title }}</v-toolbar-title>
+      </v-toolbar>
+      <v-card-text class="pa-0">
+        <v-expansion-panels
+          v-model="expansionPanel"
+        >
+          <v-expansion-panel>
+            <v-expansion-panel-header v-if="!link" class="expansion-title">
+              {{ title }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-content eager>
+              <v-tabs
+                v-model="tab"
               >
-                <v-btn @click="onCopyButtonClick('linkField')" color="blue darken-1" text class="pa-0">
-                  <v-icon dark>
-                    mdi-content-copy
+                <v-tab
+                  v-for="item in tabItems"
+                  :key="item.name"
+                >
+                  <v-icon left>
+                    {{ item.icon }}
                   </v-icon>
-                  Copy
-                </v-btn>
-              </v-col>
-            </v-row>
-          </template>
-          <template v-else>
-            <v-row class="pl-0 ml-0">
-              <v-col cols="12" xs="12" sm="10" md="10">
-                <v-text-field
-                  ref="singlePoi"
-                  :value="poiSingleShareLink"
-                  :label="poiSingleShareTitle"
-                  hide-details
-                  outlined
-                  readonly
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                xs="12"
-                sm="2"
-                md="2"
-                align="end"
-              >
-                <v-btn @click="onCopyButtonClick('singlePoi')" color="blue darken-1" text class="pa-0">
-                  <v-icon dark>
-                    mdi-content-copy
-                  </v-icon>
-                  Copy
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row class="pl-0 ml-0 mt-10">
-              <v-col cols="12" xs="12" sm="10" md="10">
-                <v-text-field
-                  ref="catPoi"
-                  :value="poiCatShareLink"
-                  :label="poiCatShareTitle"
-                  hide-details
-                  outlined
-                  readonly
-                />
-              </v-col>
-              <v-col
-                cols="12"
-                xs="12"
-                sm="2"
-                md="2"
-                align="end"
-              >
-                <v-btn @click="onCopyButtonClick('catPoi')" color="blue darken-1" text class="pa-0">
-                  <v-icon dark>
-                    mdi-content-copy
-                  </v-icon>
-                  Copy
-                </v-btn>
-              </v-col>
-            </v-row>
-          </template>
-          <v-row>
-            <v-col v-if="copyConfirmation" cols="12" sm="8" md="8">
-              {{ copyConfirmation }}
-            </v-col>
-          </v-row>
-        </v-container>
+                  {{ item.name }}
+                </v-tab>
+              </v-tabs>
+              <v-divider />
+              <v-tabs-items v-model="tab">
+                <v-tab-item>
+                  <copy-field :link="link || poiSingleShareLink" @share-copy="showCopyConfirmation" />
+                </v-tab-item>
+                <v-tab-item eager>
+                  <share-q-r ref="qrLink" />
+                </v-tab-item>
+              </v-tabs-items>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+          <v-expansion-panel v-if="poiCatShareLink">
+            <v-expansion-panel-header class="expansion-title">
+              {{ poiCatShareTitle }}
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <copy-field :link="poiCatShareLink" @share-copy="showCopyConfirmation" />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-card-text>
       <v-divider />
       <v-card-actions>
@@ -101,59 +59,82 @@
 </template>
 
 <script>
+import ShareQR from './ShareQR';
+import CopyField from './CopyField';
+
 export default {
   name: 'ShareOverlay',
+  components: { CopyField, ShareQR },
   data () {
     return {
       dialog: false,
       title: '',
-      searchShareTitle: 'Share search result',
-      poiSingleShareTitle: 'Share the POI',
-      poiCatShareTitle: 'Share the POI category',
+      link: '',
       poiSingleShareLink: '',
       poiCatShareLink: '',
-      link: '',
-      copyConfirmation: '',
-      copySuccess: 'Url successfully copied in to clipboard!'
+      copyConfirmation: false,
+      searchShareTitle: this.$t('share_search_result'),
+      sharePOITitle: this.$t('share_poi'),
+      tab: null,
+      tabItems: [
+        {
+          name: this.$t('link'),
+          icon: 'mdi-share-variant'
+        }, {
+          name: this.$t('qr_code'),
+          icon: 'mdi-qrcode'
+        }
+      ],
+      copySuccess: this.$t('copy_to_clipboard'),
+      poiCatShareTitle: this.$t('share_poi_category'),
+      expansionPanel: 0
     };
   },
   watch: {
-    dialog () {
-      this.copyConfirmation = '';
+    dialog (flag) {
+      if (flag) {
+        this.copyConfirmation = !flag;
+      }
     }
   },
   methods: {
     show () {
       this.dialog = true;
+      this.expansionPanel = 0;
     },
     close () {
       this.dialog = false;
     },
     setPoiShareLink (url) {
       this.link = '';
-      this.title = '';
+      this.title = this.sharePOITitle;
       this.poiSingleShareLink = url.singlePoiUrl;
       this.poiCatShareLink = url.poiCatUrl;
+      this.setQRCode(this.poiSingleShareLink);
     },
     setShareLink (link) {
       this.title = this.searchShareTitle;
       this.link = link;
+      this.poiSingleShareLink = '';
+      this.poiCatShareLink = '';
+      this.setQRCode(link);
     },
-    onCopyButtonClick (fieldRef) {
-      const copyTextField = this.$refs[fieldRef];
-      const inputField = copyTextField.$el.querySelector('input');
-      inputField.select();
-      inputField.setSelectionRange(0, 99999);
-      document.execCommand('copy');
-      this.copyConfirmation = this.copySuccess;
+    setQRCode (link) {
+      this.$nextTick(() => {
+        this.$refs.qrLink.setQRCode(link);
+      });
+    },
+    showCopyConfirmation () {
+      this.$store.commit('SET_SNACKBAR', this.copySuccess);
     }
   }
 };
 </script>
 
 <style scoped>
-  .row {
-    padding-left: 15px;
+  .expansion-title {
+    font-size: 1.25rem !important;
+    line-height: 1.5 !important;
   }
 
   .container, .container-fluid {
@@ -187,7 +168,7 @@ export default {
     padding: 0;
   }
 
-  .indrz-floor-changer-float{
+  .indrz-floor-changer-float {
     position: absolute;
     background-color: #0000ff;
     top: 6em;
@@ -208,13 +189,29 @@ export default {
     padding-right: 4px;
   }
 
-  .indrz-floorchanger{
+  .indrz-floorchanger {
     background-color: #4b45ff !important;
   }
 
   /*.indrz-map-container { width:100%; height:100%; margin:0; }*/
-  #toolbox       { position:absolute; top:98px; right:18px; padding:3px; border-radius:4px; color:#fff; background: rgba(255, 255, 255, 0.4); z-index:100; }
-  #layerswitcher { margin:0; padding:15px; border-radius:4px; background:rgba(0, 60, 136, 0.5); list-style-type:none; }
+  #toolbox {
+    position: absolute;
+    top: 98px;
+    right: 18px;
+    padding: 3px;
+    border-radius: 4px;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.4);
+    z-index: 100;
+  }
+
+  #layerswitcher {
+    margin: 0;
+    padding: 15px;
+    border-radius: 4px;
+    background: rgba(0, 60, 136, 0.5);
+    list-style-type: none;
+  }
 
   .indrz-logo {
     position: absolute; /* or absolute */
@@ -223,22 +220,23 @@ export default {
     z-index: 1001;
   }
 
-  .treeview .list-group-item{
-    padding:1px 1px !important;
+  .treeview .list-group-item {
+    padding: 1px 1px !important;
   }
 
-  .list-group{
+  .list-group {
     margin-bottom: 0;
   }
 
-  .list-group-item{
-    display:block;
+  .list-group-item {
+    display: block;
     padding: 5px 1px !important;
     background-color: transparent;
     border: transparent;
     margin: 0;
 
   }
+
   .list-group-item.active, .list-group-item.active:focus, .list-group-item.active:hover {
     z-index: 2;
     color: #fff;
@@ -246,6 +244,7 @@ export default {
     border-color: #337ab7;
     font-weight: bolder;
   }
+
   main li {
     font-size: 14px;
     line-height: 18px;
@@ -254,30 +253,34 @@ export default {
   .list-group-item:hover {
     background-color: #65b6f5;
   }
+
   main a {
     color: #dadada;
     text-decoration: underline;
   }
 
-  .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+  .nav-pills > li.active > a, .nav-pills > li.active > a:focus, .nav-pills > li.active > a:hover {
     color: #fff;
     background-color: #4c4c4c !important;
     line-height: 5px !important;
     font-size: 12px !important;
     /*background-color: #000000 !important;*/
   }
-  .nav-pills>li>a, .nav-pills>li>a:focus, .nav-pills>li>a {
+
+  .nav-pills > li > a, .nav-pills > li > a:focus, .nav-pills > li > a {
     color: #0a6aa1;
     line-height: 5px !important;
     font-size: 12px !important;
     /*background-color: #000000 !important;*/
   }
+
   .indrz-search {
     position: absolute; /* or absolute */
     top: 2%;
     left: 40px;
     z-index: 1002;
   }
+
   .indrz-search-kiosk {
     position: absolute; /* or absolute */
     top: 0.5em;
@@ -285,52 +288,68 @@ export default {
     z-index: 2000;
     width: 25em;
   }
+
   .indrz-poi-kiosk {
   }
-  #poi-panel-body{
-    padding:0px;
+
+  #poi-panel-body {
+    padding: 0px;
   }
-  .indrz-kiosk-zoom-to-campus{
+
+  .indrz-kiosk-zoom-to-campus {
     left: 4.0em;
   }
-  .olImageLoadError { display: none; }
+
+  .olImageLoadError {
+    display: none;
+  }
 
   body {
     padding-top: 60px;
   }
+
   .ol-attribution {
     max-width: calc(100% - 3em);
   }
+
   .ol-control button, .ol-attribution, .ol-scale-line-inner {
-    font-family: 'Lucida Grande',Verdana,Geneva,Lucida,Arial,Helvetica,sans-serif;
+    font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif;
   }
+
   #tags {
     display: none;
   }
+
   body, h1, h2, h3, h4, p, li, td, th {
     font-family: 'Quattrocento Sans';
   }
+
   .navbar-inverse .navbar-inner {
     background: #1F6B75;
   }
+
   .navbar-inverse .brand {
     color: white;
     padding: 5px;
   }
-  .bs-example{
+
+  .bs-example {
     font-family: sans-serif;
     position: relative;
     margin: 100px;
   }
+
   .popover-content {
     min-width: 225px;
   }
+
   /* STYLE CSS for the typeahead drop down */
 
   .twitter-typeahead .tt-query,
   .twitter-typeahead .tt-hint {
     margin-bottom: 0;
   }
+
   .tt-hint {
     display: block;
     width: 100%;
@@ -348,6 +367,7 @@ export default {
     -webkit-transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
     transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;
   }
+
   .tt-menu {
     min-width: 160px;
     margin-top: 2px;
@@ -360,57 +380,63 @@ export default {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
     background-clip: padding-box;
   }
+
   .tt-suggestion {
     display: block;
     padding: 3px 20px;
     font-size: 12px;
 
   }
+
   .tt-suggestion:hover {
     color: #fff;
     background-color: #009ab8;
   }
+
   .tt-suggestion.tt-is-under-cursor a {
     color: #fff;
   }
+
   .tt-suggestion p {
     margin: 0;
   }
 
-  #id-map-switcher-widget{
+  #id-map-switcher-widget {
     position: absolute;
     right: 5px;
     top: .5em;
   }
-  #id-map-switcher-widget button{
+
+  #id-map-switcher-widget button {
     width: 110px;
     margin-right: 5px;
   }
 
-  #popupFloorNumber{
+  #popupFloorNumber {
     padding-left: 5px;
   }
 
-  #popupRoomCode{
+  #popupRoomCode {
     padding-left: 5px;
   }
 
-  #popupRoomCat{
-    padding-left: 5px;
-  }
-  #popupBuilding{
+  #popupRoomCat {
     padding-left: 5px;
   }
 
-  #sharePoiCatPopup{
+  #popupBuilding {
+    padding-left: 5px;
+  }
+
+  #sharePoiCatPopup {
     background-color: #ff4344;
   }
 
   .ol-popup {
     position: absolute;
     background-color: white;
-    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
     padding: 15px;
     border-radius: 0px;
     border: 1px solid #cccccc;
@@ -419,6 +445,7 @@ export default {
     min-width: 220px;
     z-index: 1;
   }
+
   .ol-popup:after, .ol-popup:before {
     top: 100%;
     border: solid transparent;
@@ -428,24 +455,28 @@ export default {
     position: absolute;
     pointer-events: none;
   }
+
   .ol-popup:after {
     border-top-color: white;
     border-width: 10px;
     left: 48px;
     margin-left: -10px;
   }
+
   .ol-popup:before {
     border-top-color: #cccccc;
     border-width: 11px;
     left: 48px;
     margin-left: -11px;
   }
+
   .ol-popup-closer {
     text-decoration: none;
     position: absolute;
     top: 2px;
     right: 8px;
   }
+
   .ol-popup-closer:after {
     content: "X";
   }
@@ -460,7 +491,7 @@ export default {
     border-radius: 0;
   }
 
-  .ol-zoom .ol-zoom-out{
+  .ol-zoom .ol-zoom-out {
     border-radius: 0;
   }
 
@@ -490,7 +521,11 @@ export default {
     border-radius: 0px;
   }
 
-  .twitter-typeahead{ float:left; width:100%}
+  .twitter-typeahead {
+    float: left;
+    width: 100%
+  }
+
   /* END  STYLE CSS for the TYPEAHEAD drop down */
 
   .navbar {
@@ -534,13 +569,13 @@ export default {
     }
 
     .navbar-toggle {
-      float: left !important ;
+      float: left !important;
       display: block;
       margin-left: 2em;
     }
 
     .navbar-header {
-      float: left !important ;
+      float: left !important;
     }
   }
 
@@ -549,7 +584,7 @@ export default {
       display: block !important;
     }
 
-    .indrz-floor-changer-float{
+    .indrz-floor-changer-float {
       position: absolute;
       /*background-color: rgba(51, 51, 51, 0.5);*/
       background-color: #0a6aa1;
@@ -570,14 +605,15 @@ export default {
       text-decoration: none;
       padding-left: 4px;
     }
+
     .navbar-toggle {
-      float:left !important;
+      float: left !important;
       display: none;
     }
   }
 
   .navbar-toggle {
-    float: left  ;
+    float: left;
     display: block;
     margin-left: 2em;
   }
@@ -596,26 +632,26 @@ export default {
     -webkit-margin-start: 0px;
     -webkit-margin-end: 0px;
     font-weight: bold;
-    color:black !important;
+    color: black !important;
   }
 
-  .jstree-anchor{
+  .jstree-anchor {
     font-size: 14px !important;
   }
 
-  #searchTools{
+  #searchTools {
     display: none;
 
   }
 
-  .indrz-search-tools{
+  .indrz-search-tools {
     padding-bottom: 15px !important;
     padding-top: 5px;
 
   }
 
-  .indrz-popup p{
-    font-family: Arial,sans-serif;
+  .indrz-popup p {
+    font-family: Arial, sans-serif;
     font-size: 12px;
     letter-spacing: .1px;
     line-height: 12px;
@@ -624,12 +660,12 @@ export default {
 
   }
 
-  #popup-links a{
+  #popup-links a {
     margin-bottom: 5px;
 
   }
 
-  .indrz-toolbar{
+  .indrz-toolbar {
     position: absolute;
     top: .5em;
     left: 3.9em;
@@ -642,12 +678,12 @@ export default {
 
   #search-res {
     max-height: 250px;
-    overflow-y:scroll;
+    overflow-y: scroll;
   }
 
-  .searchbox-wu{
+  .searchbox-wu {
     padding-left: 0px;
-    padding-right:12px;
+    padding-right: 12px;
   }
 
   .fa {
@@ -661,19 +697,20 @@ export default {
 
   }
 
-  .jstree-icon:empty{
-    vertical-align: middle;
-  }
-  .jstree-icon{
+  .jstree-icon:empty {
     vertical-align: middle;
   }
 
-  .indrz-modal-share h4{
+  .jstree-icon {
+    vertical-align: middle;
+  }
+
+  .indrz-modal-share h4 {
     font-size: 14px !important;
     text-align: left !important;
   }
 
-  .indrz-modal-share p{
+  .indrz-modal-share p {
     font-size: 14px !important;
     text-align: left !important;
   }
@@ -682,18 +719,18 @@ export default {
     /*resize: none;*/
     /*overflow: hidden;*/
     min-height: 80px;
-    width:100%;
+    width: 100%;
 
   }
 
-  #textAreaShareSearch{
+  #textAreaShareSearch {
     min-height: 50px;
-    width:100%;
+    width: 100%;
   }
 
-  #textAreaShareRoute{
+  #textAreaShareRoute {
     min-height: 80px;
-    width:100%;
+    width: 100%;
   }
 
   @media (max-width: 650px) {
@@ -705,6 +742,7 @@ export default {
       left: auto;
       bottom: auto;
     }
+
     .indrz-floor-changer-float {
       position: absolute;
       top: 6em;
@@ -713,20 +751,25 @@ export default {
 
     }
 
-    .sm-floor-changer{
+    .sm-floor-changer {
       background-color: black;
-      color:white;
+      color: white;
     }
-    #poi-accordian{
+
+    #poi-accordian {
       /*visibility: hidden;*/
-      display:none;
+      display: none;
     }
   }
-  color:black;
 
-  #popupTable td{
+  color:black
+
+  ;
+
+  #popupTable td {
     padding-left: 5px;
   }
+
   /* context menu */
   .indrz-context-menu {
     display: none;
@@ -774,7 +817,7 @@ export default {
     color: #fff;
     background-color: #0066aa;
     border-color: #8293a4;
-    border-radius: 0!important;
-    border: 0!important;
+    border-radius: 0 !important;
+    border: 0 !important;
   }
 </style>
