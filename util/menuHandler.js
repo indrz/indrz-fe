@@ -10,7 +10,15 @@ const handleZoomToHome = (mapInfo, center) => {
     zoom: 15
   });
 };
+
+const attachPreComposeHandler = (map) => {
+  map.once('precompose', function (event) {
+    event.context.fillStyle = 'white';
+    event.context.fillRect(0, 0, event.context.canvas.width, event.context.canvas.height);
+  });
+};
 const handleDownLoad = (mapInfo) => {
+  attachPreComposeHandler(mapInfo.map);
   mapInfo.map.once('postcompose', function (event) {
     const canvas = event.context.canvas;
     const curDate = new Date();
@@ -27,10 +35,10 @@ const handlePdf = (mapInfo) => {
   const map = mapInfo.map;
   const activeFloorName = mapInfo.activeFloorName;
 
+  attachPreComposeHandler(map);
   mapInfo.map.once('postcompose', function (event) {
     const canvas = event.context.canvas;
     const mapSize = MapUtil.getMapSize(map);
-
     const canvasMapHeight = mapSize.height_px;
     const canvasMapWidth = mapSize.width_px;
 
