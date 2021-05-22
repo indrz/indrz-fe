@@ -33,3 +33,18 @@ yarn run generate
 ```
 Now just copy the `/dist` folder to your favourite webserver or static file server to serve it up using
 nginx, S3, GCP cloud storage, Netlify, you name it.
+
+
+## Supported Url Parameters
+```
+q=Hörsaal 14
+centerx=1822249.8789
+centery=6139919.48
+zlevel=20
+floor=eg
+campus=1
+hide_left =false
+hide_head=false
+hide_footer=false
+```
+
