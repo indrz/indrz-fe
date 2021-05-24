@@ -1,21 +1,23 @@
 # INDRZ Frontend
+This is the [indrz](https://www.indrz.com) FRONTEND repository. You can find the
+ compiled version of the frontend in the `dist` folder.
+
+## Documentation
+documentation project here [indrz Docs](https://gitlab.com/indrz/indrz-doc) in the folder content
+
 [Gitlab](https://gitlab.com/indrz/indrz-frontend) hosts the main repo 
 Mirror repo is at [Github](https://github.com/indrz/indrz-fe)
 
-----------------------
-
-This is the [indrz](https://www.indrz.com) FRONTEND repository. You can find our 
-documentation project here [indrz Docs](https://gitlab.com/indrz/indrz-doc) in the folder content
 
 ----------------------
 > Indrz is a web application for indoor wayfinding, mapping and routing. The platform is for example used by a University that wants to provide its guests, staff and students a web map platform to allow them to find anything on campus.
 
-## Quick setup for development
+## Setup your development environment
 The running frontend code is of no real use without it's best friend the
 [BACKEND API](https://gitlab.com/indrz/indrz-backend). Head over to get it
-started.
+started. Next up:
 
-1. Clone the repo ``git clone https://gitlab.com/indrz/indrz-frontend.git``
+1. ``git clone https://gitlab.com/indrz/indrz-frontend.git``
 1. ``yarn install``
 1. ``yarn run dev``
 
