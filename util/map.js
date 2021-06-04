@@ -633,9 +633,9 @@ const getWmsLayers = (floors) => {
 const loadMapWithParams = async (mapInfo, query) => {
   const campusId = query.campus || 1;
   const zoomLevel = query.zlevel || 18;
+  const view = mapInfo.map.getView();
 
   if (query.centerx !== 0 && query.centery !== 0 && isNaN(query.centerx) === false) {
-    const view = mapInfo.map.getView();
     view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
   }
   if (query.floor) {
@@ -651,6 +651,7 @@ const loadMapWithParams = async (mapInfo, query) => {
       mapInfo.globalPopupInfo, null, null, null, coords, null,
       null, mapInfo.activeFloorName, mapInfo.popup, { xy: coords }, coords
     );
+    view.animate({ zoom: zoomLevel }, { center: coords });
     return;
   }
   if (query.q && query.q.length > 3) {
