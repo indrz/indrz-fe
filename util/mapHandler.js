@@ -283,6 +283,8 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     param = 'poiCatId';
   } else if (globalPopupInfo.src === 'wms') {
     param = 'wmsInfo';
+  } else if (globalPopupInfo.name === 'XY Location') {
+    param = 'xy';
   }
   return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName);
 };
@@ -337,6 +339,8 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     };
   } else if (mode === 'wmsInfo') {
     url = hostUrl + '?q=' + globalPopupInfo.wmsInfo;
+  } else if (mode === 'xy') {
+    url = `${hostUrl}?q=coords&x=${globalPopupInfo.coords[0]}&y=${globalPopupInfo.coords[1]}`
   } else {
     url = location.href;
   }
