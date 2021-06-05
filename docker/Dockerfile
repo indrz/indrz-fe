@@ -15,13 +15,16 @@ COPY . /usr/src/app/
 
 # build necessary, even if no static files are needed,
 # since it builds the server as well
-RUN npm install
-RUN npm run build
+RUN yarn build
+#RUN npm run build
 
-ENV HOST 0.0.0.0
+#ENV HOST 0.0.0.0
 
 # expose 3000 on container
 EXPOSE 3000
 
 # start the app
-CMD [ "npm", "start" ]
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+CMD [ "yarn", "start" ]
