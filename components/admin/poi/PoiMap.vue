@@ -164,8 +164,10 @@ export default {
       if (floorData && floorData.data && floorData.data.results) {
         this.floors = floorData.data.results;
         if (this.floors && this.floors.length) {
-          this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
-          this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+          this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
+          this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
+          // this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
+          // this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
           this.$emit('floorChange', {
             floor: this.intitialFloor,
             floors: this.floors,
@@ -323,10 +325,9 @@ export default {
 
       this.source = new VectorSource();
 
-      let { icon } = this.selectedPoiCategory;
-      const extension = icon.substring(icon.lastIndexOf('.'));
-
-      icon = icon.replace(extension, '_pin' + extension);
+      const { icon } = this.selectedPoiCategory;
+      // const extension = icon.substring(icon.lastIndexOf('.'));
+      // icon = icon.replace(extension, '_pin' + extension);
 
       this.vectorInteractionLayer = new VectorLayer({
         source: this.source,

@@ -34,16 +34,11 @@
           {{ item['name_' + $i18n.locale] }}
         </div>
       </template>
-      <template v-slot:prepend="{ item, open, active }">
+      <template v-slot:prepend="{ item, active }">
         <div @click="onTreeClick(item)">
-          <img v-if="active" :src="(item.icon.replace('.', '_active.'))">
-          <img v-else :src="item.icon">
-          <v-icon v-if="!item.icon">
-            {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-          </v-icon>
-          <v-icon v-else>
-            mdi-{{ item.icon }}
-          </v-icon>
+          <img v-if="active" :src="item.icon" style="height:25px;">
+          <!-- <img v-if="active" src="/media/poi_icons/other_pin.png" style="height:25px;"> -->
+          <img v-else src="/media/poi_icons/other_pin_grey.png" style="height:25px;">
         </div>
       </template>
     </v-treeview>

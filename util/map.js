@@ -176,7 +176,7 @@ const createWmtsLayer = function (layerSrcName, type, isVisible, sourceName) {
     requestEncoding: /** @type {ol.source.WMTSRequestEncoding} */ ('REST'),
     tileGrid: tilegrid,
     attributions:
-      '© <a href="https://www.basemap.at/' + '">Basemap.at       </a>'
+      '<a href="https://www.basemap.at/' + '" style="font-size: 10pt;">© Basemap.at</a>'
   });
 
   const wmtsLayer = new TileLayer({
@@ -611,9 +611,11 @@ const getWmsLayers = (floors) => {
   floors.forEach((floor, index) => {
     const floorName = floor.short_name.toLowerCase();
     const layerName = env.LAYER_NAME_PREFIX + floorName;
+    const geoserverfloorName = floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
+    const geoserverLayerName = env.GEO_SERVER_LAYER_PREFIX + env.LAYER_NAME_PREFIX + geoserverfloorName; // floor_u1_0
     const layer = createWmsLayer(
       layerName,
-      env.GEO_SERVER_LAYER_PREFIX + layerName,
+      geoserverLayerName,
       floor.floor_num,
       index === 0,
       3
