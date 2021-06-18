@@ -103,6 +103,48 @@ const clearRouteData = (map) => {
   });
 };
 
+const getNearestEntrance = async (globalPopupInfo) => {
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floorNum}&poiCatId=13/?format=json`;
+
+  try {
+    return await api.request({
+      url
+    }).then(function (response) {
+      return response;
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getNearestMetro = async (globalPopupInfo) => {
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floorNum}&poiCatId=27/?format=json`;
+
+  try {
+    return await api.request({
+      url
+    }).then(function (response) {
+      return response;
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+const getNearestDefi = async (globalPopupInfo) => {
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floorNum}&poiCatId=71/?format=json`;
+
+  try {
+    return await api.request({
+      url
+    }).then(function (response) {
+      return response;
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 const getDirections = async (map, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType) => {
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
@@ -596,6 +638,9 @@ export default function (_store, _$t, _scope) {
 
   return {
     getDirections,
+    getNearestEntrance,
+    getNearestMetro,
+    getNearestDefi,
     routeGo,
     routeToPoiFromPoi,
     clearRouteData,
