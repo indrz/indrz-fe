@@ -1,6 +1,7 @@
 Dockerfile
-devops
 tests
 .gitlab-ci.yml
 README.md
-
+node_modules
+npm-debug*
+.nuxt
