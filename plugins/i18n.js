@@ -15,7 +15,6 @@ export default ({ app, store }) => {
     }
   });
 
-/*
   app.i18n.path = (link) => {
     if (app.i18n.locale === app.i18n.fallbackLocale) {
       return `/${link}`
@@ -23,5 +22,4 @@ export default ({ app, store }) => {
 
     return `/${app.i18n.locale}/${link}`
   }
-*/
-};
+}
