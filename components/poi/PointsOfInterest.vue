@@ -52,7 +52,7 @@
 
 <script>
 import _ from 'lodash';
-import api from '../../util/api';
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'PointsOfInterest',
@@ -89,12 +89,20 @@ export default {
         xls: 'mdi-file-excel'
       },
       tree: [],
-      poiData: [],
       openedItems: [],
       forceReloadNode: false,
       loading: true,
       currentPoi: null
     };
+  },
+
+  computed: {
+    ...mapState({
+      poiData: state => state.poi.poiData
+    }),
+    ...mapGetters({
+      findNode: 'poi/findNode'
+    })
   },
 
   watch: {
@@ -138,26 +146,27 @@ export default {
   },
 
   methods: {
+    ...mapActions({
+      loadPOI: 'poi/LOAD_POI'
+    }),
     async loadDataToPoiTree () {
-      const poiData = await this.fetchPoiTreeData();
-      if (poiData && poiData.data) {
-        this.poiData = poiData.data;
-        if (this.initialPoiCatId) {
-          const foundData = this.findItem(Number(this.initialPoiCatId), this.poiData);
-          this.tree = [foundData.data];
-          setTimeout(() => {
-            const treeComp = this.$refs.poi;
-            treeComp.updateSelected(this.initialPoiCatId, true);
-            foundData.roots.reverse().forEach((node) => {
-              treeComp.updateOpen(node, true);
-            });
-            treeComp.updateActive(this.initialPoiCatId, true);
-          }, 500);
-        } else if (this.initialPoiId) {
-          setTimeout(() => {
-            this.$emit('loadSinglePoi', this.initialPoiId);
-          }, 500);
-        }
+      await this.loadPOI();
+      if (this.initialPoiCatId) {
+        const foundData = this.findNode(Number(this.initialPoiCatId));
+
+        this.tree = [foundData.data];
+        setTimeout(() => {
+          const treeComp = this.$refs.poi;
+          treeComp.updateSelected(this.initialPoiCatId, true);
+          foundData.roots.reverse().forEach((node) => {
+            treeComp.updateOpen(node, true);
+          });
+          treeComp.updateActive(this.initialPoiCatId, true);
+        }, 500);
+      } else if (this.initialPoiId) {
+        setTimeout(() => {
+          this.$emit('loadSinglePoi', this.initialPoiId);
+        }, 500);
       }
       this.loading = false;
     },
@@ -203,39 +212,6 @@ export default {
     },
     onLocationClick (location) {
       this.$emit('locationClick', location.centroid);
-    },
-    fetchPoiTreeData () {
-      return api.request({
-        endPoint: 'poi/tree/'
-      }, {
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN
-      });
-    },
-    findItem (itemId, data) {
-      let foundData = null;
-
-      data.some((d) => {
-        if (d.id && d.id === itemId) {
-          foundData = d;
-          return true;
-        }
-        if (d.children) {
-          foundData = this.findItem(itemId, d.children);
-          if (foundData) {
-            if (!foundData.roots) {
-              foundData = {
-                data: foundData,
-                roots: [d.id]
-              };
-            } else {
-              foundData.roots.push(d.id);
-            }
-            return true;
-          }
-        }
-      });
-      return foundData;
     }
   }
 };
