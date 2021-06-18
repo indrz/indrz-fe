@@ -3,13 +3,15 @@
     id="floorList"
     class="mx-auto floor-changer"
     max-height="400px"
+    dark
   >
     <v-list dense>
-      <v-list-item-group mandatory color="primary">
+      <v-list-item-group mandatory>
         <v-list-item
           v-for="(floor, i) in floors"
           :key="i"
           @click.stop="onFloorClick(floor, true)"
+          style="padding-left: 5px; padding-right: 5px;"
         >
           <v-list-item-content style="min-width: 20px">
             <v-list-item-title v-text="floor.short_name" />
@@ -61,7 +63,7 @@ export default {
     onFloorClick (floor, isEvent) {
       const floorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
       this.$emit('floorClick', floorName);
-      this.selectFloorWithCss(floor.short_name.toLowerCase(), isEvent);
+      this.selectFloorWithCss(floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_'), isEvent);
     },
     selectFloorWithCss (floorName, isEvent) {
       if (env.LAYER_NAME_PREFIX && floorName.includes(env.LAYER_NAME_PREFIX)) {
@@ -70,8 +72,8 @@ export default {
       setTimeout(() => {
         const activeClass = 'v-list-item--active';
         const linkClass = 'v-list-item--link';
-        const listItems = this.$el.querySelectorAll('[role=listitem]');
-        const floorIndex = this.floors.findIndex(_floor => _floor.short_name.toLowerCase() === floorName.toLowerCase());
+        const listItems = this.$el.querySelectorAll('[role=option]');
+        const floorIndex = this.floors.findIndex(_floor => _floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_') === floorName.toLowerCase());
         listItems.forEach((item) => {
           item.classList.remove(activeClass, linkClass);
         });
@@ -105,5 +107,9 @@ export default {
     right: 10px;
     top: 70px;
     overflow-y: auto;
+    background-color:black;
+  }
+  .v-list-item--active{
+    background-color: #004855;
   }
 </style>

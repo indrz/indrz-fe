@@ -21,10 +21,17 @@
     </div>
     <div class="logo-on-map">
       <a href="https://indrz.com" target="_blank">
-        <img id="logo-on-map" src="/images/tu-logo.png" alt="tulogo" style="width:auto; height:40px; ">
+        <img id="logo-on-map" src="/images/uni-logo.png" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
-    <info-overlay @closeClick="closeIndrzPopup(true)" @shareClick="onShareButtonClick" @popupRouteClick="onPopupRouteClick" />
+    <info-overlay
+      @closeClick="closeIndrzPopup(true)"
+      @shareClick="onShareButtonClick"
+      @popupRouteClick="onPopupRouteClick"
+      @popupEntranceButtonClick="onPopupEntranceButtonClick"
+      @popupMetroButtonClick="onPopupMetroButtonClick"
+      @popupDefiButtonClick="onPopupDefiButtonClick"
+    />
     <share-overlay ref="shareOverlay" />
     <terms :show="showTerms" @termsShow="onTermShowChange" />
     <help :show="showHelp" @helpShow="onHelpShowChange" />
@@ -123,8 +130,8 @@ export default {
     loadLayers (floors) {
       this.floors = floors;
       if (this.floors && this.floors.length) {
-        this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
-        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+        this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
+        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
         this.$emit('selectFloor', this.activeFloorName);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
@@ -144,7 +151,7 @@ export default {
         return;
       }
       const selectedItem = selection.data;
-      const floorName = selectedItem.properties.floor_name;
+      const floorName = selectedItem.properties.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
       if (floorName) {
         this.$emit('selectFloor', env.LAYER_NAME_PREFIX + floorName);
         this.activeFloorName = env.LAYER_NAME_PREFIX + floorName;
@@ -279,6 +286,36 @@ export default {
     onFloorClick (floorName) {
       this.activeFloorName = floorName;
       MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers, this.map);
+    },
+    async onPopupEntranceButtonClick () {
+      const nearestEntrance = await this.routeHandler.getNearestEntrance(this.globalPopupInfo);
+
+      if (nearestEntrance) {
+        this.$emit('popupRouteClick', {
+          path: 'from',
+          data: nearestEntrance
+        });
+      }
+    },
+    async onPopupMetroButtonClick () {
+      const nearestMetro = await this.routeHandler.getNearestMetro(this.globalPopupInfo);
+
+      if (nearestMetro) {
+        this.$emit('popupRouteClick', {
+          path: 'from',
+          data: nearestMetro
+        });
+      }
+    },
+    async onPopupDefiButtonClick () {
+      const nearestDefi = await this.routeHandler.getNearestDefi(this.globalPopupInfo);
+
+      if (nearestDefi) {
+        this.$emit('popupRouteClick', {
+          path: 'to',
+          data: nearestDefi
+        });
+      }
     },
     setGlobalRoute (selectedItem) {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
