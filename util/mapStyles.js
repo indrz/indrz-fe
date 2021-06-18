@@ -45,11 +45,7 @@ const routeInactiveStyle = new Style({
 });
 
 const createPoiStyle = (poiIconName, active) => {
-  let icon = `${poiIconName}`;
-  const extension = icon.substring(icon.lastIndexOf('.'));
-
-  icon = icon.replace(extension, '_pin' + extension);
-
+  const icon = `${poiIconName}`;
   const mainPoiIcons = ['education_active', 'access_active', 'security_active', 'infrastructure_active', 'services_active'];
 
   const iconDeactiveStyle = new Style({
@@ -79,10 +75,7 @@ const createPoiStyle = (poiIconName, active) => {
 };
 
 const setPoiStyleOnLayerSwitch = (iconName, visible) => {
-  let icon = `${iconName}` || '';
-  const extension = icon.substring(icon.lastIndexOf('.'));
-
-  icon = icon.replace(extension, '_pin' + extension);
+  const icon = `${iconName}` || '';
 
   if (!icon) {
     return new Style({
