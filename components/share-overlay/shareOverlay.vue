@@ -59,6 +59,8 @@
 </template>
 
 <script>
+import queryString from 'query-string';
+import { mapGetters } from 'vuex';
 import ShareQR from './ShareQR';
 import CopyField from './CopyField';
 
@@ -90,6 +92,11 @@ export default {
       expansionPanel: 0
     };
   },
+  computed: {
+    ...mapGetters({
+      findNode: 'poi/findNode'
+    })
+  },
   watch: {
     dialog (flag) {
       if (flag) {
@@ -109,7 +116,22 @@ export default {
       this.link = '';
       this.title = this.sharePOITitle;
       this.poiSingleShareLink = url.singlePoiUrl;
-      this.poiCatShareLink = url.poiCatUrl;
+
+      const catParsedUrl = queryString.parseUrl(url.poiCatUrl);
+      const catId = catParsedUrl.query['poi-cat-id'];
+      const node = this.findNode(catId);
+
+      if (node && node.roots && node.roots.length > 1) {
+        this.poiCatShareLink = queryString.stringifyUrl({
+          url: catParsedUrl.url,
+          query: {
+            ...catParsedUrl.query,
+            'poi-cat-id': node.roots[0]
+          }
+        });
+      } else {
+        this.poiCatShareLink = url.poiCatUrl;
+      }
       this.setQRCode(this.poiSingleShareLink);
     },
     setShareLink (link) {
