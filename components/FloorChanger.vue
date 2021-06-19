@@ -72,7 +72,7 @@ export default {
       setTimeout(() => {
         const activeClass = 'v-list-item--active';
         const linkClass = 'v-list-item--link';
-        const listItems = this.$el.querySelectorAll('[role=option]');
+        const listItems = this.$el.querySelectorAll('.v-list-item');
         const floorIndex = this.floors.findIndex(_floor => _floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_') === floorName.toLowerCase());
         listItems.forEach((item) => {
           item.classList.remove(activeClass, linkClass);

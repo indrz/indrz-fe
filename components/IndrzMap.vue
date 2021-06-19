@@ -136,9 +136,9 @@ export default {
         this.$emit('selectFloor', floor);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
-        baseWmsUrl: process.env.BASE_WMS_URL,
-        geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
-        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+        baseWmsUrl: env.BASE_WMS_URL,
+        geoServerLayerPrefix: env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: env.LAYER_NAME_PREFIX
       });
       this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
@@ -168,8 +168,8 @@ export default {
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem, {
-          searchUrl: process.env.SEARCH_URL,
-          layerNamePrefix: process.env.LAYER_NAME_PREFIX
+          searchUrl: env.SEARCH_URL,
+          layerNamePrefix: env.LAYER_NAME_PREFIX
         });
       this.searchLayer = result.searchLayer;
     },
@@ -182,7 +182,7 @@ export default {
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.currentLocale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorName, this.popup,
-        properties, coordinate, feature, null, process.env.LAYER_NAME_PREFIX
+        properties, coordinate, feature, null, env.LAYER_NAME_PREFIX
       );
     },
     closeIndrzPopup (fromEvent) {
@@ -207,13 +207,13 @@ export default {
       shareOverlay.show();
     },
     loadSinglePoi (poiId) {
-      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName, process.env.LAYER_NAME_PREFIX);
+      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName, env.LAYER_NAME_PREFIX);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems }, {
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN,
-        layerNamePrefix: process.env.LAYER_NAME_PREFIX
+        baseApiUrl: env.BASE_API_URL,
+        token: env.TOKEN,
+        layerNamePrefix: env.LAYER_NAME_PREFIX
       });
     },
     onTermShowChange (value) {
@@ -232,7 +232,7 @@ export default {
       });
     },
     onMapClick (evt) {
-      MapHandler.handleMapClick(this, evt, process.env.LAYER_NAME_PREFIX);
+      MapHandler.handleMapClick(this, evt, env.LAYER_NAME_PREFIX);
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -250,7 +250,7 @@ export default {
     onMenuButtonClick (type) {
       switch (type) {
         case 'zoom-home':
-          menuHandler.handleZoomToHome(this, JSON.parse(process.env.DEFAULT_CENTER_XY));
+          menuHandler.handleZoomToHome(this, env.DEFAULT_CENTER_XY);
           break;
         case 'download':
           menuHandler.handleDownLoad(this);
@@ -323,9 +323,9 @@ export default {
     },
     async routeGo () {
       this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this.map, this.layers, this.globalRouteInfo, 0, {
-        baseApiUrl: process.env.BASE_API_URL,
-        layerNamePrefix: process.env.LAYER_NAME_PREFIX,
-        token: process.env.TOKEN
+        baseApiUrl: env.BASE_API_URL,
+        layerNamePrefix: env.LAYER_NAME_PREFIX,
+        token: env.TOKEN
       });
     },
     clearRouteData () {
