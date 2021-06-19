@@ -6,7 +6,7 @@
           <v-app-bar-nav-icon @click.stop="onNavbarClick" />
         </v-col>
         <v-col :cols="8" align-self="center">
-          <img id="tu-logo" src="/images/uni-logo.png" alt="logo" class="left-bar-logo">
+          <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
         </v-col>
       </v-row>
     </div>
@@ -64,10 +64,13 @@
 </template>
 
 <script>
+import config from '../util/indrzConfig';
 import CampusLocations from './CampusLocations';
 import Route from './Route';
 import SearchResult from './SearchResult';
 import PointsOfInterest from './poi/PointsOfInterest';
+
+const { env } = config;
 
 export default {
   name: 'SideBar',
@@ -120,8 +123,8 @@ export default {
   computed: {
     logo () {
       return {
-        file: process.env.LOGO_FILE,
-        enabled: (process.env.LOGO_ENABLED === 'true')
+        file: env.LOGO_FILE,
+        enabled: (env.LOGO_ENABLED === true)
       };
     },
     menuItems () {

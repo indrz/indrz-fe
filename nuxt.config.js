@@ -78,7 +78,9 @@ export default {
     LAYER_NAME_PREFIX: process.env.LAYER_NAME_PREFIX,
     GEO_SERVER_LAYER_PREFIX: process.env.GEO_SERVER_LAYER_PREFIX,
     DEFAULT_START_FLOOR: process.env.DEFAULT_START_FLOOR,
-    TOKEN: process.env.TOKEN
+    TOKEN: process.env.TOKEN,
+    LOGO_FILE: process.env.LOGO_FILE,
+    LOGO_ENABLED: process.env.LOGO_ENABLED
   },
   privateRuntimeConfig: {
     TOKEN: process.env.TOKEN
