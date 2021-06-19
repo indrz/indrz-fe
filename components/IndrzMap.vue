@@ -21,7 +21,7 @@
     </div>
     <div class="logo-on-map">
       <a href="https://indrz.com" target="_blank">
-        <img id="logo-on-map" src="/images/uni-logo.png" alt="logo" style="width:auto; height:40px; ">
+        <img id="logo-on-map" :src="logo.file" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <info-overlay
@@ -99,8 +99,8 @@ export default {
   computed: {
     logo () {
       return {
-        file: process.env.LOGO_FILE,
-        enabled: (process.env.LOGO_ENABLED === 'true')
+        file: env.LOGO_FILE,
+        enabled: (env.LOGO_ENABLED === true)
       };
     }
   },
