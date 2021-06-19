@@ -131,8 +131,9 @@ export default {
       this.floors = floors;
       if (this.floors && this.floors.length) {
         this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
-        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
-        this.$emit('selectFloor', this.activeFloorName);
+        this.activeFloorName = this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+        const floor = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
+        this.$emit('selectFloor', floor);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
         baseWmsUrl: process.env.BASE_WMS_URL,
