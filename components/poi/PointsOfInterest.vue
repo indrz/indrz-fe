@@ -22,17 +22,9 @@
       style="overflow: auto; width: auto;"
     >
       <template slot="label" slot-scope="{ item }">
-        <!--<v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <div v-on="on" style="width: 100%; height: 100%" @click="onTreeClick(item)">
-              {{ item.name }}
-            </div>
-          </template>
-          <span>{{ item.name }}</span>
-        </v-tooltip>-->
-        <div @click="onTreeClick(item)" style="width: 100%; height: 100%">
+        <span @click="onTreeClick(item)" style="white-space: normal">
           {{ item['name_' + $i18n.locale] }}
-        </div>
+        </span>
       </template>
       <template v-slot:prepend="{ item, active }">
         <div @click="onTreeClick(item)">
