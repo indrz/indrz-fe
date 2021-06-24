@@ -32,7 +32,7 @@ const openIndrzPopup = (
   globalPopupInfo, popUpHomePage, currentPOIID, currentLocale,
   objCenterCoords, routeToValTemp, routeFromValTemp,
   activeFloorName, popup, properties, coordinate, feature, offsetArray) => {
-  const floorName = activeFloorName.split(env.LAYER_NAME_PREFIX)[1].toUpperCase();
+  const floorName = properties.floor_name;
   const popupContent = document.getElementById('popup-content');
 
   for (const member in globalPopupInfo) {
