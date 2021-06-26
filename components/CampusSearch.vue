@@ -274,13 +274,13 @@ export default {
 
       this.search = query;
       searchField.focus();
-      searchField
+      /* searchField
         .$el
         .querySelector('input')
         .dispatchEvent(
           new KeyboardEvent('keydown', {
             keyCode: 13
-          }));
+          })); */
     },
     getIconUrl (iconName) {
       if (this.iconNames.includes(iconName)) {
