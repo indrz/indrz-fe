@@ -11,9 +11,8 @@
           v-for="(floor, i) in floors"
           :key="i"
           @click.stop="onFloorClick(floor, true)"
-          style="padding-left: 5px; padding-right: 5px;"
         >
-          <v-list-item-content style="min-width: 20px">
+          <v-list-item-content>
             <v-list-item-title v-text="floor.short_name" />
           </v-list-item-content>
         </v-list-item>
@@ -107,9 +106,9 @@ export default {
     right: 10px;
     top: 70px;
     overflow-y: auto;
-    background-color:black;
+    background-color: #1337bf;
   }
   .v-list-item--active{
-    background-color: #004855;
+    background-color: #0048ff;
   }
 </style>
