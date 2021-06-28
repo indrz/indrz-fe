@@ -30,7 +30,8 @@ export default {
     // SCSS file in the project
     '@/assets/css/main.scss',
     '@/assets/css/ol.scss',
-    '@/assets/css/popup.scss'
+    '@/assets/css/popup.scss',
+    '@/assets/custom_css/floor_changer.scss'
   ],
   /*
   ** Plugins to load before mounting the App
