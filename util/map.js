@@ -641,9 +641,13 @@ const loadMapWithParams = async (mapInfo, query) => {
     view.animate({ zoom: zoomLevel }, { center: [query.centerx, query.centery] });
   }
   if (query.floor) {
-    mapInfo.activeFloorName = query.floor;
-    activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map);
-    mapInfo.$emit('selectFloor', mapInfo.activeFloorName);
+    const floor = mapInfo.floors.find(floor => floor.floor_num === Number(query.floor));
+
+    if (floor) {
+      mapInfo.activeFloorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
+      activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map);
+      mapInfo.$emit('selectFloor', floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_'));
+    }
   }
   if (query.q === 'coords' && query.x && query.y) {
     const coords = [Number(query.x), Number(query.y)];
