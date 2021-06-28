@@ -169,7 +169,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
             */
             poiTitle = feature.getProperties().name || feature.getProperties().name_en;
 
-            const cssName = feature.getProperties().category_icon_css_name;
+            const cssName = feature.getProperties().icon;
 
             if (env.LAYER_NAME_PREFIX + (poiFeatureFloor).toLowerCase() === activeFloorName) {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
