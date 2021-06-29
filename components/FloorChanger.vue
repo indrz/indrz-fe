@@ -62,17 +62,16 @@ export default {
     onFloorClick (floor, isEvent) {
       const floorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
       this.$emit('floorClick', floorName);
-      this.selectFloorWithCss(floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_'), isEvent);
+      this.selectFloorWithCss(floor.floor_num, isEvent);
     },
-    selectFloorWithCss (floorName, isEvent) {
-      if (env.LAYER_NAME_PREFIX && floorName.includes(env.LAYER_NAME_PREFIX)) {
-        floorName = floorName.split(env.LAYER_NAME_PREFIX)[1];
-      }
+    selectFloorWithCss (floorNum, isEvent) {
       setTimeout(() => {
         const activeClass = 'v-list-item--active';
         const linkClass = 'v-list-item--link';
         const listItems = this.$el.querySelectorAll('.v-list-item');
-        const floorIndex = this.floors.findIndex(_floor => _floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_') === floorName.toLowerCase());
+        const floorNumToFind = floorNum.toString().includes('.') ? Number(floorNum) : Number(floorNum).toFixed(1);
+        const floorIndex = this.floors.findIndex(floor => floor.floor_num.toFixed(1) === floorNumToFind);
+
         listItems.forEach((item) => {
           item.classList.remove(activeClass, linkClass);
         });

@@ -646,7 +646,7 @@ const loadMapWithParams = async (mapInfo, query) => {
     if (floor) {
       mapInfo.activeFloorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
       activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map);
-      mapInfo.$emit('selectFloor', floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_'));
+      mapInfo.$emit('selectFloor', floor.floor_num);
     }
   }
   if (query.q === 'coords' && query.x && query.y) {
@@ -668,7 +668,10 @@ const loadMapWithParams = async (mapInfo, query) => {
     mapInfo.$root.$emit('load-search-query', query.q);
 
     if (result.floorName) {
-      mapInfo.$emit('selectFloor', env.LAYER_NAME_PREFIX + result.floorName);
+      const foundFloor = mapInfo.floors.find(floor => floor.short_name.toLowerCase() === result.floorName.toLowerCase());
+      if (foundFloor) {
+        mapInfo.$emit('selectFloor', foundFloor.floor_num);
+      }
     }
     mapInfo.searchLayer = result.searchLayer;
   }
