@@ -118,14 +118,14 @@ export default {
   computed: {
     env () {
       return {
-        homePageUrl: process.env.HOME_PAGE_URL,
-        logo: process.env.LOGO_FILE,
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN,
-        baseWmsUrl: process.env.BASE_WMS_URL,
-        geoServerLayerPrefix: process.env.GEO_SERVER_LAYER_PREFIX,
-        layerNamePrefix: process.env.LAYER_NAME_PREFIX,
-        center: JSON.parse(process.env.DEFAULT_CENTER_XY)
+        homePageUrl: env.HOME_PAGE_URL,
+        logo: env.LOGO_FILE,
+        baseApiUrl: env.BASE_API_URL,
+        token: env.TOKEN,
+        baseWmsUrl: env.BASE_WMS_URL,
+        geoServerLayerPrefix: env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: env.LAYER_NAME_PREFIX,
+        center: env.DEFAULT_CENTER_XY
       };
     }
   },
@@ -165,7 +165,7 @@ export default {
         this.floors = floorData.data.results;
         if (this.floors && this.floors.length) {
           this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
-          this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
+          this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
           // this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
           // this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
           this.$emit('floorChange', {
