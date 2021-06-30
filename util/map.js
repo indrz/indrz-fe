@@ -75,8 +75,11 @@ const initializeMap = (mapId) => {
 const handleWindowResize = function (mapId) {
   const headerEl = document.getElementById('indrz-header-container');
   const footerEl = document.getElementById('indrz-footer-container');
+  const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+  const footerHeight = footerEl ? footerEl.offsetHeight : 0;
   const mapContainer = document.getElementById(mapId);
-  mapContainer.style.height = window.innerHeight - (headerEl.offsetHeight + footerEl.offsetHeight) + 'px';
+
+  mapContainer.style.height = window.innerHeight - (headerHeight + footerHeight) + 'px';
 };
 
 const createWmsLayer = function (
