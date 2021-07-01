@@ -131,9 +131,8 @@ export default {
       this.floors = floors;
       if (this.floors && this.floors.length) {
         this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
-        this.activeFloorName = this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
-        const floor = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
-        this.$emit('selectFloor', floor);
+        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+        this.$emit('selectFloor', this.intitialFloor.floor_num);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
         baseWmsUrl: env.BASE_WMS_URL,
@@ -152,11 +151,10 @@ export default {
         return;
       }
       const selectedItem = selection.data;
-      const floorName = selectedItem.properties.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
-      if (floorName) {
-        this.$emit('selectFloor', env.LAYER_NAME_PREFIX + floorName);
-        this.activeFloorName = env.LAYER_NAME_PREFIX + floorName;
-      }
+      const floorName = env.LAYER_NAME_PREFIX + selectedItem.properties.floor_name.toLowerCase();
+
+      this.activeFloorName = env.LAYER_NAME_PREFIX + floorName;
+      this.$emit('selectFloor', selectedItem.properties.floor_num);
 
       const campusId = selectedItem.building;
       const searchText = selectedItem.properties.name;
