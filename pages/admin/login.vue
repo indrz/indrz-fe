@@ -4,7 +4,7 @@
       align="center"
       justify="center"
     >
-      <span class="v-card__title">Welcome to Indoor Frontend Admin</span>
+      <span class="v-card__title">Welcome to the INDRZ Admin</span>
     </v-row>
     <br>
     <span class="v-card__text">Please login</span>
