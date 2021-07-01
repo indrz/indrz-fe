@@ -14,7 +14,7 @@
       dense
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>INDRZ POI MANAGER</v-toolbar-title>
+      <v-toolbar-title>INDRZ MANAGER</v-toolbar-title>
       <v-spacer />
       <user-menu />
     </v-app-bar>
