@@ -27,6 +27,10 @@ yarn cache clean
 yarn install
 ```
 
+## Customize Style
+View the `/assets/custom_css` folder to find   here you can place your custom css styles
+
+
 ## Create production build
 ```
 yarn run generate
