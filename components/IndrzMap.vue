@@ -20,7 +20,7 @@
       </a>
     </div>
     <div class="logo-on-map">
-      <a href="https://indrz.com" target="_blank">
+      <a :href="homePageUrl" target="_blank">
         <img id="logo-on-map" :src="logo.file" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
@@ -102,6 +102,9 @@ export default {
         file: env.LOGO_FILE,
         enabled: (env.LOGO_ENABLED === true)
       };
+    },
+    homePageUrl () {
+      return env.HOME_PAGE_URL
     }
   },
 

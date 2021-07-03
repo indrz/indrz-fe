@@ -20,9 +20,9 @@
         <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
       </a>
     </div>
-    <div class="logo">
+    <div class="logo-on-map">
       <a :href="env.homePageUrl" target="_blank">
-        <img id="logo" :src="env.logo" alt="logo" style="width:auto; height:40px; ">
+        <img id="logo-on-map" :src="env.logo" alt="logo" style="width:auto; height:40px; ">
       </a>
     </div>
     <v-dialog
