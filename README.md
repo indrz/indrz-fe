@@ -33,3 +33,6 @@ yarn run generate
 ```
 Now just copy the `/dist` folder to your favourite webserver or static file server to serve it up using
 nginx, S3, GCP cloud storage, Netlify, you name it.
+
+## Customize style
+> #### [Floor changer](assets/README.md#floor-changer)
