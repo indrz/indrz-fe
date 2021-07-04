@@ -26,10 +26,10 @@
       max-width="350"
     >
       <v-card>
-        <v-card-title v-if="removePois.length > 1">
+        <v-card-title v-if="removePois.length > 1" class="break-word">
           Are you sure you want to delete all {{ removePois.length }} poi's?
         </v-card-title>
-        <v-card-title v-if="removePois.length === 1">
+        <v-card-title v-if="removePois.length === 1" class="break-word">
           Are you sure you want to delete the selected poi?
         </v-card-title>
         <v-card-actions>

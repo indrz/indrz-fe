@@ -316,7 +316,7 @@ export default {
 <style lang="scss" scoped>
   .save-btn-panel {
     position: absolute;
-    top: 10px;
+    top: 70px;
     position: absolute;
     left: calc(50% - 70px);
   }
