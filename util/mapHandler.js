@@ -83,9 +83,9 @@ const openIndrzPopup = (
     globalPopupInfo.wmsInfo = properties.room_code;
     properties.roomcode = properties.room_code;
   }
-  if (properties.hasOwnProperty('poi_id')) {
-    currentPOIID = properties.poi_id;
-    globalPopupInfo.poiId = properties.poi_id;
+  if (properties.hasOwnProperty('poiId')) {
+    currentPOIID = properties.poiId;
+    globalPopupInfo.poiId = properties.poiId;
     if (properties.hasOwnProperty('category')) {
       globalPopupInfo.poiCatId = properties.category;
       if (currentLocale === 'de') {
@@ -412,8 +412,8 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
       closeIndrzPopup(mapInfo.popup, mapInfo.globalPopupInfo);
       coordinate = mapInfo.map.getCoordinateFromPixel(pixel);
       properties.src = 'poi';
-      if (feature.getProperties().hasOwnProperty('poi_id')) {
-        properties.poiId = feature.properties.poi_id;
+      if (feature.getProperties().hasOwnProperty('poiId')) {
+        properties.poiId = feature.properties.poiId;
       }
 
       mapInfo.openIndrzPopup(properties, coordinate, feature);

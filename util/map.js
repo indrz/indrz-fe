@@ -416,10 +416,10 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     let featureId = '';
     let poiIconPath = '';
 
-    if (feature.getProperties().hasOwnProperty('poi_id')) {
-      featureId = feature.get('poi_id');
+    if (feature.getProperties().hasOwnProperty('poiId')) {
+      featureId = feature.get('poiId');
       poiIconPath = feature.get('icon');
-      globalPopupInfo.poiId = feature.get('poi_id');
+      globalPopupInfo.poiId = feature.get('poiId');
       globalPopupInfo.src = feature.get('src')
     } else {
       globalPopupInfo.poiId = 'noid';
@@ -457,7 +457,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     /*
      // the following code may need later use for space
       space_id = response.features[0].properties.space_id;
-      poi_id = response.features[0].properties.poi_id;
+      poiId = response.features[0].properties.poiId;
       search_text = searchString;
      */
     // active the floor of the start point
@@ -497,10 +497,13 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   $('#shareSearch').removeClass('hide');
   $('#searchTools').toggle(true); // show div tag
   */
+  const { features } = response;
+  const selectedItem = features && features.length ? features[0] : null;
   return {
     searchLayer,
     floorName,
-    searchResult
+    searchResult,
+    selectedItem
   };
 };
 
@@ -675,6 +678,9 @@ const loadMapWithParams = async (mapInfo, query) => {
       if (foundFloor) {
         mapInfo.$emit('selectFloor', foundFloor.floor_num);
       }
+    }
+    if (result.selectedItem) {
+      mapInfo.globalSearchInfo.selectedItem = result.selectedItem;
     }
     mapInfo.searchLayer = result.searchLayer;
   }

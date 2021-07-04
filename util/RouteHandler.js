@@ -30,41 +30,42 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0, env) => {
       to.properties.space_id,
       to.properties.floorNum,
       '0',
-      'spaceIdToSpaceId'
+      'spaceIdToSpaceId',
+      to.properties.frontoffice?.space_id
     );
   } else if (
-    (from.properties.poi_id && to.properties.space_id) ||
-    (from.properties.space_id && to.properties.poi_id)
+    (from.properties.poiId && to.properties.space_id) ||
+    (from.properties.space_id && to.properties.poiId)
   ) {
     routeUrl = await getDirections(
       map,
       layers,
       (from.properties.space_id || to.properties.space_id),
       from.properties.floorNum,
-      (from.properties.poi_id || to.properties.poi_id),
+      (from.properties.poiId || to.properties.poiId),
       to.properties.floorNum,
       '0',
       'spaceIdToPoiId'
     );
-  } else if (from.properties.poi_id && to.properties.poi_id) {
+  } else if (from.properties.poiId && to.properties.poiId) {
     routeUrl = await getDirections(
       map,
       layers,
-      from.properties.poi_id,
+      from.properties.poiId,
       from.properties.floorNum,
-      to.properties.poi_id,
+      to.properties.poiId,
       to.properties.floorNum,
       '0',
       'poiIdToPoiId'
     );
   } else if (
-    (from.properties.coords && to.properties.poi_id) ||
-    (from.properties.poi_id && to.properties.coords)
+    (from.properties.coords && to.properties.poiId) ||
+    (from.properties.poiId && to.properties.coords)
   ) {
     routeUrl = await getDirections(
       map,
       layers,
-      (from.properties.poi_id || to.properties.poi_id),
+      (from.properties.poiId || to.properties.poiId),
       null,
       (from.properties.coords || to.properties.coords),
       (from.properties.coords ? from.properties.floorNum : to.properties.floorNum),
@@ -145,7 +146,7 @@ const getNearestDefi = async (globalPopupInfo) => {
   }
 };
 
-const getDirections = async (map, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType) => {
+const getDirections = async (map, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType, foid) => {
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
   let startName = '';
@@ -168,6 +169,9 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
       break;
     case 'spaceIdToSpaceId':
       geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText + '&type=' + routeType;
+      if (foid) {
+        geoJsonUrl += '&foid=' + foid;
+      }
       break;
     case 'poiIdToPoiId':
       geoJsonUrl = baseApiRoutingUrl + 'start-poi-id=' + startSearchText + '&' + 'end-poi-id=' + endSearchText;
