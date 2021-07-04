@@ -1,7 +1,32 @@
-# ASSETS
-
-**This directory is not required, you can delete it if you don't want to use it.**
-
-This directory contains your un-compiled assets such as LESS, SASS, or JavaScript.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/guide/assets#webpacked).
+# Floor Changer
+To change the appearance of Floor Changer, define the styles inside [floor_changer.scss](./custom_css/floor_changer.scss) file.
+For example:
+```scss
+.floor-changer {
+  position: absolute;
+  right: 10px;
+  top: 70px;
+  overflow-y: auto;
+  .v-list {
+    background-color: #ffffff !important;
+    .v-list-item-group {
+      background: transparent !important;
+      .v-list-item{
+        .v-list-item__title {
+          color: #000000 !important;
+        }
+      }
+      .v-list-item--active{
+        background-color: #FF0000 !important;
+        .v-list-item__title {
+          color: #ffffff !important;
+        }
+      }
+      .v-list-item:hover{
+        cursor: pointer;
+        background-color: rgba(255, 0, 0, 0.1) !important;
+      }
+    }
+  }
+}
+```
