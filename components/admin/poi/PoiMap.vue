@@ -292,7 +292,7 @@ export default {
           anchorXUnits: 'fraction',
           anchorYUnits: 'pixels',
           opacity: 1,
-          src: '/images/selected_pin.png'
+          src: '/media/poi_icons/selected_pin.png'
         })
       });
 
