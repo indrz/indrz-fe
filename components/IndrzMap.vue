@@ -163,6 +163,7 @@ export default {
       const searchText = selectedItem.properties.name;
       const zoomLevel = 20;
 
+      this.globalSearchInfo.selectedItem = selectedItem;
       this.globalSearchInfo.searchText = searchText;
       this.objCenterCoords = selectedItem.properties.centerGeometry.coordinates;
 
@@ -227,9 +228,16 @@ export default {
       this.showQrCode = value;
     },
     onPopupRouteClick (path) {
+      let data = null;
+
+      if (this.globalSearchInfo.selectedItem) {
+        data = this.globalSearchInfo.selectedItem.properties;
+      } else {
+        data = this.globalPopupInfo;
+      }
       this.$emit('popupRouteClick', {
         path,
-        data: this.globalPopupInfo
+        data
       });
     },
     onMapClick (evt) {
@@ -295,7 +303,7 @@ export default {
       if (nearestEntrance) {
         this.$emit('popupRouteClick', {
           path: 'from',
-          data: nearestEntrance
+          data: nearestEntrance?.data
         });
       }
     },
