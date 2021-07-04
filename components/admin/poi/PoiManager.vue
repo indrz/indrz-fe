@@ -47,7 +47,7 @@
       max-width="350"
     >
       <v-card>
-        <v-card-title>There are unsaved changes. Do you want to save changes?</v-card-title>
+        <v-card-title class="break-word">There are unsaved changes. Do you want to save changes?</v-card-title>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -316,7 +316,7 @@ export default {
 <style lang="scss" scoped>
   .save-btn-panel {
     position: absolute;
-    top: 10px;
+    top: 70px;
     position: absolute;
     left: calc(50% - 70px);
   }

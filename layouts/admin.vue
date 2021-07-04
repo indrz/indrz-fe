@@ -18,7 +18,7 @@
       <v-spacer />
       <user-menu />
     </v-app-bar>
-    <v-main>
+    <v-main style="padding-top: 0px">
       <v-container :class="isPoiManager ? 'admin-map-container' : ''">
         <nuxt />
       </v-container>
