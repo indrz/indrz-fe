@@ -118,7 +118,7 @@
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title v-text="item.name" />
-            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
+            <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
       </v-autocomplete>
@@ -217,7 +217,6 @@ export default {
             return;
           }
           this.apiResponse = response.data.features.filter(feature => feature.properties && feature.properties.name);
-
           if (this.apiResponse.length > 100) {
             this.apiResponse = this.apiResponse.slice(0, this.serachItemLimit);
           }
@@ -225,7 +224,7 @@ export default {
           this.searchResult = this.apiResponse.map(({ properties }) => {
             let code = properties.roomcode;
 
-            if (code.toLowerCase() === this.search.toLowerCase()) {
+            if (code && code.toLowerCase() === this.search.toLowerCase()) {
               code = properties.room_category || properties.external_id || code;
             }
 
@@ -233,7 +232,8 @@ export default {
               name: properties.name,
               floorNum: properties.floor_num,
               roomCode: properties.roomcode,
-              src_icon: properties.src_icon,
+              building: properties.building,
+              src_icon: properties.src_icon || properties.icon,
               code
             }
           });
@@ -285,6 +285,8 @@ export default {
     getIconUrl (iconName) {
       if (this.iconNames.includes(iconName)) {
         return `${this.iconPath}/${iconName}.png`;
+      } else if (iconName.includes('.png')) {
+        return `/media/${iconName}`
       }
       return `${this.iconPath}/poi.png`;
     }
