@@ -174,7 +174,7 @@ const openIndrzPopup = (
   if (floorName && !properties.xy) {
     addPoiTableRow(labelFloorName, floorName, 'popup_floor_name');
   }
-  if (properties.building_name) {
+  if (buildingName) {
     addPoiTableRow(labelBuildingName, buildingName, 'popup_building_name');
   }
   if (roomCat) {
@@ -236,6 +236,8 @@ const getBuildingLetter = (p) => {
       buildingLetter = p.building_name;
       return buildingLetter;
     }
+  } else if (p.hasOwnProperty('building')) {
+    return p.building;
   }
   return '';
 };

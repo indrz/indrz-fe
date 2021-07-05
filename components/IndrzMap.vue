@@ -148,24 +148,41 @@ export default {
       this.loadMapWithParams();
       this.onFloorClick(this.activeFloorName);
     },
+    getFloorName (data) {
+      let floorName = '';
+
+      if (data.floor_name) {
+        floorName = data.floor_name;
+      } else if (data.floor_num) {
+        const foundFloor = this.floors.find(floor => floor.floor_num.toFixed(1) === Number(data.floor_num).toFixed(1));
+        if (foundFloor) {
+          floorName = foundFloor.short_name;
+        }
+      }
+      return floorName;
+    },
     async onSearchSelect (selection) {
       if (!selection || !selection.data) {
         this.closeIndrzPopup();
         return;
       }
       const selectedItem = selection.data;
-      const floorName = env.LAYER_NAME_PREFIX + selectedItem.properties.floor_name.toLowerCase();
+      const { properties } = selectedItem;
+      if (!properties.floor_name) {
+        properties.floor_name = this.getFloorName(properties);
+      }
+      const floorName = env.LAYER_NAME_PREFIX + properties.floor_name.toLowerCase();
 
       this.activeFloorName = env.LAYER_NAME_PREFIX + floorName;
-      this.$emit('selectFloor', selectedItem.properties.floor_num);
+      this.$emit('selectFloor', properties.floor_num);
 
-      const campusId = selectedItem.building;
-      const searchText = selectedItem.properties.name;
+      const campusId = selectedItem.properties.building;
+      const searchText = properties.name;
       const zoomLevel = 20;
 
       this.globalSearchInfo.selectedItem = selectedItem;
       this.globalSearchInfo.searchText = searchText;
-      this.objCenterCoords = selectedItem.properties.centerGeometry.coordinates;
+      this.objCenterCoords = properties.centerGeometry ? properties.centerGeometry.coordinates : selectedItem.geometry.coordinates;
 
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
