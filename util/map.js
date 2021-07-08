@@ -207,10 +207,10 @@ const setLayerVisible = (layerName, switchableLayers, map) => {
       foundLayer.setVisible(true);
       map.getLayers().forEach((layer) => {
         if (layer.get('name') === 'RouteFromSearch') {
-          const currentFloorName = foundLayer.getProperties().floorName;
+          const currentFloorNumber = Number(foundLayer.getProperties().floorNumber).toFixed(1);
 
           layer.getSource().getFeatures().forEach((feature) => {
-            if (feature.getProperties().floor_name === currentFloorName) {
+            if (Number(feature.getProperties().floor).toFixed(1) === currentFloorNumber) {
               feature.setStyle(MapStyles.routeActiveStyle);
             } else {
               feature.setStyle(MapStyles.routeInactiveStyle);
@@ -704,7 +704,7 @@ const loadMapWithParams = async (mapInfo, query) => {
     });
     setTimeout(async () => {
       mapInfo.globalRouteInfo.routeUrl = await mapInfo.routeHandler.getDirections(
-        mapInfo.map,
+        mapInfo,
         mapInfo.layers,
         query['start-spaceid'],
         null,
