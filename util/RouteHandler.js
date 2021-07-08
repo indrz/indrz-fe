@@ -17,18 +17,18 @@ const { env } = config;
 let scope = null;
 let translate = null;
 
-const routeGo = async (map, layers, globalRouteInfo, routeType = 0, env) => {
+const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
   if (from.properties.space_id && to.properties.space_id) {
     routeUrl = await getDirections(
-      map,
+      mapInfo,
       layers,
       from.properties.space_id,
-      from.properties.floorNum,
+      from.properties.floor_num,
       to.properties.space_id,
-      to.properties.floorNum,
+      to.properties.floor_num,
       '0',
       'spaceIdToSpaceId',
       to.properties.frontoffice?.space_id
@@ -38,23 +38,23 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0, env) => {
     (from.properties.space_id && to.properties.poiId)
   ) {
     routeUrl = await getDirections(
-      map,
+      mapInfo,
       layers,
       (from.properties.space_id || to.properties.space_id),
-      from.properties.floorNum,
+      from.properties.floor_num,
       (from.properties.poiId || to.properties.poiId),
-      to.properties.floorNum,
+      to.properties.floor_num,
       '0',
       'spaceIdToPoiId'
     );
   } else if (from.properties.poiId && to.properties.poiId) {
     routeUrl = await getDirections(
-      map,
+      mapInfo,
       layers,
       from.properties.poiId,
-      from.properties.floorNum,
+      from.properties.floor_num,
       to.properties.poiId,
-      to.properties.floorNum,
+      to.properties.floor_num,
       '0',
       'poiIdToPoiId'
     );
@@ -63,23 +63,23 @@ const routeGo = async (map, layers, globalRouteInfo, routeType = 0, env) => {
     (from.properties.poiId && to.properties.coords)
   ) {
     routeUrl = await getDirections(
-      map,
+      mapInfo,
       layers,
       (from.properties.poiId || to.properties.poiId),
       null,
       (from.properties.coords || to.properties.coords),
-      (from.properties.coords ? from.properties.floorNum : to.properties.floorNum),
+      (from.properties.coords ? from.properties.floor_num : to.properties.floor_num),
       '0',
       'poiToCoords'
     );
   } else if (from.properties.coords && to.properties.coords) {
     routeUrl = await getDirections(
-      map,
+      mapInfo,
       layers,
       from.properties.coords,
-      from.properties.floorNum,
+      from.properties.floor_num,
       to.properties.coords,
-      to.properties.floorNum,
+      to.properties.floor_num,
       '0',
       'coords'
     );
@@ -146,7 +146,8 @@ const getNearestDefi = async (globalPopupInfo) => {
   }
 };
 
-const getDirections = async (map, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType, foid) => {
+const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType, foid) => {
+  const map = mapInfo.map;
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
   let startName = '';
@@ -182,6 +183,7 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
 
   const source = new SourceVector();
   let floorName = '';
+  let floorNum = '';
 
   try {
     routeUrl = await api.request({
@@ -225,8 +227,11 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
       }
 
       if (typeof (features[0]) !== 'undefined') {
-        floorName = features[0].getProperties().floor_name;
+        floorNum = features[0].getProperties().floor;
+        floorName = mapInfo.getFloorName({ floor_num: floorNum });
+
         if (floorName) {
+          mapInfo.$emit('selectFloor', features[0].getProperties().floor);
           MapUtil.activateLayer(env.LAYER_NAME_PREFIX + floorName, layers.switchableLayers, map);
         }
       }
@@ -265,8 +270,8 @@ const getDirections = async (map, layers, startSearchText, startFloor, endSearch
     // format: new ol.format.GeoJSON(),
     source: source,
     style: function (feature, resolution) {
-      const featureFloor = feature.getProperties().floor_name;
-      if (featureFloor === floorName) {
+      const featureFloor = Number(feature.getProperties().floor).toFixed(1);
+      if (featureFloor === Number(floorNum).toFixed(1)) {
         feature.setStyle(MapStyles.routeActiveStyle);
       } else {
         feature.setStyle(MapStyles.routeInactiveStyle);
