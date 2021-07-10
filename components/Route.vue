@@ -157,3 +157,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+  #route-description {
+    margin-bottom: 10px;
+  }
+</style>
