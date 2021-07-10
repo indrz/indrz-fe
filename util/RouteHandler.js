@@ -209,7 +209,9 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
         startName = routeData.route_info.start_name;
         endName = routeData.route_info.end_name;
         routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
-
+        if (foid) {
+          routeUrl += '&foid=' + foid;
+        }
         // TODO:: Show hide things
         /*
         $('#route-from').val(startName)
