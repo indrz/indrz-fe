@@ -209,9 +209,19 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
         startName = routeData.route_info.start_name;
         endName = routeData.route_info.end_name;
         routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
-        if (foid) {
+util/RouteHandler.js
+      }
+      
+      if (foid) {
           routeUrl += '&foid=' + foid;
-        }
+      }
+
+      const frontOffice = mapInfo.globalRouteInfo.to.properties.frontoffice;
+
+      if (frontOffice) {
+        routeData.frontOffice = frontOffice;
+
+
         // TODO:: Show hide things
         /*
         $('#route-from').val(startName)
@@ -221,11 +231,11 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
         $('#collapseCampus').collapse('hide')
         insertRouteDescriptionText(startName, endName, routeData, true)
         */
+ util/RouteHandler.js
       }
-      if (routeData.route_info.mid_name !== '') {
-        insertRouteDescriptionText(startName, endName, routeData, true);
-      } else {
-        insertRouteDescriptionText(startName, endName, routeData, false);
+
+      if (routeData.route_info) {
+        insertRouteDescriptionText(startName, endName, routeData);
       }
 
       if (typeof (features[0]) !== 'undefined') {
@@ -589,13 +599,11 @@ const setNoRouteFoundText = () => {
   descriptionEl.innerHTML = `<span style="color: red">${text}</span>`;
 };
 
-const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, frontOffice) => {
-  // $('#RouteDescription').remove();
-
+const insertRouteDescriptionText = (startSearchText, endSearchText, routeData) => {
   const ulList = '<span class="font-weight-medium list-group">Route Description</span><ul class="list-group">';
-
+  const listStartTemplate = `<li class="list-group-item"><span class="font-weight-medium">`;
+  const listEndTemplate = `</span></li>`;
   const routeTime = routeData.route_info.walk_time;
-
   const minutes = Math.floor(routeTime / 60);
   const seconds = routeTime - minutes * 60;
   const mins = 'minutes';
@@ -603,47 +611,27 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData, f
   const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
   const descriptionEl = document.getElementById('route-description');
   let routeInfo = '';
+  let frontOfficeTemplate = '';
 
-  if (frontOffice) {
-    if (routeData.route_info.mid_name !== '') {
-      const routeMidPointName = routeData.route_info.mid_name;
-      const x = 'Please first visit the ' + routeMidPointName + ' ' + 'front office';
-      /*
-      if (req_locale === 'de') {
-        var x = gettext('Please first visit the ') + 'Front Office von ' + routeMidPointName
-
-      } else {
-        var x = gettext('Please first visit the ') + routeMidPointName + ' ' + gettext('front office')
-      }
-      */
-      routeInfo =
-        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText} </li>
-        <li class="list-group-item"> ${x} </li>
-        <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText} </li>
-        <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span> ${routeData.route_info.route_length} m</li>
-        <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
-    } else if (startSearchText) {
-      routeInfo =
-        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText}</li>
-         <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText}</li>
-         <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span>${routeData.route_info.route_length} m</li>'
-         <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
-    } else {
-      startSearchText = routeData.route_info.start_name;
-      endSearchText = routeData.route_info.end_name;
-      routeInfo =
-        `<li class="list-group-item"><span class="font-weight-medium">Start: </span> ${startSearchText}</li>
-        <li class="list-group-item"><span class="font-weight-medium">Destination: </span> ${endSearchText}</li>
-        <li class="list-group-item"><span class="font-weight-medium">Aprox. distance: </span> ${routeData.route_info.route_length} m</li>
-        <li class="list-group-item"><span class="font-weight-medium">Aprox. walk time: </span> ${walkTimeString}</li>`;
-    }
-
-    descriptionEl.innerHTML = ulList + routeInfo + '</ul>';
+  if (routeData.frontOffice) {
+    const { name, room_code: roomCode } = routeData.frontOffice;
+    frontOfficeTemplate = `Please first visit the ${name}, ${roomCode} front office`;
+  } else if (!startSearchText) {
+    startSearchText = routeData.route_info.start_name;
+    endSearchText = routeData.route_info.end_name;
   }
+
+  routeInfo =
+    `${listStartTemplate}Start: ${startSearchText}${listEndTemplate}
+     ${listStartTemplate}${frontOfficeTemplate}${listEndTemplate}
+     ${listStartTemplate}Destination: ${endSearchText}${listEndTemplate}
+     ${listStartTemplate}Aprox. distance: ${routeData.route_info.route_length} m${listEndTemplate}
+     ${listStartTemplate}Aprox. walk time: ${walkTimeString}${listEndTemplate}`;
+
+  descriptionEl.innerHTML = ulList + routeInfo + '</ul>';
 };
 
 export default function (_store, _$t, _scope) {
-  // store = _store;
   translate = _$t;
   scope = _scope;
 
