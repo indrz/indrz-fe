@@ -209,29 +209,14 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
         startName = routeData.route_info.start_name;
         endName = routeData.route_info.end_name;
         routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
-util/RouteHandler.js
-      }
-      
-      if (foid) {
+        if (foid) {
           routeUrl += '&foid=' + foid;
+        }
       }
-
       const frontOffice = mapInfo.globalRouteInfo.to.properties.frontoffice;
 
       if (frontOffice) {
         routeData.frontOffice = frontOffice;
-
-
-        // TODO:: Show hide things
-        /*
-        $('#route-from').val(startName)
-        $('#route-to').val(endName)
-        $('#collapseRouting').collapse('show')
-        $('#collapsePoi').collapse('hide')
-        $('#collapseCampus').collapse('hide')
-        insertRouteDescriptionText(startName, endName, routeData, true)
-        */
- util/RouteHandler.js
       }
 
       if (routeData.route_info) {
@@ -601,8 +586,6 @@ const setNoRouteFoundText = () => {
 
 const insertRouteDescriptionText = (startSearchText, endSearchText, routeData) => {
   const ulList = '<span class="font-weight-medium list-group">Route Description</span><ul class="list-group">';
-  const listStartTemplate = `<li class="list-group-item"><span class="font-weight-medium">`;
-  const listEndTemplate = `</span></li>`;
   const routeTime = routeData.route_info.walk_time;
   const minutes = Math.floor(routeTime / 60);
   const seconds = routeTime - minutes * 60;
@@ -620,13 +603,12 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData) =
     startSearchText = routeData.route_info.start_name;
     endSearchText = routeData.route_info.end_name;
   }
-
-  routeInfo =
-    `${listStartTemplate}Start: ${startSearchText}${listEndTemplate}
-     ${listStartTemplate}${frontOfficeTemplate}${listEndTemplate}
-     ${listStartTemplate}Destination: ${endSearchText}${listEndTemplate}
-     ${listStartTemplate}Aprox. distance: ${routeData.route_info.route_length} m${listEndTemplate}
-     ${listStartTemplate}Aprox. walk time: ${walkTimeString}${listEndTemplate}`;
+  routeInfo = `
+  ${MapUtil.getRouteDescriptionListItem('Start', startSearchText)}
+  ${MapUtil.getRouteDescriptionListItem('', frontOfficeTemplate)}
+  ${MapUtil.getRouteDescriptionListItem('Destination', endSearchText)}
+  ${MapUtil.getRouteDescriptionListItem('Aprox. distance', routeData.route_info.route_length ? routeData.route_info.route_length + ' m' : '')}
+  ${MapUtil.getRouteDescriptionListItem('Aprox. walk time', walkTimeString)}`;
 
   descriptionEl.innerHTML = ulList + routeInfo + '</ul>';
 };

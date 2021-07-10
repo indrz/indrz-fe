@@ -723,6 +723,15 @@ const loadMapWithParams = async (mapInfo, query) => {
   }
 };
 
+const getRouteDescriptionListItem = (label, value) => {
+  const listStartTemplate = `<li class="list-group-item"><span class="font-weight-medium">`;
+  const listEndTemplate = `</span></li>`;
+
+  return value ? `${listStartTemplate}
+                    ${label ? (label + ': ') : ''}${value}
+                  ${listEndTemplate}` : '';
+};
+
 export default {
   initializeMap,
   getStartCenter,
@@ -738,5 +747,6 @@ export default {
   getMapSize,
   calculateAspectRatioFit,
   loadMapWithParams,
-  handleWindowResize
+  handleWindowResize,
+  getRouteDescriptionListItem
 };
