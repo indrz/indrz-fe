@@ -181,7 +181,7 @@ export default {
       const zoomLevel = 20;
 
       this.globalSearchInfo.selectedItem = selectedItem;
-      this.globalSearchInfo.searchText = selectedItem.properties.name || searchText;
+      this.globalSearchInfo.searchText = searchText;
       this.objCenterCoords = properties.centerGeometry ? properties.centerGeometry.coordinates : selectedItem.geometry.coordinates;
 
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
