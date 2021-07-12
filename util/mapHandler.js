@@ -407,7 +407,10 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
         properties.poiId = feature.getId();
         properties.src = 'poi';
       }
-
+      mapInfo.globalSearchInfo = {
+        selectedItem: { type: featureType, properties },
+        searchText: properties.name
+      };
       mapInfo.openIndrzPopup(properties, coordinate, feature);
       MapUtil.activateFloor(feature, mapInfo.layers, mapInfo.map);
     } else if (featureType === 'Point') {
@@ -417,7 +420,10 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
       if (feature.getProperties().hasOwnProperty('poiId')) {
         properties.poiId = feature.properties.poiId;
       }
-
+      mapInfo.globalSearchInfo = {
+        selectedItem: { type: featureType, properties },
+        searchText: properties.name
+      };
       mapInfo.openIndrzPopup(properties, coordinate, feature);
       MapUtil.activateFloor(feature, mapInfo.layers, mapInfo.map);
     }
