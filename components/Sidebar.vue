@@ -88,7 +88,7 @@ export default {
       }
     },
     initialPoiCatId: {
-      type: String,
+      type: Number,
       default: function () {
         return null;
       }

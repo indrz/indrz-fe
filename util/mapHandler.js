@@ -355,6 +355,12 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
 };
 
 const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }, env) => {
+  newItems.forEach((newItem) => {
+    if (newItem.children) {
+      newItems = newItem.children.map(item => item);
+    }
+  });
+
   if (removedItems && removedItems.length) {
     removedItems.forEach((item) => {
       if (POIHandler.poiExist(item, map)) {
