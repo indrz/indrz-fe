@@ -45,7 +45,7 @@ export default {
   name: 'PointsOfInterest',
   props: {
     initialPoiCatId: {
-      type: String,
+      type: Number,
       default: function () {
         return null;
       }
@@ -142,14 +142,26 @@ export default {
         const foundData = this.findNode(Number(this.initialPoiCatId));
 
         this.tree = [foundData.data];
-        setTimeout(() => {
+        this.$nextTick(() => {
           const treeComp = this.$refs.poi;
-          treeComp.updateSelected(this.initialPoiCatId, true);
+
           foundData.roots.reverse().forEach((node) => {
             treeComp.updateOpen(node, true);
           });
+
+          treeComp.updateOpen(this.initialPoiCatId, true);
+
+          if (foundData.data.children) {
+            foundData.data.children.forEach((child) => {
+              treeComp.updateActive(child.id, true);
+              treeComp.updateSelected(child.id, true);
+            });
+          }
+
           treeComp.updateActive(this.initialPoiCatId, true);
-        }, 500);
+          treeComp.updateSelected(this.initialPoiCatId, true);
+          this.onTreeClick(foundData)
+        });
       } else if (this.initialPoiId) {
         setTimeout(() => {
           this.$emit('loadSinglePoi', this.initialPoiId);
@@ -159,7 +171,6 @@ export default {
     },
     onTreeClick (node) {
       const treeComp = this.$refs.poi;
-
       const handler = node.children ? this.onTreeParentNodeClick : this.onLeafNodeClick;
 
       handler(node, treeComp);

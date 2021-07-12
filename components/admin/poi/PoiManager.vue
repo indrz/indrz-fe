@@ -207,7 +207,7 @@ export default {
       });
       const treeComp = this.$refs.poiTree;
       treeComp.forceReloadNode = force;
-      this.initialPoiCatId = this.mapComp.newPois[0].category.toString();
+      this.initialPoiCatId = Number(this.mapComp.newPois[0].category);
       if (force) {
         treeComp.loadDataToPoiTree();
       }
@@ -255,7 +255,7 @@ export default {
           const treeComp = this.$refs.poiTree;
 
           treeComp.forceReloadNode = true;
-          this.initialPoiCatId = this.mapComp.editPois[0].getProperties().category.toString();
+          this.initialPoiCatId = Number(this.mapComp.editPois[0].getProperties().category);
 
           if (!this.unsavedChanges) {
             treeComp.loadDataToPoiTree();
@@ -295,7 +295,7 @@ export default {
           const treeComp = this.$refs.poiTree;
 
           treeComp.forceReloadNode = true;
-          this.initialPoiCatId = this.mapComp.removePois[0].getProperties().category.toString();
+          this.initialPoiCatId = Number(this.mapComp.removePois[0].getProperties().category);
 
           if (!this.unsavedChanges) {
             treeComp.loadDataToPoiTree();
