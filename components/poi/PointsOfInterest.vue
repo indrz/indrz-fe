@@ -140,18 +140,23 @@ export default {
       await this.loadPOI();
       if (this.initialPoiCatId) {
         const foundData = this.findNode(Number(this.initialPoiCatId));
-
+        if (!foundData) {
+          this.loading = false;
+          return;
+        }
         this.tree = [foundData.data];
         this.$nextTick(() => {
           const treeComp = this.$refs.poi;
 
-          foundData.roots.reverse().forEach((node) => {
-            treeComp.updateOpen(node, true);
-          });
+          if (foundData && foundData.roots) {
+            foundData.roots.reverse().forEach((node) => {
+              treeComp.updateOpen(node, true);
+            });
+          }
 
           treeComp.updateOpen(this.initialPoiCatId, true);
 
-          if (foundData.data.children) {
+          if (foundData?.data?.children) {
             foundData.data.children.forEach((child) => {
               treeComp.updateActive(child.id, true);
               treeComp.updateSelected(child.id, true);
