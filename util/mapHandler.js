@@ -355,32 +355,41 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
 };
 
 const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }, env) => {
+  newItems.forEach((newItem) => {
+    if (newItem && newItem.children) {
+      newItems = newItem.children.map(item => item);
+    }
+  });
   if (removedItems && removedItems.length) {
     removedItems.forEach((item) => {
-      if (POIHandler.poiExist(item, map)) {
+      if (item && POIHandler.poiExist(item, map)) {
         POIHandler.disablePoiById(item.id, map);
       }
     });
   }
   if (oldItems && oldItems.length) {
     oldItems.forEach((item) => {
-      POIHandler.setPoiVisibility(item, map);
+      if (item) {
+        POIHandler.setPoiVisibility(item, map);
+      }
     });
   }
   if (newItems && newItems.length) {
     newItems.forEach((item) => {
-      if (POIHandler.poiExist(item, map)) {
-        POIHandler.setPoiVisibility(item.id, map);
-      } else {
-        POIHandler
-          .fetchPoi(item.id, map, activeFloorName, env)
-          .then((poiLayer) => {
-            map.getLayers().forEach((layer) => {
-              if (layer.getProperties().id === 99999) {
-                layer.getLayers().push(poiLayer);
-              }
+      if (item) {
+        if (POIHandler.poiExist(item, map)) {
+          POIHandler.setPoiVisibility(item.id, map);
+        } else {
+          POIHandler
+            .fetchPoi(item.id, map, activeFloorName, env)
+            .then((poiLayer) => {
+              map.getLayers().forEach((layer) => {
+                if (layer.getProperties().id === 99999) {
+                  layer.getLayers().push(poiLayer);
+                }
+              });
             });
-          });
+        }
       }
     });
   }

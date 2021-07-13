@@ -165,7 +165,7 @@ export default {
       if (isPoiId) {
         this.initialPoiId = poiCatId;
       } else {
-        this.initialPoiCatId = poiCatId;
+        this.initialPoiCatId = Number(poiCatId);
       }
     },
     onShowSearchResult (searchResult) {
