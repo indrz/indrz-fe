@@ -89,7 +89,10 @@ export default {
     }),
     ...mapGetters({
       findNode: 'poi/findNode'
-    })
+    }),
+    treeComp () {
+      return this.$refs.poi;
+    }
   },
 
   watch: {
@@ -139,40 +142,44 @@ export default {
     async loadDataToPoiTree () {
       await this.loadPOI();
       if (this.initialPoiCatId) {
-        const foundData = this.findNode(Number(this.initialPoiCatId));
-        if (!foundData) {
-          this.loading = false;
-          return;
-        }
-        this.tree = [foundData.data];
-        this.$nextTick(() => {
-          const treeComp = this.$refs.poi;
-
-          if (foundData && foundData.roots) {
-            foundData.roots.reverse().forEach((node) => {
-              treeComp.updateOpen(node, true);
-            });
-          }
-
-          treeComp.updateOpen(this.initialPoiCatId, true);
-
-          if (foundData?.data?.children) {
-            foundData.data.children.forEach((child) => {
-              treeComp.updateActive(child.id, true);
-              treeComp.updateSelected(child.id, true);
-            });
-          }
-
-          treeComp.updateActive(this.initialPoiCatId, true);
-          treeComp.updateSelected(this.initialPoiCatId, true);
-          this.onTreeClick(foundData)
-        });
+        setTimeout(() => {
+          this.loadInitialPOICategory();
+        }, 1000)
       } else if (this.initialPoiId) {
         setTimeout(() => {
           this.$emit('loadSinglePoi', this.initialPoiId);
         }, 500);
       }
       this.loading = false;
+    },
+    loadInitialPOICategory () {
+      const foundData = this.findNode(Number(this.initialPoiCatId));
+
+      if (!foundData) {
+        this.loading = false;
+        return;
+      }
+      this.tree = [foundData.data];
+      const treeComp = this.treeComp;
+
+      if (foundData && foundData.roots) {
+        foundData.roots.reverse().forEach((node) => {
+          treeComp.updateOpen(node, true);
+        });
+      }
+
+      treeComp.updateOpen(this.initialPoiCatId, true);
+
+      if (foundData?.data?.children) {
+        foundData.data.children.forEach((child) => {
+          treeComp.updateActive(child.id, true);
+          treeComp.updateSelected(child.id, true);
+        });
+      }
+
+      treeComp.updateActive(this.initialPoiCatId, true);
+      treeComp.updateSelected(this.initialPoiCatId, true);
+      this.onTreeClick(foundData)
     },
     onTreeClick (node) {
       const treeComp = this.$refs.poi;
