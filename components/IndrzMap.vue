@@ -327,20 +327,20 @@ export default {
     async onPopupMetroButtonClick () {
       const nearestMetro = await this.routeHandler.getNearestMetro(this.globalPopupInfo);
 
-      if (nearestMetro) {
+      if (nearestMetro && nearestMetro.data) {
         this.$emit('popupRouteClick', {
           path: 'from',
-          data: nearestMetro
+          data: nearestMetro.data
         });
       }
     },
     async onPopupDefiButtonClick () {
       const nearestDefi = await this.routeHandler.getNearestDefi(this.globalPopupInfo);
 
-      if (nearestDefi) {
+      if (nearestDefi && nearestDefi.data) {
         this.$emit('popupRouteClick', {
           path: 'to',
-          data: nearestDefi
+          data: nearestDefi.data
         });
       }
     },
