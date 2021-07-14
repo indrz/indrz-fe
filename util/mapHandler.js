@@ -279,10 +279,10 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     param = 'route';
   } else if (globalPopupInfo.bookId) {
     param = 'bookId';
-  } else if (globalSearchInfo.searchText) {
-    param = 'search';
   } else if (globalPopupInfo.poiCatId) {
     param = 'poiCatId';
+  } else if (globalSearchInfo.searchText) {
+    param = 'search';
   } else if (globalPopupInfo.src === 'wms') {
     param = 'wmsInfo';
   } else if (globalPopupInfo.name === 'XY Location') {
