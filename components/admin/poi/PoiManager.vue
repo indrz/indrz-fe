@@ -37,7 +37,6 @@
     </div>
     <floor-changer
       ref="floorChanger"
-      :floors="floors"
       @floorClick="onFloorClick"
     />
     <action-buttons />
@@ -147,8 +146,7 @@ export default {
       const { map, layers } = this.$refs.map;
       MapUtil.activateLayer(this.activeFloorName, layers.switchableLayers, map);
     },
-    onMapFloorChange ({ floor, floors, name }) {
-      this.floors = floors;
+    onMapFloorChange ({ floor, name }) {
       this.activeFloor = floor;
       this.$nextTick(function () {
         this.$refs.floorChanger.onFloorClick(floor);
