@@ -47,18 +47,18 @@
       @openPoiTree="onOpenPoiTree"
       @showSearchResult="onShowSearchResult"
     />
-    <floor-changer ref="floorChanger" :floors="floors" @floorClick="onFloorClick" />
+    <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
     <snack-bar />
   </v-card>
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
 import IndrzMap from '../../components/IndrzMap';
 import Sidebar from '../../components/Sidebar';
 import FloorChanger from '../../components/FloorChanger';
 import CampusSearch from '../../components/CampusSearch';
 import SnackBar from '../../components/SnackBar';
-import api from '../../util/api';
 import mapHandler from '../../util/mapHandler';
 
 export default {
@@ -74,7 +74,6 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
-      floors: [],
       loading: true,
       items: [
         {
@@ -93,6 +92,13 @@ export default {
       initialPoiId: null
     };
   },
+
+  computed: {
+    ...mapState({
+      floors: state => state.floor.floors
+    })
+  },
+
   watch: {
     search (text) {
       if (!text || text.length < 3) {
@@ -103,13 +109,11 @@ export default {
   },
 
   async mounted () {
-    mapHandler.setI18n(this.$i18n);
-    const floorData = await this.fetchFloors();
     const mapComponent = this.$refs.map;
-    if (floorData && floorData.data && floorData.data.results) {
-      this.floors = floorData.data.results;
-      mapComponent.loadLayers(this.floors);
-    }
+
+    mapHandler.setI18n(this.$i18n);
+    await this.loadFloors();
+    mapComponent.loadLayers(this.floors);
     this.loading = false;
     if (this.setSelection) {
       this.selectFloorWithCss(this.setSelection);
@@ -117,14 +121,9 @@ export default {
     this.$root.$on('poiLoad', this.onPoiLoad);
   },
   methods: {
-    fetchFloors () {
-      return api.request({
-        endPoint: 'floor/'
-      }, {
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN
-      });
-    },
+    ...mapActions({
+      loadFloors: 'floor/LOAD_FLOORS'
+    }),
     onDrawerClick () {
       this.$emit('onDrawerClick');
     },

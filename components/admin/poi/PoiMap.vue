@@ -55,6 +55,7 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
 import { Vector as VectorLayer } from 'ol/layer';
 import { Vector as VectorSource } from 'ol/source';
 import { Style, Icon } from 'ol/style';
@@ -65,7 +66,6 @@ import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
 import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
-import api from '~/util/api';
 import 'ol/ol.css';
 
 const { env } = config;
@@ -111,6 +111,9 @@ export default {
     };
   },
   computed: {
+    ...mapState({
+      floors: state => state.floor.floors
+    }),
     env () {
       return {
         homePageUrl: env.HOME_PAGE_URL,
@@ -125,10 +128,14 @@ export default {
     }
   },
   async mounted () {
-    await this.initializeMap();
+    await this.loadFloors();
+    this.initializeMap();
     this.initializeEventHandlers();
   },
   methods: {
+    ...mapActions({
+      loadFloors: 'floor/LOAD_FLOORS'
+    }),
     initializeEventHandlers () {
       this.$root.$on('addPoiClick', this.addInteractions);
       this.$root.$on('editPoiClick', () => {
@@ -137,7 +144,7 @@ export default {
       this.$root.$on('deletePoiClick', this.enableDeletePoi);
       this.$root.$on('cancelPoiClick', this.removeInteraction);
     },
-    async initializeMap () {
+    initializeMap () {
       const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
 
       this.view = view;
@@ -151,30 +158,20 @@ export default {
         MapUtil.handleWindowResize(this.mapId);
       };
 
-      const floorData = await api.request(
-        {
-          endPoint: 'floor/'
-        }, this.env);
+      if (this.floors && this.floors.length) {
+        this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
+        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
 
-      if (floorData && floorData.data && floorData.data.results) {
-        this.floors = floorData.data.results;
-        if (this.floors && this.floors.length) {
-          this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
-          this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
-          // this.intitialFloor = this.floors.filter(floor => floor.short_name.toLowerCase() === env.DEFAULT_START_FLOOR.toLowerCase())[0];
-          // this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
-          this.$emit('floorChange', {
-            floor: this.intitialFloor,
-            floors: this.floors,
-            name: this.activeFloorName
-          });
+        this.$emit('floorChange', {
+          floor: this.intitialFloor,
+          name: this.activeFloorName
+        });
 
-          this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
-        }
-        this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
-        this.layers.switchableLayers = this.wmsLayerInfo.layers;
-        this.map.addLayer(this.wmsLayerInfo.layerGroup);
+        this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
       }
+      this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
+      this.layers.switchableLayers = this.wmsLayerInfo.layers;
+      this.map.addLayer(this.wmsLayerInfo.layerGroup);
     },
     onMapClick (evt) {
       const pixel = evt.pixel;

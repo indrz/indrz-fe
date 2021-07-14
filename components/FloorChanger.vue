@@ -22,24 +22,22 @@
 </template>
 
 <script>
-import api from '../util/api';
+import { mapState } from 'vuex';
 import config from '../util/indrzConfig';
 
 const { env } = config;
 
 export default {
-  props: {
-    floors: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    }
-  },
   data () {
     return {
       setSelection: null
     };
+  },
+
+  computed: {
+    ...mapState({
+      floors: state => state.floor.floors
+    })
   },
 
   watch: {
@@ -51,14 +49,6 @@ export default {
   },
 
   methods: {
-    fetchFloors () {
-      return api.request({
-        endPoint: 'floor/'
-      }, {
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN
-      });
-    },
     onFloorClick (floor, isEvent) {
       const floorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
       this.$emit('floorClick', floorName);
