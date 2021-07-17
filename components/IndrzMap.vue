@@ -78,7 +78,7 @@ export default {
       isSatelliteMap: true,
       layers: [],
       popup: null,
-      activeFloorName: '',
+      activeFloorNum: '',
       initialFloor: {},
       globalPopupInfo: {},
       globalSearchInfo: {},
@@ -134,7 +134,7 @@ export default {
       this.floors = floors;
       if (this.floors && this.floors.length) {
         this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
-        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+        this.activeFloorNum = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num;
         this.$emit('selectFloor', this.intitialFloor.floor_num);
       }
       this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, {
@@ -146,7 +146,7 @@ export default {
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
       this.loadMapWithParams();
-      this.onFloorClick(this.activeFloorName);
+      this.onFloorClick(this.activeFloorNum);
     },
     getFloorName (data) {
       let floorName = '';
@@ -171,9 +171,8 @@ export default {
       if (!properties.floor_name) {
         properties.floor_name = this.getFloorName(properties);
       }
-      const floorName = env.LAYER_NAME_PREFIX + properties.floor_name.toLowerCase();
+      this.activeFloorNum = env.LAYER_NAME_PREFIX + properties.floor_num;
 
-      this.activeFloorName = env.LAYER_NAME_PREFIX + floorName;
       this.$emit('selectFloor', properties.floor_num);
 
       const campusId = selectedItem.properties.building;
@@ -186,7 +185,7 @@ export default {
 
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
         this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-        this.routeFromValTemp, this.activeFloorName, this.popup, selectedItem, {
+        this.routeFromValTemp, this.activeFloorNum, this.popup, selectedItem, {
           searchUrl: env.SEARCH_URL,
           layerNamePrefix: env.LAYER_NAME_PREFIX
         });
@@ -200,7 +199,7 @@ export default {
       MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.currentLocale, this.objCenterCoords, this.routeToValTemp,
-        this.routeFromValTemp, this.activeFloorName, this.popup,
+        this.routeFromValTemp, this.activeFloorNum, this.popup,
         properties, coordinate, feature, null, env.LAYER_NAME_PREFIX
       );
     },
@@ -216,7 +215,7 @@ export default {
     },
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
-      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorName, isRouteShare);
+      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum, isRouteShare);
 
       if (typeof url === 'object' && url.type === 'poi') {
         shareOverlay.setPoiShareLink(url);
@@ -226,10 +225,10 @@ export default {
       shareOverlay.show();
     },
     loadSinglePoi (poiId) {
-      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorName, env.LAYER_NAME_PREFIX);
+      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      MapHandler.handlePoiLoad(this.map, this.activeFloorName, { removedItems, newItems, oldItems }, {
+      MapHandler.handlePoiLoad(this.map, this.activeFloorNum, { removedItems, newItems, oldItems }, {
         baseApiUrl: env.BASE_API_URL,
         token: env.TOKEN,
         layerNamePrefix: env.LAYER_NAME_PREFIX
@@ -310,9 +309,9 @@ export default {
         zoom: 18
       });
     },
-    onFloorClick (floorName) {
-      this.activeFloorName = floorName;
-      MapUtil.activateLayer(this.activeFloorName, this.layers.switchableLayers, this.map);
+    onFloorClick (floorNum) {
+      this.activeFloorNum = floorNum;
+      MapUtil.activateLayer(this.activeFloorNum, this.layers.switchableLayers, this.map);
     },
     async onPopupEntranceButtonClick () {
       const nearestEntrance = await this.routeHandler.getNearestEntrance(this.globalPopupInfo);

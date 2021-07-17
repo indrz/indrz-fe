@@ -33,7 +33,7 @@ const handleDownLoad = (mapInfo) => {
 };
 const handlePdf = (mapInfo) => {
   const map = mapInfo.map;
-  const activeFloorName = mapInfo.activeFloorName;
+  const activeFloorNum = mapInfo.activeFloorNum;
 
   attachPreComposeHandler(map);
   mapInfo.map.once('postcompose', function (event) {
@@ -112,13 +112,17 @@ const handlePdf = (mapInfo) => {
             const base64data = reader.result;
             if (ratio > 1) {
               const pdfLeftMargin = (pdfWidth - x.width) / 2;
-              doc.text('Stockwerk:  ' + activeFloorName, 208, titleYPos + 10);
+              debugger;
+              // todo: need to handle here to load floor name
+              doc.text('Stockwerk:  ' + activeFloorNum, 208, titleYPos + 10);
               doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
                 .height);
               doc.text(today, 20, 617);
             } else {
               const pdfLeftMargin = (pdfWidth - x.width) / 2;
-              doc.text('Stockwerk:  ' + activeFloorName, 300, titleYPos + 10);
+              debugger;
+              // todo: need to handle here to load floor name
+              doc.text('Stockwerk:  ' + activeFloorNum, 300, titleYPos + 10);
               doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
                 .height);
               doc.text(today, 20, 420);
@@ -133,7 +137,7 @@ const handlePdf = (mapInfo) => {
   mapInfo.map.renderSync();
 };
 const handleShare = (mapInfo) => {
-  const url = MapHandler.updateUrl('map', mapInfo.map, mapInfo.globalPopupInfo, mapInfo.globalRouteInfo, mapInfo.globalSearchInfo, mapInfo.activeFloorName);
+  const url = MapHandler.updateUrl('map', mapInfo.map, mapInfo.globalPopupInfo, mapInfo.globalRouteInfo, mapInfo.globalSearchInfo, mapInfo.activeFloorNum);
   const shareOverlay = mapInfo.$refs.shareOverlay;
   if (typeof url === 'object' && url.type === 'poi') {
     shareOverlay.setPoiShareLink(url);

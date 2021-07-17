@@ -10,12 +10,12 @@ import config from './indrzConfig';
 import api from './api';
 
 const { env } = config;
-const fetchPoi = (catId, map, activeFloorName) => {
+const fetchPoi = (catId, map, activeFloorNum) => {
   return api.request({
     endPoint: `poi/cat/${catId}/?format=json`
   }, env)
     .then((response) => {
-      return createPoilayer(response.data, catId, activeFloorName, env.layerNamePrefix);
+      return createPoilayer(response.data, catId, activeFloorNum, env.layerNamePrefix);
     });
 };
 
@@ -82,7 +82,7 @@ const poiExist = (poiItem, map) => {
   return isExists;
 };
 
-const createPoilayer = (data, poiCatId, activeFloorName, layerNamePrefix) => {
+const createPoilayer = (data, poiCatId, activeFloorNum, layerNamePrefix) => {
   let poiTitle = '';
   const poiSource = new SourceVector();
   const geojsonFormat3 = new GeoJSON();
@@ -92,7 +92,7 @@ const createPoilayer = (data, poiCatId, activeFloorName, layerNamePrefix) => {
   const poiVectorLayer = new VectorLayer({
     source: poiSource,
     style: function (feature) {
-      const poiFeatureFloor = feature.getProperties().floor_name;
+      const poiFeatureFloor = feature.getProperties().floor_num;
       /*
       if (req_locale === 'de') {
         poiTitle = feature.getProperties().name_de;
@@ -102,7 +102,7 @@ const createPoilayer = (data, poiCatId, activeFloorName, layerNamePrefix) => {
       */
       poiTitle = feature.getProperties().name_en;
       const icon = feature.getProperties().icon;
-      if (env.LAYER_NAME_PREFIX + (poiFeatureFloor).toLowerCase() === activeFloorName) {
+      if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'y', poiFeatureFloor));
       } else {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'n', poiFeatureFloor));
@@ -122,7 +122,7 @@ const createPoilayer = (data, poiCatId, activeFloorName, layerNamePrefix) => {
   return poiVectorLayer;
 };
 
-const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorName, layerNamePrefix) => {
+const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNum, layerNamePrefix) => {
   globalPopupInfo.poiId = poiId;
   // map.getLayers().getArray()[0].getProperties()
   const poiSingleLayer = map
@@ -149,7 +149,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
         const poiCoords = poiProperties.geometry.getCoordinates();
         poiProperties.poiId = poiId;
         MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', poiCoords,
-          null, null, activeFloorName, popup, poiProperties, centerCoord,
+          null, null, activeFloorNum, popup, poiProperties, centerCoord,
           null, offSetPos, layerNamePrefix);
         MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
@@ -159,7 +159,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
         const poiLayer = new VectorLayer({
           source: poiSource,
           style: function (feature, resolution) {
-            const poiFeatureFloor = feature.getProperties().floor_name;
+            const poiFeatureFloor = feature.getProperties().floor_num;
             /*
             if (req_locale === 'de') {
               poiTitle = feature.getProperties().name_de;
@@ -171,7 +171,7 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
 
             const cssName = feature.getProperties().icon;
 
-            if (env.LAYER_NAME_PREFIX + (poiFeatureFloor).toLowerCase() === activeFloorName) {
+            if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
             } else {
               feature.setStyle(MapStyles.createPoiStyle(cssName, 'n', poiFeatureFloor));
@@ -192,13 +192,13 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNa
     });
 };
 
-const setPoiFeatureVisibility = (map, activeFloorName, layerNamePrefix) => {
+const setPoiFeatureVisibility = (map, activeFloorNum, layerNamePrefix) => {
   map.getLayers().forEach(function (layer, i) {
     if (layer instanceof Group) {
       if (layer.getProperties().name === 'poi group' || layer.getProperties().name === 'POI-Gruppe') {
         layer.getLayers().forEach(function (sublayer, i) {
           sublayer.getSource().forEachFeature(function (feature, i) {
-            if (env.LAYER_NAME_PREFIX + (feature.getProperties().floor_name).toLowerCase() !== activeFloorName) {
+            if ((env.LAYER_NAME_PREFIX + feature.getProperties().floor_num) !== activeFloorNum) {
               feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, false));
             } else {
               feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch(feature.getProperties().icon, true));

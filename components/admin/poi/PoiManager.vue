@@ -91,7 +91,7 @@ export default {
   data () {
     return {
       activeFloor: null,
-      activeFloorName: '',
+      activeFloorNum: '',
       selectedPoiCategory: null,
       floors: [],
       newPoiCollection: [],
@@ -141,16 +141,16 @@ export default {
       }
     },
     onFloorClick (floorName) {
-      this.activeFloorName = floorName;
+      this.activeFloorNum = floorName;
       this.activeFloor = this.$refs.floorChanger.getFloorByFloorName(floorName);
       const { map, layers } = this.$refs.map;
-      MapUtil.activateLayer(this.activeFloorName, layers.switchableLayers, map);
+      MapUtil.activateLayer(this.activeFloorNum, layers.switchableLayers, map);
     },
-    onMapFloorChange ({ floor, name }) {
+    onMapFloorChange ({ floor, floorNum }) {
       this.activeFloor = floor;
       this.$nextTick(function () {
         this.$refs.floorChanger.onFloorClick(floor);
-        this.activeFloorName = name;
+        this.activeFloorNum = floorNum;
       });
     },
     onEditPoi (poi) {
