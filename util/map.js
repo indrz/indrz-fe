@@ -98,7 +98,7 @@ const createWmsLayer = function (
     }),
     visible: isVisible,
     name: layerName,
-    floorNumber: floorNumber,
+    floorNum: floorNumber,
     floorName: layerName.split(env.LAYER_NAME_PREFIX)[1],
     type: 'floor',
     zIndex: zIndexValue,
@@ -207,7 +207,7 @@ const setLayerVisible = (layerName, switchableLayers, map) => {
       foundLayer.setVisible(true);
       map.getLayers().forEach((layer) => {
         if (layer.get('name') === 'RouteFromSearch') {
-          const currentFloorNumber = Number(foundLayer.getProperties().floorNumber).toFixed(1);
+          const currentFloorNumber = Number(foundLayer.getProperties().floorNum).toFixed(1);
 
           layer.getSource().getFeatures().forEach((feature) => {
             if (Number(feature.getProperties().floor).toFixed(1) === currentFloorNumber) {
@@ -223,8 +223,8 @@ const setLayerVisible = (layerName, switchableLayers, map) => {
 };
 
 const activateFloor = (feature, layers, map) => {
-  const floorName = feature ? feature.getProperties().floorName : '';
-  const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
+  const floorNum = feature ? feature.getProperties().floorNum : '';
+  const layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorNum === floorNum);
   if (layerToActive) {
     activateLayer(layerToActive.getProperties().name, layers.switchableLayers, map);
   }
@@ -372,7 +372,7 @@ const searchThroughAPI = async (searchText) => {
 const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
   popUpHomePage, currentPOIID,
   currentLocale, objCenterCoords, routeToValTemp,
-  routeFromValTemp, activeFloorName, popup, feature) => {
+  routeFromValTemp, activeFloorNum, popup, feature) => {
   if (searchLayer) {
     map.removeLayer(searchLayer);
     clearSearchResults(map, searchLayer);
@@ -444,13 +444,13 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
 
   const centerCoOrd = getCenter(searchSource.getExtent());
   let layerToActive = '';
-  let floorName = '';
+  let floorNum = '';
 
   if (featuresSearch.length === 1) {
     MapHandler.openIndrzPopup(
       globalPopupInfo, popUpHomePage, currentPOIID,
       currentLocale, objCenterCoords, routeToValTemp,
-      routeFromValTemp, activeFloorName, popup,
+      routeFromValTemp, activeFloorNum, popup,
       featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
     );
     zoomer(map.getView(), centerCoOrd, zoomLevel);
@@ -461,8 +461,8 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       search_text = searchString;
      */
     // active the floor of the start point
-    floorName = featuresSearch[0].getProperties().floor_name ? featuresSearch[0].getProperties().floor_name.toLowerCase() : '';
-    layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorName === floorName);
+    floorNum = featuresSearch[0].getProperties().floor_num ? featuresSearch[0].getProperties().floor_num : '';
+    layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorNum === floorNum);
 
     activateFloor(layerToActive, layers, map);
   } else if (featuresSearch.length === 0) {
@@ -501,7 +501,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   const selectedItem = features && features.length ? features[0] : null;
   return {
     searchLayer,
-    floorName,
+    floorNum,
     searchResult,
     selectedItem
   };
@@ -650,8 +650,8 @@ const loadMapWithParams = async (mapInfo, query) => {
     const floor = mapInfo.floors.find(floor => floor.floor_num === Number(query.floor));
 
     if (floor) {
-      mapInfo.activeFloorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
-      activateLayer(mapInfo.activeFloorName, mapInfo.layers.switchableLayers, mapInfo.map);
+      mapInfo.activeFloorNum = env.LAYER_NAME_PREFIX + floor.floor_num;
+      activateLayer(mapInfo.activeFloorNum, mapInfo.layers.switchableLayers, mapInfo.map);
       mapInfo.$emit('selectFloor', floor.floor_num);
     }
   }
@@ -661,7 +661,7 @@ const loadMapWithParams = async (mapInfo, query) => {
     mapInfo.globalPopupInfo.coords = coords;
     MapHandler.openIndrzPopup(
       mapInfo.globalPopupInfo, null, null, null, coords, null,
-      null, mapInfo.activeFloorName, mapInfo.popup, { xy: coords }, coords
+      null, mapInfo.activeFloorNum, mapInfo.popup, { xy: coords }, coords
     );
     view.animate({ zoom: zoomLevel }, { center: coords });
     return;
@@ -669,12 +669,12 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query.q && query.q.length > 3) {
     const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
       mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.currentLocale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
-      mapInfo.routeFromValTemp, mapInfo.activeFloorName, mapInfo.popup);
+      mapInfo.routeFromValTemp, mapInfo.activeFloorNum, mapInfo.popup);
 
     mapInfo.$root.$emit('load-search-query', query.q);
 
-    if (result.floorName) {
-      const foundFloor = mapInfo.floors.find(floor => floor.short_name.toLowerCase() === result.floorName.toLowerCase());
+    if (result.floorNum) {
+      const foundFloor = mapInfo.floors.find(floor => floor.floor_num === result.floorNum);
       if (foundFloor) {
         mapInfo.$emit('selectFloor', foundFloor.floor_num);
       }

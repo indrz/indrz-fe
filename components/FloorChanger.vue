@@ -50,8 +50,8 @@ export default {
 
   methods: {
     onFloorClick (floor, isEvent) {
-      const floorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
-      this.$emit('floorClick', floorName);
+      const floorNum = env.LAYER_NAME_PREFIX + floor.floor_num;
+      this.$emit('floorClick', floorNum);
       this.selectFloorWithCss(floor.floor_num, isEvent);
     },
     selectFloorWithCss (floorNum, isEvent) {

@@ -160,11 +160,11 @@ export default {
 
       if (this.floors && this.floors.length) {
         this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
-        this.activeFloorName = env.LAYER_NAME_PREFIX + this.intitialFloor.short_name.toLowerCase();
+        this.activeFloorNum = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num;
 
         this.$emit('floorChange', {
           floor: this.intitialFloor,
-          name: this.activeFloorName
+          floorNnum: this.activeFloorNum
         });
 
         this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
@@ -188,9 +188,9 @@ export default {
 
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
-            this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+            this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
             let onActiveLayer = true;
-            if (env.LAYER_NAME_PREFIX + (feature.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+            if ((env.LAYER_NAME_PREFIX + feature.getProperties().floor_num) !== this.activeFloorNum) {
               onActiveLayer = false;
             }
 
@@ -227,11 +227,11 @@ export default {
         return;
       }
 
-      this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
 
       features.forEach((feature) => {
         if (feature) {
-          if (env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+          if ((env.LAYER_NAME_PREFIX + this.selectedPoi.getProperties().floor_num) !== this.activeFloorNum) {
             onActiveLayer = false;
           }
           const featureType = feature.getGeometry().getType().toString();
@@ -245,10 +245,10 @@ export default {
     },
     clearPreviousSelection () {
       let onActiveLayer = true;
-      this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
 
       if (this.selectedPoi) {
-        if (env.LAYER_NAME_PREFIX + (this.selectedPoi.getProperties().floor_name).toLowerCase() !== this.activeFloorName) {
+        if ((env.LAYER_NAME_PREFIX + this.selectedPoi.getProperties().floor_num) !== this.activeFloorNum) {
           onActiveLayer = false;
         }
         this.selectedPoi.setStyle(MapStyles.setPoiStyleOnLayerSwitch(this.selectedPoi.getProperties().icon, onActiveLayer));
@@ -310,7 +310,7 @@ export default {
       this.cleanUp();
       this.currentMode = this.mode.add;
 
-      if (!this.activeFloorName || !this.selectedPoiCategory) {
+      if (!this.activeFloorNum || !this.selectedPoiCategory) {
         this.$store.commit('SET_SNACKBAR', 'Please select the POI category and Active floor to continue');
         return;
       }
@@ -437,7 +437,7 @@ export default {
       this.newPois.push(data);
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
-      this.activeFloorName = env.LAYER_NAME_PREFIX + this.activeFloor.short_name.toLowerCase();
+      this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
       if (removedItems && removedItems.length) {
         removedItems.forEach((item) => {
           if (POIHandler.poiExist(item, this.map)) {
@@ -453,7 +453,7 @@ export default {
       if (newItems && newItems.length) {
         newItems.forEach((item) => {
           POIHandler
-            .fetchPoi(item.id, this.map, this.activeFloorName, {
+            .fetchPoi(item.id, this.map, this.activeFloorNum, {
               baseApiUrl: process.env.BASE_API_URL,
               token: process.env.TOKEN,
               layerNamePrefix: process.env.LAYER_NAME_PREFIX
