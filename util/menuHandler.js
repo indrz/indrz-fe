@@ -2,6 +2,9 @@ import { saveAs } from 'file-saver';
 import JSPDF from 'jspdf';
 import MapUtil from '~/util/map';
 import MapHandler from '~/util/mapHandler';
+import config from '~/util/indrzConfig';
+
+const { env } = config;
 
 const handleZoomToHome = (mapInfo, center) => {
   mapInfo.view.animate({
@@ -33,8 +36,8 @@ const handleDownLoad = (mapInfo) => {
 };
 const handlePdf = (mapInfo) => {
   const map = mapInfo.map;
-  const activeFloorNum = mapInfo.activeFloorNum;
-
+  const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
+  const floorName = floor?.short_name;
   attachPreComposeHandler(map);
   mapInfo.map.once('postcompose', function (event) {
     const canvas = event.context.canvas;
@@ -112,17 +115,15 @@ const handlePdf = (mapInfo) => {
             const base64data = reader.result;
             if (ratio > 1) {
               const pdfLeftMargin = (pdfWidth - x.width) / 2;
-              debugger;
-              // todo: need to handle here to load floor name
-              doc.text('Stockwerk:  ' + activeFloorNum, 208, titleYPos + 10);
+
+              doc.text('Stockwerk:  ' + floorName, 208, titleYPos + 10);
               doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
                 .height);
               doc.text(today, 20, 617);
             } else {
               const pdfLeftMargin = (pdfWidth - x.width) / 2;
-              debugger;
-              // todo: need to handle here to load floor name
-              doc.text('Stockwerk:  ' + activeFloorNum, 300, titleYPos + 10);
+
+              doc.text('Stockwerk:  ' + floorName, 300, titleYPos + 10);
               doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
                 .height);
               doc.text(today, 20, 420);
