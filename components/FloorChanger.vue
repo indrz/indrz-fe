@@ -74,12 +74,12 @@ export default {
         }
       }, 500);
     },
-    getFloorByFloorName (floorName) {
-      const shortName = env.LAYER_NAME_PREFIX ? floorName.split(env.LAYER_NAME_PREFIX)[1] : floorName;
-      if (!shortName) {
-        return {};
+    getFloorByFloorNum (floorNameWithPrefix) {
+      const floorNum = env.LAYER_NAME_PREFIX ? floorNameWithPrefix.split(env.LAYER_NAME_PREFIX)[1] : floorNameWithPrefix;
+      if (!floorNum) {
+        return null;
       }
-      const foundFloors = this.floors.filter(floor => floor.short_name.toLowerCase() === shortName);
+      const foundFloors = this.floors.filter(floor => floor.floor_num.toFixed(1) === Number(floorNum).toFixed(1));
       if (foundFloors && foundFloors.length) {
         return foundFloors[0];
       }

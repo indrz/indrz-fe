@@ -140,9 +140,9 @@ export default {
         this.$refs.map.removeInteraction();
       }
     },
-    onFloorClick (floorName) {
-      this.activeFloorNum = floorName;
-      this.activeFloor = this.$refs.floorChanger.getFloorByFloorName(floorName);
+    onFloorClick (floorNum) {
+      this.activeFloorNum = floorNum;
+      this.activeFloor = this.$refs.floorChanger.getFloorByFloorNum(floorNum);
       const { map, layers } = this.$refs.map;
       MapUtil.activateLayer(this.activeFloorNum, layers.switchableLayers, map);
     },
