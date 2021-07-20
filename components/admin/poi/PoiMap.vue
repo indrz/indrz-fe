@@ -164,7 +164,7 @@ export default {
 
         this.$emit('floorChange', {
           floor: this.intitialFloor,
-          floorNnum: this.activeFloorNum
+          floorNum: this.activeFloorNum
         });
 
         this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
