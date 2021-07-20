@@ -201,7 +201,7 @@ const setLayerVisible = (layerName, switchableLayers, map) => {
     const foundLayer = switchableLayers
       .find((layer) => {
         const layerProperties = layer.getProperties();
-        return (layerProperties.name || layerProperties.floorName).toLowerCase() === layerName.toLowerCase();
+        return layerProperties.name === layerName;
       });
     if (foundLayer) {
       foundLayer.setVisible(true);
@@ -615,8 +615,8 @@ const getWmsLayers = (floors) => {
   const wmsLayers = [];
 
   floors.forEach((floor, index) => {
-    const floorName = floor.short_name.toLowerCase();
-    const layerName = env.LAYER_NAME_PREFIX + floorName;
+    const floorNum = floor.floor_num;
+    const layerName = env.LAYER_NAME_PREFIX + floorNum;
     const geoserverfloorName = floor.floor_num.toFixed(1).toString().replace('-', 'u').replace('.', '_');
     const geoserverLayerName = env.GEO_SERVER_LAYER_PREFIX + env.LAYER_NAME_PREFIX + geoserverfloorName; // floor_u1_0
     const layer = createWmsLayer(
