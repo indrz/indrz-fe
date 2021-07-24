@@ -37,7 +37,6 @@
     </div>
     <floor-changer
       ref="floorChanger"
-      :floors="floors"
       @floorClick="onFloorClick"
     />
     <action-buttons />
@@ -92,7 +91,7 @@ export default {
   data () {
     return {
       activeFloor: null,
-      activeFloorName: '',
+      activeFloorNum: '',
       selectedPoiCategory: null,
       floors: [],
       newPoiCollection: [],
@@ -141,18 +140,17 @@ export default {
         this.$refs.map.removeInteraction();
       }
     },
-    onFloorClick (floorName) {
-      this.activeFloorName = floorName;
-      this.activeFloor = this.$refs.floorChanger.getFloorByFloorName(floorName);
+    onFloorClick (floorNum) {
+      this.activeFloorNum = floorNum;
+      this.activeFloor = this.$refs.floorChanger.getFloorByFloorNum(floorNum);
       const { map, layers } = this.$refs.map;
-      MapUtil.activateLayer(this.activeFloorName, layers.switchableLayers, map);
+      MapUtil.activateLayer(this.activeFloorNum, layers.switchableLayers, map);
     },
-    onMapFloorChange ({ floor, floors, name }) {
-      this.floors = floors;
+    onMapFloorChange ({ floor, floorNum }) {
       this.activeFloor = floor;
       this.$nextTick(function () {
         this.$refs.floorChanger.onFloorClick(floor);
-        this.activeFloorName = name;
+        this.activeFloorNum = floorNum;
       });
     },
     onEditPoi (poi) {

@@ -31,7 +31,7 @@ const closeIndrzPopup = (popup, globalPopupInfo) => {
 const openIndrzPopup = (
   globalPopupInfo, popUpHomePage, currentPOIID, currentLocale,
   objCenterCoords, routeToValTemp, routeFromValTemp,
-  activeFloorName, popup, properties, coordinate, feature, offsetArray) => {
+  activeFloorNum, popup, properties, coordinate, feature, offsetArray) => {
   const floorName = properties.floor_name;
   const popupContent = document.getElementById('popup-content');
 
@@ -198,7 +198,7 @@ const openIndrzPopup = (
 
   globalPopupInfo.name = properties.xy ? translate.t('xy_location') : titlePopup;
   globalPopupInfo.coords = objCenterCoords;
-  globalPopupInfo.floor = activeFloorName;
+  globalPopupInfo.floor = activeFloorNum;
   globalPopupInfo.roomcode = roomCode;
   globalPopupInfo.floorNum = properties.floor_num;
   popup.setPosition(coordinate);
@@ -265,14 +265,14 @@ const getRoomInfo = (floor, layers, layerNamePrefix) => {
   let newel;
 
   availableWmsLayers.forEach(function (element) {
-    if (floor.toLowerCase() === (env.LAYER_NAME_PREFIX + element.getProperties().floorName).toLowerCase()) {
+    if (floor === (env.LAYER_NAME_PREFIX + element.getProperties().floorNum)) {
       newel = element.getSource();
     }
   });
   return newel;
 };
 
-const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName, isRouteShare) => {
+const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum, isRouteShare) => {
   let param = '';
 
   if (isRouteShare) {
@@ -288,10 +288,10 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
   } else if (globalPopupInfo.name === 'XY Location') {
     param = 'xy';
   }
-  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName);
+  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
 };
 
-const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorName) => {
+const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
   const currentZoom2 = map.getView().getZoom();
   const centerCrd = map.getView().getCenter();
@@ -300,7 +300,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   // const buildingId = 1;
 
   let url = '?centerx=' + centerX2 + '&centery=' + centerY2 +
-    '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
+    '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
 
   const data = {};
 
@@ -328,7 +328,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       url = '?q=' + globalPopupInfo.name;
     }
   } else if (mode === 'map') {
-    url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorName;
+    url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
   } else if (mode === 'bookId') {
     url = hostUrl + globalRouteInfo.routeUrl;
   } else if (mode === 'poiCatId') {
@@ -354,7 +354,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   return location.href;
 };
 
-const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems }, env) => {
+const handlePoiLoad = (map, activeFloorNum, { removedItems, newItems, oldItems }, env) => {
   newItems.forEach((newItem) => {
     if (newItem && newItem.children) {
       newItems = newItem.children.map(item => item);
@@ -381,7 +381,7 @@ const handlePoiLoad = (map, activeFloorName, { removedItems, newItems, oldItems 
           POIHandler.setPoiVisibility(item.id, map);
         } else {
           POIHandler
-            .fetchPoi(item.id, map, activeFloorName, env)
+            .fetchPoi(item.id, map, activeFloorNum, env)
             .then((poiLayer) => {
               map.getLayers().forEach((layer) => {
                 if (layer.getProperties().id === 99999) {
@@ -440,7 +440,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
     const featuresWms = mapInfo.map.getFeaturesAtPixel(pixel);
     const v = mapInfo.map.getView();
     const viewResolution = /** @type {number} */ (v.getResolution());
-    const wmsSource2 = getRoomInfo(mapInfo.activeFloorName, mapInfo.layers, layerNamePrefix);
+    const wmsSource2 = getRoomInfo(mapInfo.activeFloorNum, mapInfo.layers, layerNamePrefix);
     const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
       INFO_FORMAT: 'application/json',
       FEATURE_COUNT: 50
@@ -469,14 +469,18 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
             }
           });
           dataProperties.properties.src = 'wms';
+          mapInfo.globalSearchInfo = {
+            selectedItem: { type: 'Feature', properties: dataProperties.properties },
+            searchText: dataProperties.properties?.room_code
+          };
           mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
         } else {
-          const floorName = mapInfo.activeFloorName.split(env.LAYER_NAME_PREFIX)[1].toUpperCase();
-          const floor = mapInfo.floors.find(floor => floor.short_name === floorName);
+          const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
 
           mapInfo.openIndrzPopup({
             xy: coordinate,
-            floor_num: floor.floor_num
+            floor_num: floor?.floor_num,
+            floor_name: floor?.short_name
           }, coordinate, null)
         }
       });

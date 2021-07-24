@@ -22,24 +22,22 @@
 </template>
 
 <script>
-import api from '../util/api';
+import { mapState } from 'vuex';
 import config from '../util/indrzConfig';
 
 const { env } = config;
 
 export default {
-  props: {
-    floors: {
-      type: Array,
-      default: function () {
-        return [];
-      }
-    }
-  },
   data () {
     return {
       setSelection: null
     };
+  },
+
+  computed: {
+    ...mapState({
+      floors: state => state.floor.floors
+    })
   },
 
   watch: {
@@ -51,17 +49,9 @@ export default {
   },
 
   methods: {
-    fetchFloors () {
-      return api.request({
-        endPoint: 'floor/'
-      }, {
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN
-      });
-    },
     onFloorClick (floor, isEvent) {
-      const floorName = env.LAYER_NAME_PREFIX + floor.short_name.toLowerCase();
-      this.$emit('floorClick', floorName);
+      const floorNum = env.LAYER_NAME_PREFIX + floor.floor_num;
+      this.$emit('floorClick', floorNum);
       this.selectFloorWithCss(floor.floor_num, isEvent);
     },
     selectFloorWithCss (floorNum, isEvent) {
@@ -84,12 +74,12 @@ export default {
         }
       }, 500);
     },
-    getFloorByFloorName (floorName) {
-      const shortName = env.LAYER_NAME_PREFIX ? floorName.split(env.LAYER_NAME_PREFIX)[1] : floorName;
-      if (!shortName) {
-        return {};
+    getFloorByFloorNum (floorNameWithPrefix) {
+      const floorNum = env.LAYER_NAME_PREFIX ? floorNameWithPrefix.split(env.LAYER_NAME_PREFIX)[1] : floorNameWithPrefix;
+      if (!floorNum) {
+        return null;
       }
-      const foundFloors = this.floors.filter(floor => floor.short_name.toLowerCase() === shortName);
+      const foundFloors = this.floors.filter(floor => floor.floor_num.toFixed(1) === Number(floorNum).toFixed(1));
       if (foundFloors && foundFloors.length) {
         return foundFloors[0];
       }
