@@ -702,18 +702,6 @@ const loadMapWithParams = async (mapInfo, query) => {
         name: endSpaceId
       }
     });
-    setTimeout(async () => {
-      mapInfo.globalRouteInfo.routeUrl = await mapInfo.routeHandler.getDirections(
-        mapInfo,
-        mapInfo.layers,
-        query['start-spaceid'],
-        null,
-        query['end-spaceid'],
-        null,
-        '0',
-        'spaceIdToSpaceId'
-      );
-    }, 600);
   }
   if (query['poi-cat-id']) {
     mapInfo.$emit('openPoiTree', query['poi-cat-id']);

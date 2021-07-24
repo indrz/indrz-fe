@@ -88,19 +88,23 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
 };
 
 const clearRouteData = (map) => {
-  // $('#RouteDescription').remove()
-  const layersToRemove = [
+  const layerNamesToRemove = [
     'RouteToBook',
     'RouteLibraryMarkers',
     'RouteMarkers',
     'RouteFromSearch'
   ];
-  layersToRemove.forEach((layerName) => {
-    map.getLayers().forEach(function (layer) {
-      if (layer && layerName === layer.get('name')) {
-        map.removeLayer(layer);
-      }
-    });
+
+  const layersToRemove = [];
+
+  map.getLayers().forEach(function (layer) {
+    if (layerNamesToRemove.includes(layer.get('name'))) {
+      layersToRemove.push(layer);
+    }
+  });
+
+  layersToRemove.forEach((layer) => {
+    map.removeLayer(layer);
   });
 };
 
