@@ -328,7 +328,8 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
       url = '?q=' + globalPopupInfo.name;
     }
   } else if (mode === 'map') {
-    url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + activeFloorNum;
+    const floorNum = activeFloorNum.includes(env.LAYER_NAME_PREFIX) ? activeFloorNum.split(env.LAYER_NAME_PREFIX)[1] : activeFloorNum;
+    url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + floorNum;
   } else if (mode === 'bookId') {
     url = hostUrl + globalRouteInfo.routeUrl;
   } else if (mode === 'poiCatId') {
