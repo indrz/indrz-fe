@@ -93,6 +93,9 @@ export default {
       return this.fromRoute && this.toRoute;
     }
   },
+  mounted () {
+    this.$root.$on('updateRouteFields', this.setSearchFieldRouteText);
+  },
   methods: {
     onSearchSelect (selectedItem) {
       this[selectedItem.routeType + 'Route'] = selectedItem.data;
@@ -114,6 +117,21 @@ export default {
       this.$refs.toRoute.clearSearch('');
       document.getElementById('route-description').innerHTML = '';
       this.$emit('clearRoute');
+    },
+    setSearchFieldRouteText (routeInfo) {
+      const fieldExtensions = ['from', 'to'];
+
+      fieldExtensions.forEach((extension) => {
+        const field = this.$refs[extension + 'Route'];
+
+        field.stopSearch = true;
+        field.apiResponse = [routeInfo[extension + 'Data']];
+        field.searchResult = [routeInfo[extension + 'Data']];
+        field.model = routeInfo[extension + 'Data'];
+        setTimeout(() => {
+          field.stopSearch = false;
+        }, 1000);
+      });
     },
     setRoute (routeInfo) {
       const routeData = { ...routeInfo.data };

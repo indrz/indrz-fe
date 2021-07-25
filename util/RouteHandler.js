@@ -225,6 +225,14 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
 
       if (routeData.route_info) {
         insertRouteDescriptionText(startName, endName, routeData);
+        mapInfo.$root.$emit('updateRouteFields', {
+          fromData: {
+            name: startName
+          },
+          toData: {
+            name: endName
+          }
+        });
       }
 
       if (typeof (features[0]) !== 'undefined') {
