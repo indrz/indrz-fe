@@ -104,6 +104,7 @@ export default {
       if (this.multi === false) {
         removedItems = oldSelections;
         newItems = this.currentPoi;
+        newSelections = [newSelections[newSelections.length - 1]];
       } else {
         if (oldSelections.length > newSelections.length) {
           removedItems = _.differenceBy(oldSelections, newSelections, 'id');
@@ -193,9 +194,9 @@ export default {
       treeComp.updateSelected(node.id, (this.multi === false ? true : shouldAdd));
       treeComp.updateActive(node.id, (this.multi === false ? true : shouldAdd));
 
-      this.currentPoi = node.children || [node];
+      this.currentPoi = node.children || [node.data ? node.data : node];
 
-      this.$emit('selectPoiCategory', node);
+      this.$emit('selectPoiCategory', this.currentPoi[0]);
       treeComp.emitSelected();
     },
     onTreeParentNodeClick (node, treeComp) {
