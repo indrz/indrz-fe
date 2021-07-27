@@ -225,7 +225,11 @@ export default {
       shareOverlay.show();
     },
     loadSinglePoi (poiId) {
-      POIHandler.showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX);
+      POIHandler
+        .showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
+        .then((layer) => {
+          this.searchLayer = layer;
+        });
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       MapHandler.handlePoiLoad(this.map, this.activeFloorNum, { removedItems, newItems, oldItems }, {
