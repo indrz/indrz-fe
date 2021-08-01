@@ -7,8 +7,8 @@
       @drawerClick="onDrawerClick"
     />
     <v-app-bar
-      clipped-left
       v-if="isUserSignedIn"
+      clipped-left
       app
       color="indigo"
       dark
