@@ -33,6 +33,7 @@
           />
           <v-btn
             outlined
+            @click="addBookShelf"
           >
             <v-icon left>
               mdi-plus
@@ -50,7 +51,7 @@
       </template>
       <template v-slot:item.edit="{ item }">
         <v-icon
-          @click="editItem(item)"
+          @click="editBookShelf(item)"
           small
         >
           mdi-pencil
@@ -246,7 +247,12 @@ export default {
       this.loading = false;
     },
 
-    editItem (item) {
+    addBookShelf () {
+      this.editedItem = Object.assign({ double_sided: 'Yes' });
+      this.dialog = true;
+    },
+
+    editBookShelf (item) {
       this.editedIndex = this.shelvesListData.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
