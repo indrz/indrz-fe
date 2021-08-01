@@ -23,22 +23,7 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.building" label="Building" />
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col>
-                <v-text-field v-model="editedItem.building_floor" label="Floor" />
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col>
-                <v-text-field v-model="editedItem.length" label="Length" />
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col>
-                <v-text-field v-model="editedItem.width" label="Width" />
+                <v-text-field v-model="editedItem.geom" label="Geometry" />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -63,7 +48,41 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.geom" label="Geometry" />
+                <v-text-field v-model="editedItem.building" label="Building" />
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col>
+                <v-text-field v-model="editedItem.building_floor" label="Building Floor" />
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col>
+                <v-text-field v-model="editedItem.length" label="Length in m" />
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col>
+                <v-text-field v-model="editedItem.width" label="Width in m" />
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col>
+                <v-text-field v-model="editedItem.depth" label="Depth in m" />
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col>
+                <v-text-field v-model="editedItem.rotation" label="Rotation angle of the bookshelf" />
+              </v-col>
+            </v-row>
+            <v-row no-gutters>
+              <v-col>
+                <v-select
+                  v-model="editedItem.double_sided"
+                  :items="['Unknown', 'Yes', 'No']"
+                  label="Does the shelf have two sides"
+                ></v-select>
               </v-col>
             </v-row>
           </v-container>
