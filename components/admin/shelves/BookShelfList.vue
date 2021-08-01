@@ -30,12 +30,13 @@
             class="mx-4"
             inset
             vertical
-          ></v-divider>
+          />
           <v-btn
-            class="ma-2"
             outlined
           >
-            <v-icon left>mdi-plus</v-icon>
+            <v-icon left>
+              mdi-plus
+            </v-icon>
             Book Shelf
           </v-btn>
         </v-toolbar>
