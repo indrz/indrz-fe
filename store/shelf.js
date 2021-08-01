@@ -16,19 +16,18 @@ export const mutations = {
 };
 
 export const actions = {
-  async LOAD_SHELVES ({ commit }, payload) {
-    const endPoint = `bookway/shelf/QP 400`;
-    const urlWithParams = payload ? `${'?' + Object.keys(payload).map(key => key + '=' + payload[key]).join('&')}` : '';
+  async LOAD_BOOKSHELF_LIST ({ commit }, payload) {
+    const endPoint = `bookway/bookshelf/`;
+    const urlWithParams = api.getURLParamsFromPayLoad(payload);
 
     const { data } = await api.request({
       endPoint: `${endPoint}${urlWithParams}`
     });
 
     const shelvesData = {
-      data: data.results,
+      data: data.results.features,
       total: data.count
     };
-
     commit('setShelves', shelvesData);
   },
 

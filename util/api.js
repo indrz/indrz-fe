@@ -63,9 +63,14 @@ const getPageParams = ({ page = 1, itemsPerPage = 10 }) => {
   }
 };
 
+const getURLParamsFromPayLoad = (payload) => {
+  return payload ? `?${Object.keys(payload).map(key => key + '=' + payload[key]).join('&')}` : '';
+};
+
 export default {
   request,
   postRequest,
   putRequest,
-  getPageParams
+  getPageParams,
+  getURLParamsFromPayLoad
 }

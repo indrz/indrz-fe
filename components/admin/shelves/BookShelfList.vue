@@ -21,7 +21,6 @@
         :options.sync="pagination"
         :loading="loading"
         item-key="id"
-        show-select
         class="elevation-1"
         loading-text="Loading... Please wait"
       >
@@ -55,14 +54,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import api from '../../../util/api';
 import AddEditShelf from './AddEditShelf';
 
 export default {
-  name: 'ShelvesList',
+  name: 'BookShelfList',
   components: { AddEditShelf },
   data () {
     return {
@@ -75,50 +74,68 @@ export default {
       term$: new Subject(),
       headers: [
         {
+          text: 'Id',
+          align: 'right',
+          sortable: false,
+          value: 'id'
+        },
+        {
           text: 'External Id',
           align: 'right',
           sortable: false,
           value: 'external_id'
         },
         {
+          text: 'Building',
+          align: 'right',
+          filterable: false,
+          sortable: false,
+          value: 'building'
+        },
+        {
           text: 'Floor',
           align: 'right',
           filterable: false,
           sortable: false,
-          value: 'floor'
+          value: 'building_floor'
         },
         {
-          text: 'System From',
+          text: 'Length',
           align: 'right',
+          filterable: false,
+          sortable: false,
+          value: 'length'
+        },
+        {
+          text: 'Width',
+          align: 'right',
+          filterable: false,
+          sortable: false,
+          value: 'width'
+        },
+        {
+          text: 'Left From Label',
+          align: 'left',
           sortable: true,
-          value: 'system_from'
+          value: 'left_from_label'
         },
         {
-          text: 'System To',
-          align: 'right',
+          text: 'Left To Label',
+          align: 'left',
           sortable: true,
-          value: 'system_to'
+          value: 'left_to_label'
         },
         {
-          text: 'Shelf Side',
-          align: 'right',
-          filterable: false,
-          sortable: false,
-          value: 'side'
+          text: 'Right From Label',
+          align: 'left',
+          sortable: true,
+          value: 'right_from_label'
         },
         {
-          text: 'Measure From',
-          align: 'right',
-          filterable: false,
-          sortable: false,
-          value: 'measure_from'
-        },
-        {
-          text: 'Measure To',
-          align: 'right',
-          filterable: false,
-          sortable: false,
-          value: 'measure_to'
+          text: 'Right To Label',
+          align: 'left',
+          sortable: true,
+          value: 'right_to_label'
         },
         { text: 'Map', value: 'map', sortable: false, filterable: false, width: '56px' },
         { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' }
@@ -145,9 +162,14 @@ export default {
     ...mapState({
       shelvesListData: function (state) {
         const { data, total } = state.shelf.shelves;
+        const tableData = [];
+
         this.total = total;
 
-        return data;
+        data.forEach((d) => {
+          tableData.push({ ...d.properties, id: d.id, geometry: d.geometry });
+        });
+        return tableData;
       }
     }),
     formTitle () {
@@ -180,7 +202,10 @@ export default {
     this.loadData();
   },
   methods: {
-    loadData (term) {
+    ...mapActions({
+      loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST'
+    }),
+    async loadData (term) {
       if (this.loading) {
         return;
       }
@@ -192,15 +217,9 @@ export default {
         query.search = term;
       }
 
-      this
-        .$store
-        .dispatch('shelf/LOAD_SHELVES', query)
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+      await this.loadShelfList(query);
+
+      this.loading = false;
     },
 
     editItem (item) {

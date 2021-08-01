@@ -1,15 +1,15 @@
 <template>
   <div>
-    <shelves-list />
+    <book-shelf-list />
   </div>
 </template>
 
 <script>
-import ShelvesList from '../../components/admin/shelves/ShelvesList';
+import BookShelfList from '../../components/admin/shelves/BookShelfList';
 export default {
   layout: 'admin',
   components: {
-    ShelvesList
+    BookShelfList
   }
 };
 </script>
