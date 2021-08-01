@@ -1,16 +1,5 @@
 <template>
   <v-card>
-    <v-card-title>
-      Book Shelves
-      <v-spacer />
-      <v-text-field
-        v-model="search"
-        label="Search"
-        clearable
-        single-line
-        hide-details
-      />
-    </v-card-title>
     <v-data-table
       v-model="selected"
       :headers="headers"
@@ -20,20 +9,36 @@
       :options.sync="pagination"
       :loading="loading"
       :height="height"
+      @click:row="onShelfClick"
       dense
       item-key="id"
       class="elevation-1"
       loading-text="Loading... Please wait"
-      @click:row="onShelfClick"
     >
       <template v-slot:top>
-        <add-edit-shelf
-          :title="formTitle"
-          :dialog="dialog"
-          :edited-item="editedItem"
-          @save="save"
-          @close="close"
-        />
+        <v-toolbar flat>
+          <v-toolbar-title>Book Shelves</v-toolbar-title>
+          <v-spacer />
+          <v-text-field
+            v-model="search"
+            label="Search"
+            clearable
+            single-line
+            hide-details
+          />
+          <v-divider
+            class="mx-4"
+            inset
+            vertical
+          ></v-divider>
+          <v-btn
+            class="ma-2"
+            outlined
+          >
+            <v-icon left>mdi-plus</v-icon>
+            Book Shelf
+          </v-btn>
+        </v-toolbar>
       </template>
       <template v-slot:item.map="{}">
         <v-icon
@@ -51,6 +56,13 @@
         </v-icon>
       </template>
     </v-data-table>
+    <add-edit-shelf
+      :title="formTitle"
+      :dialog="dialog"
+      :edited-item="editedItem"
+      @save="save"
+      @close="close"
+    />
   </v-card>
 </template>
 
