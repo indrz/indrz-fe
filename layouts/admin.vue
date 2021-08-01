@@ -7,6 +7,7 @@
       @drawerClick="onDrawerClick"
     />
     <v-app-bar
+      clipped-left
       v-if="isUserSignedIn"
       app
       color="indigo"
@@ -18,8 +19,8 @@
       <v-spacer />
       <user-menu />
     </v-app-bar>
-    <v-main style="padding-top: 0px">
-      <v-container :class="isPoiManager ? 'admin-map-container' : ''">
+    <v-main>
+      <v-container :class="isPoiManager ? 'admin-map-container' : 'pages'">
         <nuxt />
       </v-container>
     </v-main>

@@ -316,14 +316,14 @@ export default {
 <style lang="scss" scoped>
   .save-btn-panel {
     position: absolute;
-    top: 70px;
+    top: 20px;
     position: absolute;
     left: calc(50% - 70px);
   }
   .poi {
     position: absolute;
     left: 10px;
-    top: 70px;
+    top: 20px;
     background: white;
     padding: 15px;
     border-radius: 5px;

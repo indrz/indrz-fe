@@ -1,5 +1,10 @@
 <template>
-  <v-navigation-drawer v-model="drawerState" app>
+  <v-navigation-drawer
+    v-model="drawerState"
+    fixed
+    app
+    clipped
+  >
     <v-list dense>
       <v-list-item
         v-for="menuItem in menuItems"
