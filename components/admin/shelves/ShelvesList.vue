@@ -144,7 +144,7 @@ export default {
   computed: {
     ...mapState({
       shelvesListData: function (state) {
-        const { data, total } = state.user.shelves;
+        const { data, total } = state.shelf.shelves;
         this.total = total;
 
         return data;
@@ -194,7 +194,7 @@ export default {
 
       this
         .$store
-        .dispatch('user/LOAD_SHELVES', query)
+        .dispatch('shelf/LOAD_SHELVES', query)
         .catch((err) => {
           console.log(err);
         })
