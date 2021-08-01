@@ -1,56 +1,57 @@
 <template>
-  <div>
-    <v-card>
-      <v-card-title>
-        Regal
-        <v-spacer />
-        <v-text-field
-          v-model="search"
-          label="Search"
-          clearable
-          single-line
-          hide-details
+  <v-card>
+    <v-card-title>
+      Book Shelves
+      <v-spacer />
+      <v-text-field
+        v-model="search"
+        label="Search"
+        clearable
+        single-line
+        hide-details
+      />
+    </v-card-title>
+    <v-data-table
+      v-model="selected"
+      :headers="headers"
+      :items="shelvesListData"
+      :server-items-length="total"
+      :single-select="singleSelect"
+      :options.sync="pagination"
+      :loading="loading"
+      :height="height"
+      dense
+      item-key="id"
+      class="elevation-1"
+      loading-text="Loading... Please wait"
+      @click:row="onShelfClick"
+    >
+      <template v-slot:top>
+        <add-edit-shelf
+          :title="formTitle"
+          :dialog="dialog"
+          :edited-item="editedItem"
+          @save="save"
+          @close="close"
         />
-      </v-card-title>
-      <v-data-table
-        v-model="selected"
-        :headers="headers"
-        :items="shelvesListData"
-        :server-items-length="total"
-        :single-select="singleSelect"
-        :options.sync="pagination"
-        :loading="loading"
-        item-key="id"
-        class="elevation-1"
-        loading-text="Loading... Please wait"
-      >
-        <template v-slot:top>
-          <add-edit-shelf
-            :title="formTitle"
-            :dialog="dialog"
-            :edited-item="editedItem"
-            @save="save"
-            @close="close"
-          />
-        </template>
-        <template v-slot:item.map="{}">
-          <v-icon
-            small
-          >
-            mdi-map
-          </v-icon>
-        </template>
-        <template v-slot:item.edit="{ item }">
-          <v-icon
-            @click="editItem(item)"
-            small
-          >
-            mdi-pencil
-          </v-icon>
-        </template>
-      </v-data-table>
-    </v-card>
-  </div>
+      </template>
+      <template v-slot:item.map="{}">
+        <v-icon
+          small
+        >
+          mdi-map
+        </v-icon>
+      </template>
+      <template v-slot:item.edit="{ item }">
+        <v-icon
+          @click="editItem(item)"
+          small
+        >
+          mdi-pencil
+        </v-icon>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>
@@ -63,6 +64,12 @@ import AddEditShelf from './AddEditShelf';
 export default {
   name: 'BookShelfList',
   components: { AddEditShelf },
+  props: {
+    height: {
+      type: Number,
+      default: 285
+    }
+  },
   data () {
     return {
       loading: false,
@@ -203,8 +210,12 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST'
+      loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
+      setSelectedShelf: 'shelf/SET_SELECTED_SHELF'
     }),
+    onShelfClick (shelf) {
+      this.setSelectedShelf(shelf);
+    },
     async loadData (term) {
       if (this.loading) {
         return;
