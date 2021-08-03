@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import BookShelfList from '@/components/admin/shelves/BookShelfList';
 import ShelfDataList from '@/components/admin/shelves/ShelfDataList';
 export default {
@@ -21,6 +22,18 @@ export default {
   components: {
     ShelfDataList,
     BookShelfList
+  },
+  mounted () {
+    Promise.all([
+      this.loadFloors(),
+      this.loadBuildings()
+    ])
+  },
+  methods: {
+    ...mapActions({
+      loadFloors: 'floor/LOAD_FLOORS',
+      loadBuildings: 'building/LOAD_BUILDINGS'
+    })
   }
 };
 </script>
