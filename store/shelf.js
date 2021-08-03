@@ -1,6 +1,4 @@
-import axios from 'axios';
 import api from '@/util/api';
-import config from '@/util/indrzConfig';
 
 const initialShelves = {
   data: [],
@@ -59,18 +57,21 @@ export const actions = {
     commit('setShelfData', shelfData);
   },
 
-  SAVE_SHELF ({ commit }, payload) {
-    const url = `${config.baseApiUrl}/shelf/${payload.id}/`;
+  async SAVE_SHELF ({ commit }, data) {
+    let endPoint = `bookway/bookshelf/`;
+    let apiRequest = api.postRequest;
 
-    return axios({
-      method: 'PUT',
-      url: url,
-      data: payload,
-      headers: {
-        Authorization: config.token,
-        'Content-Type': 'application/json'
-      }
+    if (data.id) {
+      apiRequest = api.putRequest;
+      endPoint = `${endPoint}${data.id}`
+    }
+
+    const response = await apiRequest({
+      data: data,
+      endPoint
     });
+
+    return response.data;
   }
 };
 

@@ -14,43 +14,48 @@
         </v-btn>
       </v-toolbar>
       <v-card-text>
-        <v-form>
+        <v-form
+          ref="form"
+          v-model="valid"
+          lazy-validation
+        >
           <v-container>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.external_id" label="External Id" />
+                <v-text-field v-model="currentShelf.external_id" :rules="requiredRule" label="External Id" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.geom" label="Geometry" />
+                <v-text-field v-model="currentShelf.geom" label="Geometry" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.left_from_label" label="Left From Label" />
+                <v-text-field v-model="currentShelf.left_from_label" label="Left From Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.left_to_label" label="Left To Label" />
+                <v-text-field v-model="currentShelf.left_to_label" label="Left To Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.right_from_label" label="Right From Label" />
+                <v-text-field v-model="currentShelf.right_from_label" label="Right From Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.right_to_label" label="Right To Label" />
+                <v-text-field v-model="currentShelf.right_to_label" label="Right To Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-select
-                  v-model="editedItem.building"
+                  v-model="currentShelf.building"
                   :items="buildings"
+                  :rules="requiredRule"
                   item-text="building_name"
                   item-value="id"
                   label="Building"
@@ -60,8 +65,9 @@
             <v-row no-gutters>
               <v-col>
                 <v-select
-                  v-model="editedItem.building_floor"
+                  v-model="currentShelf.building_floor"
                   :items="floors"
+                  :rules="requiredRule"
                   item-text="short_name"
                   item-value="id"
                   label="Building Floor"
@@ -70,28 +76,28 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field type="number" min="0" v-model="editedItem.length" label="Length in m" />
+                <v-text-field v-model="currentShelf.length" type="number" min="0" label="Length in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field type="number" min="0" v-model="editedItem.width" label="Width in m" />
+                <v-text-field v-model="currentShelf.width" type="number" min="0" label="Width in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field type="number" min="0" v-model="editedItem.depth" label="Depth in m" />
+                <v-text-field v-model="currentShelf.depth" type="number" min="0" label="Depth in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field type="number" v-model="editedItem.rotation" label="Rotation angle" />
+                <v-text-field v-model="currentShelf.rotation" type="number" label="Rotation angle" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-select
-                  v-model="editedItem.double_sided"
+                  v-model="currentShelf.double_sided"
                   :items="doubleSidedItems"
                   item-text="text"
                   item-value="value"
@@ -109,7 +115,7 @@
           Cancel
         </v-btn>
         <v-btn
-          :disabled="loading"
+          :disabled="loading || !valid"
           :loading="loading"
           @click="save"
           outlined
@@ -126,7 +132,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'AddEditShelf',
@@ -143,7 +149,7 @@ export default {
         return false;
       }
     },
-    editedItem: {
+    currentShelf: {
       type: Object,
       default: function () {
         return {};
@@ -153,10 +159,14 @@ export default {
   data () {
     return {
       loading: false,
+      valid: true,
       doubleSidedItems: [
         { text: 'Unknown', value: null },
         { text: 'Yes', value: true },
         { text: 'No', value: false }
+      ],
+      requiredRule: [
+        v => !!v || 'This field is required.'
       ]
     };
   },
@@ -167,12 +177,25 @@ export default {
     })
   },
   methods: {
+    ...mapActions({
+      saveShelf: 'shelf/SAVE_SHELF'
+    }),
     close () {
+      this.$refs.form.reset();
+      this.$refs.form.resetValidation();
       this.$emit('close');
     },
-    save () {
+    async save () {
+      if (!this.$refs.form.validate()) {
+        return;
+      }
       this.loading = true;
-      this.$store.dispatch('SAVE_SHELF', this.editedItem)
+
+      const shelf = await this.saveShelf(this.currentShelf);
+      console.log(shelf);
+      this.loading = false;
+      this.close();
+      /* this.$store.dispatch('SAVE_SHELF', this.currentShelf)
         .then((response) => {
           this.$emit('save');
         })
@@ -181,7 +204,7 @@ export default {
         })
         .finally(() => {
           this.loading = false;
-        });
+        }); */
     }
   }
 };

@@ -64,7 +64,7 @@
     <add-edit-shelf
       :title="formTitle"
       :dialog="dialog"
-      :edited-item="editedItem"
+      :current-shelf="editedItem"
       @save="save"
       @close="close"
     />
