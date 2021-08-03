@@ -48,41 +48,55 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.building" label="Building" />
+                <v-select
+                  v-model="editedItem.building"
+                  :items="buildings"
+                  item-text="building_name"
+                  item-value="id"
+                  label="Building"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.building_floor" label="Building Floor" />
+                <v-select
+                  v-model="editedItem.building_floor"
+                  :items="floors"
+                  item-text="short_name"
+                  item-value="id"
+                  label="Building Floor"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.length" label="Length in m" />
+                <v-text-field type="number" min="0" v-model="editedItem.length" label="Length in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.width" label="Width in m" />
+                <v-text-field type="number" min="0" v-model="editedItem.width" label="Width in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.depth" label="Depth in m" />
+                <v-text-field type="number" min="0" v-model="editedItem.depth" label="Depth in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="editedItem.rotation" label="Rotation angle of the bookshelf" />
+                <v-text-field type="number" v-model="editedItem.rotation" label="Rotation angle" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-select
                   v-model="editedItem.double_sided"
-                  :items="['Unknown', 'Yes', 'No']"
+                  :items="doubleSidedItems"
+                  item-text="text"
+                  item-value="value"
                   label="Does the shelf have two sides"
-                ></v-select>
+                />
               </v-col>
             </v-row>
           </v-container>
@@ -112,6 +126,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
+
 export default {
   name: 'AddEditShelf',
   props: {
@@ -136,8 +152,19 @@ export default {
   },
   data () {
     return {
-      loading: false
+      loading: false,
+      doubleSidedItems: [
+        { text: 'Unknown', value: null },
+        { text: 'Yes', value: true },
+        { text: 'No', value: false }
+      ]
     };
+  },
+  computed: {
+    ...mapState({
+      floors: state => state.floor.floors,
+      buildings: state => state.building.buildings
+    })
   },
   methods: {
     close () {

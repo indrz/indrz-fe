@@ -32,8 +32,8 @@
             vertical
           />
           <v-btn
-            outlined
             @click="addBookShelf"
+            outlined
           >
             <v-icon left>
               mdi-plus
@@ -41,6 +41,9 @@
             Book Shelf
           </v-btn>
         </v-toolbar>
+      </template>
+      <template v-slot:item.building="{item}">
+        {{getBuildingName(item.building)}}
       </template>
       <template v-slot:item.map="{}">
         <v-icon
@@ -69,7 +72,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import api from '../../../util/api';
@@ -102,13 +105,14 @@ export default {
         },
         {
           text: 'External Id',
-          align: 'right',
+          align: 'left',
           sortable: false,
-          value: 'external_id'
+          value: 'external_id',
+          width: 90
         },
         {
           text: 'Building',
-          align: 'right',
+          align: 'left',
           filterable: false,
           sortable: false,
           value: 'building'
@@ -191,10 +195,21 @@ export default {
           tableData.push({ ...d.properties, id: d.id, geometry: d.geometry });
         });
         return tableData;
-      }
+      },
+      floors: state => state.floor.floors,
+      buildings: state => state.building.buildings
+    }),
+    ...mapGetters({
+      getBuildingName: 'building/getBuildingName'
     }),
     formTitle () {
       return this.editedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
+    },
+    firstFloor () {
+      return this.floors && this.floors.length ? this.floors[0].id : null;
+    },
+    firstBuilding () {
+      return this.buildings && this.buildings.length ? this.buildings[0].id : null;
     }
   },
   watch: {
@@ -248,7 +263,12 @@ export default {
     },
 
     addBookShelf () {
-      this.editedItem = Object.assign({ double_sided: 'Yes' });
+      this.editedItem = Object.assign({
+        double_sided: true,
+        geom: 'SRID=3857;MULTILINESTRING((1826591.54074498 6142466.7599126,1826596.22332136 6142463.08341735))',
+        building: this.firstBuilding,
+        building_floor: this.firstFloor
+      });
       this.dialog = true;
     },
 
