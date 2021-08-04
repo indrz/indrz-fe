@@ -12,7 +12,8 @@ const initialShelfData = {
 export const state = () => ({
   shelves: initialShelves,
   shelfData: initialShelfData,
-  selectedShelf: null
+  selectedShelf: null,
+  lastShelfQuery: null
 });
 
 export const mutations = {
@@ -24,13 +25,16 @@ export const mutations = {
   },
   setShelfData (state, shelfData) {
     state.shelfData = shelfData;
+  },
+  setLastShelfQuery (state, query) {
+    state.lastShelfQuery = query;
   }
 };
 
 export const actions = {
-  async LOAD_BOOKSHELF_LIST ({ commit }, payload) {
+  async LOAD_BOOKSHELF_LIST ({ commit }, query) {
     const endPoint = `bookway/bookshelf/`;
-    const urlWithParams = api.getURLParamsFromPayLoad(payload);
+    const urlWithParams = api.getURLParamsFromPayLoad(query);
 
     const { data } = await api.request({
       endPoint: `${endPoint}${urlWithParams}`
@@ -40,6 +44,7 @@ export const actions = {
       data: data.results.features,
       total: data.count
     };
+    commit('setLastShelfQuery', query);
     commit('setShelves', shelfListData);
     commit('setShelfData', initialShelfData);
     commit('setSelectedShelf', null);
@@ -57,7 +62,7 @@ export const actions = {
     commit('setShelfData', shelfData);
   },
 
-  async SAVE_SHELF ({ commit }, data) {
+  async SAVE_SHELF ({ state, commit, dispatch }, data) {
     let endPoint = `bookway/bookshelf/`;
     let apiRequest = api.postRequest;
 
@@ -70,6 +75,8 @@ export const actions = {
       data: data,
       endPoint
     });
+
+    await dispatch('LOAD_BOOKSHELF_LIST', state.lastShelfQuery);
 
     return response.data;
   }
