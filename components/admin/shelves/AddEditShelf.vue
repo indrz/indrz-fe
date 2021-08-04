@@ -191,20 +191,10 @@ export default {
       }
       this.loading = true;
 
-      const shelf = await this.saveShelf(this.currentShelf);
-      console.log(shelf);
+      await this.saveShelf(this.currentShelf);
+
       this.loading = false;
       this.close();
-      /* this.$store.dispatch('SAVE_SHELF', this.currentShelf)
-        .then((response) => {
-          this.$emit('save');
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading = false;
-        }); */
     }
   }
 };
