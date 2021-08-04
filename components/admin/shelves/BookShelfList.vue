@@ -43,7 +43,7 @@
         </v-toolbar>
       </template>
       <template v-slot:item.building="{item}">
-        {{getBuildingName(item.building)}}
+        {{ getBuildingName(item.building) }}
       </template>
       <template v-slot:item.map="{}">
         <v-icon
@@ -60,13 +60,26 @@
           mdi-pencil
         </v-icon>
       </template>
+      <template v-slot:item.delete="{}">
+        <v-icon
+          @click="showConfirmDeleteShelf = true"
+          small
+        >
+          mdi-delete
+        </v-icon>
+      </template>
     </v-data-table>
     <add-edit-shelf
       :title="formTitle"
-      :dialog="dialog"
+      :dialog="addEditDialog"
       :current-shelf="editedItem"
-      @save="save"
-      @close="close"
+      @close="addEditDialogClose"
+    />
+    <confirm-dialog
+      :show="showConfirmDeleteShelf"
+      :message="deleteShelfConfirmMessage"
+      @cancelClick="showConfirmDeleteShelf = false"
+      @confirmClick="deleteBookShelf"
     />
   </v-card>
 </template>
@@ -75,12 +88,13 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
-import api from '../../../util/api';
+import api from '@/util/api';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelf from './AddEditShelf';
 
 export default {
   name: 'BookShelfList',
-  components: { AddEditShelf },
+  components: { ConfirmDialog, AddEditShelf },
   props: {
     height: {
       type: Number,
@@ -91,7 +105,8 @@ export default {
     return {
       loading: false,
       singleSelect: false,
-      dialog: false,
+      addEditDialog: false,
+      showConfirmDeleteShelf: false,
       selected: [],
       pagination: {},
       search: '',
@@ -163,7 +178,8 @@ export default {
           value: 'right_to_label'
         },
         { text: 'Map', value: 'map', sortable: false, filterable: false, width: '56px' },
-        { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' }
+        { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' },
+        { text: 'Delete', value: 'delete', sortable: false, filterable: false, width: '56px' }
       ],
       editedIndex: -1,
       editedItem: {},
@@ -180,7 +196,8 @@ export default {
         side: 'L',
         system_from: null,
         system_to: null
-      }
+      },
+      deleteShelfConfirmMessage: 'All shelf data will be deleted. DO YOU REALLY WANT TO DELETE THE BOOKSHELF?'
     };
   },
   computed: {
@@ -196,6 +213,7 @@ export default {
         });
         return tableData;
       },
+      selectedShelf: state => state.shelf.selectedShelf,
       floors: state => state.floor.floors,
       buildings: state => state.building.buildings
     }),
@@ -216,8 +234,8 @@ export default {
     search (text) {
       this.term$.next(text);
     },
-    dialog (val) {
-      val || this.close();
+    addEditDialog (val) {
+      val || this.addEditDialogClose();
     },
     pagination: {
       handler () {
@@ -269,34 +287,26 @@ export default {
         building: this.firstBuilding,
         building_floor: this.firstFloor
       });
-      this.dialog = true;
+      this.addEditDialog = true;
     },
 
     editBookShelf (item) {
       this.editedIndex = this.shelvesListData.indexOf(item);
       this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+      this.addEditDialog = true;
     },
 
-    close () {
-      this.dialog = false;
+    deleteBookShelf () {
+      this.showConfirmDeleteShelf = false;
+      // console.log(this.selectedShelf)
+    },
+
+    addEditDialogClose () {
+      this.addEditDialog = false;
       setTimeout(() => {
         this.editedItem = Object.assign({}, this.defaultItem);
         this.editedIndex = -1;
       }, 300);
-    },
-
-    save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.shelvesListData[this.editedIndex], this.editedItem);
-      }
-      // We are not adding shelf yet. So commenting out the following line
-      /*
-      else {
-        this.shelvesListData.push(this.editedItem);
-      }
-      */
-      this.close();
     }
   }
 };
