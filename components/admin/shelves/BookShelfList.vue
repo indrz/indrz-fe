@@ -78,8 +78,9 @@
     <confirm-dialog
       :show="showConfirmDeleteShelf"
       :message="deleteShelfConfirmMessage"
+      :busy="loading"
       @cancelClick="showConfirmDeleteShelf = false"
-      @confirmClick="deleteBookShelf"
+      @confirmClick="confirmDeleteBookShelf"
     />
   </v-card>
 </template>
@@ -258,6 +259,7 @@ export default {
   methods: {
     ...mapActions({
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
+      deleteBookShelf: 'shelf/DELETE_SHELF',
       setSelectedShelf: 'shelf/SET_SELECTED_SHELF'
     }),
     onShelfClick (shelf) {
@@ -296,9 +298,13 @@ export default {
       this.addEditDialog = true;
     },
 
-    deleteBookShelf () {
+    async confirmDeleteBookShelf () {
+      this.loading = true;
+
+      await this.deleteBookShelf(this.selectedShelf);
+
       this.showConfirmDeleteShelf = false;
-      // console.log(this.selectedShelf)
+      this.loading = false;
     },
 
     addEditDialogClose () {
