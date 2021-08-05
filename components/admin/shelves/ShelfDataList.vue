@@ -21,15 +21,6 @@
         class="elevation-1"
         loading-text="Loading... Please wait"
       >
-        <template v-slot:top>
-          <add-edit-shelf
-            :title="formTitle"
-            :dialog="dialog"
-            :edited-item="editedItem"
-            @save="save"
-            @close="close"
-          />
-        </template>
         <template v-slot:item.map="{}">
           <v-icon
             small
@@ -39,13 +30,19 @@
         </template>
         <template v-slot:item.edit="{ item }">
           <v-icon
-            @click="editItem(item)"
+            @click="editShelfData(item)"
             small
           >
             mdi-pencil
           </v-icon>
         </template>
       </v-data-table>
+      <add-edit-shelf-data
+        :title="shelfDataFormTitle"
+        :dialog="shelfDataAddEditDialog"
+        :current-shelf-data="shelfDataEditedItem"
+        @close="shelfDataAddEditDialogClose"
+      />
     </v-card>
   </div>
 </template>
@@ -53,11 +50,11 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import api from '@/util/api';
-import AddEditShelf from './AddEditShelf';
+import AddEditShelfData from './AddEditShelfData';
 
 export default {
   name: 'ShelfDataList',
-  components: { AddEditShelf },
+  components: { AddEditShelfData },
   props: {
     height: {
       type: Number,
@@ -68,7 +65,7 @@ export default {
     return {
       loading: false,
       singleSelect: false,
-      dialog: false,
+      shelfDataAddEditDialog: false,
       selected: [],
       pagination: {},
       headers: [
@@ -120,8 +117,8 @@ export default {
         },
         { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' }
       ],
-      editedIndex: -1,
-      editedItem: {},
+      shelfDataEditedIndex: -1,
+      shelfDataEditedItem: {},
       defaultItem: {
         bookshelf_id: null,
         external_id: null,
@@ -152,15 +149,23 @@ export default {
           return 'No shelf data found';
         }
         return 'No book shelf selected';
-      }
+      },
+      floors: state => state.floor.floors,
+      buildings: state => state.building.buildings
     }),
-    formTitle () {
-      return this.editedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
+    shelfDataFormTitle () {
+      return this.shelfDataEditedIndex === -1 ? 'New Shelf Data' : 'Edit Shelf Data';
+    },
+    firstFloor () {
+      return this.floors && this.floors.length ? this.floors[0].id : null;
+    },
+    firstBuilding () {
+      return this.buildings && this.buildings.length ? this.buildings[0].id : null;
     }
   },
   watch: {
-    dialog (val) {
-      val || this.close();
+    shelfDataAddEditDialog (val) {
+      val || this.shelfDataAddEditDialogClose();
     },
     pagination: {
       handler () {
@@ -193,31 +198,26 @@ export default {
       this.loading = false;
     },
 
-    editItem (item) {
-      this.editedIndex = this.shelfListData.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+    addShelfData () {
+      this.shelfDataEditedItem = Object.assign({
+        building: this.firstBuilding,
+        building_floor: this.firstFloor
+      });
+      this.shelfDataAddEditDialog = true;
     },
 
-    close () {
-      this.dialog = false;
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+    editShelfData (item) {
+      this.shelfDataEditedIndex = this.shelfListData.indexOf(item);
+      this.shelfDataEditedItem = Object.assign({}, item);
+      this.shelfDataAddEditDialog = true;
     },
 
-    save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.shelfListData[this.editedIndex], this.editedItem);
-      }
-      // We are not adding shelf yet. So commenting out the following line
-      /*
-      else {
-        this.shelfListData.push(this.editedItem);
-      }
-      */
-      this.close();
+    shelfDataAddEditDialogClose () {
+      this.shelfDataAddEditDialog = false;
+      /* setTimeout(() => {
+        this.shelfDataEditedItem = Object.assign({}, this.defaultItem);
+        this.shelfDataEditedIndex = -1;
+      }, 300); */
     }
   }
 };
