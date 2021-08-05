@@ -76,22 +76,22 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.length" type="number" min="0" label="Length in m" />
+                <v-text-field v-model="currentShelf.length" type="number" min="0" step="0.01" label="Length in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.width" type="number" min="0" label="Width in m" />
+                <v-text-field v-model="currentShelf.width" type="number" min="0" step="0.01" label="Width in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.depth" type="number" min="0" label="Depth in m" />
+                <v-text-field v-model="currentShelf.depth" type="number" min="0" step="0.01" label="Depth in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.rotation" type="number" label="Rotation angle" />
+                <v-text-field v-model="currentShelf.rotation" type="number" step="0.01" label="Rotation angle" />
               </v-col>
             </v-row>
             <v-row no-gutters>
