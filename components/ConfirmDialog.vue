@@ -11,6 +11,7 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
+          :disabled="busy"
           @click="onConfirmClick"
           color="error darken-1"
           text
@@ -18,6 +19,7 @@
           {{ yesText }}
         </v-btn>
         <v-btn
+          :loading="busy"
           @click="onCancelClick"
           color="blue darken-1"
           text
@@ -48,6 +50,10 @@ export default {
     yesText: {
       type: String,
       default: 'Yes'
+    },
+    busy: {
+      type: Boolean,
+      default: false
     }
   },
   methods: {

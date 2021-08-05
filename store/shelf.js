@@ -1,5 +1,7 @@
 import api from '@/util/api';
 
+const shelfEndpoint = `bookway/bookshelf/`;
+
 const initialShelves = {
   data: [],
   total: 0
@@ -33,11 +35,10 @@ export const mutations = {
 
 export const actions = {
   async LOAD_BOOKSHELF_LIST ({ commit }, query) {
-    const endPoint = `bookway/bookshelf/`;
     const urlWithParams = api.getURLParamsFromPayLoad(query);
 
     const { data } = await api.request({
-      endPoint: `${endPoint}${urlWithParams}`
+      endPoint: `${shelfEndpoint}${urlWithParams}`
     });
 
     const shelfListData = {
@@ -63,17 +64,29 @@ export const actions = {
   },
 
   async SAVE_SHELF ({ state, commit, dispatch }, data) {
-    let endPoint = `bookway/bookshelf/`;
     let apiRequest = api.postRequest;
+    let endPoint = shelfEndpoint;
 
     if (data.id) {
       apiRequest = api.putRequest;
-      endPoint = `${endPoint}${data.id}`
+      endPoint = `${shelfEndpoint}${data.id}`
     }
 
     const response = await apiRequest({
       data: data,
       endPoint
+    });
+
+    await dispatch('LOAD_BOOKSHELF_LIST', state.lastShelfQuery);
+
+    return response.data;
+  },
+
+  async DELETE_SHELF ({ state, commit, dispatch }, data) {
+    const response = await api.postRequest({
+      endPoint: `${shelfEndpoint}${data.id}`,
+      method: 'DELETE',
+      data: {}
     });
 
     await dispatch('LOAD_BOOKSHELF_LIST', state.lastShelfQuery);
