@@ -1,10 +1,6 @@
 <template>
   <div>
     <v-card>
-      <v-card-title>
-        Shelf Data
-        <v-spacer />
-      </v-card-title>
       <v-data-table
         v-model="selected"
         :headers="headers"
@@ -21,12 +17,21 @@
         class="elevation-1"
         loading-text="Loading... Please wait"
       >
-        <template v-slot:item.map="{}">
-          <v-icon
-            small
-          >
-            mdi-map
-          </v-icon>
+        <template v-slot:top>
+          <v-toolbar flat>
+            <v-toolbar-title>Shelf Data</v-toolbar-title>
+            <v-spacer />
+            <v-btn
+              :disabled="!selectedShelf || shelfDataAddEditDialog"
+              @click="addShelfData"
+              outlined
+            >
+              <v-icon left>
+                mdi-plus
+              </v-icon>
+              Shelf Data
+            </v-btn>
+          </v-toolbar>
         </template>
         <template v-slot:item.edit="{ item }">
           <v-icon
@@ -151,7 +156,8 @@ export default {
         return 'No book shelf selected';
       },
       floors: state => state.floor.floors,
-      buildings: state => state.building.buildings
+      buildings: state => state.building.buildings,
+      selectedShelf: state => state.shelf.selectedShelf
     }),
     shelfDataFormTitle () {
       return this.shelfDataEditedIndex === -1 ? 'New Shelf Data' : 'Edit Shelf Data';
