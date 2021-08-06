@@ -32,6 +32,7 @@
             vertical
           />
           <v-btn
+            :disabled="bookShelfAddEditDialog"
             @click="addBookShelf"
             outlined
           >
@@ -45,25 +46,27 @@
       <template v-slot:item.building="{item}">
         {{ getBuildingName(item.building) }}
       </template>
-      <template v-slot:item.map="{}">
+      <template v-slot:item.building_floor="{item}">
+        {{ getFloorName(item.building_floor) }}
+      </template>
+      <template v-slot:item.actions="{ item }">
         <v-icon
           small
+          class="mr-1"
+          @click="editBookShelf(item)"
         >
           mdi-map
         </v-icon>
-      </template>
-      <template v-slot:item.edit="{ item }">
         <v-icon
-          @click="editBookShelf(item)"
           small
+          class="mr-1"
+          @click="editBookShelf(item)"
         >
           mdi-pencil
         </v-icon>
-      </template>
-      <template v-slot:item.delete="{}">
         <v-icon
-          @click="showConfirmDeleteShelf = true"
           small
+          @click="showConfirmDeleteShelf = true"
         >
           mdi-delete
         </v-icon>
@@ -131,14 +134,16 @@ export default {
           align: 'left',
           filterable: false,
           sortable: false,
-          value: 'building'
+          value: 'building',
+          width: 150
         },
         {
           text: 'Floor',
-          align: 'right',
+          align: 'left',
           filterable: false,
           sortable: false,
-          value: 'building_floor'
+          value: 'building_floor',
+          width: 100
         },
         {
           text: 'Length',
@@ -178,9 +183,7 @@ export default {
           sortable: true,
           value: 'right_to_label'
         },
-        { text: 'Map', value: 'map', sortable: false, filterable: false, width: '56px' },
-        { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' },
-        { text: 'Delete', value: 'delete', sortable: false, filterable: false, width: '56px' }
+        { text: '', value: 'actions', width: 120, sortable: false }
       ],
       bookShelfEditedIndex: -1,
       bookShelfEditedItem: {},
@@ -219,7 +222,8 @@ export default {
       buildings: state => state.building.buildings
     }),
     ...mapGetters({
-      getBuildingName: 'building/getBuildingName'
+      getBuildingName: 'building/getBuildingName',
+      getFloorName: 'floor/getFloorName'
     }),
     bookShelfFormTitle () {
       return this.bookShelfEditedIndex === -1 ? 'New Shelf' : 'Edit Shelf';

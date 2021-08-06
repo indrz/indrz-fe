@@ -30,6 +30,6 @@ export const getters = {
     if (building) {
       name = building.building_name;
     }
-    return name;
+    return name || id;
   }
 };
