@@ -223,16 +223,12 @@ export default {
     }),
     ...mapGetters({
       getBuildingName: 'building/getBuildingName',
-      getFloorName: 'floor/getFloorName'
+      firstBuilding: 'building/firstBuilding',
+      getFloorName: 'floor/getFloorName',
+      firstFloor: 'floor/firstFloor'
     }),
     bookShelfFormTitle () {
       return this.bookShelfEditedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
-    },
-    firstFloor () {
-      return this.floors && this.floors.length ? this.floors[0].id : null;
-    },
-    firstBuilding () {
-      return this.buildings && this.buildings.length ? this.buildings[0].id : null;
     }
   },
   watch: {
@@ -290,8 +286,8 @@ export default {
       this.bookShelfEditedItem = Object.assign({
         double_sided: true,
         geom: 'SRID=3857;MULTILINESTRING((1826591.54074498 6142466.7599126,1826596.22332136 6142463.08341735))',
-        building: this.firstBuilding,
-        building_floor: this.firstFloor
+        building: this.firstBuilding(),
+        building_floor: this.firstFloor()
       });
       this.bookShelfAddEditDialog = true;
     },
