@@ -217,8 +217,10 @@ export default {
     addShelfData () {
       this.shelfDataEditedItem = Object.assign({
         building: this.firstBuilding(),
-        building_floor: this.firstFloor()
+        building_floor: this.firstFloor(),
+        bookshelf: this.selectedShelf.id
       });
+
       this.shelfDataAddEditDialog = true;
     },
 
