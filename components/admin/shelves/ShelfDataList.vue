@@ -13,7 +13,6 @@
         :no-data-text="noDataText"
         item-key="id"
         dense
-        show-select
         class="elevation-1"
         loading-text="Loading... Please wait"
       >
@@ -33,12 +32,19 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <template v-slot:item.edit="{ item }">
+        <template v-slot:item.actions="{ item }">
           <v-icon
-            @click="editShelfData(item)"
             small
+            class="mr-1"
+            @click="editShelfData(item)"
           >
             mdi-pencil
+          </v-icon>
+          <v-icon
+            small
+            @click="showConfirmDeleteShelf = true"
+          >
+            mdi-delete
           </v-icon>
         </template>
       </v-data-table>
@@ -76,9 +82,10 @@ export default {
       headers: [
         {
           text: 'External Id',
-          align: 'right',
+          align: 'left',
           sortable: false,
-          value: 'external_id'
+          value: 'external_id',
+          width: 90
         },
         {
           text: 'Floor',
@@ -120,7 +127,7 @@ export default {
           sortable: false,
           value: 'measure_to'
         },
-        { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' }
+        { text: '', value: 'actions', sortable: false }
       ],
       shelfDataEditedIndex: -1,
       shelfDataEditedItem: {},

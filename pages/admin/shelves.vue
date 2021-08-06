@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <v-row>
       <v-col>
         <book-shelf-list />
@@ -10,7 +10,7 @@
         <shelf-data-list />
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>

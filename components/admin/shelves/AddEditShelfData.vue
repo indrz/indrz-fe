@@ -90,18 +90,6 @@
                 />
               </v-col>
             </v-row>
-            <v-row no-gutters>
-              <v-col>
-                <v-select
-                  v-model="currentShelfData.building_floor"
-                  :items="floors"
-                  :rules="requiredRule"
-                  item-text="short_name"
-                  item-value="id"
-                  label="Building Floor"
-                />
-              </v-col>
-            </v-row>
           </v-container>
         </v-form>
       </v-card-text>
