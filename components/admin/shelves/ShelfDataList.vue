@@ -32,6 +32,9 @@
             </v-btn>
           </v-toolbar>
         </template>
+        <template v-slot:item.building_floor="{item}">
+          {{ getFloorName(item.building_floor) }}
+        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon
             small
@@ -59,7 +62,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import api from '@/util/api';
 import AddEditShelfData from './AddEditShelfData';
 
@@ -166,14 +169,14 @@ export default {
       buildings: state => state.building.buildings,
       selectedShelf: state => state.shelf.selectedShelf
     }),
+    ...mapGetters({
+      getFloorName: 'floor/getFloorName',
+      firstBuilding: 'building/firstBuilding',
+      firstFloor: 'floor/firstFloor'
+
+    }),
     shelfDataFormTitle () {
       return this.shelfDataEditedIndex === -1 ? 'New Shelf Data' : 'Edit Shelf Data';
-    },
-    firstFloor () {
-      return this.floors && this.floors.length ? this.floors[0].id : null;
-    },
-    firstBuilding () {
-      return this.buildings && this.buildings.length ? this.buildings[0].id : null;
     }
   },
   watch: {
@@ -213,8 +216,8 @@ export default {
 
     addShelfData () {
       this.shelfDataEditedItem = Object.assign({
-        building: this.firstBuilding,
-        building_floor: this.firstFloor
+        building: this.firstBuilding(),
+        building_floor: this.firstFloor()
       });
       this.shelfDataAddEditDialog = true;
     },
