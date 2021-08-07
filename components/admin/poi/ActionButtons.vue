@@ -91,6 +91,6 @@ export default {
   .speed-btn-panel {
     position: absolute;
     right: 45px !important;
-    bottom: 70px !important;
+    bottom: 100px !important;
   }
 </style>

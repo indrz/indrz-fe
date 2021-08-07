@@ -1,0 +1,361 @@
+<template>
+  <div class="fill-height">
+    <div :id="mapId" :ref="map" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+    <div id="zoom-control" class="indrz-zoom-control" />
+    <div id="id-map-switcher-widget">
+      <v-btn
+        id="id-map-switcher"
+        @click="onMapSwitchClick"
+        color="rgba(0,60,136,0.5)"
+        min-width="95px"
+        class="pa-2"
+        small
+        dark
+      >
+        {{ isSatelliteMap ? "Satellite" : "Map" }}
+      </v-btn>
+    </div>
+    <div class="indrz-logo">
+      <a href="https://www.indrz.com" target="_blank">
+        <img id="indrz-logo" src="/images/indrz-powered-by-90px.png" alt="indrz logo">
+      </a>
+    </div>
+  </div>
+</template>
+
+<script>
+import 'ol/ol.css';
+import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Draw, Modify, Translate } from 'ol/interaction';
+import { MultiPoint, Point } from 'ol/geom';
+import { Vector as VectorSource } from 'ol/source';
+import { Vector as VectorLayer } from 'ol/layer';
+import { getHeight, getWidth, getCenter } from 'ol/extent';
+import {
+  never,
+  platformModifierKeyOnly,
+  primaryAction
+} from 'ol/events/condition';
+import config from '@/util/indrzConfig';
+import MapUtil from '@/util/map';
+
+const { env } = config;
+
+export default {
+  name: 'ShelfMap',
+  props: {
+  },
+  data () {
+    return {
+      mapId: 'shelfMapContainer',
+      map: null,
+      view: null,
+      popup: null,
+      layers: [],
+      isSatelliteMap: true,
+      modify: null
+    };
+  },
+  computed: {
+    env () {
+      return {
+        homePageUrl: env.HOME_PAGE_URL,
+        logo: env.LOGO_FILE,
+        baseApiUrl: env.BASE_API_URL,
+        token: env.TOKEN,
+        baseWmsUrl: env.BASE_WMS_URL,
+        geoServerLayerPrefix: env.GEO_SERVER_LAYER_PREFIX,
+        layerNamePrefix: env.LAYER_NAME_PREFIX,
+        center: env.DEFAULT_CENTER_XY
+      };
+    }
+  },
+  mounted () {
+    this.initializeMap();
+  },
+  methods: {
+    initializeMap () {
+      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
+
+      this.view = view;
+      this.map = map;
+      this.layers = layers;
+      this.popup = popup;
+
+      window.onresize = () => {
+        this.map.updateSize();
+        MapUtil.handleWindowResize(this.mapId);
+      };
+
+      this.$nextTick(() => {
+        this.map.updateSize();
+        this.test();
+      });
+      /* this.source = new VectorSource();
+      this.draw = new Draw({
+        source: this.source,
+        type: 'LineString',
+        maxPoints: 2
+      });
+      this.map.addInteraction(this.draw);
+
+      this.draw.on('drawend', function (evt) {
+        const coordinates = evt.feature.getGeometry().getCoordinates();
+        console.log(coordinates);
+      });
+
+      this.map.addInteraction(this.draw); */
+    },
+    onMapSwitchClick () {
+      const { baseLayers } = this.layers;
+
+      this.isSatelliteMap = !this.isSatelliteMap;
+
+      if (this.isSatelliteMap) {
+        baseLayers.ortho30cmBmapat.setVisible(false);
+        baseLayers.greyBmapat.setVisible(true);
+        return;
+      }
+      baseLayers.ortho30cmBmapat.setVisible(true);
+      baseLayers.greyBmapat.setVisible(false);
+    },
+    calculateCenter (geometry) {
+      let center, coordinates, minRadius;
+      const type = geometry.getType();
+      if (type === 'Polygon') {
+        let x = 0;
+        let y = 0;
+        let i = 0;
+        coordinates = geometry.getCoordinates()[0].slice(1);
+        coordinates.forEach(function (coordinate) {
+          x += coordinate[0];
+          y += coordinate[1];
+          i++;
+        });
+        center = [x / i, y / i];
+      } else if (type === 'LineString') {
+        center = geometry.getCoordinateAt(0.5);
+        coordinates = geometry.getCoordinates();
+      } else {
+        center = getCenter(geometry.getExtent());
+      }
+      let sqDistances;
+      if (coordinates) {
+        sqDistances = coordinates.map(function (coordinate) {
+          const dx = coordinate[0] - center[0];
+          const dy = coordinate[1] - center[1];
+          return dx * dx + dy * dy;
+        });
+        minRadius = Math.sqrt(Math.max.apply(Math, sqDistances)) / 3;
+      } else {
+        minRadius =
+          Math.max(
+            getWidth(geometry.getExtent()),
+            getHeight(geometry.getExtent())
+          ) / 3;
+      }
+      return {
+        center: center,
+        coordinates: coordinates,
+        minRadius: minRadius,
+        sqDistances: sqDistances
+      };
+    },
+    getDrawingVectorLayer (source) {
+      const style = new Style({
+        geometry: function (feature) {
+          const modifyGeometry = feature.get('modifyGeometry');
+          return modifyGeometry ? modifyGeometry.geometry : feature.getGeometry();
+        },
+        fill: new Fill({
+          color: 'rgba(255, 255, 255, 0.2)'
+        }),
+        stroke: new Stroke({
+          color: '#ffcc33',
+          width: 2
+        }),
+        image: new CircleStyle({
+          radius: 7,
+          fill: new Fill({
+            color: '#ffcc33'
+          })
+        })
+      });
+
+      return new VectorLayer({
+        source: source,
+        style: (feature) => {
+          const styles = [style];
+          const modifyGeometry = feature.get('modifyGeometry');
+          const geometry = modifyGeometry
+            ? modifyGeometry.geometry
+            : feature.getGeometry();
+          const result = this.calculateCenter(geometry);
+          const center = result.center;
+          if (center) {
+            styles.push(
+              new Style({
+                geometry: new Point(center),
+                image: new CircleStyle({
+                  radius: 4,
+                  fill: new Fill({
+                    color: '#ff3333'
+                  })
+                })
+              })
+            );
+            const coordinates = result.coordinates;
+            if (coordinates) {
+              const minRadius = result.minRadius;
+              const sqDistances = result.sqDistances;
+              const rsq = minRadius * minRadius;
+              const points = coordinates.filter(function (coordinate, index) {
+                return sqDistances[index] > rsq;
+              });
+              styles.push(
+                new Style({
+                  geometry: new MultiPoint(points),
+                  image: new CircleStyle({
+                    radius: 4,
+                    fill: new Fill({
+                      color: '#33cc33'
+                    })
+                  })
+                })
+              );
+            }
+          }
+          return styles;
+        }
+      });
+    },
+    addInteractions (source) {
+      this.draw = new Draw({
+        source: source,
+        type: 'LineString',
+        maxPoints: 2
+      });
+      this.map.addInteraction(this.draw);
+    },
+    test () {
+      const source = new VectorSource();
+
+      const vector = this.getDrawingVectorLayer(source);
+
+      this.map.addLayer(vector);
+
+      const defaultStyle = new Modify({ source: source })
+        .getOverlay()
+        .getStyleFunction();
+
+      const modify = new Modify({
+        source: source,
+        condition: function (event) {
+          return primaryAction(event) && !platformModifierKeyOnly(event);
+        },
+        deleteCondition: never,
+        insertVertexCondition: never,
+        style: function (feature) {
+          debugger;
+        },
+        style_: (feature) => {
+          feature.get('features').forEach(function (modifyFeature) {
+            const modifyGeometry = modifyFeature.get('modifyGeometry');
+            if (modifyGeometry) {
+              const point = feature.getGeometry().getCoordinates();
+              let modifyPoint = modifyGeometry.point;
+              if (!modifyPoint) {
+                // save the initial geometry and vertex position
+                modifyPoint = point;
+                modifyGeometry.point = modifyPoint;
+                modifyGeometry.geometry0 = modifyGeometry.geometry;
+                // get anchor and minimum radius of vertices to be used
+                const result = this.calculateCenter(modifyGeometry.geometry0);
+                modifyGeometry.center = result.center;
+                modifyGeometry.minRadius = result.minRadius;
+              }
+
+              const center = modifyGeometry.center;
+              const minRadius = modifyGeometry.minRadius;
+              let dx, dy;
+              dx = modifyPoint[0] - center[0];
+              dy = modifyPoint[1] - center[1];
+              const initialRadius = Math.sqrt(dx * dx + dy * dy);
+              if (initialRadius > minRadius) {
+                const initialAngle = Math.atan2(dy, dx);
+                dx = point[0] - center[0];
+                dy = point[1] - center[1];
+                const currentRadius = Math.sqrt(dx * dx + dy * dy);
+                if (currentRadius > 0) {
+                  const currentAngle = Math.atan2(dy, dx);
+                  const geometry = modifyGeometry.geometry0.clone();
+                  geometry.scale(currentRadius / initialRadius, undefined, center);
+                  geometry.rotate(currentAngle - initialAngle, center);
+                  modifyGeometry.geometry = geometry;
+                }
+              }
+            }
+          });
+          return defaultStyle(feature);
+        }
+      });
+
+      modify.on('modifystart', function (event) {
+        debugger;
+        event.features.forEach(function (feature) {
+          feature.set(
+            'modifyGeometry',
+            { geometry: feature.getGeometry().clone() },
+            true
+          );
+        });
+      });
+
+      modify.on('modifyend', function (event) {
+        debugger;
+        event.features.forEach(function (feature) {
+          const modifyGeometry = feature.get('modifyGeometry');
+          if (modifyGeometry) {
+            feature.setGeometry(modifyGeometry.geometry);
+            feature.unset('modifyGeometry', true);
+          }
+        });
+      });
+
+      this.map.addInteraction(modify);
+      this.map.addInteraction(
+        new Translate({
+          condition: function (event) {
+            return primaryAction(event) && platformModifierKeyOnly(event);
+          },
+          layers: [vector]
+        })
+      );
+
+      this.addInteractions(source);
+    }
+  }
+};
+</script>
+
+<style scoped>
+  .indrz-logo {
+    position: absolute; /* or absolute */
+    bottom: 80px;
+    left: calc(50% - 45px);
+    z-index: 5;
+  }
+  #shelfMapContainer {
+    height: calc(100vh - 75px) !important;
+  }
+  .indrz-zoom-control {
+    right: 50px !important;
+    bottom: 170px !important;
+    position: absolute;
+  }
+  #id-map-switcher-widget {
+    position: absolute;
+    right: 45px !important;
+    bottom: 115px !important;
+  }
+</style>
