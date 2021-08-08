@@ -79,7 +79,7 @@ export const actions = {
 
     if (data.id) {
       apiRequest = api.putRequest;
-      endPoint = `${bookShelfEndpoint}${data.id}`
+      endPoint = `${bookShelfEndpoint}${data.id}/`
     }
 
     const response = await apiRequest({
@@ -110,12 +110,12 @@ export const actions = {
 
     if (data.id) {
       apiRequest = api.putRequest;
-      endPoint = `${shelfDataEndpoint}${data.id}`
+      endPoint = `${shelfDataEndpoint}${data.id}/`
     }
 
     const response = await apiRequest({
       data: data,
-      endPoint
+      endPoint: `bookway${endPoint}`
     });
 
     await dispatch('SET_SELECTED_SHELF', state.selectedShelf);
@@ -125,7 +125,7 @@ export const actions = {
 
   async DELETE_SHELF_DATA ({ state, commit, dispatch }, data) {
     const response = await api.postRequest({
-      endPoint: `${shelfDataEndpoint}${data.id}`,
+      endPoint: `bookway${shelfDataEndpoint}${data.id}/`,
       method: 'DELETE',
       data: {}
     });
