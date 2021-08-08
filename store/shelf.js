@@ -63,11 +63,11 @@ export const actions = {
       commit('setShelfData', initialShelfData);
       return;
     }
-    const { data } = await api.request({
+    const shelfData = await api.request({
       endPoint: `${bookShelfEndpoint}${shelf.id}${shelfDataEndpoint}`
     });
 
-    commit('setShelfData', data);
+    commit('setShelfData', shelfData);
   },
   SET_SELECTED_SHELF_DATA ({ commit }, shelfData) {
     commit('setSelectedShelfData', shelfData);

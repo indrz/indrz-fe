@@ -7,7 +7,6 @@
         :items="shelfListData"
         :server-items-length="total"
         :single-select="singleSelect"
-        :options.sync="pagination"
         :loading="loading"
         :height="height"
         :no-data-text="noDataText"
@@ -16,6 +15,7 @@
         dense
         class="elevation-1"
         loading-text="Loading... Please wait"
+        hide-default-footer
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -71,7 +71,6 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import api from '@/util/api';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelfData from './AddEditShelfData';
 
@@ -91,7 +90,6 @@ export default {
       shelfDataAddEditDialog: false,
       showConfirmDeleteShelfData: false,
       selected: [],
-      pagination: {},
       headers: [
         {
           text: 'External Id',
@@ -194,12 +192,6 @@ export default {
   watch: {
     shelfDataAddEditDialog (val) {
       val || this.shelfDataAddEditDialogClose();
-    },
-    pagination: {
-      handler () {
-        this.loadData();
-      },
-      deep: true
     }
   },
   mounted () {
@@ -214,19 +206,14 @@ export default {
     onShelfDataClick (data) {
       this.setSelectedShelfData(data);
     },
-    async loadData (term) {
+    async loadData () {
       if (this.loading) {
         return;
       }
 
       this.loading = true;
-      const query = api.getPageParams(this.pagination);
 
-      if (term) {
-        query.search = term;
-      }
-
-      await this.loadShelfList(query);
+      await this.loadShelfList();
 
       this.loading = false;
     },
