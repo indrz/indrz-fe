@@ -56,6 +56,7 @@
                   v-model="currentShelf.building"
                   :items="buildings"
                   :rules="requiredRule"
+                  @change="onBuildingChange"
                   item-text="building_name"
                   item-value="id"
                   label="Building"
@@ -172,14 +173,18 @@ export default {
   },
   computed: {
     ...mapState({
-      floors: state => state.floor.floors,
+      floors: state => state.building.floors,
       buildings: state => state.building.buildings
     })
   },
   methods: {
     ...mapActions({
-      saveShelf: 'shelf/SAVE_SHELF'
+      saveShelf: 'shelf/SAVE_SHELF',
+      loadFloors: 'building/LOAD_FLOORS'
     }),
+    async onBuildingChange (buildingId) {
+      await this.loadFloors(buildingId);
+    },
     close () {
       this.$refs.form.reset();
       this.$refs.form.resetValidation();
