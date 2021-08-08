@@ -91,20 +91,6 @@ export default {
         this.map.updateSize();
         this.test();
       });
-      /* this.source = new VectorSource();
-      this.draw = new Draw({
-        source: this.source,
-        type: 'LineString',
-        maxPoints: 2
-      });
-      this.map.addInteraction(this.draw);
-
-      this.draw.on('drawend', function (evt) {
-        const coordinates = evt.feature.getGeometry().getCoordinates();
-        console.log(coordinates);
-      });
-
-      this.map.addInteraction(this.draw); */
     },
     onMapSwitchClick () {
       const { baseLayers } = this.layers;
@@ -236,6 +222,9 @@ export default {
         maxPoints: 2
       });
       this.map.addInteraction(this.draw);
+      this.draw.on('drawend', (evt) => {
+        this.map.removeInteraction(this.draw);
+      });
     },
     test () {
       const source = new VectorSource();
@@ -255,11 +244,8 @@ export default {
         },
         deleteCondition: never,
         insertVertexCondition: never,
-        style: function (feature) {
-          debugger;
-        },
-        style_: (feature) => {
-          feature.get('features').forEach(function (modifyFeature) {
+        style: (feature) => {
+          feature.get('features').forEach((modifyFeature) => {
             const modifyGeometry = modifyFeature.get('modifyGeometry');
             if (modifyGeometry) {
               const point = feature.getGeometry().getCoordinates();
@@ -301,7 +287,6 @@ export default {
       });
 
       modify.on('modifystart', function (event) {
-        debugger;
         event.features.forEach(function (feature) {
           feature.set(
             'modifyGeometry',
@@ -312,7 +297,6 @@ export default {
       });
 
       modify.on('modifyend', function (event) {
-        debugger;
         event.features.forEach(function (feature) {
           const modifyGeometry = feature.get('modifyGeometry');
           if (modifyGeometry) {
