@@ -461,7 +461,9 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       search_text = searchString;
      */
     // active the floor of the start point
-    floorNum = featuresSearch[0].getProperties().floor_num ? featuresSearch[0].getProperties().floor_num : '';
+    const isSearchFeatureContainsFloorNum = featuresSearch[0].getProperties().hasOwnProperty('floor_num');
+    floorNum = isSearchFeatureContainsFloorNum ? featuresSearch[0].getProperties().floor_num : '';
+
     layerToActive = layers.switchableLayers.find(layer => layer.getProperties().floorNum === floorNum);
 
     activateFloor(layerToActive, layers, map);
