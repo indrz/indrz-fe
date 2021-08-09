@@ -23,6 +23,9 @@ export const actions = {
 };
 
 export const getters = {
+  firstBuilding: state => () => {
+    return state.buildings && state.buildings.length ? state.buildings[0].id : null;
+  },
   getBuildingName: state => (id) => {
     let name = '';
     const building = state.buildings.find(building => building.id === id);
@@ -30,6 +33,6 @@ export const getters = {
     if (building) {
       name = building.building_name;
     }
-    return name;
+    return name || id;
   }
 };

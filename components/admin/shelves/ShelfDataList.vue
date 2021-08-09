@@ -1,10 +1,6 @@
 <template>
   <div>
     <v-card>
-      <v-card-title>
-        Shelf Data
-        <v-spacer />
-      </v-card-title>
       <v-data-table
         v-model="selected"
         :headers="headers"
@@ -17,47 +13,62 @@
         :no-data-text="noDataText"
         item-key="id"
         dense
-        show-select
         class="elevation-1"
         loading-text="Loading... Please wait"
       >
         <template v-slot:top>
-          <add-edit-shelf
-            :title="formTitle"
-            :dialog="dialog"
-            :edited-item="editedItem"
-            @save="save"
-            @close="close"
-          />
+          <v-toolbar flat>
+            <v-toolbar-title>Shelf Data</v-toolbar-title>
+            <v-spacer />
+            <v-btn
+              :disabled="!selectedShelf || shelfDataAddEditDialog"
+              @click="addShelfData"
+              outlined
+            >
+              <v-icon left>
+                mdi-plus
+              </v-icon>
+              Shelf Data
+            </v-btn>
+          </v-toolbar>
         </template>
-        <template v-slot:item.map="{}">
+        <template v-slot:item.building_floor="{item}">
+          {{ getFloorName(item.building_floor) }}
+        </template>
+        <template v-slot:item.actions="{ item }">
           <v-icon
             small
-          >
-            mdi-map
-          </v-icon>
-        </template>
-        <template v-slot:item.edit="{ item }">
-          <v-icon
-            @click="editItem(item)"
-            small
+            class="mr-1"
+            @click="editShelfData(item)"
           >
             mdi-pencil
           </v-icon>
+          <v-icon
+            small
+            @click="showConfirmDeleteShelf = true"
+          >
+            mdi-delete
+          </v-icon>
         </template>
       </v-data-table>
+      <add-edit-shelf-data
+        :title="shelfDataFormTitle"
+        :dialog="shelfDataAddEditDialog"
+        :current-shelf-data="shelfDataEditedItem"
+        @close="shelfDataAddEditDialogClose"
+      />
     </v-card>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import api from '@/util/api';
-import AddEditShelf from './AddEditShelf';
+import AddEditShelfData from './AddEditShelfData';
 
 export default {
   name: 'ShelfDataList',
-  components: { AddEditShelf },
+  components: { AddEditShelfData },
   props: {
     height: {
       type: Number,
@@ -68,15 +79,16 @@ export default {
     return {
       loading: false,
       singleSelect: false,
-      dialog: false,
+      shelfDataAddEditDialog: false,
       selected: [],
       pagination: {},
       headers: [
         {
           text: 'External Id',
-          align: 'right',
+          align: 'left',
           sortable: false,
-          value: 'external_id'
+          value: 'external_id',
+          width: 90
         },
         {
           text: 'Floor',
@@ -118,10 +130,10 @@ export default {
           sortable: false,
           value: 'measure_to'
         },
-        { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' }
+        { text: '', value: 'actions', sortable: false }
       ],
-      editedIndex: -1,
-      editedItem: {},
+      shelfDataEditedIndex: -1,
+      shelfDataEditedItem: {},
       defaultItem: {
         bookshelf_id: null,
         external_id: null,
@@ -152,15 +164,24 @@ export default {
           return 'No shelf data found';
         }
         return 'No book shelf selected';
-      }
+      },
+      floors: state => state.floor.floors,
+      buildings: state => state.building.buildings,
+      selectedShelf: state => state.shelf.selectedShelf
     }),
-    formTitle () {
-      return this.editedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
+    ...mapGetters({
+      getFloorName: 'floor/getFloorName',
+      firstBuilding: 'building/firstBuilding',
+      firstFloor: 'floor/firstFloor'
+
+    }),
+    shelfDataFormTitle () {
+      return this.shelfDataEditedIndex === -1 ? 'New Shelf Data' : 'Edit Shelf Data';
     }
   },
   watch: {
-    dialog (val) {
-      val || this.close();
+    shelfDataAddEditDialog (val) {
+      val || this.shelfDataAddEditDialogClose();
     },
     pagination: {
       handler () {
@@ -193,31 +214,28 @@ export default {
       this.loading = false;
     },
 
-    editItem (item) {
-      this.editedIndex = this.shelfListData.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
+    addShelfData () {
+      this.shelfDataEditedItem = Object.assign({
+        building: this.firstBuilding(),
+        building_floor: this.firstFloor(),
+        bookshelf: this.selectedShelf.id
+      });
+
+      this.shelfDataAddEditDialog = true;
     },
 
-    close () {
-      this.dialog = false;
-      setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      }, 300);
+    editShelfData (item) {
+      this.shelfDataEditedIndex = this.shelfListData.indexOf(item);
+      this.shelfDataEditedItem = Object.assign({}, item);
+      this.shelfDataAddEditDialog = true;
     },
 
-    save () {
-      if (this.editedIndex > -1) {
-        Object.assign(this.shelfListData[this.editedIndex], this.editedItem);
-      }
-      // We are not adding shelf yet. So commenting out the following line
-      /*
-      else {
-        this.shelfListData.push(this.editedItem);
-      }
-      */
-      this.close();
+    shelfDataAddEditDialogClose () {
+      this.shelfDataAddEditDialog = false;
+      /* setTimeout(() => {
+        this.shelfDataEditedItem = Object.assign({}, this.defaultItem);
+        this.shelfDataEditedIndex = -1;
+      }, 300); */
     }
   }
 };

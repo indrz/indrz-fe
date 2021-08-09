@@ -25,5 +25,17 @@ export const actions = {
 export const getters = {
   floors: state => () => {
     return state.floors;
+  },
+  firstFloor: state => () => {
+    return state.floors && state.floors.length ? state.floors[0].id : null;
+  },
+  getFloorName: state => (id) => {
+    let name = '';
+    const floor = state.floors.find(floor => floor.id === id);
+
+    if (floor) {
+      name = floor.short_name;
+    }
+    return name || id;
   }
 };

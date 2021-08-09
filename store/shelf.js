@@ -1,6 +1,7 @@
 import api from '@/util/api';
 
-const shelfEndpoint = `bookway/bookshelf/`;
+const bookShelfEndpoint = `bookway/bookshelf/`;
+const shelfDataEndpoint = `bookway/shelfdata/`;
 
 const initialShelves = {
   data: [],
@@ -38,7 +39,7 @@ export const actions = {
     const urlWithParams = api.getURLParamsFromPayLoad(query);
 
     const { data } = await api.request({
-      endPoint: `${shelfEndpoint}${urlWithParams}`
+      endPoint: `${bookShelfEndpoint}${urlWithParams}`
     });
 
     const shelfListData = {
@@ -65,11 +66,11 @@ export const actions = {
 
   async SAVE_SHELF ({ state, commit, dispatch }, data) {
     let apiRequest = api.postRequest;
-    let endPoint = shelfEndpoint;
+    let endPoint = bookShelfEndpoint;
 
     if (data.id) {
       apiRequest = api.putRequest;
-      endPoint = `${shelfEndpoint}${data.id}`
+      endPoint = `${bookShelfEndpoint}${data.id}`
     }
 
     const response = await apiRequest({
@@ -84,12 +85,31 @@ export const actions = {
 
   async DELETE_SHELF ({ state, commit, dispatch }, data) {
     const response = await api.postRequest({
-      endPoint: `${shelfEndpoint}${data.id}`,
+      endPoint: `${bookShelfEndpoint}${data.id}`,
       method: 'DELETE',
       data: {}
     });
 
     await dispatch('LOAD_BOOKSHELF_LIST', state.lastShelfQuery);
+
+    return response.data;
+  },
+
+  async SAVE_SHELF_DATA ({ state, commit, dispatch }, data) {
+    let apiRequest = api.postRequest;
+    let endPoint = shelfDataEndpoint;
+
+    if (data.id) {
+      apiRequest = api.putRequest;
+      endPoint = `${shelfDataEndpoint}${data.id}`
+    }
+
+    const response = await apiRequest({
+      data: data,
+      endPoint
+    });
+
+    await dispatch('SET_SELECTED_SHELF', state.selectedShelf);
 
     return response.data;
   }

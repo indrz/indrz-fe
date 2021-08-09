@@ -32,6 +32,7 @@
             vertical
           />
           <v-btn
+            :disabled="bookShelfAddEditDialog"
             @click="addBookShelf"
             outlined
           >
@@ -45,35 +46,37 @@
       <template v-slot:item.building="{item}">
         {{ getBuildingName(item.building) }}
       </template>
-      <template v-slot:item.map="{}">
+      <template v-slot:item.building_floor="{item}">
+        {{ getFloorName(item.building_floor) }}
+      </template>
+      <template v-slot:item.actions="{ item }">
         <v-icon
           small
+          class="mr-1"
+          @click="editBookShelf(item)"
         >
           mdi-map
         </v-icon>
-      </template>
-      <template v-slot:item.edit="{ item }">
         <v-icon
-          @click="editBookShelf(item)"
           small
+          class="mr-1"
+          @click="editBookShelf(item)"
         >
           mdi-pencil
         </v-icon>
-      </template>
-      <template v-slot:item.delete="{}">
         <v-icon
-          @click="showConfirmDeleteShelf = true"
           small
+          @click="showConfirmDeleteShelf = true"
         >
           mdi-delete
         </v-icon>
       </template>
     </v-data-table>
     <add-edit-shelf
-      :title="formTitle"
-      :dialog="addEditDialog"
-      :current-shelf="editedItem"
-      @close="addEditDialogClose"
+      :title="bookShelfFormTitle"
+      :dialog="bookShelfAddEditDialog"
+      :current-shelf="bookShelfEditedItem"
+      @close="bookShelfAddEditDialogClose"
     />
     <confirm-dialog
       :show="showConfirmDeleteShelf"
@@ -106,7 +109,7 @@ export default {
     return {
       loading: false,
       singleSelect: false,
-      addEditDialog: false,
+      bookShelfAddEditDialog: false,
       showConfirmDeleteShelf: false,
       selected: [],
       pagination: {},
@@ -131,14 +134,16 @@ export default {
           align: 'left',
           filterable: false,
           sortable: false,
-          value: 'building'
+          value: 'building',
+          width: 150
         },
         {
           text: 'Floor',
-          align: 'right',
+          align: 'left',
           filterable: false,
           sortable: false,
-          value: 'building_floor'
+          value: 'building_floor',
+          width: 100
         },
         {
           text: 'Length',
@@ -178,12 +183,10 @@ export default {
           sortable: true,
           value: 'right_to_label'
         },
-        { text: 'Map', value: 'map', sortable: false, filterable: false, width: '56px' },
-        { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' },
-        { text: 'Delete', value: 'delete', sortable: false, filterable: false, width: '56px' }
+        { text: '', value: 'actions', width: 120, sortable: false }
       ],
-      editedIndex: -1,
-      editedItem: {},
+      bookShelfEditedIndex: -1,
+      bookShelfEditedItem: {},
       defaultItem: {
         bookshelf_id: null,
         external_id: null,
@@ -219,24 +222,21 @@ export default {
       buildings: state => state.building.buildings
     }),
     ...mapGetters({
-      getBuildingName: 'building/getBuildingName'
+      getBuildingName: 'building/getBuildingName',
+      firstBuilding: 'building/firstBuilding',
+      getFloorName: 'floor/getFloorName',
+      firstFloor: 'floor/firstFloor'
     }),
-    formTitle () {
-      return this.editedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
-    },
-    firstFloor () {
-      return this.floors && this.floors.length ? this.floors[0].id : null;
-    },
-    firstBuilding () {
-      return this.buildings && this.buildings.length ? this.buildings[0].id : null;
+    bookShelfFormTitle () {
+      return this.bookShelfEditedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
     }
   },
   watch: {
     search (text) {
       this.term$.next(text);
     },
-    addEditDialog (val) {
-      val || this.addEditDialogClose();
+    bookShelfAddEditDialog (val) {
+      val || this.bookShelfAddEditDialogClose();
     },
     pagination: {
       handler () {
@@ -283,19 +283,19 @@ export default {
     },
 
     addBookShelf () {
-      this.editedItem = Object.assign({
+      this.bookShelfEditedItem = Object.assign({
         double_sided: true,
         geom: 'SRID=3857;MULTILINESTRING((1826591.54074498 6142466.7599126,1826596.22332136 6142463.08341735))',
-        building: this.firstBuilding,
-        building_floor: this.firstFloor
+        building: this.firstBuilding(),
+        building_floor: this.firstFloor()
       });
-      this.addEditDialog = true;
+      this.bookShelfAddEditDialog = true;
     },
 
     editBookShelf (item) {
-      this.editedIndex = this.shelvesListData.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.addEditDialog = true;
+      this.bookShelfEditedIndex = this.shelvesListData.indexOf(item);
+      this.bookShelfEditedItem = Object.assign({}, item);
+      this.bookShelfAddEditDialog = true;
     },
 
     async confirmDeleteBookShelf () {
@@ -307,11 +307,11 @@ export default {
       this.loading = false;
     },
 
-    addEditDialogClose () {
-      this.addEditDialog = false;
+    bookShelfAddEditDialogClose () {
+      this.bookShelfAddEditDialog = false;
       setTimeout(() => {
-        this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
+        this.bookShelfEditedItem = Object.assign({}, this.defaultItem);
+        this.bookShelfEditedIndex = -1;
       }, 300);
     }
   }
