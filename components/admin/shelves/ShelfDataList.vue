@@ -11,6 +11,7 @@
         :loading="loading"
         :height="height"
         :no-data-text="noDataText"
+        @click:row="onShelfDataClick"
         item-key="id"
         dense
         class="elevation-1"
@@ -37,15 +38,15 @@
         </template>
         <template v-slot:item.actions="{ item }">
           <v-icon
+            @click="editShelfData(item)"
             small
             class="mr-1"
-            @click="editShelfData(item)"
           >
             mdi-pencil
           </v-icon>
           <v-icon
+            @click="showConfirmDeleteShelfData = true"
             small
-            @click="showConfirmDeleteShelf = true"
           >
             mdi-delete
           </v-icon>
@@ -57,6 +58,13 @@
         :current-shelf-data="shelfDataEditedItem"
         @close="shelfDataAddEditDialogClose"
       />
+      <confirm-dialog
+        :show="showConfirmDeleteShelfData"
+        :message="deleteShelfDataConfirmMessage"
+        :busy="loading"
+        @cancelClick="showConfirmDeleteShelfData = false"
+        @confirmClick="confirmDeleteShelfData"
+      />
     </v-card>
   </div>
 </template>
@@ -64,11 +72,12 @@
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
 import api from '@/util/api';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelfData from './AddEditShelfData';
 
 export default {
   name: 'ShelfDataList',
-  components: { AddEditShelfData },
+  components: { ConfirmDialog, AddEditShelfData },
   props: {
     height: {
       type: Number,
@@ -80,6 +89,7 @@ export default {
       loading: false,
       singleSelect: false,
       shelfDataAddEditDialog: false,
+      showConfirmDeleteShelfData: false,
       selected: [],
       pagination: {},
       headers: [
@@ -147,7 +157,8 @@ export default {
         side: 'L',
         system_from: null,
         system_to: null
-      }
+      },
+      deleteShelfDataConfirmMessage: 'Are you sure to delete this shelf data?'
     };
   },
   computed: {
@@ -167,7 +178,8 @@ export default {
       },
       floors: state => state.floor.floors,
       buildings: state => state.building.buildings,
-      selectedShelf: state => state.shelf.selectedShelf
+      selectedShelf: state => state.shelf.selectedShelf,
+      selectedShelfData: state => state.shelf.selectedShelfData
     }),
     ...mapGetters({
       getFloorName: 'floor/getFloorName',
@@ -195,8 +207,13 @@ export default {
   },
   methods: {
     ...mapActions({
-      loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST'
+      loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
+      deleteShelfData: 'shelf/DELETE_SHELF_DATA',
+      setSelectedShelfData: 'shelf/SET_SELECTED_SHELF_DATA'
     }),
+    onShelfDataClick (data) {
+      this.setSelectedShelfData(data);
+    },
     async loadData (term) {
       if (this.loading) {
         return;
@@ -228,6 +245,15 @@ export default {
       this.shelfDataEditedIndex = this.shelfListData.indexOf(item);
       this.shelfDataEditedItem = Object.assign({}, item);
       this.shelfDataAddEditDialog = true;
+    },
+
+    async confirmDeleteShelfData () {
+      this.loading = true;
+
+      await this.deleteShelfData(this.selectedShelfData);
+
+      this.showConfirmDeleteShelfData = false;
+      this.loading = false;
     },
 
     shelfDataAddEditDialogClose () {

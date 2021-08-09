@@ -16,6 +16,7 @@ export const state = () => ({
   shelves: initialShelves,
   shelfData: initialShelfData,
   selectedShelf: null,
+  selectedShelfData: null,
   lastShelfQuery: null
 });
 
@@ -28,6 +29,9 @@ export const mutations = {
   },
   setShelfData (state, shelfData) {
     state.shelfData = shelfData;
+  },
+  setSelectedShelfData (state, shelfData) {
+    state.selectedShelfData = shelfData;
   },
   setLastShelfQuery (state, query) {
     state.lastShelfQuery = query;
@@ -62,6 +66,9 @@ export const actions = {
     const shelfData = getShelfData(shelf.id, api.getPageParams({}));
 
     commit('setShelfData', shelfData);
+  },
+  SET_SELECTED_SHELF_DATA ({ commit }, shelfData) {
+    commit('setSelectedShelfData', shelfData);
   },
 
   async SAVE_SHELF ({ state, commit, dispatch }, data) {
@@ -107,6 +114,18 @@ export const actions = {
     const response = await apiRequest({
       data: data,
       endPoint
+    });
+
+    await dispatch('SET_SELECTED_SHELF', state.selectedShelf);
+
+    return response.data;
+  },
+
+  async DELETE_SHELF_DATA ({ state, commit, dispatch }, data) {
+    const response = await api.postRequest({
+      endPoint: `${shelfDataEndpoint}${data.id}`,
+      method: 'DELETE',
+      data: {}
     });
 
     await dispatch('SET_SELECTED_SHELF', state.selectedShelf);
