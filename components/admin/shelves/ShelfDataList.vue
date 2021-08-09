@@ -180,9 +180,9 @@ export default {
       selectedShelfData: state => state.shelf.selectedShelfData
     }),
     ...mapGetters({
-      getFloorName: 'floor/getFloorName',
+      getFloorName: 'building/getFloorName',
       firstBuilding: 'building/firstBuilding',
-      firstFloor: 'floor/firstFloor'
+      firstFloor: 'building/firstFloor'
 
     }),
     shelfDataFormTitle () {
@@ -194,31 +194,20 @@ export default {
       val || this.shelfDataAddEditDialogClose();
     }
   },
-  mounted () {
-    this.loadData();
-  },
   methods: {
     ...mapActions({
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
+      loadFloors: 'building/LOAD_FLOORS',
       deleteShelfData: 'shelf/DELETE_SHELF_DATA',
       setSelectedShelfData: 'shelf/SET_SELECTED_SHELF_DATA'
     }),
     onShelfDataClick (data) {
       this.setSelectedShelfData(data);
     },
-    async loadData () {
-      if (this.loading) {
-        return;
-      }
 
-      this.loading = true;
+    async addShelfData () {
+      await this.loadFloors();
 
-      await this.loadShelfList();
-
-      this.loading = false;
-    },
-
-    addShelfData () {
       this.shelfDataEditedItem = Object.assign({
         building: this.firstBuilding(),
         building_floor: this.firstFloor(),
@@ -228,9 +217,11 @@ export default {
       this.shelfDataAddEditDialog = true;
     },
 
-    editShelfData (item) {
-      this.shelfDataEditedIndex = this.shelfListData.indexOf(item);
-      this.shelfDataEditedItem = Object.assign({}, item);
+    async editShelfData (shelfData) {
+      await this.loadFloors(shelfData.building);
+
+      this.shelfDataEditedIndex = this.shelfListData.indexOf(shelfData);
+      this.shelfDataEditedItem = Object.assign({}, shelfData);
       this.shelfDataAddEditDialog = true;
     },
 
