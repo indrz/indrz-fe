@@ -111,15 +111,15 @@
       <v-divider />
       <v-card-actions>
         <v-spacer />
-        <v-btn :disabled="loading" @click="close">
+        <v-btn :disabled="loading" @click="close" color="blue darken-1" text>
           Cancel
         </v-btn>
         <v-btn
           :disabled="loading || !valid"
           :loading="loading"
           @click="save"
-          outlined
-          color="primary"
+          color="blue darken-1"
+          text
         >
           <v-icon left>
             mdi-content-save
