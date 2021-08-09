@@ -2,25 +2,21 @@
   <div>
     <v-card>
       <v-card-title>
-        Regal
+        Shelf Data
         <v-spacer />
-        <v-text-field
-          v-model="search"
-          label="Search"
-          clearable
-          single-line
-          hide-details
-        />
       </v-card-title>
       <v-data-table
         v-model="selected"
         :headers="headers"
-        :items="shelvesListData"
+        :items="shelfListData"
         :server-items-length="total"
         :single-select="singleSelect"
         :options.sync="pagination"
         :loading="loading"
+        :height="height"
+        :no-data-text="noDataText"
         item-key="id"
+        dense
         show-select
         class="elevation-1"
         loading-text="Loading... Please wait"
@@ -55,15 +51,19 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
-import api from '../../../util/api';
+import { mapState, mapActions } from 'vuex';
+import api from '@/util/api';
 import AddEditShelf from './AddEditShelf';
 
 export default {
-  name: 'ShelvesList',
+  name: 'ShelfDataList',
   components: { AddEditShelf },
+  props: {
+    height: {
+      type: Number,
+      default: 285
+    }
+  },
   data () {
     return {
       loading: false,
@@ -71,8 +71,6 @@ export default {
       dialog: false,
       selected: [],
       pagination: {},
-      search: '',
-      term$: new Subject(),
       headers: [
         {
           text: 'External Id',
@@ -85,7 +83,7 @@ export default {
           align: 'right',
           filterable: false,
           sortable: false,
-          value: 'floor'
+          value: 'building_floor'
         },
         {
           text: 'System From',
@@ -120,7 +118,6 @@ export default {
           sortable: false,
           value: 'measure_to'
         },
-        { text: 'Map', value: 'map', sortable: false, filterable: false, width: '56px' },
         { text: 'Edit', value: 'edit', sortable: false, filterable: false, width: '56px' }
       ],
       editedIndex: -1,
@@ -143,11 +140,18 @@ export default {
   },
   computed: {
     ...mapState({
-      shelvesListData: function (state) {
-        const { data, total } = state.user.shelves;
+      shelfListData: function (state) {
+        const { data, total } = state.shelf.shelfData;
+
         this.total = total;
 
         return data;
+      },
+      noDataText: (state) => {
+        if (state.shelf.selectedShelf) {
+          return 'No shelf data found';
+        }
+        return 'No book shelf selected';
       }
     }),
     formTitle () {
@@ -155,9 +159,6 @@ export default {
     }
   },
   watch: {
-    search (text) {
-      this.term$.next(text);
-    },
     dialog (val) {
       val || this.close();
     },
@@ -169,18 +170,13 @@ export default {
     }
   },
   mounted () {
-    this
-      .term$
-      .pipe(
-        filter(term => !term || term.length > 2),
-        debounceTime(500),
-        distinctUntilChanged()
-      )
-      .subscribe(term => this.loadData(term));
     this.loadData();
   },
   methods: {
-    loadData (term) {
+    ...mapActions({
+      loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST'
+    }),
+    async loadData (term) {
       if (this.loading) {
         return;
       }
@@ -192,19 +188,13 @@ export default {
         query.search = term;
       }
 
-      this
-        .$store
-        .dispatch('user/LOAD_SHELVES', query)
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => {
-          this.loading = false;
-        });
+      await this.loadShelfList(query);
+
+      this.loading = false;
     },
 
     editItem (item) {
-      this.editedIndex = this.shelvesListData.indexOf(item);
+      this.editedIndex = this.shelfListData.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
@@ -219,12 +209,12 @@ export default {
 
     save () {
       if (this.editedIndex > -1) {
-        Object.assign(this.shelvesListData[this.editedIndex], this.editedItem);
+        Object.assign(this.shelfListData[this.editedIndex], this.editedItem);
       }
       // We are not adding shelf yet. So commenting out the following line
       /*
       else {
-        this.shelvesListData.push(this.editedItem);
+        this.shelfListData.push(this.editedItem);
       }
       */
       this.close();
@@ -235,4 +225,4 @@ export default {
 
 <style scoped>
 
-</style>
+</style>=

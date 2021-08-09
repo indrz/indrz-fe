@@ -1,15 +1,39 @@
 <template>
-  <div>
-    <shelves-list />
-  </div>
+  <v-container>
+    <v-row>
+      <v-col>
+        <book-shelf-list />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <shelf-data-list />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-import ShelvesList from '../../components/admin/shelves/ShelvesList';
+import { mapActions } from 'vuex';
+import BookShelfList from '@/components/admin/shelves/BookShelfList';
+import ShelfDataList from '@/components/admin/shelves/ShelfDataList';
 export default {
   layout: 'admin',
   components: {
-    ShelvesList
+    ShelfDataList,
+    BookShelfList
+  },
+  mounted () {
+    Promise.all([
+      this.loadFloors(),
+      this.loadBuildings()
+    ])
+  },
+  methods: {
+    ...mapActions({
+      loadFloors: 'floor/LOAD_FLOORS',
+      loadBuildings: 'building/LOAD_BUILDINGS'
+    })
   }
 };
 </script>

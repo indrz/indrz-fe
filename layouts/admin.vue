@@ -8,6 +8,7 @@
     />
     <v-app-bar
       v-if="isUserSignedIn"
+      clipped-left
       app
       color="indigo"
       dark
@@ -18,8 +19,8 @@
       <v-spacer />
       <user-menu />
     </v-app-bar>
-    <v-main style="padding-top: 0px">
-      <v-container :class="isPoiManager ? 'admin-map-container' : ''">
+    <v-main>
+      <v-container :class="isPoiManager ? 'admin-map-container' : 'pages'">
         <nuxt />
       </v-container>
     </v-main>
