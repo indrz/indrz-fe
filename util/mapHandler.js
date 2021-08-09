@@ -200,7 +200,7 @@ const openIndrzPopup = (
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorNum;
   globalPopupInfo.roomcode = roomCode;
-  globalPopupInfo.floorNum = properties.floor_num;
+  globalPopupInfo.floor_num = properties.floor_num;
   popup.setPosition(coordinate);
   popup.setOffset(offsetArray);
 };
@@ -335,7 +335,7 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   } else if (mode === 'poiCatId') {
     url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
 
-    const singlePoiUrl = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floorNum;
+    const singlePoiUrl = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor_num;
     return {
       type: 'poi',
       singlePoiUrl,
