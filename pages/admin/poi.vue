@@ -1,5 +1,5 @@
 <template>
-  <div class="fill-height">
+  <div>
     <poi-manager />
     <snack-bar />
   </div>

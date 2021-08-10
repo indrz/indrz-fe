@@ -7,7 +7,6 @@
         :items="shelfListData"
         :server-items-length="total"
         :single-select="singleSelect"
-        :options.sync="pagination"
         :loading="loading"
         :height="height"
         :no-data-text="noDataText"
@@ -16,6 +15,7 @@
         dense
         class="elevation-1"
         loading-text="Loading... Please wait"
+        hide-default-footer
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -71,7 +71,6 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import api from '@/util/api';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelfData from './AddEditShelfData';
 
@@ -91,7 +90,6 @@ export default {
       shelfDataAddEditDialog: false,
       showConfirmDeleteShelfData: false,
       selected: [],
-      pagination: {},
       headers: [
         {
           text: 'External Id',
@@ -182,9 +180,9 @@ export default {
       selectedShelfData: state => state.shelf.selectedShelfData
     }),
     ...mapGetters({
-      getFloorName: 'floor/getFloorName',
+      getFloorName: 'building/getFloorName',
       firstBuilding: 'building/firstBuilding',
-      firstFloor: 'floor/firstFloor'
+      firstFloor: 'building/firstFloor'
 
     }),
     shelfDataFormTitle () {
@@ -194,44 +192,22 @@ export default {
   watch: {
     shelfDataAddEditDialog (val) {
       val || this.shelfDataAddEditDialogClose();
-    },
-    pagination: {
-      handler () {
-        this.loadData();
-      },
-      deep: true
     }
-  },
-  mounted () {
-    this.loadData();
   },
   methods: {
     ...mapActions({
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
+      loadFloors: 'building/LOAD_FLOORS',
       deleteShelfData: 'shelf/DELETE_SHELF_DATA',
       setSelectedShelfData: 'shelf/SET_SELECTED_SHELF_DATA'
     }),
     onShelfDataClick (data) {
       this.setSelectedShelfData(data);
     },
-    async loadData (term) {
-      if (this.loading) {
-        return;
-      }
 
-      this.loading = true;
-      const query = api.getPageParams(this.pagination);
+    async addShelfData () {
+      await this.loadFloors();
 
-      if (term) {
-        query.search = term;
-      }
-
-      await this.loadShelfList(query);
-
-      this.loading = false;
-    },
-
-    addShelfData () {
       this.shelfDataEditedItem = Object.assign({
         building: this.firstBuilding(),
         building_floor: this.firstFloor(),
@@ -241,9 +217,11 @@ export default {
       this.shelfDataAddEditDialog = true;
     },
 
-    editShelfData (item) {
-      this.shelfDataEditedIndex = this.shelfListData.indexOf(item);
-      this.shelfDataEditedItem = Object.assign({}, item);
+    async editShelfData (shelfData) {
+      await this.loadFloors(shelfData.building);
+
+      this.shelfDataEditedIndex = this.shelfListData.indexOf(shelfData);
+      this.shelfDataEditedItem = Object.assign({}, shelfData);
       this.shelfDataAddEditDialog = true;
     },
 

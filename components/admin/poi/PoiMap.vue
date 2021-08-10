@@ -1,6 +1,6 @@
 <template>
-  <div class="fill-height">
-    <div :id="mapId" :ref="map" class="fill-height fluid flat width='100%' style='border-radius: 0" />
+  <div>
+    <div :id="mapId" :ref="map" class="fluid flat width='100%' style='border-radius: 0" />
     <div id="zoom-control" class="indrz-zoom-control" />
     <div id="id-map-switcher-widget">
       <v-btn
@@ -88,7 +88,7 @@ export default {
   },
   data () {
     return {
-      mapId: 'mapContainer',
+      mapId: 'poiMapContainer',
       map: null,
       view: null,
       layers: [],
@@ -483,11 +483,14 @@ export default {
 </script>
 
 <style scoped>
-  .indrz-zoom-control {
-    right: 50px !important;
-    bottom: 100px !important;
-    position: absolute;
+  #poiMapContainer {
+    height: calc(100vh - 48px) !important;
   }
+  .indrz-zoom-control {
+     right: 50px !important;
+     bottom: 100px !important;
+     position: absolute;
+   }
   #id-map-switcher-widget {
     position: absolute;
     right: 45px !important;

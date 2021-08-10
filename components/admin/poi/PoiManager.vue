@@ -1,5 +1,5 @@
 <template>
-  <div class="fill-height">
+  <div>
     <poi-map
       ref="map"
       :selected-poi-category="selectedPoiCategory"

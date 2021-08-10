@@ -51,22 +51,22 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon
-          small
+          @click="bookShelfDrawDialog = true"
           class="mr-1"
-          @click="editBookShelf(item)"
+          small
         >
           mdi-map
         </v-icon>
         <v-icon
-          small
-          class="mr-1"
           @click="editBookShelf(item)"
+          class="mr-1"
+          small
         >
           mdi-pencil
         </v-icon>
         <v-icon
-          small
           @click="showConfirmDeleteShelf = true"
+          small
         >
           mdi-delete
         </v-icon>
@@ -77,6 +77,11 @@
       :dialog="bookShelfAddEditDialog"
       :current-shelf="bookShelfEditedItem"
       @close="bookShelfAddEditDialogClose"
+    />
+    <draw-shelf
+      :title="drawShelfTitle"
+      :show="bookShelfDrawDialog"
+      @close="bookShelfDrawDialogClose"
     />
     <confirm-dialog
       :show="showConfirmDeleteShelf"
@@ -95,10 +100,11 @@ import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import api from '@/util/api';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelf from './AddEditShelf';
+import DrawShelf from './DrawShelf';
 
 export default {
   name: 'BookShelfList',
-  components: { ConfirmDialog, AddEditShelf },
+  components: { DrawShelf, ConfirmDialog, AddEditShelf },
   props: {
     height: {
       type: Number,
@@ -110,6 +116,7 @@ export default {
       loading: false,
       singleSelect: false,
       bookShelfAddEditDialog: false,
+      bookShelfDrawDialog: false,
       showConfirmDeleteShelf: false,
       selected: [],
       pagination: {},
@@ -224,11 +231,14 @@ export default {
     ...mapGetters({
       getBuildingName: 'building/getBuildingName',
       firstBuilding: 'building/firstBuilding',
-      getFloorName: 'floor/getFloorName',
-      firstFloor: 'floor/firstFloor'
+      firstFloor: 'building/firstFloor',
+      getFloorName: 'building/getFloorName'
     }),
     bookShelfFormTitle () {
       return this.bookShelfEditedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
+    },
+    drawShelfTitle () {
+      return 'Draw Shelf';
     }
   },
   watch: {
@@ -237,6 +247,9 @@ export default {
     },
     bookShelfAddEditDialog (val) {
       val || this.bookShelfAddEditDialogClose();
+    },
+    bookShelfDrawDialog (val) {
+      val || this.bookShelfDrawDialogClose();
     },
     pagination: {
       handler () {
@@ -259,6 +272,7 @@ export default {
   methods: {
     ...mapActions({
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
+      loadFloors: 'building/LOAD_FLOORS',
       deleteBookShelf: 'shelf/DELETE_SHELF',
       setSelectedShelf: 'shelf/SET_SELECTED_SHELF'
     }),
@@ -282,7 +296,9 @@ export default {
       this.loading = false;
     },
 
-    addBookShelf () {
+    async addBookShelf () {
+      await this.loadFloors();
+
       this.bookShelfEditedItem = Object.assign({
         double_sided: true,
         geom: 'SRID=3857;MULTILINESTRING((1826591.54074498 6142466.7599126,1826596.22332136 6142463.08341735))',
@@ -292,9 +308,11 @@ export default {
       this.bookShelfAddEditDialog = true;
     },
 
-    editBookShelf (item) {
-      this.bookShelfEditedIndex = this.shelvesListData.indexOf(item);
-      this.bookShelfEditedItem = Object.assign({}, item);
+    async editBookShelf (bookShelf) {
+      await this.loadFloors(bookShelf.building);
+
+      this.bookShelfEditedIndex = this.shelvesListData.indexOf(bookShelf);
+      this.bookShelfEditedItem = Object.assign({}, bookShelf);
       this.bookShelfAddEditDialog = true;
     },
 
@@ -313,6 +331,9 @@ export default {
         this.bookShelfEditedItem = Object.assign({}, this.defaultItem);
         this.bookShelfEditedIndex = -1;
       }, 300);
+    },
+    bookShelfDrawDialogClose () {
+      this.bookShelfDrawDialog = false;
     }
   }
 };

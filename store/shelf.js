@@ -1,7 +1,7 @@
 import api from '@/util/api';
 
-const bookShelfEndpoint = `bookway/bookshelf/`;
-const shelfDataEndpoint = `bookway/shelfdata/`;
+const bookShelfEndpoint = `bookway/bookshelf2/`;
+const shelfDataEndpoint = `/shelfdata/`;
 
 const initialShelves = {
   data: [],
@@ -56,14 +56,16 @@ export const actions = {
     commit('setSelectedShelf', null);
   },
 
-  SET_SELECTED_SHELF ({ commit }, shelf) {
+  async SET_SELECTED_SHELF ({ commit }, shelf) {
     commit('setSelectedShelf', shelf);
 
     if (!shelf) {
       commit('setShelfData', initialShelfData);
       return;
     }
-    const shelfData = getShelfData(shelf.id, api.getPageParams({}));
+    const shelfData = await api.request({
+      endPoint: `${bookShelfEndpoint}${shelf.id}${shelfDataEndpoint}`
+    });
 
     commit('setShelfData', shelfData);
   },
@@ -77,7 +79,7 @@ export const actions = {
 
     if (data.id) {
       apiRequest = api.putRequest;
-      endPoint = `${bookShelfEndpoint}${data.id}`
+      endPoint = `${bookShelfEndpoint}${data.id}/`
     }
 
     const response = await apiRequest({
@@ -108,12 +110,12 @@ export const actions = {
 
     if (data.id) {
       apiRequest = api.putRequest;
-      endPoint = `${shelfDataEndpoint}${data.id}`
+      endPoint = `${shelfDataEndpoint}${data.id}/`
     }
 
     const response = await apiRequest({
       data: data,
-      endPoint
+      endPoint: `bookway${endPoint}`
     });
 
     await dispatch('SET_SELECTED_SHELF', state.selectedShelf);
@@ -123,7 +125,7 @@ export const actions = {
 
   async DELETE_SHELF_DATA ({ state, commit, dispatch }, data) {
     const response = await api.postRequest({
-      endPoint: `${shelfDataEndpoint}${data.id}`,
+      endPoint: `bookway${shelfDataEndpoint}${data.id}/`,
       method: 'DELETE',
       data: {}
     });
@@ -135,181 +137,3 @@ export const actions = {
 };
 
 export const getters = {};
-
-const getShelfData = (shelfId, payLoad) => {
-  /* const endPoint = `bookway/${shelfId}/shelfdata`;
-  const urlWithParams = api.getURLParamsFromPayLoad(payLoad);
-
-  const response = await api.request({
-    endPoint: `${endPoint}${urlWithParams}`
-  });
-  console.log(response); */
-  // TODO following is the sample response which need to remove once API implemented this endpoint;
-
-  const sampleJSON = {
-    'count': 276,
-    'next': 'http://0.0.0.0/api/v1/bookway/shelfdata/?format=json&limit=50&offset=50',
-    'previous': null,
-    'results': [
-      {
-        'id': 2,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'A',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 100 B864',
-        'system_to': 'QP 120 G983 -3(8)',
-        'side': 'R',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 3,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'B',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 120 H136 (6)',
-        'system_to': 'QP 120 R352',
-        'side': 'L',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 4,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'B',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 120 S182(6)',
-        'system_to': 'QP 120 W959',
-        'side': 'R',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 5,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'C',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 140 A325',
-        'system_to': 'QP 150 K94 C8',
-        'side': 'L',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 6,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'C',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 150 L141',
-        'system_to': 'QP 160 W583',
-        'side': 'R',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 7,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'D',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 200 G736',
-        'system_to': 'QP 210 H999',
-        'side': 'L',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 8,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'D',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 210 I28',
-        'system_to': 'QP 215 W972 (2)',
-        'side': 'R',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 9,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'E',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 220 B869',
-        'system_to': 'QP 230 F953 (4)',
-        'side': 'L',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 10,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'E',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 230 G137',
-        'system_to': 'QP 230 O89 (2)',
-        'side': 'R',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 11,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'F',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 230 P239',
-        'system_to': 'QP 240 W959 P9',
-        'side': 'L',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      },
-      {
-        'id': 12,
-        'building_floor': 68,
-        'building': 2,
-        'external_id': 'F',
-        'section_main': null,
-        'section_child': null,
-        'system_from': 'QP 300 A162',
-        'system_to': 'QP 300 F988',
-        'side': 'R',
-        'measure_from': null,
-        'measure_to': null,
-        'bookshelf': null
-      }
-    ]
-  };
-
-  return {
-    data: sampleJSON.results,
-    total: sampleJSON.count
-  };
-};
