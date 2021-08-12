@@ -112,6 +112,7 @@
           <v-list-item-icon style="margin-right: 16px">
             <v-img
               :src="getIconUrl(item.src_icon)"
+              contain
               max-height="24"
               max-width="24"
             />
@@ -286,7 +287,7 @@ export default {
       if (this.iconNames.includes(iconName)) {
         return `${this.iconPath}/${iconName}.png`;
       } else if (iconName.includes('.png')) {
-        return `/media/${iconName}`
+        return `${iconName}`
       }
       return `${this.iconPath}/poi.png`;
     }
