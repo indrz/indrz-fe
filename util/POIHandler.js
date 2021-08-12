@@ -153,8 +153,8 @@ const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNu
           null, offSetPos, layerNamePrefix);
         MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
-        globalPopupInfo.poiCatId = featuresSearch[0].getProperties().category;
-        globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + featuresSearch[0].getProperties().category;
+        globalPopupInfo.poiCatId = featuresSearch[0].getProperties().category.id;
+        globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + featuresSearch[0].getProperties().category.id;
 
         const poiLayer = new VectorLayer({
           source: poiSource,
