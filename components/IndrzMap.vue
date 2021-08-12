@@ -121,8 +121,10 @@ export default {
 
     this.map.on('singleclick', this.onMapClick, this);
     window.onresize = () => {
-      this.map.updateSize();
       MapUtil.handleWindowResize(this.mapId);
+      this.$nextTick(() => {
+        this.map.updateSize();
+      });
     };
     this.map.on('moveend', (e) => {
       this.$root.$emit('map-moved', e.map.getView().getCenter());
