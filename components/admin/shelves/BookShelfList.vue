@@ -97,10 +97,10 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
-import api from '@/util/api';
-import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelf from './AddEditShelf';
 import DrawShelf from './DrawShelf';
+import ConfirmDialog from '@/components/ConfirmDialog';
+import api from '@/util/api';
 
 export default {
   name: 'BookShelfList',
