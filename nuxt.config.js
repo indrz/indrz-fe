@@ -17,6 +17,7 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: process.env.FAVICON_ICON }
     ]
   },
+  target: 'static',
   /*
   ** Customize the progress-bar color
   */
