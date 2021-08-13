@@ -47,7 +47,7 @@ const openIndrzPopup = (
   }
   if (properties.hasOwnProperty('category')) {
     globalPopupInfo.src = 'poi';
-    globalPopupInfo.poiCatId = properties.category;
+    globalPopupInfo.poiCatId = properties.category.id;
   }
   if (properties.hasOwnProperty('spaceid')) {
     globalPopupInfo.spaceid = properties.spaceid;
@@ -87,11 +87,11 @@ const openIndrzPopup = (
     currentPOIID = properties.poiId;
     globalPopupInfo.poiId = properties.poiId;
     if (properties.hasOwnProperty('category')) {
-      globalPopupInfo.poiCatId = properties.category;
+      globalPopupInfo.poiCatId = properties.category.id;
       if (currentLocale === 'de') {
-        globalPopupInfo.poiCatName = properties.category_name_de;
+        globalPopupInfo.poiCatName = properties.category.name_de;
       } else {
-        globalPopupInfo.poiCatName = properties.category_name_en;
+        globalPopupInfo.poiCatName = properties.category.name_en;
       }
       // globalPopupInfo.poiCatName = properties.category.cat_name;
       globalPopupInfo.poiCatShareUrl = hostUrl + '?poi-cat-id=' + globalPopupInfo.poiCatId;
@@ -442,7 +442,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
     const v = mapInfo.map.getView();
     const viewResolution = /** @type {number} */ (v.getResolution());
     const wmsSource2 = getRoomInfo(mapInfo.activeFloorNum, mapInfo.layers, layerNamePrefix);
-    const url = wmsSource2.getGetFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
+    const url = wmsSource2.getFeatureInfoUrl(coordinate, viewResolution, 'EPSG:3857', {
       INFO_FORMAT: 'application/json',
       FEATURE_COUNT: 50
     });
