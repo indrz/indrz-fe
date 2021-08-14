@@ -131,6 +131,65 @@ const loadSinglePoi = async (poiId) => {
   return geojsonFormat3.readFeatures(data, { featureProjection: 'EPSG:4326' });
 };
 
+const addPoisToMap = async (poiIds, map, activeFloorNum, layerName = '') => {
+  let poiProperties;
+  let poiLayer;
+  const features = [];
+
+  if (!Array.isArray(poiIds)) {
+    poiIds = [poiIds];
+  }
+
+  for (const poiId of poiIds) {
+    const poiSingleLayer = map
+      .getLayers()
+      .getArray()
+      .find(layer => layer.getProperties() && layer.getProperties().id === parseInt(poiId, 10));
+    if (poiSingleLayer) {
+      map.removeLayer(poiSingleLayer);
+    }
+    const feature = await loadSinglePoi(poiId);
+    features.push(feature[0]);
+  }
+
+  const poiSource = new SourceVector();
+
+  poiSource.addFeatures(features);
+
+  if (features.length) {
+    poiProperties = features[0].getProperties();
+    poiProperties.poiId = poiIds[0];
+
+    poiLayer = new VectorLayer({
+      source: poiSource,
+      style: function (feature) {
+        const properties = feature.getProperties();
+        const poiFeatureFloor = properties.floor_num;
+        const icon = properties.icon;
+
+        if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
+          feature.setStyle(MapStyles.createPoiStyle(icon, 'y', poiFeatureFloor));
+        } else {
+          feature.setStyle(MapStyles.createPoiStyle(icon, 'n', poiFeatureFloor));
+        }
+      },
+      title: layerName,
+      name: layerName,
+      id: poiIds[0],
+      active: true,
+      visible: true,
+      zIndex: 999
+    });
+    map.addLayer(poiLayer);
+  }
+
+  return {
+    poiLayer: poiLayer,
+    properties: poiProperties,
+    centerCoord: getCenter(poiSource.getExtent())
+  };
+};
+
 const addSinglePoiToMap = async (poiId, map, activeFloorNum) => {
   let poiTitle = '';
   let poiProperties;
@@ -147,7 +206,7 @@ const addSinglePoiToMap = async (poiId, map, activeFloorNum) => {
 
   poiSource.addFeatures(featuresSearch);
 
-  if (featuresSearch.length === 1) {
+  if (featuresSearch.length) {
     poiProperties = featuresSearch[0].getProperties();
     poiProperties.poiId = poiId;
 
@@ -223,6 +282,8 @@ export default {
   removePoiById,
   setPoiVisibility,
   fetchPoi,
+  addPoisToMap,
+  addSinglePoiToMap,
   showSinglePoi,
   setPoiFeatureVisibility
 };

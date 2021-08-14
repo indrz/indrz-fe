@@ -686,6 +686,27 @@ const loadMapWithParams = async (mapInfo, query) => {
     }
     mapInfo.searchLayer = result.searchLayer;
   }
+  if (query['start-poi-id'] && query['end-poi-id']) {
+    const startPoiId = query['start-poi-id'];
+    const endPoiId = query['end-poi-id'];
+
+    mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
+
+    mapInfo.$emit('popupRouteClick', {
+      path: 'from',
+      data: {
+        poiId: startPoiId,
+        name: startPoiId
+      }
+    });
+    mapInfo.$emit('popupRouteClick', {
+      path: 'to',
+      data: {
+        poiId: endPoiId,
+        name: endPoiId
+      }
+    });
+  }
   if (query['start-spaceid'] && query['end-spaceid']) {
     const startSpaceId = query['start-spaceid'];
     const endSpaceId = query['end-spaceid'];
