@@ -82,44 +82,36 @@ const poiExist = (poiItem, map) => {
   return isExists;
 };
 
-const createPoilayer = (data, poiCatId, activeFloorNum, layerNamePrefix) => {
-  let poiTitle = '';
-  const poiSource = new SourceVector();
-  const geojsonFormat3 = new GeoJSON();
-  const featuresSearch = geojsonFormat3.readFeatures(data, { featureProjection: 'EPSG:4326' });
-  poiSource.addFeatures(featuresSearch);
-
-  const poiVectorLayer = new VectorLayer({
+const createPoiVectorLayer = (poiSource, activeFloorNum, id, layerName = '') => {
+  return new VectorLayer({
     source: poiSource,
     style: function (feature) {
-      const poiFeatureFloor = feature.getProperties().floor_num;
-      /*
-      if (req_locale === 'de') {
-        poiTitle = feature.getProperties().name_de;
-      } else {
-        poiTitle = feature.getProperties().name_en;
-      }
-      */
-      poiTitle = feature.getProperties().name_en;
-      const icon = feature.getProperties().icon;
+      const properties = feature.getProperties();
+      const poiFeatureFloor = properties.floor_num;
+      const icon = properties.icon;
+
       if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'y', poiFeatureFloor));
       } else {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'n', poiFeatureFloor));
       }
     },
-
-    title: poiTitle,
-    name: poiTitle,
-    id: poiCatId,
+    title: layerName,
+    name: layerName,
+    id,
     active: true,
     visible: true,
     zIndex: 999
   });
-  // todo we can add the following code in some map handler
-  // poiLayerGroup.getLayers().push(poiVectorLayer);
+};
 
-  return poiVectorLayer;
+const createPoilayer = (data, poiCatId, activeFloorNum, layerName = '') => {
+  const poiSource = new SourceVector();
+  const geojsonFormat3 = new GeoJSON();
+  const featuresSearch = geojsonFormat3.readFeatures(data, { featureProjection: 'EPSG:4326' });
+  poiSource.addFeatures(featuresSearch);
+
+  return createPoiVectorLayer(poiSource, activeFloorNum, poiCatId, layerName);
 };
 
 const loadSinglePoi = async (poiId) => {
@@ -160,77 +152,8 @@ const addPoisToMap = async (poiIds, map, activeFloorNum, layerName = '') => {
     poiProperties = features[0].getProperties();
     poiProperties.poiId = poiIds[0];
 
-    poiLayer = new VectorLayer({
-      source: poiSource,
-      style: function (feature) {
-        const properties = feature.getProperties();
-        const poiFeatureFloor = properties.floor_num;
-        const icon = properties.icon;
+    poiLayer = createPoiVectorLayer(poiSource, activeFloorNum, poiProperties.poiId, layerName || poiProperties.name);
 
-        if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
-          feature.setStyle(MapStyles.createPoiStyle(icon, 'y', poiFeatureFloor));
-        } else {
-          feature.setStyle(MapStyles.createPoiStyle(icon, 'n', poiFeatureFloor));
-        }
-      },
-      title: layerName,
-      name: layerName,
-      id: poiIds[0],
-      active: true,
-      visible: true,
-      zIndex: 999
-    });
-    map.addLayer(poiLayer);
-  }
-
-  return {
-    poiLayer: poiLayer,
-    properties: poiProperties,
-    centerCoord: getCenter(poiSource.getExtent())
-  };
-};
-
-const addSinglePoiToMap = async (poiId, map, activeFloorNum) => {
-  let poiTitle = '';
-  let poiProperties;
-  let poiLayer;
-  const featuresSearch = await loadSinglePoi(poiId);
-  const poiSource = new SourceVector();
-  const poiSingleLayer = map
-    .getLayers()
-    .getArray()
-    .filter(layer => layer.getProperties().id === poiId);
-  if (poiSingleLayer && poiSingleLayer.length) {
-    map.removeLayer(poiSingleLayer[0]);
-  }
-
-  poiSource.addFeatures(featuresSearch);
-
-  if (featuresSearch.length) {
-    poiProperties = featuresSearch[0].getProperties();
-    poiProperties.poiId = poiId;
-
-    poiLayer = new VectorLayer({
-      source: poiSource,
-      style: function (feature, resolution) {
-        const poiFeatureFloor = feature.getProperties().floor_num;
-        const cssName = feature.getProperties().icon;
-
-        poiTitle = feature.getProperties().name || feature.getProperties().name_en;
-
-        if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
-          feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
-        } else {
-          feature.setStyle(MapStyles.createPoiStyle(cssName, 'n', poiFeatureFloor));
-        }
-      },
-      title: poiTitle,
-      name: poiTitle,
-      id: poiId,
-      active: true,
-      visible: true,
-      zIndex: 999
-    });
     map.addLayer(poiLayer);
   }
 
@@ -243,7 +166,7 @@ const addSinglePoiToMap = async (poiId, map, activeFloorNum) => {
 
 const showSinglePoi = async (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNum, layerNamePrefix) => {
   const offSetPos = [0, -44];
-  const { poiLayer, properties, centerCoord } = await addSinglePoiToMap(poiId, map, activeFloorNum);
+  const { poiLayer, properties, centerCoord } = await addPoisToMap(poiId, map, activeFloorNum);
 
   globalPopupInfo.poiId = poiId;
   globalPopupInfo.poiCatId = properties.category.id;
@@ -283,7 +206,6 @@ export default {
   setPoiVisibility,
   fetchPoi,
   addPoisToMap,
-  addSinglePoiToMap,
   showSinglePoi,
   setPoiFeatureVisibility
 };
