@@ -45,6 +45,7 @@
       @clearSearch="onClearSearch"
       @popupRouteClick="onPopupRouteClick"
       @openPoiTree="onOpenPoiTree"
+      @openPoiToPoiRoute="onOpenPoiToPoiRoute"
       @showSearchResult="onShowSearchResult"
     />
     <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
@@ -85,7 +86,6 @@ export default {
       picker: new Date().toISOString().substr(0, 10),
       miniVariant: false,
       mapId: 'mapContainer',
-      map: null,
       mapElName: 'mapCard',
       openedPanels: [],
       initialPoiCatId: null,
@@ -96,7 +96,10 @@ export default {
   computed: {
     ...mapState({
       floors: state => state.floor.floors
-    })
+    }),
+    map () {
+      return this.$refs.map;
+    }
   },
 
   watch: {
@@ -109,7 +112,7 @@ export default {
   },
 
   async mounted () {
-    const mapComponent = this.$refs.map;
+    const mapComponent = this.map;
 
     mapHandler.setI18n(this.$i18n);
     await this.loadFloors();
@@ -128,25 +131,25 @@ export default {
       this.$emit('onDrawerClick');
     },
     onMenuButtonClick (type) {
-      this.$refs.map.onMenuButtonClick(type);
+      this.map.onMenuButtonClick(type);
     },
     onLocationClick (value) {
-      this.$refs.map.onLocationClick(value);
+      this.map.onLocationClick(value);
     },
     onFloorClick (floor) {
-      this.$refs.map.onFloorClick(floor);
+      this.map.onFloorClick(floor);
     },
     onFloorSelect (floor) {
       this.$refs.floorChanger.selectFloorWithCss(floor);
     },
     onSearchSelect (selectedItem) {
-      this.$refs.map.onSearchSelect(selectedItem);
+      this.map.onSearchSelect(selectedItem);
     },
     onSetGlobalRoute (selectedItem) {
-      this.$refs.map.setGlobalRoute(selectedItem);
+      this.map.setGlobalRoute(selectedItem);
     },
     onRouteGo () {
-      this.$refs.map.routeGo();
+      this.map.routeGo();
     },
     onClearSearch () {
       this.$refs.searchComp.clearSearch();
@@ -167,22 +170,25 @@ export default {
         this.initialPoiCatId = Number(poiCatId);
       }
     },
+    onOpenPoiToPoiRoute (startPoiId, endPoiId) {
+      this.map.loadPoiToPoiroute(startPoiId, endPoiId);
+    },
     onShowSearchResult (searchResult) {
       this.drawer = true;
       this.openedPanels = [3];
       this.$refs.sideBar.searchResult = searchResult;
     },
     onClearRoute () {
-      this.$refs.map.clearRouteData();
+      this.map.clearRouteData();
     },
     onShareClick () {
-      this.$refs.map.onShareButtonClick(true);
+      this.map.onShareButtonClick(true);
     },
     onPoiLoad (data) {
-      this.$refs.map.onPoiLoad(data);
+      this.map.onPoiLoad(data);
     },
     loadSinglePoi (poiId) {
-      this.$refs.map.loadSinglePoi(poiId);
+      this.map.loadSinglePoi(poiId);
     }
   }
 };

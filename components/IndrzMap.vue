@@ -233,6 +233,10 @@ export default {
           this.searchLayer = layer;
         });
     },
+    loadPoiToPoiroute (startPoiId, endPoiId) {
+      POIHandler
+        .addPoisToMap([startPoiId, endPoiId], this.map, this.activeFloorNum, 'RouteFromPoiToPoi')
+    },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       MapHandler.handlePoiLoad(this.map, this.activeFloorNum, { removedItems, newItems, oldItems }, {
         baseApiUrl: env.BASE_API_URL,
@@ -360,7 +364,7 @@ export default {
       });
     },
     clearRouteData () {
-      this.routeHandler.clearRouteData(this.map);
+      this.routeHandler.clearRouteData(this.map, true);
     },
     showHideHeaderFooter (query) {
       if (query.hideHeader && query.hideHeader === 'true') {
