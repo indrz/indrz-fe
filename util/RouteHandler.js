@@ -222,8 +222,7 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
         endName = routeInfo.end_name;
 
         if (searchType === 'coords') {
-          /* startName = routeData.route_info.start_name;
-          endName = routeData.route_info.end_name; */
+          routeUrl = `?start-xy=${startSearchText.join(',')},${startFloor}&end-xy=${endSearchText.join(',')},${endFloor}`;
         } else if (searchType === 'poiIdToPoiId') {
           routeUrl = '?start-poi-id=' + routeInfo.start.id + '&end-poi-id=' + routeInfo.end.id;
         } else if (searchType === 'spaceIdToSpaceId') {

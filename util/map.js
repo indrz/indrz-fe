@@ -686,52 +686,83 @@ const loadMapWithParams = async (mapInfo, query) => {
     }
     mapInfo.searchLayer = result.searchLayer;
   }
-  if (query['start-poi-id'] && query['end-poi-id']) {
-    const startPoiId = query['start-poi-id'];
-    const endPoiId = query['end-poi-id'];
-
-    mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
-
-    mapInfo.$emit('popupRouteClick', {
-      path: 'from',
-      data: {
-        poiId: startPoiId,
-        name: startPoiId
-      }
-    });
-    mapInfo.$emit('popupRouteClick', {
-      path: 'to',
-      data: {
-        poiId: endPoiId,
-        name: endPoiId
-      }
-    });
-  }
-  if (query['start-spaceid'] && query['end-spaceid']) {
-    const startSpaceId = query['start-spaceid'];
-    const endSpaceId = query['end-spaceid'];
-
-    mapInfo.$emit('popupRouteClick', {
-      path: 'from',
-      data: {
-        spaceid: startSpaceId,
-        name: startSpaceId
-      }
-    });
-    mapInfo.$emit('popupRouteClick', {
-      path: 'to',
-      data: {
-        spaceid: endSpaceId,
-        name: endSpaceId
-      }
-    });
-  }
   if (query['poi-cat-id']) {
     mapInfo.$emit('openPoiTree', query['poi-cat-id']);
   }
   if (query['poi-id']) {
     mapInfo.$emit('openPoiTree', query['poi-id'], true);
   }
+  if (query['start-xy'] && query['end-xy']) {
+    loadMapFromXyToXyRoute(query['start-xy'], query['end-xy'], mapInfo);
+  }
+  if (query['start-poi-id'] && query['end-poi-id']) {
+    loadMapFromPoiToPoiRoute(query['start-poi-id'], query['end-poi-id'], mapInfo);
+  }
+  if (query['start-spaceid'] && query['end-spaceid']) {
+    loadMapFromSpaceIdToSpaceIdRoute(query['start-spaceid'], query['end-spaceid'], mapInfo);
+  }
+};
+
+const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
+  const startXy = startXyQuery.split(',');
+  const startCoords = [startXy[0], startXy[1]];
+  const startFloor = startXy[2];
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: {
+      coords: startCoords,
+      name: 'XY Location',
+      floor_num: startFloor
+    }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: {
+      coords: endCoords,
+      name: 'XY Location',
+      floor_num: endFloor
+    }
+  });
+};
+
+const loadMapFromPoiToPoiRoute = (startPoiId, endPoiId, mapInfo) => {
+  mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: {
+      poiId: startPoiId,
+      name: startPoiId
+    }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: {
+      poiId: endPoiId,
+      name: endPoiId
+    }
+  });
+};
+
+const loadMapFromSpaceIdToSpaceIdRoute = (startSpaceId, endSpaceId, mapInfo) => {
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: {
+      spaceid: startSpaceId,
+      name: startSpaceId
+    }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: {
+      spaceid: endSpaceId,
+      name: endSpaceId
+    }
+  });
 };
 
 const getRouteDescriptionListItem = (label, value) => {
