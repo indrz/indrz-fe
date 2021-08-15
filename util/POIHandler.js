@@ -82,114 +82,102 @@ const poiExist = (poiItem, map) => {
   return isExists;
 };
 
-const createPoilayer = (data, poiCatId, activeFloorNum, layerNamePrefix) => {
-  let poiTitle = '';
-  const poiSource = new SourceVector();
-  const geojsonFormat3 = new GeoJSON();
-  const featuresSearch = geojsonFormat3.readFeatures(data, { featureProjection: 'EPSG:4326' });
-  poiSource.addFeatures(featuresSearch);
-
-  const poiVectorLayer = new VectorLayer({
+const createPoiVectorLayer = (poiSource, activeFloorNum, id, layerName = '') => {
+  return new VectorLayer({
     source: poiSource,
     style: function (feature) {
-      const poiFeatureFloor = feature.getProperties().floor_num;
-      /*
-      if (req_locale === 'de') {
-        poiTitle = feature.getProperties().name_de;
-      } else {
-        poiTitle = feature.getProperties().name_en;
-      }
-      */
-      poiTitle = feature.getProperties().name_en;
-      const icon = feature.getProperties().icon;
+      const properties = feature.getProperties();
+      const poiFeatureFloor = properties.floor_num;
+      const icon = properties.icon;
+
       if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'y', poiFeatureFloor));
       } else {
         feature.setStyle(MapStyles.createPoiStyle(icon, 'n', poiFeatureFloor));
       }
     },
-
-    title: poiTitle,
-    name: poiTitle,
-    id: poiCatId,
+    title: layerName,
+    name: layerName,
+    id,
     active: true,
     visible: true,
     zIndex: 999
   });
-  // todo we can add the following code in some map handler
-  // poiLayerGroup.getLayers().push(poiVectorLayer);
-
-  return poiVectorLayer;
 };
 
-const showSinglePoi = (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNum, layerNamePrefix) => {
-  globalPopupInfo.poiId = poiId;
-  // map.getLayers().getArray()[0].getProperties()
-  const poiSingleLayer = map
-    .getLayers()
-    .getArray()
-    .filter(layer => layer.getProperties().id === poiId);
-  if (poiSingleLayer && poiSingleLayer.length) {
-    map.removeLayer(poiSingleLayer[0]);
+const createPoilayer = (data, poiCatId, activeFloorNum, layerName = '') => {
+  const poiSource = new SourceVector();
+  const geojsonFormat3 = new GeoJSON();
+  const featuresSearch = geojsonFormat3.readFeatures(data, { featureProjection: 'EPSG:4326' });
+  poiSource.addFeatures(featuresSearch);
+
+  return createPoiVectorLayer(poiSource, activeFloorNum, poiCatId, layerName);
+};
+
+const loadSinglePoi = async (poiId) => {
+  const { data } = await api.request({
+    endPoint: `poi/${poiId}/?format=json`
+  });
+  const geojsonFormat3 = new GeoJSON();
+
+  return geojsonFormat3.readFeatures(data, { featureProjection: 'EPSG:4326' });
+};
+
+const addPoisToMap = async (poiIds, map, activeFloorNum, layerName = '') => {
+  let poiProperties;
+  let poiLayer;
+  const features = [];
+
+  if (!Array.isArray(poiIds)) {
+    poiIds = [poiIds];
   }
-  let poiTitle = '';
+
+  for (const poiId of poiIds) {
+    const poiSingleLayer = map
+      .getLayers()
+      .getArray()
+      .find(layer => layer.getProperties() && layer.getProperties().id === parseInt(poiId, 10));
+    if (poiSingleLayer) {
+      map.removeLayer(poiSingleLayer);
+    }
+    const feature = await loadSinglePoi(poiId);
+    features.push(feature[0]);
+  }
+
   const poiSource = new SourceVector();
 
-  return api.request({
-    endPoint: `poi/${poiId}/?format=json`
-  })
-    .then((response) => {
-      const geojsonFormat3 = new GeoJSON();
-      const featuresSearch = geojsonFormat3.readFeatures(response.data, { featureProjection: 'EPSG:4326' });
-      poiSource.addFeatures(featuresSearch);
-      const centerCoord = getCenter(poiSource.getExtent());
-      if (featuresSearch.length === 1) {
-        const offSetPos = [0, -35];
-        const poiProperties = featuresSearch[0].getProperties();
-        const poiCoords = poiProperties.geometry.getCoordinates();
-        poiProperties.poiId = poiId;
-        MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', poiCoords,
-          null, null, activeFloorNum, popup, poiProperties, centerCoord,
-          null, offSetPos, layerNamePrefix);
-        MapUtil.zoomer(map.getView(), centerCoord, zlevel);
+  poiSource.addFeatures(features);
 
-        globalPopupInfo.poiCatId = featuresSearch[0].getProperties().category.id;
-        globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + featuresSearch[0].getProperties().category.id;
+  if (features.length) {
+    poiProperties = features[0].getProperties();
+    poiProperties.poiId = poiIds[0];
 
-        const poiLayer = new VectorLayer({
-          source: poiSource,
-          style: function (feature, resolution) {
-            const poiFeatureFloor = feature.getProperties().floor_num;
-            /*
-            if (req_locale === 'de') {
-              poiTitle = feature.getProperties().name_de;
-            } else {
-              poiTitle = feature.getProperties().name || feature.getProperties().name_en;
-            }
-            */
-            poiTitle = feature.getProperties().name || feature.getProperties().name_en;
+    poiLayer = createPoiVectorLayer(poiSource, activeFloorNum, poiProperties.poiId, layerName || poiProperties.name);
 
-            const cssName = feature.getProperties().icon;
+    map.addLayer(poiLayer);
+  }
 
-            if ((env.LAYER_NAME_PREFIX + poiFeatureFloor) === activeFloorNum) {
-              feature.setStyle(MapStyles.createPoiStyle(cssName, 'y', poiFeatureFloor));
-            } else {
-              feature.setStyle(MapStyles.createPoiStyle(cssName, 'n', poiFeatureFloor));
-            }
-          },
+  return {
+    poiLayer: poiLayer,
+    properties: poiProperties,
+    centerCoord: getCenter(poiSource.getExtent())
+  };
+};
 
-          title: poiTitle,
-          name: poiTitle,
-          id: poiId,
-          active: true,
-          visible: true,
-          zIndex: 999
-        });
+const showSinglePoi = async (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNum, layerNamePrefix) => {
+  const offSetPos = [0, -44];
+  const { poiLayer, properties, centerCoord } = await addPoisToMap(poiId, map, activeFloorNum);
 
-        map.addLayer(poiLayer);
-        return poiLayer;
-      }
-    });
+  globalPopupInfo.poiId = poiId;
+  globalPopupInfo.poiCatId = properties.category.id;
+  globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + properties.category.id;
+
+  MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', null,
+    null, null, activeFloorNum, popup, properties, centerCoord,
+    null, offSetPos, layerNamePrefix);
+  MapUtil.zoomer(map.getView(), centerCoord, zlevel);
+
+  return poiLayer;
 };
 
 const setPoiFeatureVisibility = (map, activeFloorNum, layerNamePrefix) => {
@@ -217,6 +205,7 @@ export default {
   removePoiById,
   setPoiVisibility,
   fetchPoi,
+  addPoisToMap,
   showSinglePoi,
   setPoiFeatureVisibility
 };

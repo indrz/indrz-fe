@@ -87,13 +87,17 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
   return routeUrl;
 };
 
-const clearRouteData = (map) => {
-  const layerNamesToRemove = [
+const clearRouteData = (map, includeAllLayers = false) => {
+  const optionalLayers = [
+    'RouteFromPoiToPoi'
+  ];
+  const defaultLayers = [
     'RouteToBook',
     'RouteLibraryMarkers',
     'RouteMarkers',
     'RouteFromSearch'
   ];
+  const layerNamesToRemove = includeAllLayers ? defaultLayers.concat(optionalLayers) : defaultLayers;
 
   const layersToRemove = [];
 
@@ -202,37 +206,43 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
       const features = geojsonFormat.readFeatures(response, { featureProjection: 'EPSG:4326' });
       const routeJson = JSON.stringify(response);
       const routeData = JSON.parse(routeJson);
+      const { route_info: routeInfo } = routeData;
       source.addFeatures(features);
 
-      addMarkers(map, features, routeData.route_info);
+      addMarkers(map, features, routeInfo);
 
-      if (searchType === 'coords') {
-        startName = routeData.route_info.start_name;
-        endName = routeData.route_info.end_name;
-      } else if (searchType === 'spaceIdToSpaceId') {
-        startName = routeData.route_info.start_name;
-        endName = routeData.route_info.end_name;
-        routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType
-        if (foid) {
-          routeUrl += '&foid=' + foid;
-        }
-      }
       const frontOffice = mapInfo.globalRouteInfo.to.properties.frontoffice;
 
       if (frontOffice) {
         routeData.frontOffice = frontOffice;
       }
 
-      if (routeData.route_info) {
-        insertRouteDescriptionText(startName, endName, routeData);
-        mapInfo.$root.$emit('updateRouteFields', {
-          fromData: {
-            name: startName
-          },
-          toData: {
-            name: endName
+      if (routeInfo) {
+        startName = routeInfo.start_name;
+        endName = routeInfo.end_name;
+
+        if (searchType === 'coords') {
+          /* startName = routeData.route_info.start_name;
+          endName = routeData.route_info.end_name; */
+        } else if (searchType === 'poiIdToPoiId') {
+          routeUrl = '?start-poi-id=' + routeInfo.start.id + '&end-poi-id=' + routeInfo.end.id;
+        } else if (searchType === 'spaceIdToSpaceId') {
+          routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType;
+          if (foid) {
+            routeUrl += '&foid=' + foid;
           }
-        });
+        }
+        insertRouteDescriptionText(startName, endName, routeData);
+        if (startName && endName) {
+          mapInfo.$root.$emit('updateRouteFields', {
+            fromData: {
+              name: startName
+            },
+            toData: {
+              name: endName
+            }
+          });
+        }
       }
 
       if (typeof (features[0]) !== 'undefined') {
