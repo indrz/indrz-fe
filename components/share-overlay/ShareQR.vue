@@ -46,7 +46,7 @@
 
 <script>
 import QRCode from 'qrcode';
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
 import { getFormattedDate } from '@/util/misc';
 
 export default {
@@ -61,14 +61,10 @@ export default {
     onDownloadButtonClick () {
       this.isDownloadingQR = true;
       const qrImageArea = document.querySelector('.share-qr');
-      html2canvas(qrImageArea)
-        .then((canvas) => {
-          const image = canvas.toDataURL();
-          const a = document.createElement('a');
-          a.setAttribute('download', `QR-location-${getFormattedDate()}.png`);
-          a.setAttribute('href', image);
-          a.click();
-          canvas.remove();
+
+      toBlob(qrImageArea)
+        .then(function (blob) {
+          window.saveAs(blob, `QR-location-${getFormattedDate()}.png`);
         })
         .finally(() => {
           this.isDownloadingQR = false;
@@ -104,6 +100,7 @@ export default {
     border-radius: 12px !important;
     width: 196px;
     height: 234px;
+    background-color: #ffffff;
   }
 
   .share-qr-img-container {
