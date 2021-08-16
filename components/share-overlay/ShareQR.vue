@@ -47,6 +47,7 @@
 <script>
 import QRCode from 'qrcode';
 import html2canvas from 'html2canvas';
+import { getFormattedDate } from '@/util/misc';
 
 export default {
   name: 'ShareQR',
@@ -62,21 +63,16 @@ export default {
       const qrImageArea = document.querySelector('.share-qr');
       html2canvas(qrImageArea)
         .then((canvas) => {
-          document.body.appendChild(canvas);
-          canvas.style.display = 'none';
-          return canvas;
-        })
-        .then((canvas) => {
-          const image = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+          const image = canvas.toDataURL();
           const a = document.createElement('a');
-          a.setAttribute('download', `${this.qrLink}.png`);
+          a.setAttribute('download', `QR-location-${getFormattedDate()}.png`);
           a.setAttribute('href', image);
           a.click();
           canvas.remove();
         })
         .finally(() => {
           this.isDownloadingQR = false;
-        })
+        });
     },
     onTestLinkButtonClick () {
       window.open(this.qrLink, '_blank');
@@ -106,11 +102,12 @@ export default {
   .share-qr {
     border: 4px solid black;
     border-radius: 12px !important;
+    width: 196px;
+    height: 234px;
   }
 
   .share-qr-img-container {
-    margin: 8px auto 0px;
-    width: 172px
+    margin: 8px;
   }
 
   .share-qr-img {
