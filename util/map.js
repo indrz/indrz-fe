@@ -774,6 +774,40 @@ const getRouteDescriptionListItem = (label, value) => {
                   ${listEndTemplate}` : '';
 };
 
+const createMapCanvas = (map) => {
+  const mapCanvas = document.createElement('canvas');
+  const size = map.getSize();
+  mapCanvas.width = size[0];
+  mapCanvas.height = size[1];
+  const mapContext = mapCanvas.getContext('2d');
+  mapContext.fillStyle = 'white';
+  mapContext.fillRect(0, 0, mapContext.canvas.width, mapContext.canvas.height);
+
+  Array.prototype.forEach.call(
+    document.querySelectorAll('.ol-layer canvas'),
+    function (canvas) {
+      if (canvas.width > 0) {
+        const opacity = canvas.parentNode.style.opacity;
+        mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
+        const transform = canvas.style.transform;
+        // Get the transform parameters from the style's transform matrix
+        const matrix = transform
+          .match(/^matrix\(([^(]*)\)$/)[1]
+          .split(',')
+          .map(Number);
+        // Apply the transform to the export map context
+        CanvasRenderingContext2D.prototype.setTransform.apply(
+          mapContext,
+          matrix
+        );
+        mapContext.drawImage(canvas, 0, 0);
+      }
+    }
+  );
+
+  return mapContext;
+};
+
 export default {
   initializeMap,
   getStartCenter,
@@ -790,5 +824,6 @@ export default {
   calculateAspectRatioFit,
   loadMapWithParams,
   handleWindowResize,
-  getRouteDescriptionListItem
+  getRouteDescriptionListItem,
+  createMapCanvas
 };

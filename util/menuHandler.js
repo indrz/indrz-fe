@@ -14,25 +14,15 @@ const handleZoomToHome = (mapInfo, center) => {
   });
 };
 
-const attachPreComposeHandler = (map) => {
-  map.once('precompose', function (event) {
-    event.context.fillStyle = 'white';
-    event.context.fillRect(0, 0, event.context.canvas.width, event.context.canvas.height);
-  });
-};
 const handleDownLoad = (mapInfo) => {
-  attachPreComposeHandler(mapInfo.map);
-  mapInfo.map.once('postcompose', function (event) {
-    const canvas = event.context.canvas;
-    const curDate = new Date();
+  const map = mapInfo.map;
+  const mapContext = MapUtil.createMapCanvas(map);
 
-    if (canvas.toBlob) {
-      canvas.toBlob(function (blob) {
-        saveAs(blob, curDate.toLocaleDateString() + '_map.png');
-      }, 'image/png');
-    }
-  });
-  mapInfo.map.renderSync();
+  if (mapContext.canvas.toBlob) {
+    mapContext.canvas.toBlob(function (blob) {
+      saveAs(blob, 'map.png');
+    }, 'image/png');
+  }
 };
 
 const handlePdf = (mapInfo) => {
@@ -45,10 +35,9 @@ const handlePdf = (mapInfo) => {
   const pdfBottomMargin = 20;
   const map = mapInfo.map;
   const format = 'a4';
-  const mapSize = MapUtil.getMapSize(map);
-  const canvasMapHeight = mapSize.height_px;
-  const canvasMapWidth = mapSize.width_px;
   const size = map.getSize();
+  const canvasMapHeight = size[1];
+  const canvasMapWidth = size[0];
   const viewResolution = map.getView().getResolution();
   const ratio = canvasMapHeight / canvasMapWidth;
   let pageOrientation = 'landscape';
@@ -70,35 +59,8 @@ const handlePdf = (mapInfo) => {
     pageOrientation = 'portrait';
   }
 
-  const mapCanvas = document.createElement('canvas');
-  mapCanvas.width = mapSize.width_px;
-  mapCanvas.height = mapSize.height_px;
-  const mapContext = mapCanvas.getContext('2d');
+  const mapContext = MapUtil.createMapCanvas(map);
 
-  mapContext.fillStyle = 'white';
-  mapContext.fillRect(0, 0, mapContext.canvas.width, mapContext.canvas.height);
-
-  Array.prototype.forEach.call(
-    document.querySelectorAll('.ol-layer canvas'),
-    function (canvas) {
-      if (canvas.width > 0) {
-        const opacity = canvas.parentNode.style.opacity;
-        mapContext.globalAlpha = opacity === '' ? 1 : Number(opacity);
-        const transform = canvas.style.transform;
-        // Get the transform parameters from the style's transform matrix
-        const matrix = transform
-          .match(/^matrix\(([^(]*)\)$/)[1]
-          .split(',')
-          .map(Number);
-        // Apply the transform to the export map context
-        CanvasRenderingContext2D.prototype.setTransform.apply(
-          mapContext,
-          matrix
-        );
-        mapContext.drawImage(canvas, 0, 0);
-      }
-    }
-  );
   const pdf = new JSPDF({
     orientation: pageOrientation,
     unit: 'px',
@@ -119,7 +81,7 @@ const handlePdf = (mapInfo) => {
   const x = MapUtil.calculateAspectRatioFit(canvasMapWidth, canvasMapHeight, maxWidth,
     maxHeight);
   pdf.addImage(
-    mapCanvas.toDataURL('image/jpeg'),
+    mapContext.canvas.toDataURL('image/jpeg'),
     'JPEG',
     pdfLeftMargin,
     40,
