@@ -46,7 +46,8 @@
 
 <script>
 import QRCode from 'qrcode';
-import html2canvas from 'html2canvas';
+import { toBlob } from 'html-to-image';
+import { getFormattedDate } from '@/util/misc';
 
 export default {
   name: 'ShareQR',
@@ -60,23 +61,14 @@ export default {
     onDownloadButtonClick () {
       this.isDownloadingQR = true;
       const qrImageArea = document.querySelector('.share-qr');
-      html2canvas(qrImageArea)
-        .then((canvas) => {
-          document.body.appendChild(canvas);
-          canvas.style.display = 'none';
-          return canvas;
-        })
-        .then((canvas) => {
-          const image = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-          const a = document.createElement('a');
-          a.setAttribute('download', `${this.qrLink}.png`);
-          a.setAttribute('href', image);
-          a.click();
-          canvas.remove();
+
+      toBlob(qrImageArea)
+        .then(function (blob) {
+          window.saveAs(blob, `QR-location-${getFormattedDate()}.png`);
         })
         .finally(() => {
           this.isDownloadingQR = false;
-        })
+        });
     },
     onTestLinkButtonClick () {
       window.open(this.qrLink, '_blank');
@@ -106,11 +98,13 @@ export default {
   .share-qr {
     border: 4px solid black;
     border-radius: 12px !important;
+    width: 196px;
+    height: 234px;
+    background-color: #ffffff;
   }
 
   .share-qr-img-container {
-    margin: 8px auto 0px;
-    width: 172px
+    margin: 8px;
   }
 
   .share-qr-img {
