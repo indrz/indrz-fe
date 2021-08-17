@@ -14,129 +14,96 @@ const handleZoomToHome = (mapInfo, center) => {
   });
 };
 
-const attachPreComposeHandler = (map) => {
-  map.once('precompose', function (event) {
-    event.context.fillStyle = 'white';
-    event.context.fillRect(0, 0, event.context.canvas.width, event.context.canvas.height);
-  });
-};
 const handleDownLoad = (mapInfo) => {
-  attachPreComposeHandler(mapInfo.map);
-  mapInfo.map.once('postcompose', function (event) {
-    const canvas = event.context.canvas;
-    const curDate = new Date();
-
-    if (canvas.toBlob) {
-      canvas.toBlob(function (blob) {
-        saveAs(blob, curDate.toLocaleDateString() + '_map.png');
-      }, 'image/png');
-    }
-  });
-  mapInfo.map.renderSync();
-};
-const handlePdf = (mapInfo) => {
   const map = mapInfo.map;
+  const mapContext = MapUtil.createMapCanvas(map);
+
+  if (mapContext.canvas.toBlob) {
+    mapContext.canvas.toBlob(function (blob) {
+      saveAs(blob, 'map.png');
+    }, 'image/png');
+  }
+};
+
+const handlePdf = (mapInfo) => {
+  let maxWidth;
+  let maxHeight;
+
+  const pdfLeftMargin = 20;
+  const pdfRightMargin = 20;
+  const pdfTopMargin = 40;
+  const pdfBottomMargin = 20;
+  const map = mapInfo.map;
+  const format = 'a4';
+  const size = map.getSize();
+  const canvasMapHeight = size[1];
+  const canvasMapWidth = size[0];
+  const viewResolution = map.getView().getResolution();
+  const ratio = canvasMapHeight / canvasMapWidth;
+  let pageOrientation = 'landscape';
   const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
   const floorName = floor?.short_name;
-  attachPreComposeHandler(map);
-  mapInfo.map.once('postcompose', function (event) {
-    const canvas = event.context.canvas;
-    const mapSize = MapUtil.getMapSize(map);
-    const canvasMapHeight = mapSize.height_px;
-    const canvasMapWidth = mapSize.width_px;
+  let today = new Date();
+  let dd = today.getDate();
+  let mm = today.getMonth() + 1; // January is 0!
 
-    const ratio = canvasMapHeight / canvasMapWidth;
+  const yyyy = today.getFullYear();
+  if (dd < 10) {
+    dd = '0' + dd;
+  }
+  if (mm < 10) {
+    mm = '0' + mm;
+  }
+  today = dd + '.' + mm + '.' + yyyy;
+  if (ratio > 1) {
+    pageOrientation = 'portrait';
+  }
 
-    let pageOrientation = 'landscape';
+  const mapContext = MapUtil.createMapCanvas(map);
 
-    if (ratio > 1) {
-      pageOrientation = 'portrait';
-    }
-
-    let today = new Date();
-    let dd = today.getDate();
-    let mm = today.getMonth() + 1; // January is 0!
-
-    const yyyy = today.getFullYear();
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-    today = dd + '.' + mm + '.' + yyyy;
-    const todayFileName = yyyy + '-' + mm + '-' + dd;
-
-    if (canvas.toBlob) {
-      canvas.toBlob(
-        function (blob) {
-          const doc = new JSPDF({
-            orientation: pageOrientation,
-            unit: 'px',
-            format: 'a4'
-          });
-
-          const pdfWidth = doc.internal.pageSize.width;
-          const pdfHeight = doc.internal.pageSize.height;
-
-          let maxWidth;
-          let maxHeight;
-
-          const pdfLeftMargin = 20;
-          const pdfRightMargin = 20;
-          const pdfTopMargin = 40;
-          const pdfBottomMargin = 20;
-
-          if (ratio > 1) {
-            // portrait
-            maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
-            maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
-          } else {
-            maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
-            maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
-          }
-          const pdfMapWidth = pdfWidth - (pdfLeftMargin + pdfRightMargin);
-          const titleXPos = pdfMapWidth / 2.4;
-          const titleYPos = 25;
-
-          doc.setFont('Arial');
-
-          doc.setFontSize(22);
-
-          doc.text('TU Campus', titleXPos, titleYPos);
-          doc.setFontSize(12);
-
-          const x = MapUtil.calculateAspectRatioFit(canvasMapWidth, canvasMapHeight, maxWidth,
-            maxHeight);
-
-          const reader = new window.FileReader();
-          reader.readAsDataURL(blob);
-          reader.onloadend = function () {
-            const base64data = reader.result;
-            if (ratio > 1) {
-              const pdfLeftMargin = (pdfWidth - x.width) / 2;
-
-              doc.text('Stockwerk:  ' + floorName, 208, titleYPos + 10);
-              doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
-                .height);
-              doc.text(today, 20, 617);
-            } else {
-              const pdfLeftMargin = (pdfWidth - x.width) / 2;
-
-              doc.text('Stockwerk:  ' + floorName, 300, titleYPos + 10);
-              doc.addImage(base64data, 'PNG', pdfLeftMargin, 40, x.width, x
-                .height);
-              doc.text(today, 20, 420);
-            }
-            doc.save(todayFileName + '-TU.pdf');
-          };
-        },
-        'image/jpeg'
-      );
-    }
+  const pdf = new JSPDF({
+    orientation: pageOrientation,
+    unit: 'px',
+    format
   });
-  mapInfo.map.renderSync();
+
+  const pdfWidth = pdf.internal.pageSize.width;
+  const pdfHeight = pdf.internal.pageSize.height;
+
+  if (ratio > 1) {
+    // portrait
+    maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
+    maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
+  } else {
+    maxWidth = pdfWidth - pdfLeftMargin - pdfRightMargin;
+    maxHeight = pdfHeight - pdfTopMargin - pdfBottomMargin;
+  }
+  const x = MapUtil.calculateAspectRatioFit(canvasMapWidth, canvasMapHeight, maxWidth,
+    maxHeight);
+  pdf.addImage(
+    mapContext.canvas.toDataURL('image/jpeg'),
+    'JPEG',
+    pdfLeftMargin,
+    40,
+    x.width,
+    x.height
+  );
+  const titleXPos = maxWidth / 2 - 20;
+  const titleYPos = 25;
+
+  pdf.setFont('Arial');
+  pdf.setFontSize(22);
+  pdf.text('Campus', titleXPos, titleYPos);
+  pdf.setFontSize(12);
+  pdf.text('Stockwerk:  ' + floorName, (maxWidth / 2) - 25, titleYPos + 10);
+  pdf.text(today, pdfLeftMargin, maxHeight);
+  pdf.save('map.pdf');
+  // Reset original map size
+  map.setSize(size);
+  map.getView().setResolution(viewResolution);
+  document.body.style.cursor = 'auto';
 };
+
 const handleShare = (mapInfo) => {
   const url = MapHandler.updateUrl('map', mapInfo.map, mapInfo.globalPopupInfo, mapInfo.globalRouteInfo, mapInfo.globalSearchInfo, mapInfo.activeFloorNum);
   const shareOverlay = mapInfo.$refs.shareOverlay;
