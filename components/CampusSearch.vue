@@ -13,12 +13,11 @@
         @click:clear="onClearClick"
         @change="onSearchSelection"
         item-text="name"
-        item-value="spaceid"
+        item-value="id"
         append-icon=""
         single-line
         return-object
         flat
-        hide-selected
         hide-details
       >
         <template v-slot:append>
@@ -70,13 +69,12 @@
         @click:clear="onClearClick"
         @change="onSearchSelection"
         item-text="name"
-        item-value="spaceid"
+        item-value="id"
         append-icon=""
         single-line
         return-object
         solo
         flat
-        hide-selected
         hide-details
       >
         <template v-slot:append>
@@ -222,7 +220,7 @@ export default {
             this.apiResponse = this.apiResponse.slice(0, this.serachItemLimit);
           }
 
-          this.searchResult = this.apiResponse.map(({ properties }) => {
+          this.searchResult = this.apiResponse.map(({ id, properties }) => {
             let code = properties.roomcode;
 
             if (code && code.toLowerCase() === this.search.toLowerCase()) {
@@ -235,7 +233,8 @@ export default {
               roomCode: properties.roomcode,
               building: properties.building,
               src_icon: properties.src_icon || properties.icon,
-              code
+              code,
+              id
             }
           });
         })
@@ -248,7 +247,7 @@ export default {
       let data = null;
 
       if (selection) {
-        data = this.apiResponse.find(responseData => responseData.properties.roomcode === selection.roomCode);
+        data = this.apiResponse.find(responseData => responseData.id === selection.id);
       }
 
       this.$emit('selectSearhResult', {

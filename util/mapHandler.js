@@ -38,6 +38,7 @@ const openIndrzPopup = (
   for (const member in globalPopupInfo) {
     globalPopupInfo[member] = null;
   }
+
   feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1;
   offsetArray = (typeof offsetArray !== 'undefined' && offsetArray !== null) ? offsetArray : [0, 0];
 
@@ -48,6 +49,7 @@ const openIndrzPopup = (
   if (properties.hasOwnProperty('category')) {
     globalPopupInfo.src = 'poi';
     globalPopupInfo.poiCatId = properties.category.id;
+    offsetArray[1] = -44;
   }
   if (properties.hasOwnProperty('spaceid')) {
     globalPopupInfo.spaceid = properties.spaceid;
@@ -201,6 +203,7 @@ const openIndrzPopup = (
   globalPopupInfo.floor = activeFloorNum;
   globalPopupInfo.roomcode = roomCode;
   globalPopupInfo.floor_num = properties.floor_num;
+
   popup.setPosition(coordinate);
   popup.setOffset(offsetArray);
 };
@@ -416,6 +419,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
       if (featureType === 'MultiPoint') {
         properties.poiId = feature.getId();
         properties.src = 'poi';
+        coordinate = feature.getGeometry().flatCoordinates;
       }
       mapInfo.globalSearchInfo = {
         selectedItem: { type: featureType, properties },
