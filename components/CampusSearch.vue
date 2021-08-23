@@ -50,9 +50,17 @@
           </div>
         </template>
         <template v-slot:item="{ item }">
+          <v-list-item-icon style="margin-right: 16px">
+            <v-img
+              :src="getIconUrl(item.src_icon)"
+              contain
+              max-height="24"
+              max-width="24"
+            />
+          </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title v-text="item.name" />
-            <v-list-item-subtitle v-text="`(${item.code}, Floor ${item.floorNum})`" />
+            <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}Floor ${item.floorNum})`" />
           </v-list-item-content>
         </template>
       </v-autocomplete>
@@ -227,7 +235,7 @@ export default {
               code = properties.room_category || properties.external_id || code;
             }
 
-            return {
+            const data = {
               name: properties.name,
               floorNum: properties.floor_num,
               roomCode: properties.roomcode,
@@ -235,7 +243,13 @@ export default {
               src_icon: properties.src_icon || properties.icon,
               code,
               id
+            };
+
+            if (properties.hasOwnProperty('category')) {
+              properties.poiId = id;
             }
+
+            return data;
           });
         })
         .catch((err) => {
@@ -283,6 +297,9 @@ export default {
           })); */
     },
     getIconUrl (iconName) {
+      if (!iconName) {
+        return '';
+      }
       if (this.iconNames.includes(iconName)) {
         return `${this.iconPath}/${iconName}.png`;
       } else if (iconName.includes('.png')) {
