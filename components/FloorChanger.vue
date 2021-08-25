@@ -89,15 +89,26 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
   .floor-changer {
     position: absolute;
     right: 10px;
     top: 70px;
     overflow-y: auto;
-    background-color: #1337bf;
+    background-color: transparent;
+    .v-list-item__title {
+      text-align: center;
+    }
+    .v-list-item__content {
+      min-width: 30px;
+    }
   }
   .v-list-item--active{
     background-color: #0048ff;
+  }
+  @-moz-document url-prefix() {
+    .floor-changer {
+      scrollbar-width: thin;
+    }
   }
 </style>
