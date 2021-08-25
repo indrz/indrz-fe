@@ -338,7 +338,9 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
   } else if (mode === 'poiCatId') {
     url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
 
-    const singlePoiUrl = location.origin + '?poi-id=' + globalPopupInfo.poiId + '&floor=' + globalPopupInfo.floor_num;
+    const poiId = globalPopupInfo.poiId || globalSearchInfo?.selectedItem?.id;
+    const singlePoiUrl = `${location.origin}?poi-id=${poiId}&floor=${globalPopupInfo.floor_num}`;
+
     return {
       type: 'poi',
       singlePoiUrl,
@@ -416,6 +418,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
 
     if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
       closeIndrzPopup(mapInfo.popup, mapInfo.globalPopupInfo);
+
       if (featureType === 'MultiPoint') {
         properties.poiId = feature.getId();
         properties.src = 'poi';
