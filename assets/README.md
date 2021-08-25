@@ -3,10 +3,10 @@ To change the appearance of Floor Changer, define the styles inside [floor_chang
 For example:
 ```scss
 .floor-changer {
-  position: absolute;
+  position: absolute !important;
   right: 10px;
   top: 70px;
-  overflow-y: auto;
+  overflow-x: hidden;
   .v-list {
     background-color: #ffffff !important;
     .v-list-item-group {
