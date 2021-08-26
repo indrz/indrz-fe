@@ -293,7 +293,6 @@ export default {
               this.shelf.getGeometry().setCoordinates([featureCoords[0], featureCoords[1]]);
               this.dragHandle = mouseCoords;
             }
-
           }
           feature.get('features').forEach((modifyFeature) => {
             const modifyGeometry = modifyFeature.get('modifyGeometry');
