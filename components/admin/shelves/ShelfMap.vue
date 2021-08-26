@@ -53,7 +53,8 @@ export default {
       popup: null,
       layers: [],
       isSatelliteMap: true,
-      modify: null
+      modify: null,
+      shelf: null
     };
   },
   computed: {
@@ -249,8 +250,9 @@ export default {
       });
       this.map.addInteraction(this.draw);
       this.draw.on('drawend', (drawEvent) => {
-        const coordinate = drawEvent.feature.getGeometry().getCoordinates();
-        console.log(coordinate);
+        this.shelf = drawEvent.feature;
+        // const coordinate = drawEvent.feature.getGeometry().getCoordinates();
+        // console.log(coordinate);
         this.map.removeInteraction(this.draw);
       });
     },
@@ -273,6 +275,12 @@ export default {
         deleteCondition: never,
         insertVertexCondition: never,
         style: (feature) => {
+          if (feature.get('features').length === 0) {
+            const featureCoords = this.shelf.getGeometry().getCoordinates();
+            const mouseCoords = feature.getGeometry().getCoordinates();
+
+            this.shelf.getGeometry().setCoordinates([[featureCoords[0][0], mouseCoords[1]], [featureCoords[1][0], mouseCoords[1]]]);
+          }
           feature.get('features').forEach((modifyFeature) => {
             const modifyGeometry = modifyFeature.get('modifyGeometry');
             if (modifyGeometry) {
