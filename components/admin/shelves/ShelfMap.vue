@@ -25,9 +25,9 @@
 
 <script>
 import 'ol/ol.css';
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Circle as CircleStyle, Fill, Stroke, Text, Style } from 'ol/style';
 import { Draw, Modify, Translate } from 'ol/interaction';
-import { MultiPoint, Point } from 'ol/geom';
+import { Point } from 'ol/geom';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { getHeight, getWidth, getCenter } from 'ol/extent';
@@ -153,18 +153,9 @@ export default {
           const modifyGeometry = feature.get('modifyGeometry');
           return modifyGeometry ? modifyGeometry.geometry : feature.getGeometry();
         },
-        fill: new Fill({
-          color: 'rgba(255, 255, 255, 0.2)'
-        }),
         stroke: new Stroke({
-          color: '#ffcc33',
-          width: 2
-        }),
-        image: new CircleStyle({
-          radius: 7,
-          fill: new Fill({
-            color: '#ffcc33'
-          })
+          color: '#ff0000',
+          width: 4
         })
       });
 
@@ -192,20 +183,55 @@ export default {
             );
             const coordinates = result.coordinates;
             if (coordinates) {
-              const minRadius = result.minRadius;
-              const sqDistances = result.sqDistances;
-              const rsq = minRadius * minRadius;
-              const points = coordinates.filter(function (coordinate, index) {
-                return sqDistances[index] > rsq;
-              });
               styles.push(
                 new Style({
-                  geometry: new MultiPoint(points),
+                  geometry: new Point(coordinates[0]),
                   image: new CircleStyle({
-                    radius: 4,
+                    radius: 10,
+                    stroke: new Stroke({
+                      color: '#ff0000',
+                      width: 1
+                    }),
                     fill: new Fill({
-                      color: '#33cc33'
+                      color: '#ffffff'
                     })
+                  })
+                })
+              );
+              styles.push(
+                new Style({
+                  geometry: new Point(coordinates[0]),
+                  text: new Text({
+                    text: 'S',
+                    font: '12px "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif',
+                    fill: new Fill({ color: '#ff0000' }),
+                    stroke: new Stroke({ color: '#ff0000', width: 1 })
+                  })
+                })
+              );
+              styles.push(
+                new Style({
+                  geometry: new Point(coordinates[1]),
+                  image: new CircleStyle({
+                    radius: 10,
+                    stroke: new Stroke({
+                      color: '#ff0000',
+                      width: 1
+                    }),
+                    fill: new Fill({
+                      color: '#ffffff'
+                    })
+                  })
+                })
+              );
+              styles.push(
+                new Style({
+                  geometry: new Point(coordinates[1]),
+                  text: new Text({
+                    text: 'E',
+                    font: '12px "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif',
+                    fill: new Fill({ color: '#ff0000' }),
+                    stroke: new Stroke({ color: '#ff0000', width: 1 })
                   })
                 })
               );
@@ -222,7 +248,9 @@ export default {
         maxPoints: 2
       });
       this.map.addInteraction(this.draw);
-      this.draw.on('drawend', (evt) => {
+      this.draw.on('drawend', (drawEvent) => {
+        const coordinate = drawEvent.feature.getGeometry().getCoordinates();
+        console.log(coordinate);
         this.map.removeInteraction(this.draw);
       });
     },
@@ -317,6 +345,18 @@ export default {
       );
 
       this.addInteractions(source);
+
+      /*
+      const dragModify = new Modify({
+        hitDetection: vector,
+        source: source
+      });
+      const target = document.getElementById(this.mapId);
+      dragModify.on(['modifystart', 'modifyend'], function (evt) {
+        target.style.cursor = evt.type === 'modifystart' ? 'grabbing' : 'pointer';
+      });
+      this.map.addInteraction(dragModify);
+      */
     }
   }
 };
