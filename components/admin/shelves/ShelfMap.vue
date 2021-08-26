@@ -54,7 +54,8 @@ export default {
       layers: [],
       isSatelliteMap: true,
       modify: null,
-      shelf: null
+      shelf: null,
+      dragHandle: null
     };
   },
   computed: {
@@ -279,7 +280,20 @@ export default {
             const featureCoords = this.shelf.getGeometry().getCoordinates();
             const mouseCoords = feature.getGeometry().getCoordinates();
 
-            this.shelf.getGeometry().setCoordinates([[featureCoords[0][0], mouseCoords[1]], [featureCoords[1][0], mouseCoords[1]]]);
+            if (!this.dragHandle) {
+              this.dragHandle = mouseCoords;
+            } else {
+              const dx = this.dragHandle[0] - mouseCoords[0];
+              const dy = this.dragHandle[1] - mouseCoords[1];
+
+              featureCoords[0][0] = featureCoords[0][0] - dx;
+              featureCoords[1][0] = featureCoords[1][0] - dx;
+              featureCoords[0][1] = featureCoords[0][1] - dy;
+              featureCoords[1][1] = featureCoords[1][1] - dy;
+              this.shelf.getGeometry().setCoordinates([featureCoords[0], featureCoords[1]]);
+              this.dragHandle = mouseCoords;
+            }
+
           }
           feature.get('features').forEach((modifyFeature) => {
             const modifyGeometry = modifyFeature.get('modifyGeometry');
@@ -332,7 +346,8 @@ export default {
         });
       });
 
-      modify.on('modifyend', function (event) {
+      modify.on('modifyend', (event) => {
+        this.dragHandle = null;
         event.features.forEach(function (feature) {
           const modifyGeometry = feature.get('modifyGeometry');
           if (modifyGeometry) {
