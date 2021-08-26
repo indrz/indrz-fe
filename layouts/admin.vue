@@ -52,7 +52,7 @@ export default {
       },
       {
         text: 'POI Manager',
-        // icon: 'view-list',
+        icon: 'map-marker',
         route: { name: 'poi', path: '/admin/poi' }
       }
     ]
