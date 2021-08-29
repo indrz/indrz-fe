@@ -51,7 +51,7 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon
-          @click="bookShelfDrawDialog = true"
+          @click="onBookShelfDrawClick(item)"
           class="mr-1"
           small
         >
@@ -306,6 +306,11 @@ export default {
         building_floor: this.firstFloor()
       });
       this.bookShelfAddEditDialog = true;
+    },
+
+    onBookShelfDrawClick (shelf) {
+      this.setSelectedShelf(shelf);
+      this.bookShelfDrawDialog = true;
     },
 
     async editBookShelf (bookShelf) {
