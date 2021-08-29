@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import 'ol/ol.css';
 import { Circle as CircleStyle, Fill, Stroke, Text, Style } from 'ol/style';
 import { Draw, Modify, Translate } from 'ol/interaction';
@@ -31,6 +32,8 @@ import { Point } from 'ol/geom';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { getHeight, getWidth, getCenter } from 'ol/extent';
+import { LineString } from 'ol/geom';
+import Feature from 'ol/Feature';
 import {
   never,
   platformModifierKeyOnly,
@@ -70,6 +73,12 @@ export default {
         layerNamePrefix: env.LAYER_NAME_PREFIX,
         center: env.DEFAULT_CENTER_XY
       };
+    },
+    ...mapState({
+      selectedShelf: state => state.shelf.selectedShelf
+    }),
+    hasShelfGeometry () {
+      return this.selectedShelf && this.selectedShelf.geometry;
     }
   },
   mounted () {
@@ -252,14 +261,37 @@ export default {
       this.map.addInteraction(this.draw);
       this.draw.on('drawend', (drawEvent) => {
         this.shelf = drawEvent.feature;
-        // const coordinate = drawEvent.feature.getGeometry().getCoordinates();
-        // console.log(coordinate);
+        console.log(this.shelf.getGeometry());
+        console.log(this.shelf.getGeometry().getCoordinates());
         this.map.removeInteraction(this.draw);
       });
     },
+    getVectorSource () {
+      if (this.hasShelfGeometry) {
+        const coordinates = this.selectedShelf.geometry.coordinates[0];
+        console.log('Found Coordinates')
+        this.shelf = new Feature({
+          geometry: new LineString(
+            [[coordinates[0][0], coordinates[0][1]], [coordinates[1][0], coordinates[1][1]]]
+          ).transform('EPSG:3857', this.map.getView().getProjection()),
+          name: 'LineString'
+        });
+        /* this.shelf = new Feature({
+          geometry: new LineString(
+            this.selectedShelf.geometry.coordinates
+          ).transform('EPSG:3857', this.map.getView().getProjection()),
+          name: 'LineString'
+        }); */
+        return new VectorSource({
+          features: [
+            this.shelf
+          ]
+        });
+      }
+      return new VectorSource();
+    },
     test () {
-      const source = new VectorSource();
-
+      const source = this.getVectorSource();
       const vector = this.getDrawingVectorLayer(source);
 
       this.map.addLayer(vector);
@@ -366,19 +398,7 @@ export default {
         })
       );
 
-      this.addInteractions(source);
-
-      /*
-      const dragModify = new Modify({
-        hitDetection: vector,
-        source: source
-      });
-      const target = document.getElementById(this.mapId);
-      dragModify.on(['modifystart', 'modifyend'], function (evt) {
-        target.style.cursor = evt.type === 'modifystart' ? 'grabbing' : 'pointer';
-      });
-      this.map.addInteraction(dragModify);
-      */
+      !this.hasShelfGeometry && this.addInteractions(source);
     }
   }
 };
