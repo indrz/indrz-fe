@@ -14,7 +14,7 @@
         </v-btn>
       </v-toolbar>-->
       <v-card-text class="pa-0">
-        <shelf-map v-if="show" ref="shelfMap" />
+        <shelf-map ref="shelfMap" v-if="show" />
       </v-card-text>
       <v-divider />
       <v-card-actions>

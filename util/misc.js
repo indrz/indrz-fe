@@ -17,7 +17,11 @@ export const getFormattedDate = (format = 'yyyy-mm-dd', separator = '-', date = 
 
   return `${dateObj[position[0]]}${separator}${dateObj[position[1]]}${separator}${dateObj[position[2]]}`;
 };
+export const getGeomFromCoordinates = (coordinates) => {
+  return `SRID=3857;MULTILINESTRING((${coordinates[0].join(' ')},${coordinates[1].join(' ')}))`;
+};
 
 export default {
-  getFormattedDate
+  getFormattedDate,
+  getGeomFromCoordinates
 }

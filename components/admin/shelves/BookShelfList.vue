@@ -100,6 +100,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import api from '@/util/api';
+import { getGeomFromCoordinates } from '@/util/misc';
 import AddEditShelf from './AddEditShelf';
 import DrawShelf from './DrawShelf';
 
@@ -318,7 +319,12 @@ export default {
       await this.loadFloors(bookShelf.building);
 
       this.bookShelfEditedIndex = this.shelvesListData.indexOf(bookShelf);
+
       this.bookShelfEditedItem = Object.assign({}, bookShelf);
+      const { geometry } = this.bookShelfEditedItem;
+      if (geometry && geometry?.coordinates?.length) {
+        this.bookShelfEditedItem.geom = getGeomFromCoordinates(geometry.coordinates[0]);
+      }
       this.bookShelfAddEditDialog = true;
     },
 
@@ -347,7 +353,8 @@ export default {
       const currentShelf = { ...this.selectedShelf };
 
       currentShelf.geometry && delete currentShelf.geometry;
-      currentShelf.geom = `SRID=3857;MULTILINESTRING((${coordinates[0][0]} ${coordinates[0][1]},${coordinates[1][0]} ${coordinates[1][1]}))`;
+
+      currentShelf.geom = getGeomFromCoordinates(coordinates);
 
       await this.saveShelf(currentShelf);
 
