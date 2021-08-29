@@ -27,7 +27,14 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.geom" label="Geometry" />
+                <v-text-field
+                  v-model="currentShelf.geom"
+                  @click:append-outer="onGeomButtonClick"
+                  label="Geometry"
+                  clear-icon="mdi-close-circle"
+                  append-outer-icon="mdi-map"
+                  clearable
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -129,14 +136,23 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+    <draw-shelf
+      :title="drawShelfTitle"
+      :show="bookShelfDrawDialog"
+      @save="setGeometry"
+      @close="bookShelfDrawDialogClose"
+    />
   </v-dialog>
 </template>
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import { getGeomFromCoordinates } from '@/util/misc';
+import DrawShelf from './DrawShelf';
 
 export default {
   name: 'AddEditShelf',
+  components: { DrawShelf },
   props: {
     title: {
       type: String,
@@ -161,6 +177,7 @@ export default {
     return {
       loading: false,
       valid: true,
+      bookShelfDrawDialog: false,
       doubleSidedItems: [
         { text: 'Unknown', value: null },
         { text: 'Yes', value: true },
@@ -175,7 +192,15 @@ export default {
     ...mapState({
       floors: state => state.building.floors,
       buildings: state => state.building.buildings
-    })
+    }),
+    drawShelfTitle () {
+      return 'Draw Shelf';
+    }
+  },
+  watch: {
+    bookShelfDrawDialog (val) {
+      val || this.bookShelfDrawDialogClose();
+    }
   },
   methods: {
     ...mapActions({
@@ -185,10 +210,19 @@ export default {
     async onBuildingChange (buildingId) {
       await this.loadFloors(buildingId);
     },
+    onGeomButtonClick () {
+      this.bookShelfDrawDialog = true;
+    },
     close () {
       this.$refs.form.reset();
       this.$refs.form.resetValidation();
       this.$emit('close');
+    },
+    setGeometry (coordinates) {
+      this.currentShelf.geom = getGeomFromCoordinates(coordinates);
+    },
+    bookShelfDrawDialogClose () {
+      this.bookShelfDrawDialog = false;
     },
     async save () {
       if (!this.$refs.form.validate()) {

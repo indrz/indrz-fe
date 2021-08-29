@@ -51,7 +51,7 @@
       </template>
       <template v-slot:item.actions="{ item }">
         <v-icon
-          @click="bookShelfDrawDialog = true"
+          @click="onBookShelfDrawClick(item)"
           class="mr-1"
           small
         >
@@ -81,6 +81,7 @@
     <draw-shelf
       :title="drawShelfTitle"
       :show="bookShelfDrawDialog"
+      @save="saveBookShelfGeometry"
       @close="bookShelfDrawDialogClose"
     />
     <confirm-dialog
@@ -99,6 +100,7 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import api from '@/util/api';
+import { getGeomFromCoordinates } from '@/util/misc';
 import AddEditShelf from './AddEditShelf';
 import DrawShelf from './DrawShelf';
 
@@ -274,6 +276,7 @@ export default {
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
       loadFloors: 'building/LOAD_FLOORS',
       deleteBookShelf: 'shelf/DELETE_SHELF',
+      saveShelf: 'shelf/SAVE_SHELF',
       setSelectedShelf: 'shelf/SET_SELECTED_SHELF'
     }),
     onShelfClick (shelf) {
@@ -301,18 +304,27 @@ export default {
 
       this.bookShelfEditedItem = Object.assign({
         double_sided: true,
-        geom: 'SRID=3857;MULTILINESTRING((1826591.54074498 6142466.7599126,1826596.22332136 6142463.08341735))',
         building: this.firstBuilding(),
         building_floor: this.firstFloor()
       });
       this.bookShelfAddEditDialog = true;
     },
 
+    onBookShelfDrawClick (shelf) {
+      this.setSelectedShelf(shelf);
+      this.bookShelfDrawDialog = true;
+    },
+
     async editBookShelf (bookShelf) {
       await this.loadFloors(bookShelf.building);
 
       this.bookShelfEditedIndex = this.shelvesListData.indexOf(bookShelf);
+
       this.bookShelfEditedItem = Object.assign({}, bookShelf);
+      const { geometry } = this.bookShelfEditedItem;
+      if (geometry && geometry?.coordinates?.length) {
+        this.bookShelfEditedItem.geom = getGeomFromCoordinates(geometry.coordinates[0]);
+      }
       this.bookShelfAddEditDialog = true;
     },
 
@@ -334,6 +346,19 @@ export default {
     },
     bookShelfDrawDialogClose () {
       this.bookShelfDrawDialog = false;
+    },
+    async saveBookShelfGeometry (coordinates) {
+      this.loading = true;
+
+      const currentShelf = { ...this.selectedShelf };
+
+      currentShelf.geometry && delete currentShelf.geometry;
+
+      currentShelf.geom = getGeomFromCoordinates(coordinates);
+
+      await this.saveShelf(currentShelf);
+
+      this.loading = false;
     }
   }
 };

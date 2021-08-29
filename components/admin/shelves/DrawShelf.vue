@@ -14,7 +14,7 @@
         </v-btn>
       </v-toolbar>-->
       <v-card-text class="pa-0">
-        <shelf-map v-if="show" />
+        <shelf-map ref="shelfMap" v-if="show" />
       </v-card-text>
       <v-divider />
       <v-card-actions>
@@ -82,11 +82,12 @@ export default {
       this.$emit('close');
     },
     save () {
-      this.loading = true;
+      const shelf = this.$refs.shelfMap.shelf;
 
-      // await this.saveShelf(this.currentShelf);
+      if (shelf && shelf.getGeometry().getCoordinates()) {
+        this.$emit('save', shelf.getGeometry().getCoordinates())
+      }
 
-      this.loading = false;
       this.close();
     }
   }

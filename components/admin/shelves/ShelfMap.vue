@@ -24,13 +24,15 @@
 </template>
 
 <script>
+import { mapState } from 'vuex';
 import 'ol/ol.css';
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Circle as CircleStyle, Fill, Stroke, Text, Style } from 'ol/style';
 import { Draw, Modify, Translate } from 'ol/interaction';
-import { MultiPoint, Point } from 'ol/geom';
+import { Point, LineString } from 'ol/geom';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { getHeight, getWidth, getCenter } from 'ol/extent';
+import Feature from 'ol/Feature';
 import {
   never,
   platformModifierKeyOnly,
@@ -53,7 +55,9 @@ export default {
       popup: null,
       layers: [],
       isSatelliteMap: true,
-      modify: null
+      modify: null,
+      shelf: null,
+      dragHandle: null
     };
   },
   computed: {
@@ -68,6 +72,12 @@ export default {
         layerNamePrefix: env.LAYER_NAME_PREFIX,
         center: env.DEFAULT_CENTER_XY
       };
+    },
+    ...mapState({
+      selectedShelf: state => state.shelf.selectedShelf
+    }),
+    hasShelfGeometry () {
+      return this.selectedShelf && this.selectedShelf.geometry && this.selectedShelf.geometry.coordinates.length;
     }
   },
   mounted () {
@@ -89,7 +99,7 @@ export default {
 
       this.$nextTick(() => {
         this.map.updateSize();
-        this.test();
+        this.initializeDrawing();
       });
     },
     onMapSwitchClick () {
@@ -153,18 +163,9 @@ export default {
           const modifyGeometry = feature.get('modifyGeometry');
           return modifyGeometry ? modifyGeometry.geometry : feature.getGeometry();
         },
-        fill: new Fill({
-          color: 'rgba(255, 255, 255, 0.2)'
-        }),
         stroke: new Stroke({
-          color: '#ffcc33',
-          width: 2
-        }),
-        image: new CircleStyle({
-          radius: 7,
-          fill: new Fill({
-            color: '#ffcc33'
-          })
+          color: '#ff0000',
+          width: 4
         })
       });
 
@@ -192,20 +193,55 @@ export default {
             );
             const coordinates = result.coordinates;
             if (coordinates) {
-              const minRadius = result.minRadius;
-              const sqDistances = result.sqDistances;
-              const rsq = minRadius * minRadius;
-              const points = coordinates.filter(function (coordinate, index) {
-                return sqDistances[index] > rsq;
-              });
               styles.push(
                 new Style({
-                  geometry: new MultiPoint(points),
+                  geometry: new Point(coordinates[0]),
                   image: new CircleStyle({
-                    radius: 4,
+                    radius: 10,
+                    stroke: new Stroke({
+                      color: '#ff0000',
+                      width: 1
+                    }),
                     fill: new Fill({
-                      color: '#33cc33'
+                      color: '#ffffff'
                     })
+                  })
+                })
+              );
+              styles.push(
+                new Style({
+                  geometry: new Point(coordinates[0]),
+                  text: new Text({
+                    text: 'S',
+                    font: '12px "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif',
+                    fill: new Fill({ color: '#ff0000' }),
+                    stroke: new Stroke({ color: '#ff0000', width: 1 })
+                  })
+                })
+              );
+              styles.push(
+                new Style({
+                  geometry: new Point(coordinates[1]),
+                  image: new CircleStyle({
+                    radius: 10,
+                    stroke: new Stroke({
+                      color: '#ff0000',
+                      width: 1
+                    }),
+                    fill: new Fill({
+                      color: '#ffffff'
+                    })
+                  })
+                })
+              );
+              styles.push(
+                new Style({
+                  geometry: new Point(coordinates[1]),
+                  text: new Text({
+                    text: 'E',
+                    font: '12px "Roboto", Helvetica Neue, Helvetica, Arial, sans-serif',
+                    fill: new Fill({ color: '#ff0000' }),
+                    stroke: new Stroke({ color: '#ff0000', width: 1 })
                   })
                 })
               );
@@ -222,16 +258,46 @@ export default {
         maxPoints: 2
       });
       this.map.addInteraction(this.draw);
-      this.draw.on('drawend', (evt) => {
+      this.draw.on('drawend', (drawEvent) => {
+        this.shelf = drawEvent.feature;
+        console.log(this.shelf.getGeometry());
+        console.log(this.shelf.getGeometry().getCoordinates());
         this.map.removeInteraction(this.draw);
       });
     },
-    test () {
-      const source = new VectorSource();
-
+    getVectorSource () {
+      if (this.hasShelfGeometry) {
+        const coordinates = this.selectedShelf.geometry.coordinates[0];
+        this.shelf = new Feature({
+          geometry: new LineString(
+            [[coordinates[0][0], coordinates[0][1]], [coordinates[1][0], coordinates[1][1]]]
+          ).transform('EPSG:3857', this.map.getView().getProjection()),
+          name: 'LineString'
+        });
+        /* this.shelf = new Feature({
+          geometry: new LineString(
+            this.selectedShelf.geometry.coordinates
+          ).transform('EPSG:3857', this.map.getView().getProjection()),
+          name: 'LineString'
+        }); */
+        return new VectorSource({
+          features: [
+            this.shelf
+          ]
+        });
+      }
+      return new VectorSource();
+    },
+    initializeDrawing () {
+      const source = this.getVectorSource();
       const vector = this.getDrawingVectorLayer(source);
 
       this.map.addLayer(vector);
+
+      if (this.hasShelfGeometry) {
+        const extent = source.getExtent();
+        this.map.getView().fit(extent);
+      }
 
       const defaultStyle = new Modify({ source: source })
         .getOverlay()
@@ -245,6 +311,24 @@ export default {
         deleteCondition: never,
         insertVertexCondition: never,
         style: (feature) => {
+          if (feature.get('features').length === 0) {
+            const featureCoords = this.shelf.getGeometry().getCoordinates();
+            const mouseCoords = feature.getGeometry().getCoordinates();
+
+            if (!this.dragHandle) {
+              this.dragHandle = mouseCoords;
+            } else {
+              const dx = this.dragHandle[0] - mouseCoords[0];
+              const dy = this.dragHandle[1] - mouseCoords[1];
+
+              featureCoords[0][0] = featureCoords[0][0] - dx;
+              featureCoords[1][0] = featureCoords[1][0] - dx;
+              featureCoords[0][1] = featureCoords[0][1] - dy;
+              featureCoords[1][1] = featureCoords[1][1] - dy;
+              this.shelf.getGeometry().setCoordinates([featureCoords[0], featureCoords[1]]);
+              this.dragHandle = mouseCoords;
+            }
+          }
           feature.get('features').forEach((modifyFeature) => {
             const modifyGeometry = modifyFeature.get('modifyGeometry');
             if (modifyGeometry) {
@@ -296,7 +380,8 @@ export default {
         });
       });
 
-      modify.on('modifyend', function (event) {
+      modify.on('modifyend', (event) => {
+        this.dragHandle = null;
         event.features.forEach(function (feature) {
           const modifyGeometry = feature.get('modifyGeometry');
           if (modifyGeometry) {
@@ -316,7 +401,7 @@ export default {
         })
       );
 
-      this.addInteractions(source);
+      !this.hasShelfGeometry && this.addInteractions(source);
     }
   }
 };
