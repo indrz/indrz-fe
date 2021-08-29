@@ -269,7 +269,6 @@ export default {
     getVectorSource () {
       if (this.hasShelfGeometry) {
         const coordinates = this.selectedShelf.geometry.coordinates[0];
-        console.log('Found Coordinates')
         this.shelf = new Feature({
           geometry: new LineString(
             [[coordinates[0][0], coordinates[0][1]], [coordinates[1][0], coordinates[1][1]]]
@@ -295,6 +294,11 @@ export default {
       const vector = this.getDrawingVectorLayer(source);
 
       this.map.addLayer(vector);
+
+      if (this.hasShelfGeometry) {
+        const extent = source.getExtent();
+        this.map.getView().fit(extent);
+      }
 
       const defaultStyle = new Modify({ source: source })
         .getOverlay()
