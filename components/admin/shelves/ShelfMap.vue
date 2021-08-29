@@ -99,7 +99,7 @@ export default {
 
       this.$nextTick(() => {
         this.map.updateSize();
-        this.test();
+        this.initializeDrawing();
       });
     },
     onMapSwitchClick () {
@@ -288,7 +288,7 @@ export default {
       }
       return new VectorSource();
     },
-    test () {
+    initializeDrawing () {
       const source = this.getVectorSource();
       const vector = this.getDrawingVectorLayer(source);
 
