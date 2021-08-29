@@ -81,6 +81,7 @@
     <draw-shelf
       :title="drawShelfTitle"
       :show="bookShelfDrawDialog"
+      @save="saveBookShelfGeometry"
       @close="bookShelfDrawDialogClose"
     />
     <confirm-dialog
@@ -274,6 +275,7 @@ export default {
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
       loadFloors: 'building/LOAD_FLOORS',
       deleteBookShelf: 'shelf/DELETE_SHELF',
+      saveShelf: 'shelf/SAVE_SHELF',
       setSelectedShelf: 'shelf/SET_SELECTED_SHELF'
     }),
     onShelfClick (shelf) {
@@ -301,7 +303,6 @@ export default {
 
       this.bookShelfEditedItem = Object.assign({
         double_sided: true,
-        geom: 'SRID=3857;MULTILINESTRING((1826591.54074498 6142466.7599126,1826596.22332136 6142463.08341735))',
         building: this.firstBuilding(),
         building_floor: this.firstFloor()
       });
@@ -339,6 +340,18 @@ export default {
     },
     bookShelfDrawDialogClose () {
       this.bookShelfDrawDialog = false;
+    },
+    async saveBookShelfGeometry (coordinates) {
+      this.loading = true;
+
+      const currentShelf = { ...this.selectedShelf };
+
+      currentShelf.geometry && delete currentShelf.geometry;
+      currentShelf.geom = `SRID=3857;MULTILINESTRING((${coordinates[0][0]} ${coordinates[0][1]},${coordinates[1][0]} ${coordinates[1][1]}))`;
+
+      await this.saveShelf(currentShelf);
+
+      this.loading = false;
     }
   }
 };

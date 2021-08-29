@@ -27,7 +27,7 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.geom" label="Geometry" />
+                <v-text-field v-model="currentShelf.geom" readonly label="Geometry" />
               </v-col>
             </v-row>
             <v-row no-gutters>

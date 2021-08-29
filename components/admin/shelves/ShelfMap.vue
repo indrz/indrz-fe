@@ -28,11 +28,10 @@ import { mapState } from 'vuex';
 import 'ol/ol.css';
 import { Circle as CircleStyle, Fill, Stroke, Text, Style } from 'ol/style';
 import { Draw, Modify, Translate } from 'ol/interaction';
-import { Point } from 'ol/geom';
+import { Point, LineString } from 'ol/geom';
 import { Vector as VectorSource } from 'ol/source';
 import { Vector as VectorLayer } from 'ol/layer';
 import { getHeight, getWidth, getCenter } from 'ol/extent';
-import { LineString } from 'ol/geom';
 import Feature from 'ol/Feature';
 import {
   never,
@@ -78,7 +77,7 @@ export default {
       selectedShelf: state => state.shelf.selectedShelf
     }),
     hasShelfGeometry () {
-      return this.selectedShelf && this.selectedShelf.geometry;
+      return this.selectedShelf && this.selectedShelf.geometry && this.selectedShelf.geometry.coordinates.length;
     }
   },
   mounted () {
