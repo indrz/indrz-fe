@@ -147,8 +147,8 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import { getGeomFromCoordinates } from '@/util/misc';
 import DrawShelf from './DrawShelf';
+import { getGeomFromCoordinates } from '@/util/misc';
 
 export default {
   name: 'AddEditShelf',

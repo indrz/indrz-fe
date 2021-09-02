@@ -71,8 +71,8 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelfData from './AddEditShelfData';
+import ConfirmDialog from '@/components/ConfirmDialog';
 
 export default {
   name: 'ShelfDataList',
