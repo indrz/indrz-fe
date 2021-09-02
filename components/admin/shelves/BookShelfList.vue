@@ -98,11 +98,11 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import AddEditShelf from './AddEditShelf';
+import DrawShelf from './DrawShelf';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import api from '@/util/api';
 import { getGeomFromCoordinates } from '@/util/misc';
-import AddEditShelf from './AddEditShelf';
-import DrawShelf from './DrawShelf';
 
 export default {
   name: 'BookShelfList',
