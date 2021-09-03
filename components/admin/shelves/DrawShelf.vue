@@ -1,6 +1,6 @@
 <template>
   <v-dialog :value="show" fullscreen transition="dialog-bottom-transition">
-    <v-card class="ma-2">
+    <v-card v-if="show" class="ma-2">
       <!--<v-toolbar
         dense
         flat
@@ -14,7 +14,13 @@
         </v-btn>
       </v-toolbar>-->
       <v-card-text class="pa-0">
-        <shelf-map ref="shelfMap" v-if="show" />
+        <template>
+          <shelf-map ref="shelfMap" />
+          <floor-changer
+            ref="floorChanger"
+            @floorClick="onFloorClick"
+          />
+        </template>
       </v-card-text>
       <v-divider />
       <v-card-actions>
@@ -43,12 +49,13 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
+import FloorChanger from '@/components/FloorChanger';
 import ShelfMap from './ShelfMap';
 
 export default {
   name: 'DrawShelf',
-  components: { ShelfMap },
+  components: { ShelfMap, FloorChanger },
   props: {
     title: {
       type: String,
@@ -74,10 +81,41 @@ export default {
       loading: false
     }
   },
+  computed: {
+    ...mapState({
+      selectedShelf: state => state.shelf.selectedShelf,
+      buildingFloors: state => state.building.floors
+    })
+  },
+  watch: {
+    show (value) {
+      if (value && this.selectedShelf.building) {
+        this.$nextTick(async () => {
+          await this.loadBuildingFloors(this.selectedShelf.building);
+          const buildingFloor = this.buildingFloors.find(floor => floor.id === this.selectedShelf.building_floor);
+          const floor = this.$refs.floorChanger.floors.find(floor => floor.floor_num === buildingFloor.floor_num);
+          this.$refs.floorChanger.onFloorClick(floor, false);
+        });
+      }
+    }
+  },
+  async mounted () {
+    await this.loadFloors();
+  },
   methods: {
     ...mapActions({
+      loadFloors: 'floor/LOAD_FLOORS',
+      loadBuildingFloors: 'building/LOAD_FLOORS',
       saveShelf: 'shelf/SAVE_SHELF'
     }),
+    onFloorClick (floorNum) {
+      /*
+      this.activeFloorNum = floorNum;
+      this.activeFloor = this.$refs.floorChanger.getFloorByFloorNum(floorNum);
+      const { map, layers } = this.$refs.map;
+      MapUtil.activateLayer(this.activeFloorNum, layers.switchableLayers, map);
+     */
+    },
     close () {
       this.$emit('close');
     },
