@@ -54,6 +54,11 @@ export default {
         text: 'POI Manager',
         icon: 'map-marker',
         route: { name: 'poi', path: '/admin/poi' }
+      },
+      {
+        text: 'Event Manager',
+        icon: 'calendar-blank-multiple',
+        route: { name: 'events', path: '/admin/events' }
       }
     ]
   }),
