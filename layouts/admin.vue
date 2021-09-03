@@ -46,8 +46,8 @@ export default {
         route: { name: 'dashboard', path: '/admin/' }
       },
       {
-        text: 'List shelves',
-        icon: 'view-list',
+        text: 'Bookway Editor',
+        icon: 'book-open-blank-variant',
         route: { name: 'shelves', path: '/admin/shelves' }
       },
       {
