@@ -15,7 +15,7 @@
       </v-toolbar>-->
       <v-card-text class="pa-0">
         <template>
-          <shelf-map ref="shelfMap" />
+          <shelf-map ref="shelfMap" @floorChange="onFloorChange" />
           <floor-changer
             ref="floorChanger"
             @floorClick="onFloorClick"
@@ -50,8 +50,9 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
+import MapUtil from '@/util/map';
 import FloorChanger from '@/components/FloorChanger';
-import ShelfMap from './ShelfMap';
+import ShelfMap from '@/components/admin/shelves/ShelfMap';
 
 export default {
   name: 'DrawShelf',
@@ -89,7 +90,7 @@ export default {
   },
   watch: {
     show (value) {
-      if (value && this.selectedShelf.building) {
+      if (value && this.selectedShelf?.building) {
         this.$nextTick(async () => {
           await this.loadBuildingFloors(this.selectedShelf.building);
           const buildingFloor = this.buildingFloors.find(floor => floor.id === this.selectedShelf.building_floor);
@@ -108,13 +109,13 @@ export default {
       loadBuildingFloors: 'building/LOAD_FLOORS',
       saveShelf: 'shelf/SAVE_SHELF'
     }),
+    onFloorChange ({ floor }) {
+      this.$refs.floorChanger.onFloorClick(floor, false);
+    },
     onFloorClick (floorNum) {
-      /*
       this.activeFloorNum = floorNum;
-      this.activeFloor = this.$refs.floorChanger.getFloorByFloorNum(floorNum);
-      const { map, layers } = this.$refs.map;
+      const { map, layers } = this.$refs.shelfMap;
       MapUtil.activateLayer(this.activeFloorNum, layers.switchableLayers, map);
-     */
     },
     close () {
       this.$emit('close');
