@@ -234,7 +234,7 @@ export default {
       getBuildingName: 'building/getBuildingName',
       firstBuilding: 'building/firstBuilding',
       firstFloor: 'building/firstFloor',
-      getFloorName: 'building/getFloorName'
+      getFloorName: 'floor/getFloorName'
     }),
     bookShelfFormTitle () {
       return this.bookShelfEditedIndex === -1 ? 'New Shelf' : 'Edit Shelf';

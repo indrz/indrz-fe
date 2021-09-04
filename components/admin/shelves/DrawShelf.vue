@@ -93,12 +93,12 @@ export default {
   },
   watch: {
     show (value) {
-      if (value && this.selectedShelf?.building) {
-        this.$nextTick(async () => {
-          await this.loadBuildingFloors(this.selectedShelf.building);
-          const buildingFloor = this.buildingFloors.find(floor => floor.id === this.selectedShelf.building_floor);
-          const floor = this.$refs.floorChanger.floors.find(floor => floor.floor_num === buildingFloor.floor_num);
-          this.$refs.floorChanger.onFloorClick(floor, false);
+      if (value && this.selectedShelf?.building_floor) {
+        this.$nextTick(() => {
+          const floor = this.$refs.floorChanger.floors.find(floor => floor.id === this.selectedShelf.building_floor);
+          if (floor) {
+            this.$refs.floorChanger.onFloorClick(floor, false);
+          }
         });
       }
     }
