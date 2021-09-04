@@ -74,6 +74,7 @@ export default {
       };
     },
     ...mapState({
+      floors: state => state.floor.floors,
       selectedShelf: state => state.shelf.selectedShelf
     }),
     hasShelfGeometry () {
@@ -96,6 +97,20 @@ export default {
         this.map.updateSize();
         MapUtil.handleWindowResize(this.mapId);
       };
+      if (this.floors && this.floors.length) {
+        this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
+        this.activeFloorNum = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num;
+
+        this.$emit('floorChange', {
+          floor: this.intitialFloor,
+          floorNum: this.activeFloorNum
+        });
+
+        this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
+      }
+      this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
+      this.layers.switchableLayers = this.wmsLayerInfo.layers;
+      this.map.addLayer(this.wmsLayerInfo.layerGroup);
 
       this.$nextTick(() => {
         this.map.updateSize();

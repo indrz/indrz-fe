@@ -300,6 +300,7 @@ export default {
     },
 
     async addBookShelf () {
+      this.setSelectedShelf(null);
       await this.loadFloors();
 
       this.bookShelfEditedItem = Object.assign({
