@@ -380,7 +380,7 @@ export default {
         this.modify.un('modifystart', this.onModifyStart);
       }
       if (this.translate) {
-        this.translate.un('translateend');
+        this.translate.un('translateend', this.onTranslateEnd);
       }
       // this.clearSelection();
       this.selectedPoi = null;
