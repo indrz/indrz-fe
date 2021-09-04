@@ -87,7 +87,7 @@ export default {
       },
       {
         color: '#1F7087',
-        src: 'https://cdn.vuetifyjs.com/images/cards/foster.jpg',
+        src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Books_HD_%288314929977%29.jpg/320px-Books_HD_%288314929977%29.jpg',
         title: 'Bookway',
         artist: 'Library Location Information System',
         buttonName: 'START BOOKWAY MANAGER'
