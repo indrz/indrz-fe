@@ -223,8 +223,13 @@ export default {
 
       this.mapComp.editPois.forEach((poi) => {
         const properties = { ...poi.getProperties() };
+        const { floor_num: floorNum, short_name: floorName } = this.activeFloor;
         delete properties.geometry;
 
+        if (!isNaN(floorNum) && floorName) {
+          properties.floor_num = floorNum;
+          properties.floor_name = floorName;
+        }
         const data = {
           category: poi.getProperties().category,
           geometry: {
