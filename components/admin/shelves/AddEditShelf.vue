@@ -147,8 +147,8 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import DrawShelf from './DrawShelf';
 import { getGeomFromCoordinates } from '@/util/misc';
+import DrawShelf from '@/components/admin/shelves/DrawShelf';
 
 export default {
   name: 'AddEditShelf',
@@ -218,8 +218,11 @@ export default {
       this.$refs.form.resetValidation();
       this.$emit('close');
     },
-    setGeometry (coordinates) {
+    setGeometry ({ coordinates, floor }) {
       this.currentShelf.geom = getGeomFromCoordinates(coordinates);
+      if (floor) {
+        this.currentShelf.building_floor = floor.id;
+      }
     },
     bookShelfDrawDialogClose () {
       this.bookShelfDrawDialog = false;

@@ -51,8 +51,10 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import MapUtil from '@/util/map';
+import config from '@/util/indrzConfig';
 import FloorChanger from '@/components/FloorChanger';
 import ShelfMap from '@/components/admin/shelves/ShelfMap';
+const { env } = config;
 
 export default {
   name: 'DrawShelf',
@@ -79,7 +81,8 @@ export default {
   },
   data () {
     return {
-      loading: false
+      loading: false,
+      activeFloorNum: null
     }
   },
   computed: {
@@ -124,7 +127,13 @@ export default {
       const shelf = this.$refs.shelfMap.shelf;
 
       if (shelf && shelf.getGeometry().getCoordinates()) {
-        this.$emit('save', shelf.getGeometry().getCoordinates())
+        const floorNum = Number.parseInt(this.activeFloorNum.split(env.LAYER_NAME_PREFIX)[1], 10);
+        const floor = this.$refs.floorChanger.floors.find(floor => floor.floor_num === floorNum);
+
+        this.$emit('save', {
+          coordinates: shelf.getGeometry().getCoordinates(),
+          floor: floor
+        });
       }
 
       this.close();
