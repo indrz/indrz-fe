@@ -24,10 +24,6 @@ export const actions = {
       endPoint: 'buildings/'
     });
     commit('SET_BUILDINGS', response?.data?.results || []);
-
-    const buildingId = getters.firstBuilding();
-
-    await dispatch('LOAD_FLOORS', buildingId);
   },
   async LOAD_FLOORS ({ state, commit, getters }, buildingId) {
     if (!buildingId) {

@@ -50,10 +50,10 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import MapUtil from '@/util/map';
-import config from '@/util/indrzConfig';
 import FloorChanger from '@/components/FloorChanger';
 import ShelfMap from '@/components/admin/shelves/ShelfMap';
+import MapUtil from '@/util/map';
+import config from '@/util/indrzConfig';
 const { env } = config;
 
 export default {
@@ -87,15 +87,15 @@ export default {
   },
   computed: {
     ...mapState({
-      selectedShelf: state => state.shelf.selectedShelf,
-      buildingFloors: state => state.building.floors
+      floors: state => state.floor.floors,
+      selectedShelf: state => state.shelf.selectedShelf
     })
   },
   watch: {
     show (value) {
       if (value && this.selectedShelf?.building_floor) {
         this.$nextTick(() => {
-          const floor = this.$refs.floorChanger.floors.find(floor => floor.id === this.selectedShelf.building_floor);
+          const floor = this.floors.find(floor => floor.id === this.selectedShelf.building_floor);
           if (floor) {
             this.$refs.floorChanger.onFloorClick(floor, false);
           }
@@ -103,13 +103,8 @@ export default {
       }
     }
   },
-  async mounted () {
-    await this.loadFloors();
-  },
   methods: {
     ...mapActions({
-      loadFloors: 'floor/LOAD_FLOORS',
-      loadBuildingFloors: 'building/LOAD_FLOORS',
       saveShelf: 'shelf/SAVE_SHELF'
     }),
     onFloorChange ({ floor }) {
