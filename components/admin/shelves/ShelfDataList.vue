@@ -71,8 +71,8 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import AddEditShelfData from './AddEditShelfData';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import AddEditShelfData from '@/components/admin/shelves/AddEditShelfData';
 
 export default {
   name: 'ShelfDataList',
@@ -197,7 +197,6 @@ export default {
   methods: {
     ...mapActions({
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
-      loadFloors: 'building/LOAD_FLOORS',
       deleteShelfData: 'shelf/DELETE_SHELF_DATA',
       setSelectedShelfData: 'shelf/SET_SELECTED_SHELF_DATA'
     }),
@@ -205,9 +204,7 @@ export default {
       this.setSelectedShelfData(data);
     },
 
-    async addShelfData () {
-      await this.loadFloors();
-
+    addShelfData () {
       this.shelfDataEditedItem = Object.assign({
         building: this.firstBuilding(),
         building_floor: this.firstFloor(),
@@ -217,9 +214,7 @@ export default {
       this.shelfDataAddEditDialog = true;
     },
 
-    async editShelfData (shelfData) {
-      await this.loadFloors(shelfData.building);
-
+    editShelfData (shelfData) {
       this.shelfDataEditedIndex = this.shelfListData.indexOf(shelfData);
       this.shelfDataEditedItem = Object.assign({}, shelfData);
       this.shelfDataAddEditDialog = true;

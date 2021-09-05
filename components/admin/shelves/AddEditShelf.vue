@@ -63,7 +63,6 @@
                   v-model="currentShelf.building"
                   :items="buildings"
                   :rules="requiredRule"
-                  @change="onBuildingChange"
                   item-text="building_name"
                   item-value="id"
                   label="Building"
@@ -99,7 +98,7 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.rotation" type="number" step="0.01" label="Rotation angle" />
+                <v-text-field v-model="currentShelf.rotation" type="number" step="1" label="Rotation angle" />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -190,7 +189,7 @@ export default {
   },
   computed: {
     ...mapState({
-      floors: state => state.building.floors,
+      floors: state => state.floor.floors,
       buildings: state => state.building.buildings
     }),
     drawShelfTitle () {
@@ -204,12 +203,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      saveShelf: 'shelf/SAVE_SHELF',
-      loadFloors: 'building/LOAD_FLOORS'
+      saveShelf: 'shelf/SAVE_SHELF'
     }),
-    async onBuildingChange (buildingId) {
-      await this.loadFloors(buildingId);
-    },
     onGeomButtonClick () {
       this.bookShelfDrawDialog = true;
     },

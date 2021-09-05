@@ -275,8 +275,6 @@ export default {
       this.map.addInteraction(this.draw);
       this.draw.on('drawend', (drawEvent) => {
         this.shelf = drawEvent.feature;
-        console.log(this.shelf.getGeometry());
-        console.log(this.shelf.getGeometry().getCoordinates());
         this.map.removeInteraction(this.draw);
       });
     },
@@ -289,12 +287,7 @@ export default {
           ).transform('EPSG:3857', this.map.getView().getProjection()),
           name: 'LineString'
         });
-        /* this.shelf = new Feature({
-          geometry: new LineString(
-            this.selectedShelf.geometry.coordinates
-          ).transform('EPSG:3857', this.map.getView().getProjection()),
-          name: 'LineString'
-        }); */
+
         return new VectorSource({
           features: [
             this.shelf

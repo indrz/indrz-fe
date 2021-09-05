@@ -25,11 +25,13 @@ export default {
   },
   mounted () {
     Promise.all([
+      this.loadFloors(),
       this.loadBuildings()
     ])
   },
   methods: {
     ...mapActions({
+      loadFloors: 'floor/LOAD_FLOORS',
       loadBuildings: 'building/LOAD_BUILDINGS'
     })
   }
