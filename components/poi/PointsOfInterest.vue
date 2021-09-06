@@ -180,23 +180,28 @@ export default {
 
       treeComp.updateActive(this.initialPoiCatId, true);
       treeComp.updateSelected(this.initialPoiCatId, true);
-      this.onTreeClick(foundData)
+      this.onTreeClick(foundData, true)
     },
-    onTreeClick (node) {
+    onTreeClick (node, forceSelect = false) {
       const treeComp = this.$refs.poi;
       const handler = node.children ? this.onTreeParentNodeClick : this.onLeafNodeClick;
 
-      handler(node, treeComp);
+      handler(node, treeComp, forceSelect);
     },
-    onLeafNodeClick (node, treeComp, forceSelect) {
-      const shouldAdd = (forceSelect === undefined ? !treeComp.selectedCache.has(node.id) : forceSelect);
+    onLeafNodeClick (node, treeComp, forceSelect = false) {
+      node = node?.data ? node.data : node;
+      const shouldAdd = (!forceSelect ? !treeComp.selectedCache.has(node.id) : forceSelect);
 
-      treeComp.updateSelected(node.id, (this.multi === false ? true : shouldAdd));
-      treeComp.updateActive(node.id, (this.multi === false ? true : shouldAdd));
+      if (!this.multi) {
+        this.removeAllSelections(treeComp);
+      }
 
-      this.currentPoi = node.children || [node.data ? node.data : node];
+      treeComp.updateSelected(node.id, shouldAdd);
+      treeComp.updateActive(node.id, shouldAdd);
 
-      this.$emit('selectPoiCategory', this.currentPoi[0]);
+      this.currentPoi = shouldAdd ? (node.children || [node]) : [];
+
+      this.$emit('selectPoiCategory', shouldAdd ? this.currentPoi[0] : null);
       treeComp.emitSelected();
     },
     onTreeParentNodeClick (node, treeComp) {
@@ -223,6 +228,14 @@ export default {
     },
     onLocationClick (location) {
       this.$emit('locationClick', location.centroid);
+    },
+    removeAllSelections (treeComp) {
+      treeComp.selectedCache.forEach((nodeId) => {
+        treeComp.updateSelected(nodeId, false);
+      });
+      treeComp.activeCache.forEach((nodeId) => {
+        treeComp.updateActive(nodeId, false);
+      });
     }
   }
 };
