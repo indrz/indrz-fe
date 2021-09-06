@@ -130,6 +130,10 @@ export default {
       const mapComp = this.mapComp;
       this.selectedPoiCategory = poiCategory;
 
+      if (!this.selectedPoiCategory) {
+        this.cleanupAndRemoveInteraction(true);
+        return;
+      }
       if (
         mapComp.newPois.length ||
         mapComp.removePois.length ||
@@ -308,11 +312,14 @@ export default {
           this.cleanupAndRemoveInteraction();
         });
     },
-    cleanupAndRemoveInteraction () {
+    cleanupAndRemoveInteraction (clearAll = false) {
       this.unsavedChanges = false;
       this.mapComp.removeInteraction();
       this.mapComp.cleanUp();
-      this.$refs.map.onPoiLoad(this.lastLoadedData);
+
+      if (!clearAll) {
+        this.$refs.map.onPoiLoad(this.lastLoadedData);
+      }
     }
   }
 };
