@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 <template>
   <v-container xs12>
     <v-row
@@ -53,14 +55,22 @@
           </v-layout>
         </v-container>
       </v-form>
+      <div class="mt-20"></div>
+      <v-container>
+        <v-layout row wrap>
+          <v-btn @click="onSignInWithSAML"  block color="primary">
+            Login with SAML
+          </v-btn>
+        </v-layout>
+      </v-container>
     </template>
   </v-container>
+
 </template>
 
 <script>
-
+import axios from 'axios';
 import LocalStorageService from '../../service/localStorage';
-
 export default {
   name: 'Login',
   layout: 'admin',
@@ -75,13 +85,26 @@ export default {
       }
     };
   },
+  // Replace "http://127.0.0.1:8000"
+  async beforeMount () {
+    const sessionId = /SESS\w*=([^;]+)/i.test(document.cookie) ? RegExp.$1 : false;
+    if (sessionId) {
+      const data = { 'token': sessionId }
+      await axios.post('http://127.0.0.1:8000/session_user/', data)
+        .then((response) => {
+          sessionStorage.setItem('indrz-frontend', JSON.stringify(response.data));
+        })
+    }
+  },
 
   mounted () {
-    const tokenData = LocalStorageService.getTokenData();
-    if (tokenData && tokenData.token) {
-      this.$store.commit('user/SET_USER', tokenData);
-      this.$router.push(this.$route.query.redirect || '/admin');
-    }
+    setTimeout(() => {
+      const tokenData = LocalStorageService.getTokenData();
+      if (tokenData && tokenData.token) {
+        this.$store.commit('user/SET_USER', tokenData);
+        this.$router.push(this.$route.query.redirect || '/admin');
+      }
+    }, 0)
   },
 
   methods: {
@@ -96,7 +119,6 @@ export default {
             username: this.username,
             password: this.password
           });
-
         if (this.$store.getters['user/isUserSignedIn']) {
           this.$router.push(this.$route.query.redirect || '/admin');
           this.noUser = false;
@@ -106,6 +128,11 @@ export default {
       } catch (error) {
         console.log(error.message);
       }
+    },
+    // Replace "http://127.0.0.1:8000"
+    onSignInWithSAML () {
+      const linkLs = 'http://127.0.0.1:8000/saml/login/'
+      window.location.href = linkLs
     }
   }
 };
