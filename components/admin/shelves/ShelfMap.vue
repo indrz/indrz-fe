@@ -186,6 +186,7 @@ export default {
 
       return new VectorLayer({
         source: source,
+        zIndex: 10,
         style: (feature) => {
           const styles = [style];
           const modifyGeometry = feature.get('modifyGeometry');
