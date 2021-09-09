@@ -93,7 +93,9 @@ export default {
       await axios.post('http://127.0.0.1:8000/session_user/', data)
         .then((response) => {
           sessionStorage.setItem('indrz-frontend', JSON.stringify(response.data));
-        })
+          document.cookie.split(';').forEach(function (c) { document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/'); });
+        });
+      axios.post('http://127.0.0.1:8000/session_user_logout/', data)
     }
   },
 
