@@ -62,7 +62,6 @@
                 <v-select
                   v-model="currentShelf.building"
                   :items="buildings"
-                  :rules="requiredRule"
                   item-text="building_name"
                   item-value="id"
                   label="Building"
