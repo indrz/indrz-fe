@@ -35,7 +35,6 @@ export default {
   methods: {
     signOut () {
       this.$store.dispatch('user/SIGN_OUT');
-      document.cookie.split(';').forEach(function (c) { document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/'); });
     }
   }
 };
