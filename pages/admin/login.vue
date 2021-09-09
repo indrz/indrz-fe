@@ -80,6 +80,7 @@ export default {
       password: '',
       valid: true,
       noUser: false,
+      saml_login: false,
       formRules: {
         required: value => !!value || 'This is a required field.'
       }
@@ -89,6 +90,7 @@ export default {
   async beforeMount () {
     const sessionId = /SESS\w*=([^;]+)/i.test(document.cookie) ? RegExp.$1 : false;
     if (sessionId) {
+      this.saml_login = true
       const data = { 'token': sessionId }
       await axios.post('http://127.0.0.1:8000/session_user/', data)
         .then((response) => {
@@ -96,17 +98,25 @@ export default {
           document.cookie.split(';').forEach(function (c) { document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/'); });
         });
       axios.post('http://127.0.0.1:8000/session_user_logout/', data)
-    }
-  },
-
-  mounted () {
-    setTimeout(() => {
+      console.log('1')
       const tokenData = LocalStorageService.getTokenData();
       if (tokenData && tokenData.token) {
         this.$store.commit('user/SET_USER', tokenData);
         this.$router.push(this.$route.query.redirect || '/admin');
       }
-    }, 0)
+      this.saml_login = false
+    }
+  },
+
+  mounted () {
+    if (!this.saml_login) {
+      console.log('n')
+      const tokenData = LocalStorageService.getTokenData();
+      if (tokenData && tokenData.token) {
+        this.$store.commit('user/SET_USER', tokenData);
+        this.$router.push(this.$route.query.redirect || '/admin');
+      }
+    }
   },
 
   methods: {
