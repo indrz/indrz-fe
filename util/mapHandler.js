@@ -157,9 +157,16 @@ const openIndrzPopup = (
     roomCode = properties.roomcode;
   }
 
-  const tb = '<table id="popupTable" style="user-select: text;"></table>';
   popupContent.innerHTML = '<h4 style="user-select: text;">' + titlePopup + '</h4>';
   popupContent.innerHTML += '<div><p>';
+  if (properties.html_content) {
+    popupContent.innerHTML += `
+      <div id="html_content">
+      ${properties.html_content}
+      </div>
+    `;
+  }
+  const tb = '<table id="popupTable" style="user-select: text;"></table>';
   popupContent.innerHTML += tb;
 
   const labelRoomCode = translate.t('label_room_code');

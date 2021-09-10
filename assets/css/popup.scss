@@ -48,12 +48,13 @@
 }
 .indrz-popup {
     min-width: auto;
-    p {
-        font-family: Arial, sans-serif;
-        font-size: 12px;
-        letter-spacing: .1px;
-        line-height: 12px;
-        color: black;
-        z-index: 0;
+    #html_content {
+        background: #F0F8FF;
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 5px;
+        p {
+            margin-bottom: 5px !important;
+        }
     }
 }
