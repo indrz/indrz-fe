@@ -58,11 +58,11 @@
       <div class="mt-20"></div>
       <v-container>
         <v-layout row wrap>
-          <v-btn @click="onSignInWithSAML"  block color="plain">
+          <v-btn @click="onSignInWithSAML" block color="plain">
             SSO Login
             <v-icon
-                right
-                dark
+              right
+              dark
             >
               mdi-cloud
             </v-icon>
@@ -98,12 +98,12 @@ export default {
     if (sessionId) {
       this.saml_login = true
       const data = { 'token': sessionId }
-      await axios.post('http://127.0.0.1:8000/session_user/', data)
+      await axios.post('/session_user/', data)
         .then((response) => {
           sessionStorage.setItem('indrz-frontend', JSON.stringify(response.data));
           document.cookie.split(';').forEach(function (c) { document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/'); });
         });
-      axios.post('http://127.0.0.1:8000/session_user_logout/', data)
+      axios.post('/session_user_logout/', data)
       console.log('1')
       const tokenData = LocalStorageService.getTokenData();
       if (tokenData && tokenData.token) {
@@ -149,7 +149,7 @@ export default {
     },
     // Replace "http://127.0.0.1:8000"
     onSignInWithSAML () {
-      const linkLs = 'http://127.0.0.1:8000/saml/login/'
+      const linkLs = '/saml/login/'
       window.location.href = linkLs
     }
   }
