@@ -58,8 +58,14 @@
       <div class="mt-20"></div>
       <v-container>
         <v-layout row wrap>
-          <v-btn @click="onSignInWithSAML"  block color="primary">
-            Login with SAML
+          <v-btn @click="onSignInWithSAML"  block color="plain">
+            SSO Login
+            <v-icon
+                right
+                dark
+            >
+              mdi-cloud
+            </v-icon>
           </v-btn>
         </v-layout>
       </v-container>
