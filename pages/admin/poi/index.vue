@@ -1,31 +1,33 @@
 <template>
-  <v-container pa-15>
-    <v-row
-      class="fill-height"
-      align="center"
-      justify="center"
-    >
-      <template v-for="(menuItem, i) in menuItems">
-        <v-col
-          :key="i"
-          cols="12"
-          md="4"
-        >
-          <v-hover v-slot="{ hover }">
-            <v-card
-              :elevation="hover ? 12 : 2"
-              :class="{ 'on-hover': hover }"
-              @click="onPoiMenuClick(menuItem.route)"
-            >
-              <v-card-title>
-                {{ menuItem.text }}
-              </v-card-title>
-            </v-card>
-          </v-hover>
-        </v-col>
-      </template>
-    </v-row>
-  </v-container>
+  <div class="poi-page">
+    <v-container pa-15>
+      <v-row
+        class="fill-height"
+        align="center"
+        justify="center"
+      >
+        <template v-for="(menuItem, i) in menuItems">
+          <v-col
+            :key="i"
+            cols="12"
+            md="4"
+          >
+            <v-hover v-slot="{ hover }">
+              <v-card
+                :elevation="hover ? 12 : 2"
+                :class="{ 'on-hover': hover }"
+                @click="onPoiMenuClick(menuItem.route)"
+              >
+                <v-card-title>
+                  {{ menuItem.text }}
+                </v-card-title>
+              </v-card>
+            </v-hover>
+          </v-col>
+        </template>
+      </v-row>
+    </v-container>
+  </div>
 </template>
 
 <script>
@@ -61,5 +63,10 @@ export default {
 </script>
 
 <style scoped>
-
+  .poi-page {
+    height: 100%;
+    width: 100%;
+    background-image: url("/images/poi-editor-background.jpeg");
+    background-repeat: repeat;
+  }
 </style>

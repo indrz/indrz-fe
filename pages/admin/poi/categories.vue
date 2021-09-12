@@ -1,5 +1,5 @@
 <template>
-  <span>Categories</span>
+  <span>POI - Categories</span>
 </template>
 
 <script>

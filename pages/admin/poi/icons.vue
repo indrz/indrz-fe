@@ -1,5 +1,5 @@
 <template>
-  <span>Icons</span>
+  <span>POI - Icons</span>
 </template>
 
 <script>

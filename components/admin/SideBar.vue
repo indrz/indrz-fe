@@ -68,7 +68,8 @@ export default {
     }
   },
   created () {
-    const currentRoute = this.$route.query.redirect.split('/admin')[1];
+    const { query } = this.$route;
+    const currentRoute = query && query.redirect && query.redirect.split('/admin')[1];
     if (!currentRoute) {
       return;
     }
