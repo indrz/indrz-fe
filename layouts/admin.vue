@@ -68,7 +68,10 @@ export default {
       isUserSignedIn: 'user/isUserSignedIn'
     }),
     isPoiManager () {
-      return this.$route.name === 'admin-poi-editor';
+      return [
+        'admin-poi',
+        'admin-poi-editor'
+      ].includes(this.$route.name);
     }
   },
 
