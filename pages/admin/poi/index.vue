@@ -18,7 +18,7 @@
                 :class="{ 'on-hover': hover }"
                 @click="onPoiMenuClick(menuItem.route)"
               >
-                <v-card-title>
+                <v-card-title class="justify-center">
                   {{ menuItem.text }}
                 </v-card-title>
               </v-card>
