@@ -67,9 +67,14 @@ export default {
       return this.$route.name === 'admin-poi';
     }
   },
-  mounted () {
-    const currentRoute = this.$route.query.redirect;
-    const matchedMenuIndex = this.menuItems.findIndex(menuItem => menuItem.route.path === currentRoute);
+  created () {
+    const currentRoute = this.$route.query.redirect.split('/admin')[1];
+    if (!currentRoute) {
+      return;
+    }
+    const matchedMenuIndex = this
+      .menuItems
+      .findIndex(menuItem => menuItem.route.name && currentRoute.includes(menuItem.route.name));
 
     if (matchedMenuIndex > 0) {
       this.selectedMenuIndex = matchedMenuIndex;
