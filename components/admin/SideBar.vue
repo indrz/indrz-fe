@@ -6,18 +6,28 @@
     clipped
   >
     <v-list dense>
-      <v-list-item
-        v-for="menuItem in menuItems"
-        :key="menuItem.text"
-        @click="onMenuItemClick(menuItem.route)"
+      <v-list-item-group
+        v-model="selectedMenuIndex"
+        color="primary"
       >
-        <v-list-item-action>
-          <v-icon>mdi-{{ menuItem.icon }}</v-icon>
-        </v-list-item-action>
-        <v-list-item-content>
-          <v-list-item-title>{{ menuItem.text }}</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+        <template v-for="menuItem in menuItems">
+          <v-list-item
+            :key="menuItem.text"
+            @click="onMenuItemClick(menuItem.route)"
+          >
+            <template v-slot:default="{}">
+              <v-list-item-action>
+                <v-icon>
+                  mdi-{{ menuItem.icon }}
+                </v-icon>
+              </v-list-item-action>
+              <v-list-item-content>
+                <v-list-item-title v-text="menuItem.text"></v-list-item-title>
+              </v-list-item-content>
+            </template>
+          </v-list-item>
+        </template>
+      </v-list-item-group>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -39,6 +49,11 @@ export default {
       }
     }
   },
+  data: function () {
+    return {
+      selectedMenuIndex: 0
+    }
+  },
   computed: {
     drawerState: {
       get () {
@@ -50,6 +65,14 @@ export default {
     },
     showPoi () {
       return this.$route.name === 'admin-poi';
+    }
+  },
+  mounted () {
+    const currentRoute = this.$route.query.redirect;
+    const matchedMenuIndex = this.menuItems.findIndex(menuItem => menuItem.route.path === currentRoute);
+
+    if (matchedMenuIndex > 0) {
+      this.selectedMenuIndex = matchedMenuIndex;
     }
   },
   methods: {
