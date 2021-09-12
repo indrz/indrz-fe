@@ -43,7 +43,7 @@ export default {
       {
         text: 'Dashboard',
         icon: 'home',
-        route: { name: 'dashboard', path: '/admin/' }
+        route: { name: '', path: '/admin/' }
       },
       {
         text: 'Bookway Editor',
@@ -68,7 +68,7 @@ export default {
       isUserSignedIn: 'user/isUserSignedIn'
     }),
     isPoiManager () {
-      return this.$route.name === 'admin-poi';
+      return this.$route.name === 'admin-poi-editor';
     }
   },
 
