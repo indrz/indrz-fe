@@ -98,8 +98,8 @@
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
-import AddEditShelf from './AddEditShelf';
-import DrawShelf from './DrawShelf';
+import AddEditShelf from '@/components/admin/shelves/AddEditShelf';
+import DrawShelf from '@/components/admin/shelves/DrawShelf';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import api from '@/util/api';
 import { getGeomFromCoordinates } from '@/util/misc';
@@ -233,8 +233,8 @@ export default {
     ...mapGetters({
       getBuildingName: 'building/getBuildingName',
       firstBuilding: 'building/firstBuilding',
-      firstFloor: 'building/firstFloor',
-      getFloorName: 'building/getFloorName'
+      firstFloor: 'floor/firstFloor',
+      getFloorName: 'floor/getFloorName'
     }),
     bookShelfFormTitle () {
       return this.bookShelfEditedIndex === -1 ? 'New Shelf' : 'Edit Shelf';
@@ -274,7 +274,6 @@ export default {
   methods: {
     ...mapActions({
       loadShelfList: 'shelf/LOAD_BOOKSHELF_LIST',
-      loadFloors: 'building/LOAD_FLOORS',
       deleteBookShelf: 'shelf/DELETE_SHELF',
       saveShelf: 'shelf/SAVE_SHELF',
       setSelectedShelf: 'shelf/SET_SELECTED_SHELF'
@@ -299,8 +298,8 @@ export default {
       this.loading = false;
     },
 
-    async addBookShelf () {
-      await this.loadFloors();
+    addBookShelf () {
+      this.setSelectedShelf(null);
 
       this.bookShelfEditedItem = Object.assign({
         double_sided: true,
@@ -315,9 +314,7 @@ export default {
       this.bookShelfDrawDialog = true;
     },
 
-    async editBookShelf (bookShelf) {
-      await this.loadFloors(bookShelf.building);
-
+    editBookShelf (bookShelf) {
       this.bookShelfEditedIndex = this.shelvesListData.indexOf(bookShelf);
 
       this.bookShelfEditedItem = Object.assign({}, bookShelf);
@@ -347,12 +344,15 @@ export default {
     bookShelfDrawDialogClose () {
       this.bookShelfDrawDialog = false;
     },
-    async saveBookShelfGeometry (coordinates) {
+    async saveBookShelfGeometry ({ coordinates, floor }) {
       this.loading = true;
 
       const currentShelf = { ...this.selectedShelf };
 
       currentShelf.geometry && delete currentShelf.geometry;
+      if (floor) {
+        currentShelf.building_floor = floor.id;
+      }
 
       currentShelf.geom = getGeomFromCoordinates(coordinates);
 

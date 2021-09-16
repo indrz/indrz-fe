@@ -74,6 +74,7 @@ export default {
       };
     },
     ...mapState({
+      floors: state => state.floor.floors,
       selectedShelf: state => state.shelf.selectedShelf
     }),
     hasShelfGeometry () {
@@ -96,6 +97,20 @@ export default {
         this.map.updateSize();
         MapUtil.handleWindowResize(this.mapId);
       };
+      if (this.floors && this.floors.length) {
+        this.intitialFloor = this.floors.filter(floor => floor.floor_num === env.DEFAULT_START_FLOOR)[0];
+        this.activeFloorNum = env.LAYER_NAME_PREFIX + this.intitialFloor.floor_num;
+
+        this.$emit('floorChange', {
+          floor: this.intitialFloor,
+          floorNum: this.activeFloorNum
+        });
+
+        this.wmsLayerInfo = MapUtil.getWmsLayers(this.floors, this.env);
+      }
+      this.layers.layerGroups.push(this.wmsLayerInfo.layerGroup);
+      this.layers.switchableLayers = this.wmsLayerInfo.layers;
+      this.map.addLayer(this.wmsLayerInfo.layerGroup);
 
       this.$nextTick(() => {
         this.map.updateSize();
@@ -171,6 +186,7 @@ export default {
 
       return new VectorLayer({
         source: source,
+        zIndex: 10,
         style: (feature) => {
           const styles = [style];
           const modifyGeometry = feature.get('modifyGeometry');
@@ -260,8 +276,6 @@ export default {
       this.map.addInteraction(this.draw);
       this.draw.on('drawend', (drawEvent) => {
         this.shelf = drawEvent.feature;
-        console.log(this.shelf.getGeometry());
-        console.log(this.shelf.getGeometry().getCoordinates());
         this.map.removeInteraction(this.draw);
       });
     },
@@ -274,12 +288,7 @@ export default {
           ).transform('EPSG:3857', this.map.getView().getProjection()),
           name: 'LineString'
         });
-        /* this.shelf = new Feature({
-          geometry: new LineString(
-            this.selectedShelf.geometry.coordinates
-          ).transform('EPSG:3857', this.map.getView().getProjection()),
-          name: 'LineString'
-        }); */
+
         return new VectorSource({
           features: [
             this.shelf

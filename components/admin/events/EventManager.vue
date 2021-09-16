@@ -71,8 +71,8 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from 'vuex';
-import AddEditIndrzEvents from './AddEditIndrzEvents';
 import ConfirmDialog from '@/components/ConfirmDialog';
+import AddEditIndrzEvents from '@/components/admin/events/AddEditIndrzEvents';
 
 export default {
   name: 'IndrzEventsList',

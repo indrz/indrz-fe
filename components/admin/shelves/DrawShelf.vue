@@ -1,6 +1,6 @@
 <template>
   <v-dialog :value="show" fullscreen transition="dialog-bottom-transition">
-    <v-card class="ma-2">
+    <v-card v-if="show" class="ma-2">
       <!--<v-toolbar
         dense
         flat
@@ -14,7 +14,13 @@
         </v-btn>
       </v-toolbar>-->
       <v-card-text class="pa-0">
-        <shelf-map ref="shelfMap" v-if="show" />
+        <template>
+          <shelf-map ref="shelfMap" @floorChange="onFloorChange" />
+          <floor-changer
+            ref="floorChanger"
+            @floorClick="onFloorClick"
+          />
+        </template>
       </v-card-text>
       <v-divider />
       <v-card-actions>
@@ -43,12 +49,16 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import ShelfMap from './ShelfMap';
+import { mapState, mapActions } from 'vuex';
+import FloorChanger from '@/components/FloorChanger';
+import ShelfMap from '@/components/admin/shelves/ShelfMap';
+import MapUtil from '@/util/map';
+import config from '@/util/indrzConfig';
+const { env } = config;
 
 export default {
   name: 'DrawShelf',
-  components: { ShelfMap },
+  components: { ShelfMap, FloorChanger },
   props: {
     title: {
       type: String,
@@ -71,13 +81,40 @@ export default {
   },
   data () {
     return {
-      loading: false
+      loading: false,
+      activeFloorNum: null
+    }
+  },
+  computed: {
+    ...mapState({
+      floors: state => state.floor.floors,
+      selectedShelf: state => state.shelf.selectedShelf
+    })
+  },
+  watch: {
+    show (value) {
+      if (value && this.selectedShelf?.building_floor) {
+        this.$nextTick(() => {
+          const floor = this.floors.find(floor => floor.id === this.selectedShelf.building_floor);
+          if (floor) {
+            this.$refs.floorChanger.onFloorClick(floor, false);
+          }
+        });
+      }
     }
   },
   methods: {
     ...mapActions({
       saveShelf: 'shelf/SAVE_SHELF'
     }),
+    onFloorChange ({ floor }) {
+      this.$refs.floorChanger.onFloorClick(floor, false);
+    },
+    onFloorClick (floorNum) {
+      this.activeFloorNum = floorNum;
+      const { map, layers } = this.$refs.shelfMap;
+      MapUtil.activateLayer(this.activeFloorNum, layers.switchableLayers, map);
+    },
     close () {
       this.$emit('close');
     },
@@ -85,7 +122,13 @@ export default {
       const shelf = this.$refs.shelfMap.shelf;
 
       if (shelf && shelf.getGeometry().getCoordinates()) {
-        this.$emit('save', shelf.getGeometry().getCoordinates())
+        const floorNum = Number.parseInt(this.activeFloorNum.split(env.LAYER_NAME_PREFIX)[1], 10);
+        const floor = this.$refs.floorChanger.floors.find(floor => floor.floor_num === floorNum);
+
+        this.$emit('save', {
+          coordinates: shelf.getGeometry().getCoordinates(),
+          floor: floor
+        });
       }
 
       this.close();
