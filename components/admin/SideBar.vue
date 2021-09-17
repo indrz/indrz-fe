@@ -54,6 +54,18 @@ export default {
       selectedMenuIndex: 0
     }
   },
+  watch: {
+    '$route' (to) {
+      const matchedMenuIndex = this
+        .menuItems
+        .findIndex(menuItem => menuItem.route.name && to.name.includes(menuItem.route.name));
+      if (matchedMenuIndex === -1) {
+        this.selectedMenuIndex = 0;
+      } else {
+        this.selectedMenuIndex = matchedMenuIndex;
+      }
+    }
+  },
   computed: {
     drawerState: {
       get () {
@@ -65,20 +77,6 @@ export default {
     },
     showPoi () {
       return this.$route.name === 'admin-poi';
-    }
-  },
-  created () {
-    const { query } = this.$route;
-    const currentRoute = query && query.redirect && query.redirect.split('/admin')[1];
-    if (!currentRoute) {
-      return;
-    }
-    const matchedMenuIndex = this
-      .menuItems
-      .findIndex(menuItem => menuItem.route.name && currentRoute.includes(menuItem.route.name));
-
-    if (matchedMenuIndex > 0) {
-      this.selectedMenuIndex = matchedMenuIndex;
     }
   },
   methods: {
