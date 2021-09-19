@@ -24,7 +24,7 @@
   "qr_camera_fallback_message": "Sorry looks like we could not scan that code, please use the search function and enter a room code to find your current location.",
   "no_result_found": "No results found",
   "min_search_character_length_message": "Type at least 3 characters to search",
-  "label_room_code": "Room Code DE",
+  "label_room_code": "Room Code",
   "label_floor_name": "Floor Name",
   "label_building_name": "Building Name",
   "label_category": "Category",
