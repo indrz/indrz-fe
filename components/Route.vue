@@ -109,12 +109,16 @@ export default {
     },
     onClearSearchField (routeType) {
       this[routeType + 'Route'] = null;
+      this.clearRoute();
     },
     onClearRoute () {
       this.$refs.fromRoute.clearSearch();
       this.fromRoute = null;
       this.toRoute = null;
       this.$refs.toRoute.clearSearch('');
+      this.clearRoute();
+    },
+    clearRoute () {
       document.getElementById('route-description').innerHTML = '';
       this.$emit('clearRoute');
     },
