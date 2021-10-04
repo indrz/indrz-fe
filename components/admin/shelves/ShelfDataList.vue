@@ -205,10 +205,12 @@ export default {
     },
 
     addShelfData () {
+      const { building, building_floor: buildingFloor, id: bookshelf } = this.selectedShelf;
+
       this.shelfDataEditedItem = Object.assign({
-        building: this.firstBuilding(),
-        building_floor: this.firstFloor(),
-        bookshelf: this.selectedShelf.id
+        building,
+        building_floor: buildingFloor,
+        bookshelf
       });
 
       this.shelfDataAddEditDialog = true;
