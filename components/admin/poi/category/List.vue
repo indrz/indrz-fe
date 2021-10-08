@@ -2,43 +2,57 @@
   <v-container>
     <v-row>
       <v-col>
-        <div class="text-center">
-          <v-progress-circular
-            v-if="loading"
-            indeterminate
-            color="primary"
-          />
-        </div>
-        <v-treeview
-          ref="poi"
-          v-if="!loading"
-          v-model="selection"
-          :items="poiData"
-          selected-color="indigo"
-          selectable
-          return-object
-          item-key="id"
-          class="poi"
-          dense
-          style="overflow: auto; width: auto;"
-        />
-      </v-col>
-      <v-divider vertical></v-divider>
-      <v-col
-        class="pa-6"
-        cols="6"
-      >
-        <template v-if="!selection.length">
-          No category selected.
-        </template>
-        <template v-else>
-          <div
-            v-for="node in selection"
-            :key="node.id"
-          >
-            {{ node.name }}
-          </div>
-        </template>
+        <v-card>
+          <v-toolbar flat dens>
+            <v-spacer />
+            <v-btn icon small color="indigo">
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+            <v-btn icon small color="green" :disabled="!isActiveCategory">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn icon small color="red" :disabled="!isActiveCategory">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </v-toolbar>
+          <v-card-text>
+            <div class="text-center">
+              <v-progress-circular
+                v-if="loading"
+                indeterminate
+                color="primary"
+              />
+            </div>
+            <v-treeview
+              ref="poi"
+              v-if="!loading"
+              :active.sync="currentCategory"
+              :multiple-active="false"
+              :items="poiData"
+              open-on-click
+              transition
+              activatable
+              hoverable
+              return-object
+              item-key="id"
+              class="poi no-checkbox"
+              dense
+              style="overflow: auto; width: auto;"
+            >
+              <template slot="label" slot-scope="{ item }">
+        <span style="white-space: normal">
+          {{ item['name_' + $i18n.locale] }}
+        </span>
+              </template>
+              <template v-slot:prepend="{ item }">
+                <div>
+                  <img v-if="item.icon" :src="item.icon" style="height:25px;">
+                  <img v-else src="/media/poi_icons/other_pin_grey.png" style="height:25px;">
+                </div>
+              </template>
+            </v-treeview>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>
@@ -46,14 +60,16 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
+import PointsOfInterest from '@/components/poi/PointsOfInterest';
 
 export default {
   name: 'PoiCategoryList',
-  props: {
+  components: {
+    PointsOfInterest
   },
   data () {
     return {
-      selection: [],
+      currentCategory: [],
       openedItems: [],
       forceReloadNode: false,
       loading: true,
@@ -70,6 +86,9 @@ export default {
     }),
     treeComp () {
       return this.$refs.poi;
+    },
+    isActiveCategory () {
+      return this.currentCategory.length;
     }
   },
 
