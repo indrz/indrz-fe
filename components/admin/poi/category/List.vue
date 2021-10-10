@@ -80,6 +80,10 @@ export default {
       selectedCategory: {},
       categoryAddEditDialog: false,
       addEditDialogTitle: '',
+      defaultOptions: {
+        parent: -1,
+        enabled: true
+      },
       loading: true
     };
   },
@@ -117,16 +121,12 @@ export default {
     },
     addCategory () {
       this.addEditDialogTitle = 'Add Category';
-      this.selectedCategory = {
-        enabled: true
-      };
+      this.selectedCategory = { ...this.defaultOptions };
       this.categoryAddEditDialog = true;
     },
     editCategory () {
       this.addEditDialogTitle = 'Edit Category';
-      this.selectedCategory = Object.assign({
-        enabled: true
-      }, {
+      this.selectedCategory = Object.assign({ ...this.defaultOptions }, {
         ...(this.currentCategory?.length ? this.currentCategory[0] : {})
       });
       this.categoryAddEditDialog = true;

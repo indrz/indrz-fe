@@ -36,6 +36,10 @@
             <v-row no-gutters>
               <v-col>
                 <v-select
+                  v-model="selectedCategory.parent"
+                  :items="categoryOptions"
+                  item-text="text"
+                  item-value="value"
                   label="Parent"
                 />
               </v-col>
@@ -127,12 +131,40 @@ export default {
   },
   computed: {
     ...mapState({
-    })
+      poiData: state => state.poi.poiData
+    }),
+    categoryOptions () {
+      let options = [];
+
+      this.poiData.forEach((category) => {
+        options = options.concat(this.prepareCategoryOptions(category, 0));
+      });
+
+      return [{
+        text: '--------',
+        value: -1
+      }].concat(options);
+    }
   },
   methods: {
     ...mapActions({
       // saveShelfData: 'shelf/SAVE_SHELF_DATA'
     }),
+    prepareCategoryOptions (category, level) {
+      let categoryOptions = [
+        {
+          text: `${'-'.repeat(level * 2)} ${category.name}`,
+          value: category.id
+        }
+      ];
+
+      if (category.children) {
+        category.children.forEach((childCategory) => {
+          categoryOptions = categoryOptions.concat(this.prepareCategoryOptions(childCategory, level + 1));
+        })
+      }
+      return categoryOptions;
+    },
     close () {
       this.$refs.form.reset();
       this.$refs.form.resetValidation();
