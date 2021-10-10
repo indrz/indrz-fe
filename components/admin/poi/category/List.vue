@@ -5,13 +5,13 @@
         <v-card>
           <v-toolbar flat dens>
             <v-spacer />
-            <v-btn icon small color="indigo">
+            <v-btn icon small color="indigo" @click="addCategory">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
-            <v-btn icon small color="green" :disabled="!isActiveCategory">
+            <v-btn icon small color="green" @click="editCategory" :disabled="!hasActiveCategory">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon small color="red" :disabled="!isActiveCategory">
+            <v-btn icon small color="red" :disabled="!hasActiveCategory">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-toolbar>
@@ -29,7 +29,6 @@
               :active.sync="currentCategory"
               :multiple-active="false"
               :items="poiData"
-              open-on-click
               transition
               activatable
               hoverable
@@ -55,28 +54,40 @@
         </v-card>
       </v-col>
     </v-row>
+    <add-edit-category
+      :title="addEditDialogTitle"
+      :dialog="categoryAddEditDialog"
+      :selected-category="selectedCategory"
+      @close="addEditCategoryClose"
+    />
   </v-container>
 </template>
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import PointsOfInterest from '@/components/poi/PointsOfInterest';
+import AddEditCategory from './AddEditCategory';
 
 export default {
   name: 'PoiCategoryList',
   components: {
+    AddEditCategory,
     PointsOfInterest
   },
   data () {
     return {
       currentCategory: [],
-      openedItems: [],
-      forceReloadNode: false,
-      loading: true,
-      currentPoi: null
+      selectedCategory: {},
+      categoryAddEditDialog: false,
+      addEditDialogTitle: '',
+      loading: true
     };
   },
-
+  watch: {
+    categoryAddEditDialog (val) {
+      val || this.addEditCategoryClose();
+    }
+  },
   computed: {
     ...mapState({
       poiData: state => state.poi.poiData
@@ -87,7 +98,7 @@ export default {
     treeComp () {
       return this.$refs.poi;
     },
-    isActiveCategory () {
+    hasActiveCategory () {
       return this.currentCategory.length;
     }
   },
@@ -103,6 +114,25 @@ export default {
     async loadDataToPoiTree () {
       await this.loadPOI();
       this.loading = false;
+    },
+    addCategory () {
+      this.addEditDialogTitle = 'Add Category';
+      this.selectedCategory = {
+        enabled: true
+      };
+      this.categoryAddEditDialog = true;
+    },
+    editCategory () {
+      this.addEditDialogTitle = 'Edit Category';
+      this.selectedCategory = Object.assign({
+        enabled: true
+      }, {
+        ...(this.currentCategory?.length ? this.currentCategory[0] : {})
+      });
+      this.categoryAddEditDialog = true;
+    },
+    addEditCategoryClose () {
+      this.categoryAddEditDialog = false;
     }
   }
 };
