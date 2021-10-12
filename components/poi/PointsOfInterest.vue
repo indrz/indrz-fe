@@ -17,7 +17,7 @@
       selectable
       return-object
       item-key="id"
-      class="poi"
+      class="poi no-checkbox"
       dense
       style="overflow: auto; width: auto;"
     >
@@ -245,7 +245,7 @@ export default {
 .poi {
   font-size: 0.875rem;
 }
-.v-treeview-node__checkbox {
+.no-checkbox .v-treeview-node__checkbox {
   display: none !important;
 }
 </style>
