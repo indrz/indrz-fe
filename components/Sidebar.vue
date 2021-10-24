@@ -157,22 +157,22 @@ export default {
           text: this.locale.zooToHome
         },
         {
-          icon: 'share',
+          icon: 'share-variant',
           type: 'share-map',
           text: this.locale.shareMap
         },
         {
-          icon: 'download',
+          icon: 'image-area-close',
           type: 'download',
           text: this.locale.download
         },
         {
-          icon: 'file-pdf-outline',
+          icon: 'map',
           type: 'pdf',
           text: this.locale.pdf
         },
         {
-          icon: 'help',
+          icon: 'help-box',
           type: 'help',
           text: this.locale.helpLegendInfos
         },
