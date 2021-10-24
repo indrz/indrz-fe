@@ -1,6 +1,6 @@
 import api from '@/util/api';
 
-const bookShelfEndpoint = `bookway/bookshelf2/`;
+const bookShelfEndpoint = `bookway/bookshelf/`;
 const shelfDataEndpoint = `/shelfdata/`;
 
 const initialShelves = {
