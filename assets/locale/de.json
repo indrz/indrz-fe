@@ -4,6 +4,8 @@
   "route": "Directions",
   "shareRoute": "Route Teilen",
   "start_route": "Von",
+  "route_from_here": "Route von hier",
+  "route_to_here": "Route nach hier",
   "end_route": "Bis",
   "barrier_free_route": "Barrierefreier Weg",
   "go": "Start",
