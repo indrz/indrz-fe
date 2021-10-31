@@ -31,7 +31,7 @@ const { env } = config;
 const initializeMap = (mapId) => {
   const view = new View({
     center: getStartCenter(),
-    zoom: 15,
+    zoom: getStartZoom(),
     maxZoom: 23
   });
 
@@ -598,6 +598,7 @@ const getLayers = () => {
 }
 
 const getStartCenter = () => env.DEFAULT_CENTER_XY;
+const getStartZoom = (zoom = 15) => env.DEFAULT_START_ZOOM;
 
 const getMapControls = () => {
   const attributionControl = new Attribution({
@@ -811,6 +812,7 @@ const createMapCanvas = (map) => {
 export default {
   initializeMap,
   getStartCenter,
+  getStartZoom,
   getMapControls,
   getWmsLayers,
   getLayers,
