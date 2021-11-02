@@ -237,12 +237,7 @@ const getTitle = (properties) => {
 const getBuildingLetter = (p) => {
   let buildingLetter;
   // TODO remove this roomcode stuf
-  if (p.hasOwnProperty('roomcode')) {
-    if (p.roomcode) {
-      buildingLetter = p.roomcode.split('.')[0];
-      return buildingLetter;
-    }
-  } else if (p.hasOwnProperty('building_name')) {
+  if (p.hasOwnProperty('building_name')) {
     if (p.building_name !== null || p.building_name !== '' || typeof p.building_name !== 'undefined') {
       buildingLetter = p.building_name;
       return buildingLetter;
