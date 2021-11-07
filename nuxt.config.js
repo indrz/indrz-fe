@@ -106,7 +106,17 @@ export default {
     },
     theme: {
       dark: false,
+      default: 'light',
       themes: {
+        light: {
+          primary: '#1b9dc4',
+          secondary: '#424242',
+          accent: '#65dbf5',
+          error: '#FF5252',
+          info: '#65dbf5',
+          success: '#4CAF50',
+          warning: '#FB8C00'
+        },
         dark: {
           primary: colors.blue.darken2,
           accent: colors.grey.darken3,
