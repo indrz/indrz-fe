@@ -48,7 +48,7 @@ const openIndrzPopup = (
   }
   if (properties.hasOwnProperty('category')) {
     globalPopupInfo.src = 'poi';
-    globalPopupInfo.poiCatId = properties.category.id;
+    globalPopupInfo.poiCatId = properties.category;
     offsetArray[1] = -44;
   }
   if (properties.hasOwnProperty('spaceid')) {
@@ -89,7 +89,7 @@ const openIndrzPopup = (
     currentPOIID = properties.poiId;
     globalPopupInfo.poiId = properties.poiId;
     if (properties.hasOwnProperty('category')) {
-      globalPopupInfo.poiCatId = properties.category.id;
+      globalPopupInfo.poiCatId = properties.category;
       if (currentLocale === 'de') {
         globalPopupInfo.poiCatName = properties.category.name_de;
       } else {
