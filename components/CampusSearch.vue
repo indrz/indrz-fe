@@ -169,7 +169,7 @@ export default {
     return {
       searchLabel: this.$t('search_our_campus'),
       minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
-      noResultText: 'No result found',
+      noResultText: this.$t('no_result_found'),
       serachItemLimit: 100,
       searchResult: [],
       apiResponse: [],

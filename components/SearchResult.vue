@@ -1,7 +1,7 @@
 <template>
   <div id="search-result-list" class="list-group">
     <div v-if="!searchResult.length">
-      <span>No results available</span>
+      <span>{{ no_results_found }}</span>
     </div>
     <template v-for="(result, i) in searchResult">
       <span :key="i" v-html="result.html" />
@@ -22,6 +22,7 @@ export default {
   },
   data () {
     return {
+      no_results_found: this.$t('no_result_found')
     };
   },
   methods: {
