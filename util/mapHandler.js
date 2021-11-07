@@ -219,6 +219,9 @@ const getTitle = (properties) => {
   if (properties.name) {
     return properties.name;
   }
+  if (properties.short_name) {
+    return properties.short_name;
+  }
   if (properties.room_code) {
     return properties.room_code;
   }

@@ -50,7 +50,7 @@
       <v-divider />
       <v-card-actions>
         <div class="flex-grow-1" />
-        <v-btn @click="dialog = false" color="blue darken-1" text outlined>
+        <v-btn @click="dialog = false" text outlined>
           Close
         </v-btn>
       </v-card-actions>
