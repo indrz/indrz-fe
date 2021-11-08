@@ -29,6 +29,7 @@
   "label_room_code": "Room Code",
   "label_floor_name": "Floor Name",
   "label_building_name": "Building Name",
+  "label_wing_name": "Wing",
   "label_category": "Category",
   "label_nearest_entrance": "Nearest Entrance",
   "label_room_id": "Room Id",
