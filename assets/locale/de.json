@@ -29,6 +29,7 @@
   "label_room_code": "Raumcode",
   "label_floor_name": "Etage Name",
   "label_building_name": "Gebäude Name",
+  "label_wing_name": "Trakt",
   "label_category": "Kategorie",
   "label_nearest_entrance": "Nächster Eingang",
   "label_room_id": "Raum Id",
