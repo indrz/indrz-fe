@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'AddEditShelfData',
@@ -155,12 +155,6 @@ export default {
         this.$refs.form.resetValidation();
       }
     }
-  },
-  computed: {
-    ...mapState({
-      floors: state => state.floor.floors,
-      buildings: state => state.building.buildings
-    })
   },
   methods: {
     ...mapActions({

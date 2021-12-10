@@ -126,7 +126,7 @@ export default {
           url: catParsedUrl.url,
           query: {
             ...catParsedUrl.query,
-            'poi-cat-id': node.roots[0]
+            'poi-cat-id': node.data.id
           }
         });
       } else {

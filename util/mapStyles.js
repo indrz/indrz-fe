@@ -53,7 +53,7 @@ const createPoiStyle = (poiIconName, active) => {
       anchor: [0.5, 46],
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
-      opacity: 0.4,
+      opacity: 0.2,
       src: icon
     }))
   });

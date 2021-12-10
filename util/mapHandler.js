@@ -400,6 +400,11 @@ const handlePoiLoad = (map, activeFloorNum, { removedItems, newItems, oldItems }
                   layer.getLayers().push(poiLayer);
                 }
               });
+
+              map.getView().fit(poiLayer.getSource().getExtent(), {
+                maxZoom: 18,
+                duration: 500
+              });
             });
         }
       }
