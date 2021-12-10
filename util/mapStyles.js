@@ -4,7 +4,7 @@ import Icon from 'ol/style/Icon';
 
 const routeMarkerCStyle = new Style({
   image: new Icon({
-    src: '/media/poi_icons/route_marker_C.png',
+    src: '/images/icons/routing/route_end.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6
@@ -12,7 +12,7 @@ const routeMarkerCStyle = new Style({
 
 const faCircleSolidStyle = new Style({
   image: new Icon({
-    src: '/media/poi_icons/flag.png',
+    src: '/images/icons/routing/flag.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6
@@ -20,7 +20,7 @@ const faCircleSolidStyle = new Style({
 
 const faFlagCheckeredStyle = new Style({
   image: new Icon({
-    src: '/media/poi_icons/flag-checkered.png',
+    src: '/images/icons/routing/flag-checkered.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6
@@ -39,7 +39,7 @@ const routeInactiveStyle = new Style({
     color: '#ba4682',
     width: 2,
     lineDash: [0.1, 5],
-    opacity: 0.5
+    opacity: 0.7
   }),
   zIndex: 6
 });
@@ -53,7 +53,7 @@ const createPoiStyle = (poiIconName, active) => {
       anchor: [0.5, 46],
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
-      opacity: 0.2,
+      opacity: 0.4,
       src: icon
     }))
   });

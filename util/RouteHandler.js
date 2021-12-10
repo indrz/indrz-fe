@@ -365,7 +365,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
         image: new Circle({
           radius: 12,
           fill: new Fill({
-            color: 'rgba(255, 255, 255, 0.5)'
+            color: 'rgba(255, 255, 255, 0.8)'
           }),
           stroke: new Stroke({
             color: 'rgba(186, 70, 130, 1)',
