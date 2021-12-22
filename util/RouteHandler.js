@@ -323,7 +323,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
   const markerFeatures = [];
   const lengthList = [];
   const floorList = [];
-  const fontColor = 'rgb(34,38,42)';
+  const fontColor = '#158afc';
   let prevFloorNum = -99;
   let index = -1;
   const nFeatures = routeFeatures.length;
@@ -368,7 +368,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
             color: 'rgba(255, 255, 255, 0.8)'
           }),
           stroke: new Stroke({
-            color: 'rgba(186, 70, 130, 1)',
+            color: 'rgb(21,138,252, 0.8)',
             width: 3
           })
         }),
@@ -428,7 +428,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           const startMarker = new Feature({
             geometry: startPoint
           });
-          startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
+          startMarker.setStyle([MapStyles.faCircleSolidStyle]);
           markerFeatures.push(startMarker);
         }
 

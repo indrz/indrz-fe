@@ -28,7 +28,7 @@ const faFlagCheckeredStyle = new Style({
 
 const routeActiveStyle = new Style({
   stroke: new Stroke({
-    color: '#ba4676',
+    color: '#158afc',
     width: 4
   }),
   zIndex: 6
@@ -36,7 +36,7 @@ const routeActiveStyle = new Style({
 
 const routeInactiveStyle = new Style({
   stroke: new Stroke({
-    color: '#ba4682',
+    color: '#27c4f3',
     width: 2,
     lineDash: [0.1, 5],
     opacity: 0.7
