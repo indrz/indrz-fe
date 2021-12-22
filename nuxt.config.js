@@ -83,7 +83,10 @@ export default {
     DEFAULT_START_ZOOM: process.env.DEFAULT_START_ZOOM,
     TOKEN: process.env.TOKEN,
     LOGO_FILE: process.env.LOGO_FILE,
-    LOGO_ENABLED: process.env.LOGO_ENABLED
+    LOGO_ENABLED: process.env.LOGO_ENABLED,
+    NEAREST_METRO_POIID: process.env.NEAREST_METRO_POIID,
+    NEAREST_DEFI_POIID: process.env.NEAREST_DEFI_POIID,
+    NEAREST_ENTRANCE_POIID: process.env.NEAREST_ENTRANCE_POIID
   },
   privateRuntimeConfig: {
     TOKEN: process.env.TOKEN
