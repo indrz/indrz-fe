@@ -328,7 +328,7 @@ export default {
 
       if (nearestEntrance) {
         this.$emit('popupRouteClick', {
-          path: 'from',
+          path: 'to',
           data: nearestEntrance
         });
       }
@@ -338,7 +338,7 @@ export default {
 
       if (nearestMetro) {
         this.$emit('popupRouteClick', {
-          path: 'from',
+          path: 'to',
           data: nearestMetro
         });
       }

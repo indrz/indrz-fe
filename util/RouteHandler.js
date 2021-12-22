@@ -21,7 +21,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
-  if (from.properties.space_id && to.properties.space_id && !from.properties.poiId) {
+  if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
     routeUrl = await getDirections(
       mapInfo,
       layers,
