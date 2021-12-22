@@ -21,7 +21,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
-  if (from.properties.space_id && to.properties.space_id) {
+  if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
     routeUrl = await getDirections(
       mapInfo,
       layers,
@@ -32,6 +32,17 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       '0',
       'spaceIdToSpaceId',
       to.properties.frontoffice?.space_id
+    );
+  } else if (from.properties.poiId && to.properties.poiId) {
+    routeUrl = await getDirections(
+      mapInfo,
+      layers,
+      from.properties.poiId,
+      from.properties.floor_num,
+      to.properties.poiId,
+      to.properties.floor_num,
+      '0',
+      'poiIdToPoiId'
     );
   } else if (
     (from.properties.poiId && to.properties.space_id) ||
@@ -46,17 +57,6 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       to.properties.floor_num,
       '0',
       'spaceIdToPoiId'
-    );
-  } else if (from.properties.poiId && to.properties.poiId) {
-    routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.poiId,
-      from.properties.floor_num,
-      to.properties.poiId,
-      to.properties.floor_num,
-      '0',
-      'poiIdToPoiId'
     );
   } else if (
     (from.properties.coords && to.properties.poiId) ||
@@ -113,13 +113,13 @@ const clearRouteData = (map, includeAllLayers = false) => {
 };
 
 const getNearestEntrance = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=13/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_ENTRANCE_POIID}/?format=json`;
 
   try {
     return await api.request({
       url
     }).then(function (response) {
-      return response;
+      return Object.assign({ ...response.data, poiId: response.data.id });
     });
   } catch (err) {
     console.log(err);
@@ -127,13 +127,13 @@ const getNearestEntrance = async (globalPopupInfo) => {
 };
 
 const getNearestMetro = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=27/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_METRO_POIID}/?format=json`;
 
   try {
     return await api.request({
       url
     }).then(function (response) {
-      return response;
+      return Object.assign({ ...response.data, poiId: response.data.id });
     });
   } catch (err) {
     console.log(err);
@@ -141,13 +141,13 @@ const getNearestMetro = async (globalPopupInfo) => {
 };
 
 const getNearestDefi = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=71/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_DEFI_POIID}/?format=json`;
 
   try {
     return await api.request({
       url
     }).then(function (response) {
-      return response;
+      return Object.assign({ ...response.data, poiId: response.data.id });
     });
   } catch (err) {
     console.log(err);
@@ -171,7 +171,7 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
       geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText + '&type=' + routeType;
       break;
     case 'poiToCoords':
-      geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&z_floor=' + endFloor + '&reversed=' + false;
+      geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&floor=' + endFloor + '&reversed=' + false;
       break;
     case 'spaceIdToPoiId':
       geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText + '&type=' + routeType;
@@ -463,7 +463,6 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const endMarker = new Feature({
         geometry: endPoint
       });
-      startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
       endMarker.setGeometry(endPoint);
       endMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
       markerFeatures.push(startMarker);

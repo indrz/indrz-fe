@@ -139,11 +139,11 @@ export default {
       this.$emit('popupRouteClick', path);
     },
     onEntranceButtonClick () {
-      this.$emit('popupRouteClick', 'to');
+      this.$emit('popupRouteClick', 'from');
       this.$emit('popupEntranceButtonClick');
     },
     onMetroButtonClick () {
-      this.$emit('popupRouteClick', 'to');
+      this.$emit('popupRouteClick', 'from');
       this.$emit('popupMetroButtonClick');
     },
     onDefiButtonClick () {
