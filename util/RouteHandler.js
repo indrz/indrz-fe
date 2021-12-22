@@ -113,7 +113,7 @@ const clearRouteData = (map, includeAllLayers = false) => {
 };
 
 const getNearestEntrance = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=13/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_ENTRANCE_POIID}/?format=json`;
 
   try {
     return await api.request({
@@ -127,7 +127,7 @@ const getNearestEntrance = async (globalPopupInfo) => {
 };
 
 const getNearestMetro = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=27/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_METRO_POIID}/?format=json`;
 
   try {
     return await api.request({
@@ -141,7 +141,7 @@ const getNearestMetro = async (globalPopupInfo) => {
 };
 
 const getNearestDefi = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=71/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_DEFI_POIID}/?format=json`;
 
   try {
     return await api.request({
