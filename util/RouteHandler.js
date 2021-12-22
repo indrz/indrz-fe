@@ -428,7 +428,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           const startMarker = new Feature({
             geometry: startPoint
           });
-          startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
+          startMarker.setStyle([MapStyles.faCircleSolidStyle]);
           markerFeatures.push(startMarker);
         }
 
@@ -463,7 +463,6 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const endMarker = new Feature({
         geometry: endPoint
       });
-      startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
       endMarker.setGeometry(endPoint);
       endMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
       markerFeatures.push(startMarker);
