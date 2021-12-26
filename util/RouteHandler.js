@@ -194,7 +194,7 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
   let floorNum = '';
 
   try {
-    routeUrl = await api.request({
+    return await api.request({
       url: geoJsonUrl
     }, env).then(function (response) {
       if (!response) {
@@ -223,8 +223,12 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
 
         if (searchType === 'coords') {
           routeUrl = `?start-xy=${startSearchText.join(',')},${startFloor}&end-xy=${endSearchText.join(',')},${endFloor}`;
+        } else if (searchType === 'poiToCoords') {
+          routeUrl = '?start-poi-id=' + routeInfo.start.id + `&end-xy=${endSearchText.join(',')},${endFloor}`;
         } else if (searchType === 'poiIdToPoiId') {
           routeUrl = '?start-poi-id=' + routeInfo.start.id + '&end-poi-id=' + routeInfo.end.id;
+        } else if (searchType === 'spaceIdToPoiId') {
+          routeUrl = '?start-spaceid=' + startSearchText + '&end-poi-id=' + endSearchText;
         } else if (searchType === 'spaceIdToSpaceId') {
           routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType;
           if (foid) {
