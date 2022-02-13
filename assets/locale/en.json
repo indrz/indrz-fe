@@ -48,5 +48,9 @@
   "share_search_result": "Share search result",
   "share_poi": "Share POI",
   "link": "Link",
-  "qr_code": "QR Code"
+  "qr_code": "QR Code",
+  "label_building_code": "Building Code",
+  "label_building_city": "City",
+  "label_building_plz": "Postal Code",
+  "label_building_adress": "Adress"
 }

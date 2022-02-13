@@ -48,6 +48,10 @@
   "share_search_result": "Suchergebnisse teilen",
   "share_poi": "Teile POI",
   "link": "Link",
-  "qr_code": "QR Code"
+  "qr_code": "QR Code",
+  "label_building_code": "Geb. Code",
+  "label_building_city": "Stadt",
+  "label_building_plz": "Plz",
+  "label_building_adress": "Adresse"
 
 }
