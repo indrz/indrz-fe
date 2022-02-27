@@ -360,7 +360,8 @@ export default {
       this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, 0, {
         baseApiUrl: env.BASE_API_URL,
         layerNamePrefix: env.LAYER_NAME_PREFIX,
-        token: env.TOKEN
+        token: env.TOKEN,
+        locale: this.$i18n.locale
       });
     },
     clearRouteData () {
