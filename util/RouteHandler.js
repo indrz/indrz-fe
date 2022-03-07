@@ -198,7 +198,6 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
       url: geoJsonUrl
     }, env).then(function (response) {
       if (!response) {
-        // store.commit('SET_SNACKBAR', 'test message');
         return;
       }
       response = response.data;
@@ -257,26 +256,29 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
           MapUtil.activateLayer(env.LAYER_NAME_PREFIX + floorName, layers.switchableLayers, map);
         }
       }
-      // TODO Following to check later
-      /*
-      if (library_key !== 'nokey') {
-        startFloor = routeLocalData.end.floor
-      }
-      */
 
-      // center up the route
+      const routeLayer = new VectorLayer({
+        source: source,
+        style: function (feature, resolution) {
+          const featureFloor = Number(feature.getProperties().floor).toFixed(1);
+          if (featureFloor === Number(floorNum).toFixed(1)) {
+            feature.setStyle(MapStyles.routeActiveStyle);
+          } else {
+            feature.setStyle(MapStyles.routeInactiveStyle);
+          }
+        },
+        title: 'RouteFromSearch',
+        name: 'RouteFromSearch',
+        visible: true,
+        layer_id: 20090,
+        zIndex: 4
+      });
+
+      map.getLayers().push(routeLayer);
+
       const extent = source.getExtent();
       map.getView().fit(extent);
-      /*
-      var checkName = Number(startName[0]);
 
-      if (checkName > 0) {
-        routeUrl = '/?campus=' + building_id + '&start-xyz=' + startName + '&end-xyz=' + endName;
-
-      } else if (typeof checkName !== 'number' && startName !== '' && endName !== '') {
-        routeUrl = '/?campus=' + building_id + '&startstr=' + startName + '&endstr=' + endName + '&type=' + routeType;
-      }
-      */
       return routeUrl;
     });
   } catch ({ response }) {
@@ -286,41 +288,6 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
       console.log(response.data.error);
     }
   }
-
-  const routeLayer = new VectorLayer({
-    // url: geoJsonUrl,
-    // format: new ol.format.GeoJSON(),
-    source: source,
-    style: function (feature, resolution) {
-      const featureFloor = Number(feature.getProperties().floor).toFixed(1);
-      if (featureFloor === Number(floorNum).toFixed(1)) {
-        feature.setStyle(MapStyles.routeActiveStyle);
-      } else {
-        feature.setStyle(MapStyles.routeInactiveStyle);
-      }
-    },
-    title: 'RouteFromSearch',
-    name: 'RouteFromSearch',
-    visible: true,
-    layer_id: 20090,
-    zIndex: 4
-  });
-
-  map.getLayers().push(routeLayer);
-  /*
-  $('#clearRoute').removeClass('hide')
-  $('#shareRoute').removeClass('hide')
-  $('#routeText').removeClass('hide')
-  // $('#RouteDescription').removeClass('hide');
-
-  window.location.href = '#map'
-
-  $('html,body').animate({
-      scrollTop: $('#map').offset().top
-    },
-    'slow')
-    */
-  return routeUrl;
 };
 
 const addMarkers = (map, routeFeatures, routeInfo) => {
