@@ -9,6 +9,9 @@
       :options.sync="pagination"
       :loading="loading"
       :height="height"
+      :footer-props="{
+        'items-per-page-options': [25, 50, 100]
+      }"
       @click:row="onShelfClick"
       dense
       item-key="id"
@@ -110,7 +113,7 @@ export default {
   props: {
     height: {
       type: Number,
-      default: 285
+      default: 400
     }
   },
   data () {
