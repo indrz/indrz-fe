@@ -131,6 +131,9 @@ export default {
         field.stopSearch = true;
         field.searchResult = [model];
         field.model = model;
+        setTimeout(() => {
+          field.stopSearch = false;
+        }, 1000);
       });
     },
     setRoute (routeInfo) {
@@ -163,6 +166,7 @@ export default {
         routeType: routeInfo.path
       });
       setTimeout(() => {
+        field.stopSearch = false;
         if (this.fromRoute && this.toRoute) {
           this.onGoButtonClick();
         }
