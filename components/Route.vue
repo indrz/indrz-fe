@@ -127,14 +127,10 @@ export default {
 
       fieldExtensions.forEach((extension) => {
         const field = this.$refs[extension + 'Route'];
-
+        const model = { ...field.model || {}, ...routeInfo[extension + 'Data'] };
         field.stopSearch = true;
-        field.apiResponse = [routeInfo[extension + 'Data']];
-        field.searchResult = [routeInfo[extension + 'Data']];
-        field.model = routeInfo[extension + 'Data'];
-        setTimeout(() => {
-          field.stopSearch = false;
-        }, 1000);
+        field.searchResult = [model];
+        field.model = model;
       });
     },
     setRoute (routeInfo) {
@@ -154,12 +150,9 @@ export default {
         geometry: {}
       };
       const field = this.$refs[routeInfo.path + 'Route'];
-      const model = {
-        name: data.properties.name,
-        floorNum: data.properties.floorNum || data.properties.floor,
-        roomCode: data.properties.roomcode,
-        code: data.properties.roomcode
-      };
+      const { properties } = data;
+      const model = { ...properties, ...{ floorNum: properties.floor_num, roomCode: properties.roomcode } };
+
       field.stopSearch = true;
       field.apiResponse = [data];
       field.searchResult = [model];
@@ -170,7 +163,6 @@ export default {
         routeType: routeInfo.path
       });
       setTimeout(() => {
-        field.stopSearch = false;
         if (this.fromRoute && this.toRoute) {
           this.onGoButtonClick();
         }

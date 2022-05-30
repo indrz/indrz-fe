@@ -234,16 +234,7 @@ export default {
             if (code && code.toLowerCase() === this.search.toLowerCase()) {
               code = properties.room_category || properties.external_id || code;
             }
-
-            const data = {
-              name: properties.name,
-              floorNum: properties.floor_num,
-              roomCode: properties.roomcode,
-              building: properties.building,
-              src_icon: properties.src_icon || properties.icon,
-              code,
-              id
-            };
+            const data = { ...properties, ...{ floorNum: properties.floor_num, roomCode: properties.roomcode, code, id } };
 
             if (properties.hasOwnProperty('category')) {
               properties.poiId = id;
@@ -282,6 +273,8 @@ export default {
     },
     clearSearch () {
       this.model = null;
+      this.searchResult = [];
+      this.apiResponse = [];
     },
     onLoadSearchQuery (query) {
       const searchField = this.$refs.searchField;
