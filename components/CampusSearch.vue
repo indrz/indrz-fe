@@ -234,7 +234,17 @@ export default {
             if (code && code.toLowerCase() === this.search.toLowerCase()) {
               code = properties.room_category || properties.external_id || code;
             }
-            const data = { ...properties, ...{ floorNum: properties.floor_num, roomCode: properties.roomcode, code, id } };
+
+            const data = {
+              ...properties,
+              ...{
+                floorNum: properties.floor_num,
+                roomCode: properties.roomcode,
+                src_icon: properties.src_icon || properties.icon,
+                code,
+                id
+              }
+            };
 
             if (properties.hasOwnProperty('category')) {
               properties.poiId = id;
