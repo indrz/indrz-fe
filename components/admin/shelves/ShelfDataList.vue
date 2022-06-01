@@ -33,9 +33,6 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <template v-slot:item.building_floor="{item}">
-          {{ getFloorName(item.building_floor) }}
-        </template>
         <template v-slot:item.actions="{ item }">
           <v-icon
             @click="editShelfData(item)"
@@ -70,7 +67,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelfData from '@/components/admin/shelves/AddEditShelfData';
 
@@ -97,13 +94,6 @@ export default {
           sortable: false,
           value: 'external_id',
           width: 90
-        },
-        {
-          text: 'Floor',
-          align: 'right',
-          filterable: false,
-          sortable: false,
-          value: 'building_floor'
         },
         {
           text: 'System From',
@@ -145,7 +135,6 @@ export default {
       defaultItem: {
         bookshelf_id: null,
         external_id: null,
-        floor: null,
         id: null,
         measure_from: null,
         measure_to: null,
@@ -174,16 +163,8 @@ export default {
         }
         return 'No book shelf selected';
       },
-      floors: state => state.floor.floors,
-      buildings: state => state.building.buildings,
       selectedShelf: state => state.shelf.selectedShelf,
       selectedShelfData: state => state.shelf.selectedShelfData
-    }),
-    ...mapGetters({
-      getFloorName: 'building/getFloorName',
-      firstBuilding: 'building/firstBuilding',
-      firstFloor: 'building/firstFloor'
-
     }),
     shelfDataFormTitle () {
       return this.shelfDataEditedIndex === -1 ? 'New Shelf Data' : 'Edit Shelf Data';
@@ -205,10 +186,10 @@ export default {
     },
 
     addShelfData () {
+      const { id: bookshelf } = this.selectedShelf;
+
       this.shelfDataEditedItem = Object.assign({
-        building: this.firstBuilding(),
-        building_floor: this.firstFloor(),
-        bookshelf: this.selectedShelf.id
+        bookshelf
       });
 
       this.shelfDataAddEditDialog = true;
@@ -231,10 +212,6 @@ export default {
 
     shelfDataAddEditDialogClose () {
       this.shelfDataAddEditDialog = false;
-      /* setTimeout(() => {
-        this.shelfDataEditedItem = Object.assign({}, this.defaultItem);
-        this.shelfDataEditedIndex = -1;
-      }, 300); */
     }
   }
 };

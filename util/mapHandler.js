@@ -42,13 +42,27 @@ const openIndrzPopup = (
   feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1;
   offsetArray = (typeof offsetArray !== 'undefined' && offsetArray !== null) ? offsetArray : [0, 0];
 
+  if (properties.src === 'wms_campus') {
+    globalPopupInfo.name = properties.name;
+    globalPopupInfo.buildingAdress = properties.description;
+  }
+
+  if (properties.hasOwnProperty('street')) {
+    globalPopupInfo.src = 'wms_building';
+    globalPopupInfo.name = properties.name;
+    globalPopupInfo.buildingName = properties.building_name;
+    globalPopupInfo.buildingCity = properties.city;
+    globalPopupInfo.buildingPlz = properties.postal_code;
+    globalPopupInfo.buildingAdress = properties.street;
+  }
+
   if (properties.hasOwnProperty('poiId')) {
     globalPopupInfo.src = 'poi';
     globalPopupInfo.poiId = properties.poiId;
   }
   if (properties.hasOwnProperty('category')) {
     globalPopupInfo.src = 'poi';
-    globalPopupInfo.poiCatId = properties.category.id;
+    globalPopupInfo.poiCatId = properties.category;
     offsetArray[1] = -44;
   }
   if (properties.hasOwnProperty('spaceid')) {
@@ -89,7 +103,7 @@ const openIndrzPopup = (
     currentPOIID = properties.poiId;
     globalPopupInfo.poiId = properties.poiId;
     if (properties.hasOwnProperty('category')) {
-      globalPopupInfo.poiCatId = properties.category.id;
+      globalPopupInfo.poiCatId = properties.category;
       if (currentLocale === 'de') {
         globalPopupInfo.poiCatName = properties.category.name_de;
       } else {
@@ -176,6 +190,21 @@ const openIndrzPopup = (
   const labelPoiName = translate.t('label_nearest_entrance');
   const labelRoomId = translate.t('label_room_id');
   const labelCapacity = translate.t('label_capacity');
+  const labelBuidingAdress = translate.t('label_building_adress');
+  const labelBuildingCode = translate.t('label_building_code');
+  const labelBuidingPlz = translate.t('label_building_plz');
+  const labelBuildingCity = translate.t('label_building_city');
+
+  if (properties.src === 'wms_campus') {
+    addPoiTableRow(labelBuidingAdress, properties.description, 'popup_building_adress');
+  }
+
+  if (properties.street) {
+    addPoiTableRow(labelBuidingAdress, properties.street, 'popup_building_adress');
+    addPoiTableRow(labelBuildingCode, properties.name, 'popup_building_code');
+    addPoiTableRow(labelBuidingPlz, properties.postal_code, 'popup_building_plz');
+    addPoiTableRow(labelBuildingCity, properties.city, 'popup_building_city');
+  }
 
   if (properties.roomcode) {
     addPoiTableRow(labelRoomCode, properties.roomcode, 'popup_room_code');
@@ -216,8 +245,14 @@ const openIndrzPopup = (
 };
 
 const getTitle = (properties) => {
+  if (properties.street) {
+    return properties.building_name;
+  }
   if (properties.name) {
     return properties.name;
+  }
+  if (properties.short_name) {
+    return properties.short_name;
   }
   if (properties.room_code) {
     return properties.room_code;
@@ -237,12 +272,7 @@ const getTitle = (properties) => {
 const getBuildingLetter = (p) => {
   let buildingLetter;
   // TODO remove this roomcode stuf
-  if (p.hasOwnProperty('roomcode')) {
-    if (p.roomcode) {
-      buildingLetter = p.roomcode.split('.')[0];
-      return buildingLetter;
-    }
-  } else if (p.hasOwnProperty('building_name')) {
+  if (p.hasOwnProperty('building_name')) {
     if (p.building_name !== null || p.building_name !== '' || typeof p.building_name !== 'undefined') {
       buildingLetter = p.building_name;
       return buildingLetter;
@@ -469,7 +499,34 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
         const dataProperties = {};
 
         if (listFeatures.length > 0) {
-          listFeatures.forEach(function (feature) {
+          listFeatures.some(function (feature) {
+            if (feature.id.startsWith('campus')) {
+              const centroidSource = new Vector({
+                features: (new GeoJSON()).readFeatures(feature)
+              });
+              const centroidCoords = getCenter(centroidSource.getExtent());
+              if (!dataProperties.properties) {
+                dataProperties.properties = {};
+              }
+              dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
+              dataProperties.centroid = centroidCoords;
+              dataProperties.properties.src = 'wms_campus';
+              return dataProperties;
+            }
+
+            if (feature.properties.hasOwnProperty('street')) {
+              const centroidSource = new Vector({
+                features: (new GeoJSON()).readFeatures(feature)
+              });
+              const centroidCoords = getCenter(centroidSource.getExtent());
+              if (!dataProperties.properties) {
+                dataProperties.properties = {};
+              }
+              dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
+              dataProperties.centroid = centroidCoords;
+              dataProperties.properties.src = 'wms_building';
+              return dataProperties;
+            }
             if (feature.properties.hasOwnProperty('space_type_id')) {
               if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
                 const centroidSource = new Vector({
@@ -481,10 +538,12 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
                 }
                 dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
                 dataProperties.centroid = centroidCoords;
+                dataProperties.properties.src = 'wms';
+                return dataProperties;
               }
             }
           });
-          dataProperties.properties.src = 'wms';
+
           mapInfo.globalSearchInfo = {
             selectedItem: { type: 'Feature', properties: dataProperties.properties },
             searchText: dataProperties.properties?.room_code
@@ -493,6 +552,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
         } else {
           const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
 
+          mapInfo.globalSearchInfo = {};
           mapInfo.openIndrzPopup({
             xy: coordinate,
             floor_num: floor?.floor_num,

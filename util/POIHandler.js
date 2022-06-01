@@ -169,8 +169,8 @@ const showSinglePoi = async (poiId, globalPopupInfo, zlevel, map, popup, activeF
   const { poiLayer, properties, centerCoord } = await addPoisToMap(poiId, map, activeFloorNum);
 
   globalPopupInfo.poiId = poiId;
-  globalPopupInfo.poiCatId = properties.category.id;
-  globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + properties.category.id;
+  globalPopupInfo.poiCatId = properties.category;
+  globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + properties.category;
 
   MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', null,
     null, null, activeFloorNum, popup, properties, centerCoord,

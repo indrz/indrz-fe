@@ -80,9 +80,13 @@ export default {
     LAYER_NAME_PREFIX: process.env.LAYER_NAME_PREFIX,
     GEO_SERVER_LAYER_PREFIX: process.env.GEO_SERVER_LAYER_PREFIX,
     DEFAULT_START_FLOOR: process.env.DEFAULT_START_FLOOR,
+    DEFAULT_START_ZOOM: process.env.DEFAULT_START_ZOOM,
     TOKEN: process.env.TOKEN,
     LOGO_FILE: process.env.LOGO_FILE,
-    LOGO_ENABLED: process.env.LOGO_ENABLED
+    LOGO_ENABLED: process.env.LOGO_ENABLED,
+    NEAREST_METRO_POIID: process.env.NEAREST_METRO_POIID,
+    NEAREST_DEFI_POIID: process.env.NEAREST_DEFI_POIID,
+    NEAREST_ENTRANCE_POIID: process.env.NEAREST_ENTRANCE_POIID
   },
   privateRuntimeConfig: {
     TOKEN: process.env.TOKEN
@@ -105,7 +109,17 @@ export default {
     },
     theme: {
       dark: false,
+      default: 'light',
       themes: {
+        light: {
+          primary: '#1b9dc4',
+          secondary: '#424242',
+          accent: '#65dbf5',
+          error: '#FF5252',
+          info: '#65dbf5',
+          success: '#4CAF50',
+          warning: '#FB8C00'
+        },
         dark: {
           primary: colors.blue.darken2,
           accent: colors.grey.darken3,

@@ -8,7 +8,7 @@
           <v-btn @click.stop="onRouteClick('from')" text color="wu" small>
             <v-icon left>
               mdi-map-marker
-            </v-icon> Route from here
+            </v-icon> {{ locale.routeFromHereText }}
           </v-btn>
         </v-col>
       </v-row>
@@ -17,7 +17,7 @@
           <v-btn @click.stop="onRouteClick('to')" text color="wu" small>
             <v-icon left>
               mdi-map-marker
-            </v-icon> Route to here
+            </v-icon> {{ locale.routeToHereText }}
           </v-btn>
         </v-col>
       </v-row>
@@ -114,7 +114,9 @@ export default {
         metroButtonText: this.$t('metro_button_text'),
         metroButtonTip: this.$t('metro_button_tip'),
         defiButtonTip: this.$t('defi_button_tip'),
-        shareButtonTip: this.$t('share_button_tip')
+        shareButtonTip: this.$t('share_button_tip'),
+        routeFromHereText: this.$t('route_from_here'),
+        routeToHereText: this.$t('route_to_here')
       }
     }
   },
@@ -137,11 +139,11 @@ export default {
       this.$emit('popupRouteClick', path);
     },
     onEntranceButtonClick () {
-      this.$emit('popupRouteClick', 'to');
+      this.$emit('popupRouteClick', 'from');
       this.$emit('popupEntranceButtonClick');
     },
     onMetroButtonClick () {
-      this.$emit('popupRouteClick', 'to');
+      this.$emit('popupRouteClick', 'from');
       this.$emit('popupMetroButtonClick');
     },
     onDefiButtonClick () {

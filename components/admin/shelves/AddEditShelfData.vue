@@ -37,12 +37,18 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelfData.system_from" label="Shelving System Start" />
+                <v-text-field
+                  v-model="currentShelfData.system_from"
+                  :rules="requiredRule"
+                  label="Shelving System Start" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelfData.system_to" label="Shelving System End" />
+                <v-text-field
+                  v-model="currentShelfData.system_to"
+                  :rules="requiredRule"
+                  label="Shelving System End" />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -58,35 +64,23 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelfData.measure_from" type="number" min="0" step="0.01" label="Distance from measure" />
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col>
-                <v-text-field v-model="currentShelfData.measure_to" type="number" min="0" step="0.01" label="Distance to measure" />
-              </v-col>
-            </v-row>
-            <v-row no-gutters>
-              <v-col>
-                <v-select
-                  v-model="currentShelfData.building"
-                  :items="buildings"
-                  :rules="requiredRule"
-                  item-text="building_name"
-                  item-value="id"
-                  label="Building"
+                <v-text-field
+                  v-model="currentShelfData.measure_from"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  label="Distance from measure"
                 />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-select
-                  v-model="currentShelfData.building_floor"
-                  :items="floors"
-                  :rules="requiredRule"
-                  item-text="short_name"
-                  item-value="id"
-                  label="Building Floor"
+                <v-text-field
+                  v-model="currentShelfData.measure_to"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  label="Distance to measure"
                 />
               </v-col>
             </v-row>
@@ -117,7 +111,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'AddEditShelfData',
@@ -155,11 +149,12 @@ export default {
       ]
     };
   },
-  computed: {
-    ...mapState({
-      floors: state => state.floor.floors,
-      buildings: state => state.building.buildings
-    })
+  watch: {
+    dialog: function (newValue) {
+      if (newValue === true && !this.currentShelfData.id && this.$refs?.form) {
+        this.$refs.form.resetValidation();
+      }
+    }
   },
   methods: {
     ...mapActions({

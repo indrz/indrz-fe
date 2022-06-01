@@ -328,28 +328,28 @@ export default {
 
       if (nearestEntrance) {
         this.$emit('popupRouteClick', {
-          path: 'from',
-          data: nearestEntrance?.data
+          path: 'to',
+          data: nearestEntrance
         });
       }
     },
     async onPopupMetroButtonClick () {
       const nearestMetro = await this.routeHandler.getNearestMetro(this.globalPopupInfo);
 
-      if (nearestMetro && nearestMetro.data) {
+      if (nearestMetro) {
         this.$emit('popupRouteClick', {
-          path: 'from',
-          data: nearestMetro.data
+          path: 'to',
+          data: nearestMetro
         });
       }
     },
     async onPopupDefiButtonClick () {
       const nearestDefi = await this.routeHandler.getNearestDefi(this.globalPopupInfo);
 
-      if (nearestDefi && nearestDefi.data) {
+      if (nearestDefi) {
         this.$emit('popupRouteClick', {
           path: 'to',
-          data: nearestDefi.data
+          data: nearestDefi
         });
       }
     },

@@ -31,7 +31,7 @@ const { env } = config;
 const initializeMap = (mapId) => {
   const view = new View({
     center: getStartCenter(),
-    zoom: 15,
+    zoom: getStartZoom(),
     maxZoom: 23
   });
 
@@ -598,6 +598,7 @@ const getLayers = () => {
 }
 
 const getStartCenter = () => env.DEFAULT_CENTER_XY;
+const getStartZoom = (zoom = 15) => env.DEFAULT_START_ZOOM;
 
 const getMapControls = () => {
   const attributionControl = new Attribution({
@@ -698,8 +699,14 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query['start-poi-id'] && query['end-poi-id']) {
     loadMapFromPoiToPoiRoute(query['start-poi-id'], query['end-poi-id'], mapInfo);
   }
+  if (query['start-poi-id'] && query['end-xy']) {
+    loadMapFromPoiToCoords(query['start-poi-id'], query['end-xy'], mapInfo);
+  }
   if (query['start-spaceid'] && query['end-spaceid']) {
     loadMapFromSpaceIdToSpaceIdRoute(query['start-spaceid'], query['end-spaceid'], mapInfo);
+  }
+  if (query['start-spaceid'] && query['end-poi-id']) {
+    loadMapFromSpaceIdToPoiIdRoute(query['start-spaceid'], query['end-poi-id'], mapInfo);
   }
 };
 
@@ -748,6 +755,28 @@ const loadMapFromPoiToPoiRoute = (startPoiId, endPoiId, mapInfo) => {
   });
 };
 
+const loadMapFromPoiToCoords = (startPoiId, endXyQuery, mapInfo) => {
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: {
+      poiId: startPoiId,
+      name: startPoiId
+    }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: {
+      coords: endCoords,
+      name: 'XY Location',
+      floor_num: endFloor
+    }
+  });
+};
+
 const loadMapFromSpaceIdToSpaceIdRoute = (startSpaceId, endSpaceId, mapInfo) => {
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
@@ -761,6 +790,23 @@ const loadMapFromSpaceIdToSpaceIdRoute = (startSpaceId, endSpaceId, mapInfo) => 
     data: {
       spaceid: endSpaceId,
       name: endSpaceId
+    }
+  });
+};
+
+const loadMapFromSpaceIdToPoiIdRoute = (startSpaceId, endPoiId, mapInfo) => {
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: {
+      spaceid: startSpaceId,
+      name: startSpaceId
+    }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: {
+      poiId: endPoiId,
+      name: endPoiId
     }
   });
 };
@@ -811,6 +857,7 @@ const createMapCanvas = (map) => {
 export default {
   initializeMap,
   getStartCenter,
+  getStartZoom,
   getMapControls,
   getWmsLayers,
   getLayers,

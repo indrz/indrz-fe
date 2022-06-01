@@ -1,6 +1,6 @@
 import api from '@/util/api';
 
-const bookShelfEndpoint = `bookway/bookshelf2/`;
+const bookShelfEndpoint = `bookway/bookshelf/`;
 const shelfDataEndpoint = `/shelfdata/`;
 
 const initialShelves = {
@@ -94,7 +94,7 @@ export const actions = {
 
   async DELETE_SHELF ({ state, commit, dispatch }, data) {
     const response = await api.postRequest({
-      endPoint: `${bookShelfEndpoint}${data.id}`,
+      endPoint: `${bookShelfEndpoint}${data.id}/`,
       method: 'DELETE',
       data: {}
     });

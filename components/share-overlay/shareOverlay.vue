@@ -50,7 +50,7 @@
       <v-divider />
       <v-card-actions>
         <div class="flex-grow-1" />
-        <v-btn @click="dialog = false" color="blue darken-1" text outlined>
+        <v-btn @click="dialog = false" text outlined>
           Close
         </v-btn>
       </v-card-actions>
@@ -126,7 +126,7 @@ export default {
           url: catParsedUrl.url,
           query: {
             ...catParsedUrl.query,
-            'poi-cat-id': node.roots[0]
+            'poi-cat-id': node.data.id
           }
         });
       } else {

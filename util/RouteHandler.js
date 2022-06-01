@@ -21,7 +21,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
-  if (from.properties.space_id && to.properties.space_id) {
+  if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
     routeUrl = await getDirections(
       mapInfo,
       layers,
@@ -32,6 +32,17 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       '0',
       'spaceIdToSpaceId',
       to.properties.frontoffice?.space_id
+    );
+  } else if (from.properties.poiId && to.properties.poiId) {
+    routeUrl = await getDirections(
+      mapInfo,
+      layers,
+      from.properties.poiId,
+      from.properties.floor_num,
+      to.properties.poiId,
+      to.properties.floor_num,
+      '0',
+      'poiIdToPoiId'
     );
   } else if (
     (from.properties.poiId && to.properties.space_id) ||
@@ -46,17 +57,6 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       to.properties.floor_num,
       '0',
       'spaceIdToPoiId'
-    );
-  } else if (from.properties.poiId && to.properties.poiId) {
-    routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.poiId,
-      from.properties.floor_num,
-      to.properties.poiId,
-      to.properties.floor_num,
-      '0',
-      'poiIdToPoiId'
     );
   } else if (
     (from.properties.coords && to.properties.poiId) ||
@@ -113,13 +113,13 @@ const clearRouteData = (map, includeAllLayers = false) => {
 };
 
 const getNearestEntrance = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=13/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_ENTRANCE_POIID}/?format=json`;
 
   try {
     return await api.request({
       url
     }).then(function (response) {
-      return response;
+      return Object.assign({ ...response.data, poiId: response.data.id });
     });
   } catch (err) {
     console.log(err);
@@ -127,13 +127,13 @@ const getNearestEntrance = async (globalPopupInfo) => {
 };
 
 const getNearestMetro = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=27/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_METRO_POIID}/?format=json`;
 
   try {
     return await api.request({
       url
     }).then(function (response) {
-      return response;
+      return Object.assign({ ...response.data, poiId: response.data.id });
     });
   } catch (err) {
     console.log(err);
@@ -141,13 +141,13 @@ const getNearestMetro = async (globalPopupInfo) => {
 };
 
 const getNearestDefi = async (globalPopupInfo) => {
-  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=71/?format=json`;
+  const url = `${env.BASE_API_URL}directions/near/coords=${globalPopupInfo.coords.join(',')}&floor=${globalPopupInfo.floor_num}&poiCatId=${env.NEAREST_DEFI_POIID}/?format=json`;
 
   try {
     return await api.request({
       url
     }).then(function (response) {
-      return response;
+      return Object.assign({ ...response.data, poiId: response.data.id });
     });
   } catch (err) {
     console.log(err);
@@ -171,7 +171,7 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
       geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText + '&type=' + routeType;
       break;
     case 'poiToCoords':
-      geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&z_floor=' + endFloor + '&reversed=' + false;
+      geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&floor=' + endFloor + '&reversed=' + false;
       break;
     case 'spaceIdToPoiId':
       geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText + '&type=' + routeType;
@@ -194,11 +194,10 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
   let floorNum = '';
 
   try {
-    routeUrl = await api.request({
+    return await api.request({
       url: geoJsonUrl
     }, env).then(function (response) {
       if (!response) {
-        // store.commit('SET_SNACKBAR', 'test message');
         return;
       }
       response = response.data;
@@ -223,8 +222,12 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
 
         if (searchType === 'coords') {
           routeUrl = `?start-xy=${startSearchText.join(',')},${startFloor}&end-xy=${endSearchText.join(',')},${endFloor}`;
+        } else if (searchType === 'poiToCoords') {
+          routeUrl = '?start-poi-id=' + routeInfo.start.id + `&end-xy=${endSearchText.join(',')},${endFloor}`;
         } else if (searchType === 'poiIdToPoiId') {
           routeUrl = '?start-poi-id=' + routeInfo.start.id + '&end-poi-id=' + routeInfo.end.id;
+        } else if (searchType === 'spaceIdToPoiId') {
+          routeUrl = '?start-spaceid=' + startSearchText + '&end-poi-id=' + endSearchText;
         } else if (searchType === 'spaceIdToSpaceId') {
           routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType;
           if (foid) {
@@ -253,26 +256,29 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
           MapUtil.activateLayer(env.LAYER_NAME_PREFIX + floorName, layers.switchableLayers, map);
         }
       }
-      // TODO Following to check later
-      /*
-      if (library_key !== 'nokey') {
-        startFloor = routeLocalData.end.floor
-      }
-      */
 
-      // center up the route
+      const routeLayer = new VectorLayer({
+        source: source,
+        style: function (feature, resolution) {
+          const featureFloor = Number(feature.getProperties().floor).toFixed(1);
+          if (featureFloor === Number(floorNum).toFixed(1)) {
+            feature.setStyle(MapStyles.routeActiveStyle);
+          } else {
+            feature.setStyle(MapStyles.routeInactiveStyle);
+          }
+        },
+        title: 'RouteFromSearch',
+        name: 'RouteFromSearch',
+        visible: true,
+        layer_id: 20090,
+        zIndex: 4
+      });
+
+      map.getLayers().push(routeLayer);
+
       const extent = source.getExtent();
       map.getView().fit(extent);
-      /*
-      var checkName = Number(startName[0]);
 
-      if (checkName > 0) {
-        routeUrl = '/?campus=' + building_id + '&start-xyz=' + startName + '&end-xyz=' + endName;
-
-      } else if (typeof checkName !== 'number' && startName !== '' && endName !== '') {
-        routeUrl = '/?campus=' + building_id + '&startstr=' + startName + '&endstr=' + endName + '&type=' + routeType;
-      }
-      */
       return routeUrl;
     });
   } catch ({ response }) {
@@ -282,48 +288,13 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
       console.log(response.data.error);
     }
   }
-
-  const routeLayer = new VectorLayer({
-    // url: geoJsonUrl,
-    // format: new ol.format.GeoJSON(),
-    source: source,
-    style: function (feature, resolution) {
-      const featureFloor = Number(feature.getProperties().floor).toFixed(1);
-      if (featureFloor === Number(floorNum).toFixed(1)) {
-        feature.setStyle(MapStyles.routeActiveStyle);
-      } else {
-        feature.setStyle(MapStyles.routeInactiveStyle);
-      }
-    },
-    title: 'RouteFromSearch',
-    name: 'RouteFromSearch',
-    visible: true,
-    layer_id: 20090,
-    zIndex: 4
-  });
-
-  map.getLayers().push(routeLayer);
-  /*
-  $('#clearRoute').removeClass('hide')
-  $('#shareRoute').removeClass('hide')
-  $('#routeText').removeClass('hide')
-  // $('#RouteDescription').removeClass('hide');
-
-  window.location.href = '#map'
-
-  $('html,body').animate({
-      scrollTop: $('#map').offset().top
-    },
-    'slow')
-    */
-  return routeUrl;
 };
 
 const addMarkers = (map, routeFeatures, routeInfo) => {
   const markerFeatures = [];
   const lengthList = [];
   const floorList = [];
-  const fontColor = 'rgb(34,38,42)';
+  const fontColor = '#158afc';
   let prevFloorNum = -99;
   let index = -1;
   const nFeatures = routeFeatures.length;
@@ -365,10 +336,10 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
         image: new Circle({
           radius: 12,
           fill: new Fill({
-            color: 'rgba(255, 255, 255, 0.5)'
+            color: 'rgba(255, 255, 255, 0.8)'
           }),
           stroke: new Stroke({
-            color: 'rgba(186, 70, 130, 1)',
+            color: 'rgb(21,138,252, 0.8)',
             width: 3
           })
         }),
@@ -428,7 +399,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           const startMarker = new Feature({
             geometry: startPoint
           });
-          startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
+          startMarker.setStyle([MapStyles.faCircleSolidStyle]);
           markerFeatures.push(startMarker);
         }
 
@@ -463,7 +434,6 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const endMarker = new Feature({
         geometry: endPoint
       });
-      startMarker.setStyle([MapStyles.faCircleSolidStyle, MapStyles.faFlagCheckeredStyle]);
       endMarker.setGeometry(endPoint);
       endMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
       markerFeatures.push(startMarker);

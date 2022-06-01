@@ -95,6 +95,7 @@ export default {
     right: 10px;
     top: 70px;
     overflow-y: auto;
+    scrollbar-width: none;
     background-color: transparent;
     .v-list-item__title {
       text-align: center;
@@ -105,6 +106,9 @@ export default {
   }
   .v-list-item--active{
     background-color: #0048ff;
+  }
+  .theme--dark.floor-changer {
+    background-color: #1E1E1E;
   }
   @-moz-document url-prefix() {
     .floor-changer {

@@ -464,6 +464,10 @@ export default {
                   layer.getLayers().push(poiLayer);
                 }
               });
+              this.map.getView().fit(poiLayer.getSource().getExtent(), {
+                maxZoom: 18,
+                duration: 500
+              });
             });
         });
       }
