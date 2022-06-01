@@ -240,6 +240,7 @@ export default {
               ...{
                 floorNum: properties.floor_num,
                 roomCode: properties.roomcode,
+                building: properties.building,
                 src_icon: properties.src_icon || properties.icon,
                 code,
                 id
