@@ -39,9 +39,9 @@
               style="overflow: auto; width: auto;"
             >
               <template slot="label" slot-scope="{ item }">
-        <span style="white-space: normal">
-          {{ item['name_' + $i18n.locale] }}
-        </span>
+                <span style="white-space: normal">
+                  {{ item['name_' + $i18n.locale] }}
+                </span>
               </template>
               <template v-slot:prepend="{ item }">
                 <div>

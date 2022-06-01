@@ -1,12 +1,16 @@
 import api from '~/util/api';
 
 export const state = () => ({
-  poiData: []
+  poiData: [],
+  poiIcons: []
 });
 
 export const mutations = {
   SET_POI (state, poiData) {
     state.poiData = poiData;
+  },
+  SET_POI_ICONS (state, poiIcons) {
+    state.poiIcons = poiIcons;
   }
 };
 
@@ -19,6 +23,16 @@ export const actions = {
       token: process.env.TOKEN
     });
     commit('SET_POI', response.data);
+  },
+
+  async LOAD_POI_ICONS ({ commit }) {
+    const response = await api.request({
+      endPoint: 'poi/icon/'
+    }, {
+      baseApiUrl: process.env.BASE_API_URL,
+      token: process.env.TOKEN
+    });
+    commit('SET_POI_ICONS', response.data.results);
   }
 };
 

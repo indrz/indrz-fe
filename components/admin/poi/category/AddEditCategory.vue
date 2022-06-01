@@ -29,8 +29,36 @@
             <v-row no-gutters>
               <v-col>
                 <v-select
+                  v-model="selectedCategory.icon"
+                  :items="poiIcons"
+                  item-text="name"
+                  item-value="id"
                   label="Icon"
-                />
+                >
+                  <template v-slot:selection="{ item }">
+                    <v-avatar left>
+                      <v-img
+                        :src="item.icon"
+                        contain
+                        max-height="24"
+                        max-width="24" />
+                    </v-avatar>
+                    {{ item.name }}
+                  </template>
+                  <template v-slot:item="{ item }">
+                    <v-list-item-icon style="margin-right: 16px">
+                      <v-img
+                        :src="item.icon"
+                        contain
+                        max-height="24"
+                        max-width="24"
+                      />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title v-text="item.name" />
+                    </v-list-item-content>
+                  </template>
+                </v-select>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -131,7 +159,8 @@ export default {
   },
   computed: {
     ...mapState({
-      poiData: state => state.poi.poiData
+      poiData: state => state.poi.poiData,
+      poiIcons: state => state.poi.poiIcons
     }),
     categoryOptions () {
       let options = [];
@@ -146,8 +175,12 @@ export default {
       }].concat(options);
     }
   },
+  mounted () {
+    this.loadPOIIcons();
+  },
   methods: {
     ...mapActions({
+      loadPOIIcons: 'poi/LOAD_POI_ICONS'
       // saveShelfData: 'shelf/SAVE_SHELF_DATA'
     }),
     prepareCategoryOptions (category, level) {
