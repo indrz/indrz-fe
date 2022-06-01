@@ -81,7 +81,6 @@ export default {
       categoryAddEditDialog: false,
       addEditDialogTitle: '',
       defaultOptions: {
-        parent: -1,
         enabled: true
       },
       loading: true

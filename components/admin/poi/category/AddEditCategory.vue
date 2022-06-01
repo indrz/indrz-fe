@@ -28,12 +28,14 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-select
+                <v-autocomplete
                   v-model="selectedCategory.icon"
                   :items="poiIcons"
+                  :rules="requiredRule"
                   item-text="name"
                   item-value="id"
                   label="Icon"
+                  clearable
                 >
                   <template v-slot:selection="{ item }">
                     <v-avatar left>
@@ -58,18 +60,44 @@
                       <v-list-item-title v-text="item.name" />
                     </v-list-item-content>
                   </template>
-                </v-select>
+                </v-autocomplete>
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-select
+                <v-autocomplete
                   v-model="selectedCategory.parent"
                   :items="categoryOptions"
+                  :rules="requiredRule"
                   item-text="text"
                   item-value="value"
                   label="Parent"
-                />
+                  clearable
+                >
+                  <template v-slot:selection="{ item }">
+                    <v-avatar left>
+                      <v-img
+                        :src="item.icon"
+                        contain
+                        max-height="24"
+                        max-width="24" />
+                    </v-avatar>
+                    {{ item.text }}
+                  </template>
+                  <template v-slot:item="{ item }">
+                    <v-list-item-icon style="margin-right: 16px">
+                      <v-img
+                        :src="item.icon"
+                        contain
+                        max-height="24"
+                        max-width="24"
+                      />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title v-text="item.text" />
+                    </v-list-item-content>
+                  </template>
+                </v-autocomplete>
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -84,13 +112,18 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-select
-                  v-model="selectedCategory.enabled"
-                  :items="activatedOptions"
-                  item-text="text"
-                  item-value="value"
-                  label="Activated"
-                />
+                <v-row no-gutters>
+                  <v-col cols="3">
+                    <label class="v-label theme--light">Activated</label>
+                  </v-col>
+                  <v-col cols="8">
+                    <v-switch
+                      v-model="selectedCategory.enabled"
+                      inset
+                      style="padding: 0; margin: 0"
+                    />
+                  </v-col>
+                </v-row>
               </v-col>
             </v-row>
           </v-container>
@@ -140,7 +173,14 @@ export default {
     selectedCategory: {
       type: Object,
       default: function () {
-        return {};
+        return {
+          name: null,
+          icon: null,
+          parent: null,
+          name_en: null,
+          name_de: null,
+          enabled: false
+        };
       }
     }
   },
@@ -148,10 +188,6 @@ export default {
     return {
       loading: false,
       valid: true,
-      activatedOptions: [
-        { text: 'Yes', value: true },
-        { text: 'No', value: false }
-      ],
       requiredRule: [
         v => !!v || 'This field is required.'
       ]
@@ -164,7 +200,6 @@ export default {
     }),
     categoryOptions () {
       let options = [];
-
       this.poiData.forEach((category) => {
         options = options.concat(this.prepareCategoryOptions(category, 0));
       });
@@ -187,7 +222,8 @@ export default {
       let categoryOptions = [
         {
           text: `${'-'.repeat(level * 2)} ${category.name}`,
-          value: category.id
+          value: category.id,
+          icon: category.icon
         }
       ];
 
@@ -210,7 +246,6 @@ export default {
       this.loading = true;
 
       // await this.saveShelfData(this.currentCategoryData);
-
       this.loading = false;
       this.close();
     }
