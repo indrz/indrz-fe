@@ -23,13 +23,13 @@
           <v-container>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="selectedCategory.name" :rules="requiredRule" label="Category name" />
+                <v-text-field v-model="selectedCategory.cat_name" :rules="requiredRule" label="Category name" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-autocomplete
-                  v-model="selectedCategory.icon"
+                  v-model="selectedCategory.fk_poi_icon"
                   :items="poiIcons"
                   :rules="requiredRule"
                   item-text="name"
@@ -102,12 +102,12 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="selectedCategory.name_en" label="Category name EN" />
+                <v-text-field v-model="selectedCategory.cat_name_en" label="Category name EN" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="selectedCategory.name_de" label="Category name DE" />
+                <v-text-field v-model="selectedCategory.cat_name_de" label="Category name DE" />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -174,12 +174,12 @@ export default {
       type: Object,
       default: function () {
         return {
-          name: null,
-          icon: null,
+          cat_name: null,
+          fk_poi_icon: null,
           parent: null,
-          name_en: null,
-          name_de: null,
-          enabled: false
+          cat_name_en: null,
+          cat_name_de: null,
+          enabled: true
         };
       }
     }
@@ -210,13 +210,20 @@ export default {
       }].concat(options);
     }
   },
+  watch: {
+    dialog: function (newValue) {
+      if (newValue === true && this.$refs?.form) {
+        this.$refs.form.resetValidation();
+      }
+    }
+  },
   mounted () {
     this.loadPOIIcons();
   },
   methods: {
     ...mapActions({
-      loadPOIIcons: 'poi/LOAD_POI_ICONS'
-      // saveShelfData: 'shelf/SAVE_SHELF_DATA'
+      loadPOIIcons: 'poi/LOAD_POI_ICONS',
+      saveCategory: 'poi/SAVE_POI_CATEGORY'
     }),
     prepareCategoryOptions (category, level) {
       let categoryOptions = [
@@ -239,13 +246,22 @@ export default {
       this.$refs.form.resetValidation();
       this.$emit('close');
     },
-    save () {
+    async save () {
       if (!this.$refs.form.validate()) {
         return;
       }
       this.loading = true;
+      const formData = { ...this.selectedCategory };
 
-      // await this.saveShelfData(this.currentCategoryData);
+      if (formData.parent === -1) {
+        delete formData.parent;
+      }
+
+      const response = await this.saveCategory(formData);
+      if (response.isAxiosError) {
+        this.$store.commit('SET_SNACKBAR', response.message);
+      }
+
       this.loading = false;
       this.close();
     }

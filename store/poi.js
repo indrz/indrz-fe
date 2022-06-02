@@ -1,4 +1,5 @@
 import api from '~/util/api';
+const categoryEndpoint = `poi/category/`;
 
 export const state = () => ({
   poiData: [],
@@ -33,6 +34,25 @@ export const actions = {
       token: process.env.TOKEN
     });
     commit('SET_POI_ICONS', response.data.results);
+  },
+
+  async SAVE_POI_CATEGORY ({ state, commit, dispatch }, data) {
+    let apiRequest = api.postRequest;
+    let endPoint = categoryEndpoint;
+
+    if (data.id) {
+      apiRequest = api.putRequest;
+      endPoint = `${categoryEndpoint}${data.id}/`
+    }
+
+    const response = await apiRequest({
+      data: data,
+      endPoint
+    });
+
+    await dispatch('LOAD_POI', state.lastShelfQuery);
+
+    return response;
   }
 };
 
