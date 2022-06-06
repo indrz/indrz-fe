@@ -65,8 +65,8 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
-import PointsOfInterest from '@/components/poi/PointsOfInterest';
 import AddEditCategory from './AddEditCategory';
+import PointsOfInterest from '@/components/poi/PointsOfInterest';
 
 export default {
   name: 'PoiCategoryList',
