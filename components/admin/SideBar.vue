@@ -22,7 +22,7 @@
                 </v-icon>
               </v-list-item-action>
               <v-list-item-content>
-                <v-list-item-title v-text="menuItem.text"></v-list-item-title>
+                <v-list-item-title v-text="menuItem.text" />
               </v-list-item-content>
             </template>
           </v-list-item>
@@ -54,18 +54,6 @@ export default {
       selectedMenuIndex: 0
     }
   },
-  watch: {
-    '$route' (to) {
-      const matchedMenuIndex = this
-        .menuItems
-        .findIndex(menuItem => menuItem.route.name && to.name.includes(menuItem.route.name));
-      if (matchedMenuIndex === -1) {
-        this.selectedMenuIndex = 0;
-      } else {
-        this.selectedMenuIndex = matchedMenuIndex;
-      }
-    }
-  },
   computed: {
     drawerState: {
       get () {
@@ -77,6 +65,18 @@ export default {
     },
     showPoi () {
       return this.$route.name === 'admin-poi';
+    }
+  },
+  watch: {
+    '$route' (to) {
+      const matchedMenuIndex = this
+        .menuItems
+        .findIndex(menuItem => menuItem.route.name && to.name.includes(menuItem.route.name));
+      if (matchedMenuIndex === -1) {
+        this.selectedMenuIndex = 0;
+      } else {
+        this.selectedMenuIndex = matchedMenuIndex;
+      }
     }
   },
   methods: {

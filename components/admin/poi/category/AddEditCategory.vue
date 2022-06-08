@@ -43,7 +43,8 @@
                         :src="item.icon"
                         contain
                         max-height="24"
-                        max-width="24" />
+                        max-width="24"
+                      />
                     </v-avatar>
                     {{ item.name }}
                   </template>
@@ -80,7 +81,8 @@
                         :src="item.icon"
                         contain
                         max-height="24"
-                        max-width="24" />
+                        max-width="24"
+                      />
                     </v-avatar>
                     {{ item.text }}
                   </template>
@@ -254,7 +256,7 @@ export default {
       const formData = { ...this.selectedCategory };
 
       if (formData.parent === -1) {
-        delete formData.parent;
+        formData.parent = null;
       }
 
       const response = await this.saveCategory(formData);

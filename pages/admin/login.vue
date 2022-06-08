@@ -55,7 +55,7 @@
           </v-layout>
         </v-container>
       </v-form>
-      <div class="mt-20"></div>
+      <div class="mt-20" />
       <v-container>
         <v-layout row wrap>
           <v-btn @click="onSignInWithSAML" block color="plain">
@@ -71,7 +71,6 @@
       </v-container>
     </template>
   </v-container>
-
 </template>
 
 <script>

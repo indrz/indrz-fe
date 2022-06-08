@@ -5,13 +5,13 @@
         <v-card>
           <v-toolbar flat dens>
             <v-spacer />
-            <v-btn icon small color="indigo" @click="addCategory">
+            <v-btn @click="addCategory" icon small color="indigo">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
-            <v-btn icon small color="green" @click="editCategory" :disabled="!hasActiveCategory">
+            <v-btn @click="editCategory" :disabled="!hasActiveCategory" icon small color="green">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon small color="red" :disabled="!hasActiveCategory">
+            <v-btn :disabled="!hasActiveCategory" icon small color="red">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-toolbar>
