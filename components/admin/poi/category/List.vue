@@ -57,7 +57,7 @@
     <add-edit-category
       :title="addEditDialogTitle"
       :dialog="categoryAddEditDialog"
-      :selected-category="selectedCategory"
+      :props-category="selectedCategory"
       @close="addEditCategoryClose"
     />
   </v-container>
@@ -86,11 +86,6 @@ export default {
       loading: true
     };
   },
-  watch: {
-    categoryAddEditDialog (val) {
-      val || this.addEditCategoryClose();
-    }
-  },
   computed: {
     ...mapState({
       poiData: state => state.poi.poiData
@@ -103,6 +98,12 @@ export default {
     },
     hasActiveCategory () {
       return this.currentCategory.length;
+    }
+  },
+
+  watch: {
+    categoryAddEditDialog (val) {
+      val || this.addEditCategoryClose();
     }
   },
 

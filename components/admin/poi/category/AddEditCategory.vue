@@ -1,10 +1,7 @@
 <template>
   <v-dialog :value="dialog" persistent scrollable max-width="500px">
     <v-card>
-      <v-toolbar
-        dense
-        flat
-      >
+      <v-toolbar dense flat>
         <div class="headline">
           {{ title }}
         </div>
@@ -15,15 +12,15 @@
       </v-toolbar>
       <v-divider />
       <v-card-text>
-        <v-form
-          ref="form"
-          v-model="valid"
-          lazy-validation
-        >
+        <v-form ref="form" v-model="valid" lazy-validation>
           <v-container>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="selectedCategory.cat_name" :rules="requiredRule" label="Category name" />
+                <v-text-field
+                  v-model="selectedCategory.cat_name"
+                  :rules="requiredRule"
+                  label="Category name"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -104,12 +101,18 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="selectedCategory.cat_name_en" label="Category name EN" />
+                <v-text-field
+                  v-model="selectedCategory.cat_name_en"
+                  label="Category name EN"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="selectedCategory.cat_name_de" label="Category name DE" />
+                <v-text-field
+                  v-model="selectedCategory.cat_name_de"
+                  label="Category name DE"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -172,16 +175,11 @@ export default {
         return false;
       }
     },
-    selectedCategory: {
+    propsCategory: {
       type: Object,
       default: function () {
         return {
-          cat_name: null,
-          fk_poi_icon: null,
-          parent: null,
-          cat_name_en: null,
-          cat_name_de: null,
-          enabled: true
+          id: null
         };
       }
     }
@@ -190,9 +188,21 @@ export default {
     return {
       loading: false,
       valid: true,
-      requiredRule: [
-        v => !!v || 'This field is required.'
-      ]
+      requiredRule: [v => !!v || 'This field is required.'],
+      selectedCategory: {
+        type: Object,
+        default: function () {
+          return {
+            id: null,
+            cat_name: null,
+            fk_poi_icon: null,
+            parent: null,
+            cat_name_en: null,
+            cat_name_de: null,
+            enabled: true
+          };
+        }
+      }
     };
   },
   computed: {
@@ -206,16 +216,26 @@ export default {
         options = options.concat(this.prepareCategoryOptions(category, 0));
       });
 
-      return [{
-        text: '--------',
-        value: -1
-      }].concat(options);
+      return [
+        {
+          text: '--------',
+          value: -1
+        }
+      ].concat(options);
     }
   },
   watch: {
-    dialog: function (newValue) {
-      if (newValue === true && this.$refs?.form) {
-        this.$refs.form.resetValidation();
+    dialog: async function (newValue) {
+      if (newValue === true) {
+        if (this.propsCategory.id) {
+          this.selectedCategory = await this.getCatgory(this.propsCategory.id);
+          if (this.selectedCategory.parent === null) {
+            this.selectedCategory.parent = -1;
+          }
+        }
+        if (this.$refs?.form) {
+          this.$refs.form.resetValidation();
+        }
       }
     }
   },
@@ -225,6 +245,7 @@ export default {
   methods: {
     ...mapActions({
       loadPOIIcons: 'poi/LOAD_POI_ICONS',
+      getCatgory: 'poi/GET_POI_CATGORY',
       saveCategory: 'poi/SAVE_POI_CATEGORY'
     }),
     prepareCategoryOptions (category, level) {
@@ -238,8 +259,10 @@ export default {
 
       if (category.children) {
         category.children.forEach((childCategory) => {
-          categoryOptions = categoryOptions.concat(this.prepareCategoryOptions(childCategory, level + 1));
-        })
+          categoryOptions = categoryOptions.concat(
+            this.prepareCategoryOptions(childCategory, level + 1)
+          );
+        });
       }
       return categoryOptions;
     },
@@ -271,6 +294,4 @@ export default {
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
