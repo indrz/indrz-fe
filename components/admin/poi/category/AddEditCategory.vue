@@ -227,6 +227,7 @@ export default {
   watch: {
     dialog: async function (newValue) {
       if (newValue === true) {
+        this.selectedCategory = { ...this.propsCategory };
         if (this.propsCategory.id) {
           this.selectedCategory = await this.getCatgory(this.propsCategory.id);
           if (this.selectedCategory.parent === null) {
@@ -235,7 +236,12 @@ export default {
         }
         if (this.$refs?.form) {
           this.$refs.form.resetValidation();
+          if (!this.propsCategory.id) {
+            this.selectedCategory.enabled = true;
+          }
         }
+      } else {
+        this.selectedCategory = {};
       }
     }
   },

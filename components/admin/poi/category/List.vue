@@ -8,10 +8,22 @@
             <v-btn @click="addCategory" icon small color="indigo">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
-            <v-btn @click="editCategory" :disabled="!hasActiveCategory" icon small color="green">
+            <v-btn
+              @click="editCategory"
+              :disabled="!hasActiveCategory"
+              icon
+              small
+              color="green"
+            >
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn :disabled="!hasActiveCategory" icon small color="red">
+            <v-btn
+              :disabled="!hasActiveCategory"
+              @click="showConfirmDelete = true"
+              icon
+              small
+              color="red"
+            >
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </v-toolbar>
@@ -40,13 +52,17 @@
             >
               <template slot="label" slot-scope="{ item }">
                 <span style="white-space: normal">
-                  {{ item['name_' + $i18n.locale] }}
+                  {{ item["name_" + $i18n.locale] }}
                 </span>
               </template>
               <template v-slot:prepend="{ item }">
                 <div>
                   <img v-if="item.icon" :src="item.icon" style="height:25px;">
-                  <img v-else src="/media/poi_icons/other_pin_grey.png" style="height:25px;">
+                  <img
+                    v-else
+                    src="/media/poi_icons/other_pin_grey.png"
+                    style="height:25px;"
+                  >
                 </div>
               </template>
             </v-treeview>
@@ -60,25 +76,34 @@
       :props-category="selectedCategory"
       @close="addEditCategoryClose"
     />
+    <confirm-dialog
+      :show="showConfirmDelete"
+      :busy="loading"
+      @cancelClick="showConfirmDelete = false"
+      @confirmClick="onConfirmDeleteCategory"
+    />
   </v-container>
 </template>
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import PointsOfInterest from '@/components/poi/PointsOfInterest';
+import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditCategory from './AddEditCategory';
 
 export default {
   name: 'PoiCategoryList',
   components: {
     AddEditCategory,
-    PointsOfInterest
+    PointsOfInterest,
+    ConfirmDialog
   },
   data () {
     return {
       currentCategory: [],
       selectedCategory: {},
       categoryAddEditDialog: false,
+      showConfirmDelete: false,
       addEditDialogTitle: '',
       defaultOptions: {
         enabled: true
@@ -113,7 +138,8 @@ export default {
 
   methods: {
     ...mapActions({
-      loadPOI: 'poi/LOAD_POI'
+      loadPOI: 'poi/LOAD_POI',
+      deleteCatgory: 'poi/DELETE_POI_CATGORY'
     }),
     async loadDataToPoiTree () {
       await this.loadPOI();
@@ -121,18 +147,33 @@ export default {
     },
     addCategory () {
       this.addEditDialogTitle = 'Add Category';
-      this.selectedCategory = { ...this.defaultOptions };
+      const parent =
+        this.currentCategory && this.currentCategory.length
+          ? this.currentCategory[0].id
+          : -1;
+      this.selectedCategory = { ...this.defaultOptions, parent };
       this.categoryAddEditDialog = true;
     },
     editCategory () {
       this.addEditDialogTitle = 'Edit Category';
-      this.selectedCategory = Object.assign({ ...this.defaultOptions }, {
-        ...(this.currentCategory?.length ? this.currentCategory[0] : {})
-      });
+      this.selectedCategory = Object.assign(
+        { ...this.defaultOptions },
+        {
+          ...(this.currentCategory?.length ? this.currentCategory[0] : {})
+        }
+      );
       this.categoryAddEditDialog = true;
     },
     addEditCategoryClose () {
       this.categoryAddEditDialog = false;
+    },
+    async onConfirmDeleteCategory () {
+      this.loading = true;
+
+      await this.deleteCatgory(this.currentCategory[0].id);
+
+      this.showConfirmDelete = false;
+      this.loading = false;
     }
   }
 };

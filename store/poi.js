@@ -36,6 +36,27 @@ export const actions = {
     commit('SET_POI_ICONS', response.data.results);
   },
 
+  async GET_POI_CATGORY ({ state, commit, dispatch }, id) {
+    const response = await api.request({
+      endPoint: `${categoryEndpoint}${id}/`
+    }, {
+      baseApiUrl: process.env.BASE_API_URL,
+      token: process.env.TOKEN
+    });
+    return response.data;
+  },
+
+  async DELETE_POI_CATGORY ({ state, commit, dispatch }, id) {
+    const response = await api.postRequest({
+      endPoint: `${categoryEndpoint}${id}/`,
+      method: 'DELETE',
+      data: {}
+    });
+
+    await dispatch('LOAD_POI');
+    return response.data;
+  },
+
   async SAVE_POI_CATEGORY ({ state, commit, dispatch }, data) {
     let apiRequest = api.postRequest;
     let endPoint = categoryEndpoint;
@@ -50,7 +71,7 @@ export const actions = {
       endPoint
     });
 
-    await dispatch('LOAD_POI', state.lastShelfQuery);
+    await dispatch('LOAD_POI');
 
     return response;
   }
