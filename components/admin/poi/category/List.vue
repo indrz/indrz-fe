@@ -87,6 +87,7 @@
 
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
+
 import PointsOfInterest from '@/components/poi/PointsOfInterest';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditCategory from './AddEditCategory';
