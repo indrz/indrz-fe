@@ -236,7 +236,7 @@ export default {
             }
 
             const data = {
-              name: properties.name,
+              name: properties['name_' + this.$i18n.locale],
               floorNum: properties.floor_num,
               roomCode: properties.roomcode,
               building: properties.building,

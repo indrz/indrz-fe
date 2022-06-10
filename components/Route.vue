@@ -127,14 +127,15 @@ export default {
 
       fieldExtensions.forEach((extension) => {
         const field = this.$refs[extension + 'Route'];
-
-        field.stopSearch = true;
-        field.apiResponse = [routeInfo[extension + 'Data']];
-        field.searchResult = [routeInfo[extension + 'Data']];
-        field.model = routeInfo[extension + 'Data'];
-        setTimeout(() => {
-          field.stopSearch = false;
-        }, 1000);
+        if (field) {
+          field.stopSearch = true;
+          field.apiResponse = [routeInfo[extension + 'Data']];
+          field.searchResult = [routeInfo[extension + 'Data']];
+          field.model = routeInfo[extension + 'Data'];
+          setTimeout(() => {
+            field.stopSearch = false;
+          }, 1000);
+        }
       });
     },
     setRoute (routeInfo) {

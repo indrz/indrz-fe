@@ -163,7 +163,7 @@ const openIndrzPopup = (
   if (properties.hasOwnProperty('room_code')) {
     properties.roomcode = properties.room_code;
   }
-  titlePopup = getTitle(properties);
+  titlePopup = getTitle(properties, currentLocale);
 
   if (typeof properties.label !== 'undefined') {
     roomCode = properties.roomcode;
@@ -244,12 +244,12 @@ const openIndrzPopup = (
   popup.setOffset(offsetArray);
 };
 
-const getTitle = (properties) => {
+const getTitle = (properties, locale = 'en') => {
   if (properties.street) {
     return properties.building_name;
   }
-  if (properties.name) {
-    return properties.name;
+  if (properties['name_' + locale]) {
+    return properties['name_' + locale];
   }
   if (properties.short_name) {
     return properties.short_name;
