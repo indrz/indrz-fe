@@ -1,14 +1,16 @@
 <template>
   <div>
     <poi-category-list />
+    <snack-bar />
   </div>
 </template>
 
 <script>
 import PoiCategoryList from '@/components/admin/poi/category/List';
+import SnackBar from '@/components/SnackBar';
 export default {
   name: 'PoiCategory',
-  components: { PoiCategoryList },
+  components: { PoiCategoryList, SnackBar },
   layout: 'admin'
 }
 </script>

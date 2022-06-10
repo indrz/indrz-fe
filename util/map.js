@@ -391,8 +391,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   searchSource.addFeatures(featuresSearch);
 
   searchSource.forEachFeature(function (feature) {
-    const requestedLocale = 'en';
-    const featureName = feature.get('name');
+    const featureName = feature.get('name_' + currentLocale);
     const featureExtent = feature.getGeometry().getExtent();
     const featureCenter = getCenter(featureExtent);
     let att = searchString;
@@ -402,7 +401,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       att = featureName;
     }
     const fullName = att;
-    const featureNameGet = 'category_' + requestedLocale;
+    const featureNameGet = 'category_' + currentLocale;
     const floor = feature.get('floor_name') ? feature.get('floor_name').toLowerCase() : '';
     const roomCat = feature.get(featureNameGet);
     const roomCode = feature.get('roomcode');
@@ -671,7 +670,7 @@ const loadMapWithParams = async (mapInfo, query) => {
   }
   if (query.q && query.q.length > 3) {
     const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
-      mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.currentLocale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
+      mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.$i18n.locale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
       mapInfo.routeFromValTemp, mapInfo.activeFloorNum, mapInfo.popup);
 
     mapInfo.$root.$emit('load-search-query', query.q);

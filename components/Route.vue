@@ -128,6 +128,7 @@ export default {
       fieldExtensions.forEach((extension) => {
         const field = this.$refs[extension + 'Route'];
         const model = { ...field.model || {}, ...routeInfo[extension + 'Data'] };
+
         field.stopSearch = true;
         field.searchResult = [model];
         field.model = model;
