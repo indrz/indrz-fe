@@ -29,7 +29,7 @@ const postRequest = async function (requestObj) {
     const formData = new FormData();
     // eslint-disable-next-line no-unused-vars
     for (const [key, value] of Object.entries(requestObj.data)) {
-      formData.append(key, value);
+      formData.append(key, value === null ? '' : value);
     }
     return await axios({
       url: `${requestObj.url || env.BASE_API_URL}${requestObj.endPoint || ''}`,
