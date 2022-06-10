@@ -236,13 +236,15 @@ export default {
             }
 
             const data = {
-              name: properties['name_' + this.$i18n.locale],
-              floorNum: properties.floor_num,
-              roomCode: properties.roomcode,
-              building: properties.building,
-              src_icon: properties.src_icon || properties.icon,
-              code,
-              id
+              ...properties,
+              ...{
+                floorNum: properties.floor_num,
+                roomCode: properties.roomcode,
+                building: properties.building,
+                src_icon: properties.src_icon || properties.icon,
+                code,
+                id
+              }
             };
 
             if (properties.hasOwnProperty('category')) {
@@ -282,6 +284,8 @@ export default {
     },
     clearSearch () {
       this.model = null;
+      this.searchResult = [];
+      this.apiResponse = [];
     },
     onLoadSearchQuery (query) {
       const searchField = this.$refs.searchField;
