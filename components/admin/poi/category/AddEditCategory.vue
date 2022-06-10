@@ -196,6 +196,7 @@ export default {
             id: null,
             cat_name: null,
             fk_poi_icon: null,
+            icon: null,
             parent: null,
             cat_name_en: null,
             cat_name_de: null,
