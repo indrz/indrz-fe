@@ -40,7 +40,8 @@
                 <v-text-field
                   v-model="currentShelfData.system_from"
                   :rules="requiredRule"
-                  label="Shelving System Start" />
+                  label="Shelving System Start"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
@@ -48,7 +49,8 @@
                 <v-text-field
                   v-model="currentShelfData.system_to"
                   :rules="requiredRule"
-                  label="Shelving System End" />
+                  label="Shelving System End"
+                />
               </v-col>
             </v-row>
             <v-row no-gutters>
