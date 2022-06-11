@@ -86,7 +86,6 @@ export default {
       objCenterCoords: '',
       popUpHomePage: '',
       currentPOIID: 0,
-      currentLocale: 'en',
       routeToValTemp: '',
       routeFromValTemp: '',
       hostUrl: window.location.href,
@@ -186,7 +185,7 @@ export default {
       this.objCenterCoords = properties.centerGeometry ? properties.centerGeometry.coordinates : selectedItem.geometry.coordinates;
 
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
-        this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
+        this.popUpHomePage, this.currentPOIID, this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorNum, this.popup, selectedItem, {
           searchUrl: env.SEARCH_URL,
           layerNamePrefix: env.LAYER_NAME_PREFIX
@@ -200,7 +199,7 @@ export default {
     openIndrzPopup (properties, coordinate, feature) {
       MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
-        this.currentLocale, this.objCenterCoords, this.routeToValTemp,
+        this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorNum, this.popup,
         properties, coordinate, feature, null, env.LAYER_NAME_PREFIX
       );
@@ -360,7 +359,8 @@ export default {
       this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, 0, {
         baseApiUrl: env.BASE_API_URL,
         layerNamePrefix: env.LAYER_NAME_PREFIX,
-        token: env.TOKEN
+        token: env.TOKEN,
+        locale: this.$i18n.locale
       });
     },
     clearRouteData () {

@@ -31,7 +31,8 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       to.properties.floor_num,
       '0',
       'spaceIdToSpaceId',
-      to.properties.frontoffice?.space_id
+      to.properties.frontoffice?.space_id,
+      env.locale
     );
   } else if (from.properties.poiId && to.properties.poiId) {
     routeUrl = await getDirections(
@@ -42,7 +43,9 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       to.properties.poiId,
       to.properties.floor_num,
       '0',
-      'poiIdToPoiId'
+      'poiIdToPoiId',
+      null,
+      env.locale
     );
   } else if (
     (from.properties.poiId && to.properties.space_id) ||
@@ -56,7 +59,9 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       (from.properties.poiId || to.properties.poiId),
       to.properties.floor_num,
       '0',
-      'spaceIdToPoiId'
+      'spaceIdToPoiId',
+      null,
+      env.locale
     );
   } else if (
     (from.properties.coords && to.properties.poiId) ||
@@ -70,7 +75,9 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       (from.properties.coords || to.properties.coords),
       (from.properties.coords ? from.properties.floor_num : to.properties.floor_num),
       '0',
-      'poiToCoords'
+      'poiToCoords',
+      null,
+      env.locale
     );
   } else if (from.properties.coords && to.properties.coords) {
     routeUrl = await getDirections(
@@ -81,7 +88,9 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       to.properties.coords,
       to.properties.floor_num,
       '0',
-      'coords'
+      'coords',
+      null,
+      env.locale
     );
   }
   return routeUrl;
@@ -154,7 +163,7 @@ const getNearestDefi = async (globalPopupInfo) => {
   }
 };
 
-const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType, foid) => {
+const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType, foid, locale) => {
   const map = mapInfo.map;
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
@@ -217,8 +226,10 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
       }
 
       if (routeInfo) {
-        startName = routeInfo.start_name;
-        endName = routeInfo.end_name;
+        const { start, end } = routeInfo;
+
+        startName = start ? start.properties['name_' + locale] : routeInfo.start_name;
+        endName = start ? end.properties['name_' + locale] : routeInfo.end_name;
 
         if (searchType === 'coords') {
           routeUrl = `?start-xy=${startSearchText.join(',')},${startFloor}&end-xy=${endSearchText.join(',')},${endFloor}`;
@@ -234,6 +245,7 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
             routeUrl += '&foid=' + foid;
           }
         }
+
         insertRouteDescriptionText(startName, endName, routeData);
         if (startName && endName) {
           mapInfo.$root.$emit('updateRouteFields', {
