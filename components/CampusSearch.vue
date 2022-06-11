@@ -276,6 +276,8 @@ export default {
     },
     clearSearch () {
       this.model = null;
+      this.searchResult = [];
+      this.apiResponse = [];
     },
     onLoadSearchQuery (query) {
       const searchField = this.$refs.searchField;
