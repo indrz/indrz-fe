@@ -98,7 +98,18 @@ export default {
   },
   methods: {
     onSearchSelect (selectedItem) {
-      this[selectedItem.routeType + 'Route'] = selectedItem.data;
+      if (!selectedItem) {
+        return;
+      }
+      const currentSelection = { ...selectedItem };
+      const { id, properties } = selectedItem.data;
+
+      if (!properties.space_id && properties.spaceid) {
+        properties.space_id = properties.spaceid;
+      } else if (!properties.space_id && id) {
+        properties.space_id = id;
+      }
+      this[selectedItem.routeType + 'Route'] = currentSelection.data;
       this.$emit('setGlobalRoute', selectedItem);
     },
     onGoButtonClick () {

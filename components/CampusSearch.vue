@@ -135,7 +135,7 @@
 
 <script>
 import { Subject } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import api from '../util/api';
 
 export default {
@@ -199,63 +199,57 @@ export default {
       .pipe(
         filter(term => (term && term.length > 2 && !this.stopSearch) || term === null),
         debounceTime(500),
-        distinctUntilChanged()
-      )
-      .subscribe((term) => {
-        if (term !== null) {
-          return this.apiSearch(term);
-        }
-      });
+        distinctUntilChanged(),
+        switchMap((term) => {
+          this.isLoading = true;
+          return api.request({
+            endPoint: 'search/' + term
+          }, {
+            baseApiUrl: process.env.BASE_API_URL,
+            token: process.env.TOKEN
+          });
+        })
+      ).subscribe(response => this.apiSearch(response));
+
     this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
 
   methods: {
-    apiSearch (term) {
-      this.isLoading = true;
+    apiSearch (response) {
+      this.isLoading = false;
+      if (!response || !response.data) {
+        return;
+      }
+      this.apiResponse = response.data.features.filter(feature => feature.properties && feature.properties.name);
+      if (this.apiResponse.length > 100) {
+        this.apiResponse = this.apiResponse.slice(0, this.serachItemLimit);
+      }
 
-      api.request({
-        endPoint: 'search/' + term
-      }, {
-        baseApiUrl: process.env.BASE_API_URL,
-        token: process.env.TOKEN
-      })
-        .then((response) => {
-          if (!response || !response.data) {
-            return;
+      this.searchResult = this.apiResponse.map(({ id, properties }) => {
+        let code = properties.roomcode;
+
+        if (code && code.toLowerCase() === this.search.toLowerCase()) {
+          code = properties.room_category || properties.external_id || code;
+        }
+
+        const data = {
+          ...properties,
+          ...{
+            floorNum: properties.floor_num,
+            roomCode: properties.roomcode,
+            building: properties.building,
+            src_icon: properties.src_icon || properties.icon,
+            code,
+            id
           }
-          this.apiResponse = response.data.features.filter(feature => feature.properties && feature.properties.name);
-          if (this.apiResponse.length > 100) {
-            this.apiResponse = this.apiResponse.slice(0, this.serachItemLimit);
-          }
+        };
 
-          this.searchResult = this.apiResponse.map(({ id, properties }) => {
-            let code = properties.roomcode;
+        if (properties.hasOwnProperty('category')) {
+          properties.poiId = id;
+        }
 
-            if (code && code.toLowerCase() === this.search.toLowerCase()) {
-              code = properties.room_category || properties.external_id || code;
-            }
-
-            const data = {
-              name: properties.name,
-              floorNum: properties.floor_num,
-              roomCode: properties.roomcode,
-              building: properties.building,
-              src_icon: properties.src_icon || properties.icon,
-              code,
-              id
-            };
-
-            if (properties.hasOwnProperty('category')) {
-              properties.poiId = id;
-            }
-
-            return data;
-          });
-        })
-        .catch((err) => {
-          console.log(err);
-        })
-        .finally(() => (this.isLoading = false));
+        return data;
+      });
     },
     onSearchSelection (selection) {
       let data = null;
