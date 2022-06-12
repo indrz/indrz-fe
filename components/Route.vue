@@ -108,6 +108,8 @@ export default {
         properties.space_id = properties.spaceid;
       } else if (!properties.space_id && id) {
         properties.space_id = id;
+      } else if (properties.shelfId) {
+        properties.coords = currentSelection.data.geometry.coordinates;
       }
       this[selectedItem.routeType + 'Route'] = currentSelection.data;
       this.$emit('setGlobalRoute', selectedItem);
@@ -135,7 +137,6 @@ export default {
     },
     setSearchFieldRouteText (routeInfo) {
       const fieldExtensions = ['from', 'to'];
-
       fieldExtensions.forEach((extension) => {
         const field = this.$refs[extension + 'Route'];
         const model = { ...field.model || {}, ...routeInfo[extension + 'Data'] };
@@ -177,10 +178,12 @@ export default {
         data,
         routeType: routeInfo.path
       });
+      const scope = this;
       setTimeout(() => {
         field.stopSearch = false;
-        if (this.fromRoute && this.toRoute) {
-          this.onGoButtonClick();
+        debugger;
+        if (scope.fromRoute && scope.toRoute) {
+          scope.onGoButtonClick();
         }
       }, 1000);
     }
