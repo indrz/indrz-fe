@@ -178,11 +178,11 @@ export default {
         data,
         routeType: routeInfo.path
       });
-      const scope = this;
+
       setTimeout(() => {
         field.stopSearch = false;
-        if (scope.fromRoute && scope.toRoute) {
-          scope.onGoButtonClick();
+        if (this.fromRoute && this.toRoute) {
+          this.onGoButtonClick();
         }
       }, 1000);
     }
