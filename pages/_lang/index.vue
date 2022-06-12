@@ -148,8 +148,8 @@ export default {
     onSetGlobalRoute (selectedItem) {
       this.map.setGlobalRoute(selectedItem);
     },
-    onRouteGo () {
-      this.map.routeGo();
+    onRouteGo (routeType) {
+      this.map.routeGo(routeType);
     },
     onClearSearch () {
       this.$refs.searchComp.clearSearch();
