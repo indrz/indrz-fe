@@ -220,7 +220,6 @@ export default {
 
   methods: {
     apiSearch (response) {
-      this.isLoading = false;
       if (!response || !response.data) {
         return;
       }
