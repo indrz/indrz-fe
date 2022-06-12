@@ -181,7 +181,6 @@ export default {
       const scope = this;
       setTimeout(() => {
         field.stopSearch = false;
-        debugger;
         if (scope.fromRoute && scope.toRoute) {
           scope.onGoButtonClick();
         }
