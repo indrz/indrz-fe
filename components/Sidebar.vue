@@ -206,8 +206,8 @@ export default {
     onSetGlobalRoute (value) {
       this.$emit('setGlobalRoute', value);
     },
-    onRouteGo () {
-      this.$emit('routeGo');
+    onRouteGo (routeType) {
+      this.$emit('routeGo', routeType);
     },
     onShareClick () {
       this.$emit('shareClick');

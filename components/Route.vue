@@ -18,7 +18,7 @@
       icon="mdi-flag-checkered"
       route-type="to"
     />
-    <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" />
+    <v-checkbox v-model="barrierFree" :label="barrierFreeLabel" @change="onBarrierFreeChange" />
     <div id="route-description" />
     <v-btn
       :disabled="!isRouteAvailable"
@@ -113,7 +113,7 @@ export default {
       this.$emit('setGlobalRoute', selectedItem);
     },
     onGoButtonClick () {
-      this.$emit('routeGo');
+      this.$emit('routeGo', this.barrierFree ? 1 : 0);
     },
     onShareRoute () {
       this.$emit('shareClick');
@@ -132,6 +132,11 @@ export default {
     clearRoute () {
       document.getElementById('route-description').innerHTML = '';
       this.$emit('clearRoute');
+    },
+    onBarrierFreeChange () {
+      if (this.fromRoute && this.toRoute) {
+        this.onGoButtonClick();
+      }
     },
     setSearchFieldRouteText (routeInfo) {
       const fieldExtensions = ['from', 'to'];

@@ -29,7 +29,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       from.properties.floor_num,
       to.properties.space_id,
       to.properties.floor_num,
-      '0',
+      routeType,
       'spaceIdToSpaceId',
       to.properties.frontoffice?.space_id,
       env.locale
@@ -42,7 +42,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       from.properties.floor_num,
       to.properties.poiId,
       to.properties.floor_num,
-      '0',
+      routeType,
       'poiIdToPoiId',
       null,
       env.locale
@@ -58,7 +58,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       from.properties.floor_num,
       (from.properties.poiId || to.properties.poiId),
       to.properties.floor_num,
-      '0',
+      routeType,
       'spaceIdToPoiId',
       null,
       env.locale
@@ -74,7 +74,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       null,
       (from.properties.coords || to.properties.coords),
       (from.properties.coords ? from.properties.floor_num : to.properties.floor_num),
-      '0',
+      routeType,
       'poiToCoords',
       null,
       env.locale
@@ -87,7 +87,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       from.properties.floor_num,
       to.properties.coords,
       to.properties.floor_num,
-      '0',
+      routeType,
       'coords',
       null,
       env.locale
@@ -163,7 +163,19 @@ const getNearestDefi = async (globalPopupInfo) => {
   }
 };
 
-const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSearchText, endFloor, routeType, searchType, foid, locale) => {
+const getDirections = async (
+  mapInfo,
+  layers,
+  startSearchText,
+  startFloor,
+  endSearchText,
+  endFloor,
+  routeType,
+  searchType,
+  foid,
+  locale,
+  type = 0
+) => {
   const map = mapInfo.map;
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
@@ -174,19 +186,19 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
 
   switch (searchType) {
     case 'coords':
-      geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}&${routeType}&reversed=false`;
+      geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}&reversed=false`;
       break;
     case 'string':
-      geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText + '&type=' + routeType;
+      geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText;
       break;
     case 'poiToCoords':
       geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&floor=' + endFloor + '&reversed=' + false;
       break;
     case 'spaceIdToPoiId':
-      geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText + '&type=' + routeType;
+      geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText;
       break;
     case 'spaceIdToSpaceId':
-      geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText + '&type=' + routeType;
+      geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText;
       if (foid) {
         geoJsonUrl += '&foid=' + foid;
       }
@@ -197,6 +209,8 @@ const getDirections = async (mapInfo, layers, startSearchText, startFloor, endSe
     default:
       break;
   }
+
+  geoJsonUrl += `&type=${routeType}`;
 
   const source = new SourceVector();
   let floorName = '';
