@@ -207,7 +207,11 @@ export default {
           }, {
             baseApiUrl: process.env.BASE_API_URL,
             token: process.env.TOKEN
-          });
+          })
+            .catch((err) => {
+              console.log(err);
+            })
+            .finally(() => (this.isLoading = false));
         })
       ).subscribe(response => this.apiSearch(response));
 
@@ -216,7 +220,6 @@ export default {
 
   methods: {
     apiSearch (response) {
-      this.isLoading = false;
       if (!response || !response.data) {
         return;
       }
