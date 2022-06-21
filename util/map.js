@@ -678,6 +678,7 @@ const loadMapWithParams = async (mapInfo, query) => {
     if (result.floorNum) {
       const foundFloor = mapInfo.floors.find(floor => floor.floor_num === result.floorNum);
       if (foundFloor) {
+        mapInfo.activeFloorNum = env.LAYER_NAME_PREFIX + foundFloor.floor_num;
         mapInfo.$emit('selectFloor', foundFloor.floor_num);
       }
     }
