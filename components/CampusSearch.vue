@@ -1,69 +1,69 @@
 <template>
   <div>
     <template v-if="isRoute">
-      <v-autocomplete
-        ref="searchField"
-        v-model="model"
-        :items="searchResult"
-        :loading="isLoading"
-        :search-input.sync="search"
-        :prepend-icon="icon"
-        :no-filter="true"
-        :label="routeLabel"
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
-        item-text="name"
-        item-value="id"
-        append-icon=""
-        single-line
-        return-object
-        flat
-        hide-details
-      >
-        <template v-slot:append>
-          <v-icon class="search-btn">
-            mdi-magnify
-          </v-icon>
-        </template>
-        <template v-slot:append-outer>
-          <v-icon :color="activeClearColor" @click.stop="onClearClick">
-            mdi-close
-          </v-icon>
-        </template>
-        <template v-slot:no-data>
-          <div class="v-list-item">
-            <div class="v-list-item__content">
-              <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-list-item__title">
-                <template v-if="!search || search.length < 3">
-                  {{ minSearchCharacterLengthMessage }}
-                </template>
-                <v-progress-circular
-                  v-else-if="search && search.length && isLoading"
-                  indeterminate
-                  color="primary"
-                />
-                <template v-else-if="search && search.length && !isLoading && !searchResult.length">
-                  {{ noResultText }}
-                </template>
-              </div>
-            </div>
-          </div>
-        </template>
-        <template v-slot:item="{ item }">
-          <v-list-item-icon style="margin-right: 16px">
-            <v-img
-              :src="getIconUrl(item.src_icon)"
-              contain
-              max-height="24"
-              max-width="24"
-            />
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title v-text="item.name" />
-            <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}Floor ${item.floorNum})`" />
-          </v-list-item-content>
-        </template>
-      </v-autocomplete>
+      <div>
+        <v-autocomplete
+          ref="searchField"
+          v-model="model"
+          :items="searchResult"
+          :loading="isLoading"
+          :search-input.sync="search"
+          :prepend-icon="icon"
+          :no-filter="true"
+          :label="routeLabel"
+          @click:clear="onClearClick"
+          @change="onSearchSelection"
+          @focus="focused = true"
+          @blur="focused = false"
+          :hide-no-data="true"
+          item-text="name"
+          item-value="id"
+          append-icon=""
+          single-line
+          return-object
+          flat
+          hide-details
+        >
+          <template v-slot:append>
+            <v-icon class="search-btn">
+              mdi-magnify
+            </v-icon>
+          </template>
+          <template v-slot:append-outer>
+            <v-icon :color="activeClearColor" @click.stop="onClearClick">
+              mdi-close
+            </v-icon>
+          </template>
+          <template v-slot:item="{ item }">
+            <v-list-item-icon style="margin-right: 16px">
+              <v-img
+                :src="getIconUrl(item.src_icon)"
+                contain
+                max-height="24"
+                max-width="24"
+              />
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.name" />
+              <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}Floor ${item.floorNum})`" />
+            </v-list-item-content>
+          </template>
+        </v-autocomplete>
+      </div>
+      <div v-if="focused">
+        <div :style="{'text-align': (isLoading) ? 'center' : 'left'}" class="v-label no-data-text theme--light">
+          <template v-if="!search || search.length < 3">
+            <v-icon small>
+              mdi-information-outline
+            </v-icon> {{ minSearchCharacterLengthMessage }}
+          </template>
+          <template v-else-if="search && search.length && !isLoading && !searchResult.length">
+            <v-icon small>
+              mdi-information-outline
+            </v-icon> {{ noResultText }}
+          </template>
+        </div>
+      </div>
     </template>
     <template v-else>
       <v-autocomplete
@@ -178,6 +178,7 @@ export default {
       model: null,
       search: null,
       stopSearch: false,
+      focused: false,
       iconNames: ['book', 'department', 'person', 'poi', 'space'],
       iconPath: '/images/icons/search/'
     }
@@ -311,6 +312,10 @@ export default {
 </script>
 
 <style scoped>
+  .no-data-text {
+    text-align: left;
+    margin: 10px 0 0 30px;
+  }
   .search-btn {
     border-right: 1px solid #d3d3d3;
     padding-right: 5px
