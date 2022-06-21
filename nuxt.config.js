@@ -81,6 +81,7 @@ export default {
     GEO_SERVER_LAYER_PREFIX: process.env.GEO_SERVER_LAYER_PREFIX,
     DEFAULT_START_FLOOR: process.env.DEFAULT_START_FLOOR,
     DEFAULT_START_ZOOM: process.env.DEFAULT_START_ZOOM,
+    TITLE: process.env.TITLE,
     TOKEN: process.env.TOKEN,
     LOGO_FILE: process.env.LOGO_FILE,
     LOGO_ENABLED: process.env.LOGO_ENABLED,
