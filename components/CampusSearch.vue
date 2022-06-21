@@ -198,7 +198,7 @@ export default {
     this
       .term$
       .pipe(
-        filter(term => (term && term.length > 2 && !this.stopSearch) || term === null),
+        filter(term => (term && term.length > 2 && !this.stopSearch)),
         debounceTime(500),
         distinctUntilChanged(),
         switchMap((term) => {
