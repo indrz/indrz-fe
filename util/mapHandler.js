@@ -550,14 +550,17 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
           };
           mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
         } else {
-          const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
+          mapInfo.globalSearchInfo = {};
+          mapInfo.closeIndrzPopup(true);
+          // Commented out the xy functionality issue #290
+          /* const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
 
           mapInfo.globalSearchInfo = {};
           mapInfo.openIndrzPopup({
             xy: coordinate,
             floor_num: floor?.floor_num,
             floor_name: floor?.short_name
-          }, coordinate, null)
+          }, coordinate, null) */
         }
       });
     }
