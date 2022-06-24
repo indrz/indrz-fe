@@ -257,6 +257,9 @@ export default {
 
       if (this.globalSearchInfo.selectedItem) {
         data = this.globalSearchInfo.selectedItem.properties;
+        if (data.shelfId) {
+          data.coords = this.globalSearchInfo.selectedItem.geometry.coordinates;
+        }
       } else {
         data = this.globalPopupInfo;
       }
