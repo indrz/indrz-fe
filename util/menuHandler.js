@@ -93,7 +93,7 @@ const handlePdf = (mapInfo) => {
 
   pdf.setFont('Arial');
   pdf.setFontSize(22);
-  pdf.text(env.TITLE, titleXPos, titleYPos);
+  pdf.text(env.PDF_TITLE, titleXPos, titleYPos);
   pdf.setFontSize(12);
   pdf.text('Stockwerk:  ' + floorName, (maxWidth / 2) - 25, titleYPos + 10);
   pdf.text(today, pdfLeftMargin, maxHeight);
