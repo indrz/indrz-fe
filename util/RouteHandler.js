@@ -213,7 +213,6 @@ const getDirections = async (
   geoJsonUrl += `&type=${routeType}`;
 
   const source = new SourceVector();
-  let floorName = '';
   let floorNum = '';
 
   try {
@@ -275,11 +274,10 @@ const getDirections = async (
 
       if (typeof (features[0]) !== 'undefined') {
         floorNum = features[0].getProperties().floor;
-        floorName = mapInfo.getFloorName({ floor_num: floorNum });
 
-        if (floorName) {
+        if (floorNum) {
           mapInfo.$emit('selectFloor', features[0].getProperties().floor);
-          MapUtil.activateLayer(env.LAYER_NAME_PREFIX + floorName, layers.switchableLayers, map);
+          MapUtil.activateLayer(env.LAYER_NAME_PREFIX + floorNum, layers.switchableLayers, map);
         }
       }
 
