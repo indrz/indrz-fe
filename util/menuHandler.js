@@ -10,7 +10,7 @@ const handleZoomToHome = (mapInfo, center) => {
   mapInfo.view.animate({
     center,
     duration: 2000,
-    zoom: 15
+    zoom: env.DEFAULT_START_ZOOM
   });
 };
 
