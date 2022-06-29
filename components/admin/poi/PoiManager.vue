@@ -27,7 +27,7 @@
         Save
       </v-btn>
       <v-btn
-        @click.stop.prevent="cleanupAndRemoveInteraction"
+        @click.stop.prevent="cleanupAndRemoveInteraction(false)"
         color="primary"
         width="70px"
         small
@@ -313,6 +313,7 @@ export default {
         });
     },
     cleanupAndRemoveInteraction (clearAll = false) {
+      debugger;
       this.unsavedChanges = false;
       this.mapComp.removeInteraction();
       this.mapComp.cleanUp();
