@@ -18,7 +18,7 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-    <div v-if="isSmallScreen">
+    <div v-else>
       <v-select
         v-model="selectedFloor"
         :items="floors"
@@ -141,6 +141,9 @@ export default {
     }
     .v-list-item__content {
       min-width: 30px;
+    }
+    .v-select {
+      max-width: 80px;
     }
   }
   .v-list-item--active{
