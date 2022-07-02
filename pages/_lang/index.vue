@@ -31,13 +31,26 @@
       />
     </v-navigation-drawer>
     <v-toolbar
+      :max-width="toolbarWidth"
       dense
+      rounded
       floating
       class="ma-2"
-      max-width="320px"
     >
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <campus-search ref="searchComp" @selectSearhResult="onSearchSelect" />
+      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer" />
+      <template v-if="isSmallScreen">
+        <v-btn @click="showSearch = !showSearch" icon>
+          <v-icon v-if="!showSearch">
+            mdi-magnify
+          </v-icon>
+          <v-icon v-if="showSearch">
+            mdi-chevron-left
+          </v-icon>
+        </v-btn>
+      </template>
+      <v-expand-transition>
+        <campus-search ref="searchComp" v-show="!isSmallScreen || showSearch" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
+      </v-expand-transition>
     </v-toolbar>
     <indrz-map
       ref="map"
@@ -89,7 +102,8 @@ export default {
       mapElName: 'mapCard',
       openedPanels: [],
       initialPoiCatId: null,
-      initialPoiId: null
+      initialPoiId: null,
+      showSearch: false
     };
   },
 
@@ -99,6 +113,12 @@ export default {
     }),
     map () {
       return this.$refs.map;
+    },
+    isSmallScreen () {
+      return this.$vuetify.breakpoint.mdAndDown;
+    },
+    toolbarWidth () {
+      return this.isSmallScreen ? '280px' : '320px';
     }
   },
 
@@ -189,6 +209,9 @@ export default {
     },
     loadSinglePoi (poiId) {
       this.map.loadSinglePoi(poiId);
+    },
+    onShowSearch () {
+      this.showSearch = true;
     }
   }
 };

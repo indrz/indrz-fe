@@ -284,17 +284,13 @@ export default {
       this.apiResponse = [];
     },
     onLoadSearchQuery (query) {
-      const searchField = this.$refs.searchField;
+      this.$emit('showSearch');
+      setTimeout(() => {
+        const searchField = this.$refs.searchField;
 
-      this.search = query;
-      searchField.focus();
-      /* searchField
-        .$el
-        .querySelector('input')
-        .dispatchEvent(
-          new KeyboardEvent('keydown', {
-            keyCode: 13
-          })); */
+        this.search = query;
+        searchField.focus();
+      }, 1000);
     },
     getIconUrl (iconName) {
       if (!iconName) {
