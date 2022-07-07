@@ -143,7 +143,7 @@ export default {
       min-width: 30px;
     }
     .v-select {
-      max-width: 80px;
+      max-width: 100px;
     }
   }
   .v-list-item--active{
