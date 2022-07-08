@@ -45,7 +45,7 @@
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title v-text="item.name" />
-              <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}Floor ${item.floorNum})`" />
+              <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}${searchResultFloorLabel} ${item.floorNum})`" />
             </v-list-item-content>
           </template>
         </v-autocomplete>
@@ -125,7 +125,7 @@
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title v-text="item.name" />
-            <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}Floor ${item.floorNum})`" />
+            <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}${searchResultFloorLabel} ${item.floorNum})`" />
           </v-list-item-content>
         </template>
       </v-autocomplete>
@@ -170,6 +170,7 @@ export default {
       searchLabel: this.$t('search_our_campus'),
       minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
       noResultText: this.$t('no_result_found'),
+      searchResultFloorLabel: this.$t('label_floor_name'),
       serachItemLimit: 100,
       searchResult: [],
       apiResponse: [],
