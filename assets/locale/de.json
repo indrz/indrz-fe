@@ -52,6 +52,6 @@
   "label_building_code": "Geb. Code",
   "label_building_city": "Stadt",
   "label_building_plz": "Plz",
-  "label_building_adress": "Adresse"
-
+  "label_building_adress": "Adresse",
+  "pdf_title": "Universität Plan"
 }

@@ -52,5 +52,6 @@
   "label_building_code": "Building Code",
   "label_building_city": "City",
   "label_building_plz": "Postal Code",
-  "label_building_adress": "Adress"
+  "label_building_adress": "Adress",
+  "pdf_title": "University Plan"
 }
