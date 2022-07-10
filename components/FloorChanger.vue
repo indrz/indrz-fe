@@ -1,11 +1,11 @@
 <template>
   <v-card
     id="floorList"
-    class="mx-auto floor-changer"
-    max-height="400px"
+    :max-height="containerHeight"
     dark
+    class="mx-auto floor-changer"
   >
-    <v-list dense>
+    <v-list v-if="!isSmallScreen" dense>
       <v-list-item-group mandatory>
         <v-list-item
           v-for="(floor, i) in floors"
@@ -18,6 +18,20 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
+    <div v-else>
+      <v-select
+        v-model="selectedFloor"
+        :items="floors"
+        @change="(selectedFloor) => {onFloorClick(selectedFloor, true)}"
+        item-text="short_name"
+        item-value="id"
+        flat
+        hide-details
+        solo
+        dense
+        return-object
+      />
+    </div>
   </v-card>
 </template>
 
@@ -30,6 +44,7 @@ const { env } = config;
 export default {
   data () {
     return {
+      selectedFloor: null,
       setSelection: null
     };
   },
@@ -37,10 +52,21 @@ export default {
   computed: {
     ...mapState({
       floors: state => state.floor.floors
-    })
+    }),
+    isSmallScreen () {
+      return this.$vuetify.breakpoint.mdAndDown;
+    },
+    containerHeight () {
+      return this.isSmallScreen ? '100px' : '400px';
+    }
   },
 
   watch: {
+    isSmallScreen (isSmall) {
+      if (this.selectedFloor) {
+        this.selectFloorWithCss(this.selectedFloor.floor_num, false);
+      }
+    },
     floors () {
       if (this.setSelection) {
         this.selectFloorWithCss(this.setSelection);
@@ -55,24 +81,37 @@ export default {
       this.selectFloorWithCss(floor.floor_num, isEvent);
     },
     selectFloorWithCss (floorNum, isEvent) {
+      this.setSelectedFloor(floorNum);
       setTimeout(() => {
-        const activeClass = 'v-list-item--active';
-        const linkClass = 'v-list-item--link';
-        const listItems = this.$el.querySelectorAll('.v-list-item');
-        const floorNumToFind = floorNum.toString().includes('.') ? Number(floorNum) : Number(floorNum).toFixed(1);
-        const floorIndex = this.floors.findIndex(floor => floor.floor_num.toFixed(1) === floorNumToFind);
-
-        listItems.forEach((item) => {
-          item.classList.remove(activeClass, linkClass);
-        });
-        if (listItems.length && floorIndex > -1) {
-          listItems[floorIndex].classList.add(activeClass, linkClass);
-          if (!isEvent) {
-            const list = document.getElementById('floorList');
-            list.scrollTo({ top: (40 * floorIndex), behavior: 'smooth' });
-          }
+        if (!this.isSmallScreen) {
+          this.selectOnListComponent(floorNum, isEvent);
         }
       }, 500);
+    },
+    selectOnListComponent (floorNum, isEvent) {
+      const activeClass = 'v-list-item--active';
+      const linkClass = 'v-list-item--link';
+      const listItems = this.$el.querySelectorAll('.v-list-item');
+      const floorNumToFind = Number(floorNum).toFixed(1);
+      const floorIndex = this.floors.findIndex(floor => floor.floor_num.toFixed(1) === floorNumToFind);
+
+      listItems.forEach((item) => {
+        item.classList.remove(activeClass, linkClass);
+      });
+      if (listItems.length && floorIndex > -1) {
+        listItems[floorIndex].classList.add(activeClass, linkClass);
+        if (!isEvent) {
+          const list = document.getElementById('floorList');
+          list.scrollTo({ top: (40 * floorIndex), behavior: 'smooth' });
+        }
+      }
+    },
+    setSelectedFloor (floorNum) {
+      const floorToSelect = this.floors.find(floor => floor.floor_num === floorNum);
+
+      if (floorToSelect) {
+        this.selectedFloor = floorToSelect;
+      }
     },
     getFloorByFloorNum (floorNameWithPrefix) {
       const floorNum = env.LAYER_NAME_PREFIX ? floorNameWithPrefix.split(env.LAYER_NAME_PREFIX)[1] : floorNameWithPrefix;
@@ -102,6 +141,9 @@ export default {
     }
     .v-list-item__content {
       min-width: 30px;
+    }
+    .v-select {
+      max-width: 100px;
     }
   }
   .v-list-item--active{
