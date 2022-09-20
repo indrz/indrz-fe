@@ -177,7 +177,7 @@ export default {
       this.$emit('selectFloor', properties.floor_num);
 
       const campusId = selectedItem.properties.building;
-      const searchText = properties.name;
+      const searchText = properties?.room_code || properties.name;
       const zoomLevel = 20;
 
       this.globalSearchInfo.selectedItem = selectedItem;
