@@ -231,7 +231,7 @@ export default {
       }
 
       this.searchResult = this.apiResponse.map(({ id, properties }) => {
-        let code = properties.roomcode;
+        let code = properties.room_code;
 
         if (code && code.toLowerCase() === this.search.toLowerCase()) {
           code = properties.room_category || properties.external_id || code;
@@ -241,7 +241,7 @@ export default {
           ...properties,
           ...{
             floorNum: properties.floor_num,
-            roomCode: properties.roomcode,
+            roomCode: properties.room_code,
             building: properties.building,
             src_icon: properties.src_icon || properties.icon,
             code,

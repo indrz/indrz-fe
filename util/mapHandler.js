@@ -97,7 +97,9 @@ const openIndrzPopup = (
   }
   if (properties.hasOwnProperty('room_code')) {
     globalPopupInfo.wmsInfo = properties.room_code;
-    properties.roomcode = properties.room_code;
+  }
+  if (properties.hasOwnProperty('roomcode')) {
+    globalPopupInfo.wmsInfo = properties.roomcode;
   }
   if (properties.hasOwnProperty('poiId')) {
     currentPOIID = properties.poiId;
@@ -160,15 +162,13 @@ const openIndrzPopup = (
   } else if (properties.hasOwnProperty('short_name')) {
     properties.name = properties.short_name;
   }
-  if (properties.hasOwnProperty('room_code')) {
-    properties.roomcode = properties.room_code;
-  }
+
   titlePopup = getTitle(properties, currentLocale);
 
   if (typeof properties.label !== 'undefined') {
-    roomCode = properties.roomcode;
+    roomCode = properties.room_code;
   } else {
-    roomCode = properties.roomcode;
+    roomCode = properties.room_code;
   }
 
   popupContent.innerHTML = '<h4 style="user-select: text;">' + titlePopup + '</h4>';
@@ -206,8 +206,8 @@ const openIndrzPopup = (
     addPoiTableRow(labelBuildingCity, properties.city, 'popup_building_city');
   }
 
-  if (properties.roomcode) {
-    addPoiTableRow(labelRoomCode, properties.roomcode, 'popup_room_code');
+  if (properties.room_code) {
+    addPoiTableRow(labelRoomCode, properties.room_code, 'popup_room_code');
   }
   if (floorName && !properties.xy) {
     addPoiTableRow(labelFloorName, floorName, 'popup_floor_name');
@@ -237,7 +237,7 @@ const openIndrzPopup = (
   globalPopupInfo.name = properties.xy ? translate.t('xy_location') : titlePopup;
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorNum;
-  globalPopupInfo.roomcode = roomCode;
+  globalPopupInfo.room_code = roomCode;
   globalPopupInfo.floor_num = properties.floor_num;
 
   popup.setPosition(coordinate);
@@ -250,6 +250,9 @@ const getTitle = (properties, locale = 'en') => {
   }
   if (properties['name_' + locale]) {
     return properties['name_' + locale];
+  }
+  if (properties.name) {
+    return properties.name;
   }
   if (properties.short_name) {
     return properties.short_name;
