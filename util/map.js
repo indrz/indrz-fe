@@ -411,7 +411,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     const featureNameGet = 'category_' + currentLocale;
     const floor = feature.get('floor_name') ? feature.get('floor_name').toLowerCase() : '';
     const roomCat = feature.get(featureNameGet);
-    const roomCode = feature.get('roomcode');
+    const roomCode = feature.get('room_code');
     let someThing = '';
 
     if (att !== roomCode) {

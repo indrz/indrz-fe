@@ -156,8 +156,8 @@ export default {
     },
     setRoute (routeInfo) {
       const routeData = { ...routeInfo.data };
-      if (!routeData.name && routeData.roomcode) {
-        routeData.name = routeData.roomcode;
+      if (!routeData.name && routeData.room_code) {
+        routeData.name = routeData.room_code;
       }
       if (!routeData.space_id && routeData.spaceid) {
         routeData.space_id = routeData.spaceid;
@@ -172,7 +172,7 @@ export default {
       };
       const field = this.$refs[routeInfo.path + 'Route'];
       const { properties } = data;
-      const model = { ...properties, ...{ floorNum: properties.floor_num, roomCode: properties.roomcode } };
+      const model = { ...properties, ...{ floorNum: properties.floor_num, roomCode: properties.room_code } };
 
       field.stopSearch = true;
       field.apiResponse = [data];
