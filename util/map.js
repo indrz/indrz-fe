@@ -361,12 +361,19 @@ const styleFunction = (feature, resolution) => {
   }
 };
 
-const searchThroughAPI = async (searchText) => {
-  const searchUrl = `${env.SEARCH_URL}/${searchText}`;
-  const response = await api.request({
-    url: searchUrl
-  });
-  return response.data;
+const searchThroughAPI = async (searchText, url = env.SEARCH_URL) => {
+  const searchUrl = `${url}/${searchText}`;
+  try {
+    const response = await api.request({
+      url: searchUrl
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+    }
+  }
 };
 
 const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
@@ -486,7 +493,6 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     zIndex: 999
   });
   map.getLayers().push(searchLayer);
-  window.location.href = '#map';
 
   /*
   $('html,body').animate({
@@ -669,11 +675,18 @@ const loadMapWithParams = async (mapInfo, query) => {
     return;
   }
   if (query.q && query.q.length > 3) {
+    let response = null;
+
+    if (query.q !== 'coords') {
+      response = await searchThroughAPI(query.q, env.SHARE_SPACE_URL);
+    }
     const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
       mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.$i18n.locale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
-      mapInfo.routeFromValTemp, mapInfo.activeFloorNum, mapInfo.popup);
+      mapInfo.routeFromValTemp, mapInfo.activeFloorNum, mapInfo.popup, response);
 
-    mapInfo.$root.$emit('load-search-query', query.q);
+    if (!response) {
+      mapInfo.$root.$emit('load-search-query', query.q);
+    }
 
     if (result.floorNum) {
       const foundFloor = mapInfo.floors.find(floor => floor.floor_num === result.floorNum);

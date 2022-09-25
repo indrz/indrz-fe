@@ -345,51 +345,59 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
 
   const data = {};
 
-  if (mode === 'route') {
-    if (globalRouteInfo.routeUrl) {
-      url = globalRouteInfo.routeUrl;
-    } else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
-      url = globalRouteInfo.routeUrl;
-    } else if (globalPopupInfo.poiId === 'undefined' && globalPopupInfo.poiId === '' && globalPopupInfo.poiId !== 'noid') {
-      url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
-    } else {
-      url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
-    }
-  } else if (mode === 'search') {
-    if (globalPopupInfo.hasOwnProperty('external_id')) {
-      if (globalPopupInfo.external_id === globalPopupInfo.name) {
-        url = '?q=' + globalPopupInfo.external_id;
+  switch (mode) {
+    case 'route':
+      if (globalRouteInfo.routeUrl) {
+        url = globalRouteInfo.routeUrl;
+      } else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
+        url = globalRouteInfo.routeUrl;
+      } else if (globalPopupInfo.poiId === 'undefined' && globalPopupInfo.poiId === '' && globalPopupInfo.poiId !== 'noid') {
+        url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
+      } else {
+        url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
+      }
+      break;
+    case 'search':
+      if (globalPopupInfo.hasOwnProperty('external_id')) {
+        if (globalPopupInfo.external_id === globalPopupInfo.name) {
+          url = '?q=' + globalPopupInfo.external_id;
+        } else {
+          url = '?q=' + globalPopupInfo.name;
+        }
+      }
+      if (globalSearchInfo.searchText) {
+        url = '?q=' + globalSearchInfo.searchText;
       } else {
         url = '?q=' + globalPopupInfo.name;
       }
-    }
-    if (globalSearchInfo.searchText) {
-      url = '?q=' + globalSearchInfo.searchText;
-    } else {
-      url = '?q=' + globalPopupInfo.name;
-    }
-  } else if (mode === 'map') {
-    const floorNum = activeFloorNum.includes(env.LAYER_NAME_PREFIX) ? activeFloorNum.split(env.LAYER_NAME_PREFIX)[1] : activeFloorNum;
-    url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + floorNum;
-  } else if (mode === 'bookId') {
-    url = hostUrl + globalRouteInfo.routeUrl;
-  } else if (mode === 'poiCatId') {
-    url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
+      break;
+    case 'map':
+      const floorNum = activeFloorNum.includes(env.LAYER_NAME_PREFIX) ? activeFloorNum.split(env.LAYER_NAME_PREFIX)[1] : activeFloorNum;
+      url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + floorNum;
+      break;
+    case 'bookId':
+      url = hostUrl + globalRouteInfo.routeUrl;
+      break;
+    case 'poiCatId':
+      url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
 
-    const poiId = globalPopupInfo.poiId || globalSearchInfo?.selectedItem?.id;
-    const singlePoiUrl = `${location.origin}?poi-id=${poiId}&floor=${globalPopupInfo.floor_num}`;
+      const poiId = globalPopupInfo.poiId || globalSearchInfo?.selectedItem?.id;
+      const singlePoiUrl = `${location.origin}?poi-id=${poiId}&floor=${globalPopupInfo.floor_num}`;
 
-    return {
-      type: 'poi',
-      singlePoiUrl,
-      poiCatUrl: url
-    };
-  } else if (mode === 'wmsInfo') {
-    url = hostUrl + '?q=' + globalPopupInfo.wmsInfo;
-  } else if (mode === 'xy') {
-    url = `${hostUrl}?q=coords&x=${globalPopupInfo.coords[0]}&y=${globalPopupInfo.coords[1]}`
-  } else {
-    url = location.href;
+      return {
+        type: 'poi',
+        singlePoiUrl,
+        poiCatUrl: url
+      };
+    case 'wmsInfo':
+      url = hostUrl + '?q=' + globalPopupInfo.wmsInfo;
+      break;
+    case 'xy':
+      url = `${hostUrl}?q=coords&x=${globalPopupInfo.coords[0]}&y=${globalPopupInfo.coords[1]}`
+      break;
+    default:
+      url = location.href;
+      break;
   }
 
   data.extent = currentExtent2;
