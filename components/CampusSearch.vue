@@ -291,6 +291,7 @@ export default {
 
         this.search = query;
         searchField.focus();
+        searchField.activateMenu();
       }, 1000);
     },
     getIconUrl (iconName) {

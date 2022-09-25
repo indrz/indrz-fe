@@ -75,6 +75,7 @@ export default {
     BASE_API_URL: process.env.BASE_API_URL,
     BASE_WMS_URL: process.env.BASE_WMS_URL,
     SEARCH_URL: process.env.SEARCH_URL,
+    SHARE_SPACE_URL: process.env.SHARE_SPACE_URL,
     HOME_PAGE_URL: process.env.HOME_PAGE_URL,
     DEFAULT_CENTER_XY: process.env.DEFAULT_CENTER_XY,
     LAYER_NAME_PREFIX: process.env.LAYER_NAME_PREFIX,
