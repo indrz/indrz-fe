@@ -393,7 +393,11 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
         poiCatUrl: url
       };
     case 'wmsInfo':
-      url = hostUrl + '?q=' + globalPopupInfo.wmsInfo;
+      if (globalPopupInfo.room_code) {
+        url = hostUrl + '?q=' + globalPopupInfo.room_code;
+      } else {
+        url = hostUrl + '?q=' + globalPopupInfo.wmsInfo;
+      }
       break;
     case 'xy':
       url = `${hostUrl}?q=coords&x=${globalPopupInfo.coords[0]}&y=${globalPopupInfo.coords[1]}`
