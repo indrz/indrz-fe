@@ -86,6 +86,7 @@ export default {
       objCenterCoords: '',
       popUpHomePage: '',
       currentPOIID: 0,
+      selectedPoiCatIds: [],
       routeToValTemp: '',
       routeFromValTemp: '',
       hostUrl: window.location.href,
@@ -216,7 +217,7 @@ export default {
     },
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
-      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum, isRouteShare);
+      const url = MapHandler.handleShareClick(this, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum, isRouteShare);
 
       if (typeof url === 'object' && url.type === 'poi') {
         shareOverlay.setPoiShareLink(url);
@@ -237,6 +238,18 @@ export default {
         .addPoisToMap([startPoiId, endPoiId], this.map, this.activeFloorNum, 'RouteFromPoiToPoi')
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
+      if (newItems) {
+        newItems.forEach((itemToAdd) => {
+          const index = this.selectedPoiCatIds.indexOf(itemToAdd.id);
+          index === -1 && this.selectedPoiCatIds.push(itemToAdd.id);
+        })
+      }
+      if (removedItems) {
+        removedItems.forEach((itemToRemvoe) => {
+          const index = this.selectedPoiCatIds.indexOf(itemToRemvoe.id);
+          index > -1 && this.selectedPoiCatIds.splice(index, 1);
+        });
+      }
       MapHandler.handlePoiLoad(this.map, this.activeFloorNum, { removedItems, newItems, oldItems }, {
         baseApiUrl: env.BASE_API_URL,
         token: env.TOKEN,

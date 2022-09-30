@@ -313,7 +313,7 @@ const getRoomInfo = (floor, layers, layerNamePrefix) => {
   return newel;
 };
 
-const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum, isRouteShare) => {
+const handleShareClick = (mapInfo, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum, isRouteShare) => {
   let param = '';
 
   if (isRouteShare) {
@@ -329,10 +329,11 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
   } else if (globalPopupInfo.name === 'XY Location') {
     param = 'xy';
   }
-  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
+  return updateUrl(param, mapInfo, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
 };
 
-const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+const updateUrl = (mode, mapInfo, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+  const { map } = mapInfo;
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
   const currentZoom2 = map.getView().getZoom();
   const centerCrd = map.getView().getCenter();
@@ -374,6 +375,10 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
     case 'map':
       const floorNum = activeFloorNum.includes(env.LAYER_NAME_PREFIX) ? activeFloorNum.split(env.LAYER_NAME_PREFIX)[1] : activeFloorNum;
       url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + floorNum;
+
+      if (mapInfo.selectedPoiCatIds.length) {
+        url = `${url}&poi-cat-id=${mapInfo.selectedPoiCatIds.join(',')}`
+      }
       break;
     case 'bookId':
       url = hostUrl + globalRouteInfo.routeUrl;
