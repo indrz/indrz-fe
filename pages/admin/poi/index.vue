@@ -19,6 +19,14 @@
                 @click="onPoiMenuClick(menuItem.route)"
               >
                 <v-card-title class="justify-center">
+                  <v-icon
+                    large
+                    left
+                  >
+                    mdi-pencil
+                  </v-icon>
+                  <span class="text-h6 font-weight-light" />
+
                   {{ menuItem.text }}
                 </v-card-title>
               </v-card>
@@ -66,7 +74,6 @@ export default {
   .poi-page {
     height: 100%;
     width: 100%;
-    background-image: url("/images/poi-editor-background.jpeg");
-    background-repeat: repeat;
+    background: linear-gradient(180deg, rgba(2,0,36,1) 0%, rgba(9,9,121,1) 35%, rgba(0,212,255,1) 100%);
   }
 </style>

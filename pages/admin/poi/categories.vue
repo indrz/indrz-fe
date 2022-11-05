@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>POI Category Editor</h1>
     <poi-category-list />
     <snack-bar />
   </div>

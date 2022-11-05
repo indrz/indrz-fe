@@ -313,7 +313,6 @@ export default {
         });
     },
     cleanupAndRemoveInteraction (clearAll = false) {
-      debugger;
       this.unsavedChanges = false;
       this.mapComp.removeInteraction();
       this.mapComp.cleanUp();
