@@ -29,8 +29,7 @@
       <template v-slot:prepend="{ item, active }">
         <div @click="onTreeClick(item)">
           <img v-if="active" :src="item.icon" style="height:25px;">
-          <!-- <img v-if="active" src="/media/poi_icons/other_pin.png" style="height:25px;"> -->
-          <img v-else src="/media/poi_icons/other_pin_grey.png" style="height:25px;">
+          <img v-else :src="setInactiveName(item.icon)" style="height:25px;">
         </div>
       </template>
     </v-treeview>
@@ -152,6 +151,13 @@ export default {
         }, 500);
       }
       this.loading = false;
+    },
+    setInactiveName (name) {
+      const splitName = name.split('/');
+      const oldName = splitName.pop();
+      const newName = 'Inactive_' + oldName;
+      splitName.push(newName)
+      return splitName.join('/')
     },
     loadInitialPOICategory () {
       const foundData = this.findNode(Number(this.initialPoiCatId));

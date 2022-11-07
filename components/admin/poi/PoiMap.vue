@@ -284,7 +284,7 @@ export default {
           anchorXUnits: 'fraction',
           anchorYUnits: 'pixels',
           opacity: 1,
-          src: '/media/poi_icons/selected_pin.png'
+          src: '/images/selected.png'
         })
       });
 
@@ -463,10 +463,6 @@ export default {
                 if (layer.getProperties().id === 99999) {
                   layer.getLayers().push(poiLayer);
                 }
-              });
-              this.map.getView().fit(poiLayer.getSource().getExtent(), {
-                maxZoom: 18,
-                duration: 500
               });
             });
         });
