@@ -141,7 +141,7 @@ export default {
       ) {
         this.unsavedChanges = true;
       } else {
-        this.$refs.map.removeInteraction();
+        this.$refs.map.removeInteraction(true);
       }
     },
     onFloorClick (floorNum) {
@@ -313,9 +313,8 @@ export default {
         });
     },
     cleanupAndRemoveInteraction (clearAll = false) {
-      debugger;
       this.unsavedChanges = false;
-      this.mapComp.removeInteraction();
+      this.mapComp.removeInteraction(true);
       this.mapComp.cleanUp();
 
       if (!clearAll) {

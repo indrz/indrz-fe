@@ -28,7 +28,7 @@ import config from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
 
 const { env } = config;
-const initializeMap = (mapId) => {
+const initializeMap = (mapId, predefinedPopup) => {
   const view = new View({
     center: getStartCenter(),
     zoom: getStartZoom(),
@@ -55,7 +55,7 @@ const initializeMap = (mapId) => {
     layers: layers.layerGroups
   });
 
-  const popup = new Overlay({
+  const popup = predefinedPopup || new Overlay({
     element: document.getElementById('indrz-popup'),
     autoPan: true,
     autoPanAnimation: {

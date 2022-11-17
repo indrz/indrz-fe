@@ -51,6 +51,10 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <attributes-overlay
+      ref="attributesOverlay"
+      @closeClick="closeAttributePopup()"
+    />
   </div>
 </template>
 
@@ -61,9 +65,11 @@ import { Vector as VectorSource } from 'ol/source';
 import { Style, Icon } from 'ol/style';
 import { Draw, Modify, Snap, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
+import Overlay from 'ol/Overlay';
 import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
+import AttributesOverlay from './attributesOverlay.vue'
 import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import 'ol/ol.css';
@@ -72,6 +78,9 @@ const { env } = config;
 
 export default {
   name: 'Map',
+  components: {
+    AttributesOverlay
+  },
   props: {
     selectedPoiCategory: {
       type: Object,
@@ -145,12 +154,20 @@ export default {
       this.$root.$on('cancelPoiClick', this.removeInteraction);
     },
     initializeMap () {
-      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
+      this.popup = new Overlay({
+        element: document.getElementById('attributes-overlay'),
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250
+        },
+        zIndex: 5,
+        name: 'attributesPopup'
+      });
+      const { view, map, layers } = MapUtil.initializeMap(this.mapId, this.popup);
 
       this.view = view;
       this.map = map;
       this.layers = layers;
-      this.popup = popup;
 
       this.map.on('singleclick', this.onMapClick, this);
       window.onresize = () => {
@@ -186,6 +203,15 @@ export default {
       if (feature) {
         const featureType = feature.getGeometry().getType().toString();
 
+        if (featureType === 'Point') {
+          const newPoint = this.newPois.find(poi => poi.olUid === feature.ol_uid)
+
+          if (newPoint) {
+            const coordinate = JSON.parse(newPoint.geom).coordinates[0];
+            this.openAttributesPopup(newPoint, coordinate);
+          }
+        }
+
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
             this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
@@ -203,6 +229,7 @@ export default {
               this.editInteraction();
             } else {
               this.clearPreviousSelection();
+              this.openAttributesPopup(feature.getProperties(), feature.getProperties().geometry.getCoordinates()[0]);
             }
           }
         }
@@ -361,14 +388,16 @@ export default {
         this.$emit('updatePoiCoord', this.currentEditingPoi);
       }
     },
-    removeInteraction () {
+    removeInteraction (all = false) {
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
       this.map.removeInteraction(this.translate);
-      if (this.vectorInteractionLayer) {
-        this.map.removeLayer(this.vectorInteractionLayer);
+
+      if (all) {
+        this.vectorInteractionLayer && this.map.removeLayer(this.vectorInteractionLayer);
+        this.clearEditingVectorLayer();
+        this.closeAttributePopup()
       }
-      this.clearEditingVectorLayer();
 
       if (this.draw) {
         this.draw.un('drawend', this.onDrawEnd);
@@ -432,9 +461,12 @@ export default {
               name: 'EPSG:3857'
             }
           }
-        })
+        }),
+        olUid: drawEvent.feature.ol_uid
       };
       this.newPois.push(data);
+      this.removeInteraction();
+      this.openAttributesPopup(data, coordinate)
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
@@ -481,6 +513,14 @@ export default {
           src: icon
         })
       });
+    },
+    closeAttributePopup () {
+      this.popup.setPosition(undefined)
+    },
+    openAttributesPopup (data, coordinate) {
+      this.$refs.attributesOverlay.setData(data);
+      this.popup.setPosition(coordinate);
+      this.popup.setOffset([0, -40]);
     }
   }
 };
