@@ -53,7 +53,8 @@
     </v-dialog>
     <attributes-overlay
       ref="attributesOverlay"
-      @closeClick="closeAttributePopup()"
+      @closeClick="closeAttributePopup"
+      @saveClick="saveAttributes"
     />
   </div>
 </template>
@@ -229,7 +230,7 @@ export default {
               this.editInteraction();
             } else {
               this.clearPreviousSelection();
-              this.openAttributesPopup(feature.getProperties(), feature.getProperties().geometry.getCoordinates()[0]);
+              this.openAttributesPopup(feature.getProperties(), feature.getGeometry().getCoordinates()[0], feature);
             }
           }
         }
@@ -517,8 +518,15 @@ export default {
     closeAttributePopup () {
       this.popup.setPosition(undefined)
     },
-    openAttributesPopup (data, coordinate) {
-      this.$refs.attributesOverlay.setData(data);
+    saveAttributes (attributes) {
+      if (attributes.feature) {
+        this.$emit('saveEditPoi', attributes.feature, attributes.data)
+      } else {
+        this.$emit('saveAddPoi', attributes.data)
+      }
+    },
+    openAttributesPopup (data, coordinate, feature) {
+      this.$refs.attributesOverlay.setData(data, feature);
       this.popup.setPosition(coordinate);
       this.popup.setOffset([0, -40]);
     }

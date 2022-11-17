@@ -49,7 +49,7 @@
           <v-btn
             :disabled="loading || !valid"
             :loading="loading"
-            @click="onCloseClick"
+            @click="onSaveClick"
             color="blue darken-1"
             text
           >
@@ -86,6 +86,12 @@ export default {
             enabled: true
           };
         }
+      },
+      feature: {
+        type: Object,
+        default: function () {
+          return null;
+        }
       }
     }
   },
@@ -113,8 +119,19 @@ export default {
     onCloseClick () {
       this.$emit('closeClick');
     },
-    setData (data) {
-      this.data = data;
+    onSaveClick () {
+      this.$emit('saveClick', {
+        data: this.data,
+        feature: this.feature
+      })
+    },
+    setData (data, feature) {
+      this.data = { ...data };
+      if (feature) {
+        this.feature = feature;
+      } else {
+        this.feature = null;
+      }
     }
   }
 };

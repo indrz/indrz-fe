@@ -7,6 +7,9 @@
       @floorChange="onMapFloorChange"
       @editPoi="onEditPoi"
       @updatePoiCoord="onUpdatePoiCoord"
+      @saveSinglePoi="saveAddPoi"
+      @saveEditPoi="saveEditPoi"
+      @cancelChanges="cleanupAndRemoveInteraction(false)"
     />
     <div class="poi">
       <points-of-interest
@@ -188,27 +191,37 @@ export default {
       }
       switch (this.mapComp.currentMode) {
         case 'add':
-          this.saveAddPoi(force);
+          this.saveAddPois(force);
           break;
         case 'edit':
-          this.saveEditPoi();
+          this.saveEditPois();
           break;
         case 'remove':
           this.saveRemovePoi();
           break;
       }
     },
-    saveAddPoi (force) {
+    saveAddPois (force) {
       this.mapComp.newPois.forEach(async (newPoi) => {
-        await api.postRequest({
-          endPoint: 'poi/',
-          method: 'POST',
-          data: newPoi
-        }, {
-          baseApiUrl: process.env.BASE_API_URL,
-          token: process.env.TOKEN
-        });
+        await this.saveAddSinglePoi(newPoi);
       });
+      this.updateTreeAfterAddPoi(force);
+    },
+    async saveAddPoi (poiData) {
+      await this.saveAddSinglePoi(poiData);
+      this.updateTreeAfterAddPoi(true);
+    },
+    async saveAddSinglePoi (poiData) {
+      await api.postRequest({
+        endPoint: 'poi/',
+        method: 'POST',
+        data: poiData
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
+      });
+    },
+    updateTreeAfterAddPoi (force) {
       const treeComp = this.$refs.poiTree;
       treeComp.forceReloadNode = force;
       this.initialPoiCatId = Number(this.mapComp.newPois[0].category);
@@ -219,58 +232,66 @@ export default {
         this.cleanUp(force, 'add');
       });
     },
-    saveEditPoi () {
+    async saveEditPois () {
       if (!this.mapComp.editPois.length) {
         return;
       }
-      const functions = [];
 
-      this.mapComp.editPois.forEach((poi) => {
+      for (let i = 0; i < this.mapComp.editPois.length; i++) {
+        const poi = this.mapComp.editPois[i];
         const properties = { ...poi.getProperties() };
-        const { floor_num: floorNum, short_name: floorName } = this.activeFloor;
-        delete properties.geometry;
 
-        if (!isNaN(floorNum) && floorName) {
-          properties.floor_num = floorNum;
-          properties.floor_name = floorName;
-        }
-        const data = {
-          category: poi.getProperties().category,
-          geometry: {
-            type: 'MultiPoint',
-            coordinates: poi.getGeometry().getCoordinates(),
-            crs: {
-              type: 'name',
-              properties: {
-                name: 'EPSG:3857'
-              }
+        await this.saveEditSinglePoi(poi, properties);
+      }
+      this.updateTreeAfterEditPoi(Number(this.mapComp.editPois[0].getProperties().category));
+    },
+    async saveEditPoi (poi, properties) {
+      await this.saveEditSinglePoi(poi, properties);
+      this.updateTreeAfterEditPoi(Number(poi.getProperties().category));
+    },
+    async saveEditSinglePoi (poi, properties) {
+      const { floor_num: floorNum, short_name: floorName } = this.activeFloor;
+      delete properties.geometry;
+
+      if (!isNaN(floorNum) && floorName) {
+        properties.floor_num = floorNum;
+        properties.floor_name = floorName;
+      }
+      const data = {
+        category: poi.getProperties().category,
+        geometry: {
+          type: 'MultiPoint',
+          coordinates: poi.getGeometry().getCoordinates(),
+          crs: {
+            type: 'name',
+            properties: {
+              name: 'EPSG:3857'
             }
-          },
-          properties
-        };
-        functions.push(
-          api.putRequest({
-            endPoint: `poi/${poi.getId()}/`,
-            method: 'PUT',
-            data
-          }, {
-            baseApiUrl: process.env.BASE_API_URL,
-            token: process.env.TOKEN
-          })
-        );
-      });
-      Promise.all(functions)
-        .then((response) => {
-          const treeComp = this.$refs.poiTree;
-
-          treeComp.forceReloadNode = true;
-          this.initialPoiCatId = Number(this.mapComp.editPois[0].getProperties().category);
-
-          if (!this.unsavedChanges) {
-            treeComp.loadDataToPoiTree();
           }
-          this.cleanupAndRemoveInteraction();
-        });
+        },
+        properties
+      };
+
+      await api.putRequest({
+        endPoint: `poi/${poi.getId()}/`,
+        method: 'PUT',
+        data
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
+      })
+    },
+
+    updateTreeAfterEditPoi (poiCatId) {
+      const treeComp = this.$refs.poiTree;
+
+      treeComp.forceReloadNode = true;
+      this.initialPoiCatId = poiCatId;
+
+      if (!this.unsavedChanges) {
+        treeComp.loadDataToPoiTree();
+      }
+      this.cleanupAndRemoveInteraction();
     },
     saveRemovePoi () {
       this.mapComp.deleteConfirm = true;
