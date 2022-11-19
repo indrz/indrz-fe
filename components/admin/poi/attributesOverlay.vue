@@ -42,7 +42,6 @@
         </v-card-text>
         <v-divider class="mt-5" />
         <v-card-actions>
-          <v-spacer />
           <v-btn :disabled="loading" @click="onCloseClick" color="blue darken-1" text>
             Cancel
           </v-btn>
@@ -57,6 +56,17 @@
               mdi-content-save
             </v-icon>
             Save
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            @click="onDeleteClick"
+            color="error darken-1"
+            text
+          >
+            <v-icon left>
+              mdi-delete
+            </v-icon>
+            Delete
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -121,6 +131,12 @@ export default {
     },
     onSaveClick () {
       this.$emit('saveClick', {
+        data: this.data,
+        feature: this.feature
+      })
+    },
+    onDeleteClick () {
+      this.$emit('deleteClick', {
         data: this.data,
         feature: this.feature
       })

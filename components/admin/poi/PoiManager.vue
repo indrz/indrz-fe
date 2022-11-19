@@ -7,8 +7,9 @@
       @floorChange="onMapFloorChange"
       @editPoi="onEditPoi"
       @updatePoiCoord="onUpdatePoiCoord"
-      @saveSinglePoi="saveAddPoi"
+      @saveAddPoi="saveAddPoi"
       @saveEditPoi="saveEditPoi"
+      @deletePoi="deletePoi"
       @cancelChanges="cleanupAndRemoveInteraction(false)"
     />
     <div class="poi">
@@ -42,7 +43,7 @@
       ref="floorChanger"
       @floorClick="onFloorClick"
     />
-    <action-buttons />
+    <action-buttons @action="handleAction" />
     <v-dialog
       v-model="unsavedChanges"
       persistent
@@ -124,24 +125,19 @@ export default {
         this.$refs.map.onPoiLoad(data);
       }
     });
-    this.$root.$on('deletePoi', this.deletePoi);
+    this.$root.$on('deletePois', this.deletePois);
     this.mapComp = this.$refs.map;
   },
 
   methods: {
     setSelectedPoiCategory (poiCategory) {
-      const mapComp = this.mapComp;
       this.selectedPoiCategory = poiCategory;
 
       if (!this.selectedPoiCategory) {
         this.cleanupAndRemoveInteraction(true);
         return;
       }
-      if (
-        mapComp.newPois.length ||
-        mapComp.removePois.length ||
-        mapComp.editPois.length
-      ) {
+      if (this.changes) {
         this.unsavedChanges = true;
       } else {
         this.$refs.map.removeInteraction(true);
@@ -201,17 +197,21 @@ export default {
           break;
       }
     },
-    saveAddPois (force) {
-      this.mapComp.newPois.forEach(async (newPoi) => {
-        await this.saveAddSinglePoi(newPoi);
-      });
+    async saveAddPois (force) {
+      const newPois = this.mapComp.newPois;
+
+      for (let i = 0; i < newPois.length; i++) {
+        await this.addSinglePoi(newPois[i]);
+      }
+
       this.updateTreeAfterAddPoi(force);
     },
     async saveAddPoi (poiData) {
-      await this.saveAddSinglePoi(poiData);
+      await this.addSinglePoi(poiData);
+
       this.updateTreeAfterAddPoi(true);
     },
-    async saveAddSinglePoi (poiData) {
+    async addSinglePoi (poiData) {
       await api.postRequest({
         endPoint: 'poi/',
         method: 'POST',
@@ -247,6 +247,7 @@ export default {
     },
     async saveEditPoi (poi, properties) {
       await this.saveEditSinglePoi(poi, properties);
+
       this.updateTreeAfterEditPoi(Number(poi.getProperties().category));
     },
     async saveEditSinglePoi (poi, properties) {
@@ -302,36 +303,34 @@ export default {
       }
       this.cleanupAndRemoveInteraction();
     },
-    deletePoi (selectedPoi) {
+    async deletePois () {
       if (!this.mapComp.removePois.length) {
         return;
       }
-      const functions = [];
 
-      this.mapComp.removePois.forEach((poi) => {
-        functions.push(
-          api.postRequest({
-            endPoint: `poi/${poi.getId()}`,
-            method: 'DELETE',
-            data: {}
-          }, {
-            baseApiUrl: process.env.BASE_API_URL,
-            token: process.env.TOKEN
-          })
-        );
+      const removePois = this.mapComp.removePois;
+
+      for (let i = 0; i < removePois.length; i++) {
+        await this.deleteSinglePoi(removePois[i]);
+      }
+
+      this.updateTreeAfterEditPoi(Number(this.mapComp.removePois[0].getProperties().category));
+    },
+
+    async deletePoi (poi) {
+      await this.deleteSinglePoi(poi);
+
+      this.updateTreeAfterEditPoi(Number(poi.getProperties().category));
+    },
+    async deleteSinglePoi (poi) {
+      await api.postRequest({
+        endPoint: `poi/${poi.getId()}`,
+        method: 'DELETE',
+        data: {}
+      }, {
+        baseApiUrl: process.env.BASE_API_URL,
+        token: process.env.TOKEN
       });
-      Promise.all(functions)
-        .then((response) => {
-          const treeComp = this.$refs.poiTree;
-
-          treeComp.forceReloadNode = true;
-          this.initialPoiCatId = Number(this.mapComp.removePois[0].getProperties().category);
-
-          if (!this.unsavedChanges) {
-            treeComp.loadDataToPoiTree();
-          }
-          this.cleanupAndRemoveInteraction();
-        });
     },
     cleanupAndRemoveInteraction (clearAll = false) {
       this.unsavedChanges = false;
@@ -340,6 +339,13 @@ export default {
 
       if (!clearAll) {
         this.$refs.map.onPoiLoad(this.lastLoadedData);
+      }
+    },
+    handleAction (actionName) {
+      if (this.changes) {
+        this.unsavedChanges = true;
+      } else {
+        this.mapComp[actionName]();
       }
     }
   }

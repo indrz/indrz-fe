@@ -55,6 +55,7 @@
       ref="attributesOverlay"
       @closeClick="closeAttributePopup"
       @saveClick="saveAttributes"
+      @deleteClick="deleteAttribute"
     />
   </div>
 </template>
@@ -140,20 +141,11 @@ export default {
   async mounted () {
     await this.loadFloors();
     this.initializeMap();
-    this.initializeEventHandlers();
   },
   methods: {
     ...mapActions({
       loadFloors: 'floor/LOAD_FLOORS'
     }),
-    initializeEventHandlers () {
-      this.$root.$on('addPoiClick', this.addInteractions);
-      this.$root.$on('editPoiClick', () => {
-        this.currentMode = this.mode.edit;
-      });
-      this.$root.$on('deletePoiClick', this.enableDeletePoi);
-      this.$root.$on('cancelPoiClick', this.removeInteraction);
-    },
     initializeMap () {
       this.popup = new Overlay({
         element: document.getElementById('attributes-overlay'),
@@ -191,6 +183,15 @@ export default {
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
     },
+    addPoiClick () {
+      this.addInteractions();
+    },
+    editPoiClick () {
+      this.currentMode = this.mode.edit;
+    },
+    deletePoiClick () {
+      this.enableDeletePoi();
+    },
     onMapClick (evt) {
       const pixel = evt.pixel;
       let feature = this.map.getFeaturesAtPixel(pixel);
@@ -221,7 +222,7 @@ export default {
               onActiveLayer = false;
             }
 
-            feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/images/selected.png', onActiveLayer));
+            feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/media/poi_icons/selected_pin.png', onActiveLayer));
             this.selectedPoi = feature;
             if (this.currentMode && this.currentMode === this.mode.remove) {
               this.removePois.push(this.selectedPoi);
@@ -294,7 +295,7 @@ export default {
       this.currentMode = this.mode.remove;
     },
     onDeletePoiClick () {
-      this.$root.$emit('deletePoi');
+      this.$root.$emit('deletePois');
       this.deleteConfirm = false;
     },
     editInteraction () {
@@ -441,6 +442,8 @@ export default {
         return;
       }
       const coordinate = drawEvent.feature.getGeometry().getCoordinates();
+      const mapLayers = this.map.getLayers().getArray().slice();
+
       const data = {
         floor: 1,
         name: this.selectedPoiCategory.name,
@@ -463,7 +466,8 @@ export default {
             }
           }
         }),
-        olUid: drawEvent.feature.ol_uid
+        olUid: drawEvent.feature.ol_uid,
+        layerOlUid: mapLayers[mapLayers.length - 1].ol_uid
       };
       this.newPois.push(data);
       this.removeInteraction();
@@ -524,6 +528,21 @@ export default {
       } else {
         this.$emit('saveAddPoi', attributes.data)
       }
+    },
+    deleteAttribute (attributes) {
+      if (attributes.feature) {
+        this.$emit('deletePoi', attributes.feature)
+      } else {
+        const mapLayers = this.map.getLayers().getArray().slice();
+        this.newPois = this.newPois.filter(poi => poi.olUid !== attributes.data.olUid);
+
+        mapLayers.forEach((layer) => {
+          if (layer.ol_uid === attributes.data.layerOlUid) {
+            this.map.removeLayer(layer);
+          }
+        });
+      }
+      this.closeAttributePopup();
     },
     openAttributesPopup (data, coordinate, feature) {
       this.$refs.attributesOverlay.setData(data, feature);
