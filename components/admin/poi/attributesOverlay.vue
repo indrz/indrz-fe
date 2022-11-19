@@ -42,12 +42,11 @@
         </v-card-text>
         <v-divider class="mt-5" />
         <v-card-actions>
-          <v-btn :disabled="loading" @click="onCloseClick" color="blue darken-1" text>
+          <v-btn @click="onCloseClick" color="blue darken-1" text>
             Cancel
           </v-btn>
           <v-btn
-            :disabled="loading || !valid"
-            :loading="loading"
+            :disabled="!valid"
             @click="onSaveClick"
             color="blue darken-1"
             text
@@ -81,10 +80,9 @@ export default {
   },
   data () {
     return {
-      loading: false,
       valid: true,
       requiredRule: [
-        v => !!v || 'This field is required.'
+        v => (v && v.trim().length > 0) || 'This field is required.'
       ],
       data: {
         type: Object,
