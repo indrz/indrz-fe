@@ -75,13 +75,13 @@ export default {
   },
   methods: {
     onAddPoiClick () {
-      this.$root.$emit('addPoiClick');
+      this.$emit('action', 'addPoiClick');
     },
     onEditPoiClick () {
-      this.$root.$emit('editPoiClick');
+      this.$emit('action', 'editPoiClick');
     },
     onDeletePoiClick () {
-      this.$root.$emit('deletePoiClick');
+      this.$emit('action', 'deletePoiClick');
     }
   }
 };
