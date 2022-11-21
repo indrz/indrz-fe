@@ -325,6 +325,8 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     param = 'bookId';
   } else if (globalPopupInfo.poiCatId) {
     param = 'poiCatId';
+  } else if (globalPopupInfo.src === 'wms_building') {
+    param = 'wmsBuilding';
   } else if (globalSearchInfo.searchText) {
     param = 'search';
   } else if (globalPopupInfo.src === 'wms') {
@@ -392,6 +394,9 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
         singlePoiUrl,
         poiCatUrl: url
       };
+    case 'wmsBuilding':
+      url = hostUrl + '?q=' + globalPopupInfo.name;
+      break;
     case 'wmsInfo':
       if (globalPopupInfo.room_code) {
         url = hostUrl + '?q=' + globalPopupInfo.room_code;
