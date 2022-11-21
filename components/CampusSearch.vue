@@ -175,6 +175,7 @@ export default {
       searchResult: [],
       apiResponse: [],
       isLoading: false,
+      isPristine: true,
       term$: new Subject(),
       model: null,
       search: null,
@@ -191,6 +192,9 @@ export default {
   },
   watch: {
     search (text) {
+      if (!text) {
+        this.isPristine = true;
+      }
       this.term$.next(text);
     }
   },
@@ -201,9 +205,12 @@ export default {
       .pipe(
         filter(term => (term && term.length > 2 && !this.stopSearch)),
         debounceTime(500),
-        distinctUntilChanged(),
+        distinctUntilChanged((prevTerm, currentTerm) => {
+          return prevTerm === currentTerm && !this.isPristine;
+        }),
         switchMap((term) => {
           this.isLoading = true;
+          this.isPristine = false;
           return api.request({
             endPoint: 'search/' + term
           }, {
