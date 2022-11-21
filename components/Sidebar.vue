@@ -88,9 +88,9 @@ export default {
       }
     },
     initialPoiCatId: {
-      type: Number,
+      type: Array,
       default: function () {
-        return null;
+        return [];
       }
     },
     initialPoiId: {

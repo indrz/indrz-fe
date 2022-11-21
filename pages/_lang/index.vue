@@ -186,7 +186,7 @@ export default {
       if (isPoiId) {
         this.initialPoiId = poiCatId;
       } else {
-        this.initialPoiCatId = Number(poiCatId);
+        this.initialPoiCatId = poiCatId.split(',').map(id => Number.parseInt(id, 10)).filter(id => !Number.isNaN(id));
       }
     },
     onOpenPoiToPoiRoute (startPoiId, endPoiId) {

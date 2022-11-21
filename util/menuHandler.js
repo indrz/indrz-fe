@@ -105,7 +105,8 @@ const handlePdf = (mapInfo) => {
 };
 
 const handleShare = (mapInfo) => {
-  const url = MapHandler.updateUrl('map', mapInfo.map, mapInfo.globalPopupInfo, mapInfo.globalRouteInfo, mapInfo.globalSearchInfo, mapInfo.activeFloorNum);
+  const url = MapHandler.updateUrl('map', mapInfo, mapInfo.globalPopupInfo, mapInfo.globalRouteInfo, mapInfo.globalSearchInfo, mapInfo.activeFloorNum);
+
   const shareOverlay = mapInfo.$refs.shareOverlay;
   if (typeof url === 'object' && url.type === 'poi') {
     shareOverlay.setPoiShareLink(url);
