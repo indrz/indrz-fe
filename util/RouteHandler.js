@@ -92,6 +92,8 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       null,
       env.locale
     );
+  } else {
+    setNoRouteFoundText();
   }
   return routeUrl;
 };
