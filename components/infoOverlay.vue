@@ -24,7 +24,7 @@
         </v-row>
       </div>
       <div class="mt-5">
-        <v-row :class="{'xs-popup': multiRowButton}" no-gutters align="center" justify="left">
+        <v-row :class="{'xs-popup': multiRowButton}" no-gutters align="center">
           <div>
             <v-tooltip top>
               <template v-slot:activator="{ on }">
