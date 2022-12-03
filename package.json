@@ -5,7 +5,7 @@
   "author": "GOMOGI Michael Diener",
   "private": true,
   "scripts": {
-    "dev": "nuxt --open",
+    "dev": "export NODE_OPTIONS=--openssl-legacy-provider && nuxt --open",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
@@ -19,7 +19,7 @@
     "html-to-image": "^1.7.0",
     "jspdf": "^2.3.1",
     "lodash": "^4.17.15",
-    "nuxt": "^2.0.0",
+    "nuxt": "2.15.8",
     "ol": "^6.6.1",
     "qrcode": "^1.4.4",
     "query-string": "^6.8.3",
