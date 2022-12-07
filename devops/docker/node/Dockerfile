@@ -1,4 +1,4 @@
-FROM node:13-alpine
+FROM node:43-alpine
 
 ENV APP_ROOT /src
 
@@ -15,8 +15,8 @@ COPY . /usr/src/app/
 
 # build necessary, even if no static files are needed,
 # since it builds the server as well
-RUN npm install
-RUN npm run build
+RUN yarn install
+RUN yarn run generate
 
 ENV HOST 0.0.0.0
 
@@ -24,4 +24,4 @@ ENV HOST 0.0.0.0
 EXPOSE 3000
 
 # start the app
-CMD [ "npm", "start" ]
+CMD [ "yarn", "start" ]
