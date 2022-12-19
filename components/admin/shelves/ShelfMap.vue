@@ -86,7 +86,7 @@ export default {
   },
   methods: {
     initializeMap () {
-      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
+      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
 
       this.view = view;
       this.map = map;

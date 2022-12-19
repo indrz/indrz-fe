@@ -100,7 +100,7 @@ export default {
       floors: [],
       newPoiCollection: [],
       editPoi: null,
-      initialPoiCatId: null,
+      initialPoiCatId: [],
       unsavedChanges: false,
       mapComp: null,
       lastLoadedData: {}
@@ -224,7 +224,7 @@ export default {
     updateTreeAfterAddPoi (force) {
       const treeComp = this.$refs.poiTree;
       treeComp.forceReloadNode = force;
-      this.initialPoiCatId = Number(this.mapComp.newPois[0].category);
+      this.initialPoiCatId = [Number(this.mapComp.newPois[0].category)];
       if (force) {
         treeComp.loadDataToPoiTree();
       }
@@ -287,7 +287,7 @@ export default {
       const treeComp = this.$refs.poiTree;
 
       treeComp.forceReloadNode = true;
-      this.initialPoiCatId = poiCatId;
+      this.initialPoiCatId = [poiCatId];
 
       if (!this.unsavedChanges) {
         treeComp.loadDataToPoiTree();
