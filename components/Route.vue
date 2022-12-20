@@ -98,7 +98,7 @@ export default {
   },
   methods: {
     onSearchSelect (selectedItem) {
-      if (!selectedItem) {
+      if (!selectedItem || !selectedItem.data) {
         return;
       }
       const currentSelection = { ...selectedItem };
