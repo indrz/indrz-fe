@@ -2,5 +2,7 @@
 include:
   template: Jobs/Code-Quality.gitlab-ci.yml
 code_quality:
+  variables:
+    REPORT_FORMAT: html
   artifacts:
-    paths: [gl-code-quality-report.json]
+    paths: [gl-code-quality-report.hmtl]
