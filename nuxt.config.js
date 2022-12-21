@@ -1,4 +1,7 @@
 import colors from 'vuetify/es5/util/colors';
+const fs = require('fs')
+const packageJson = fs.readFileSync('./package.json')
+const appVersion = JSON.parse(packageJson).version || '1.0.0';
 
 export default {
   ssr: false,
@@ -71,6 +74,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   publicRuntimeConfig: {
+    APP_VERSION: appVersion,
     BASE_URL: process.env.BASE_URL,
     BASE_API_URL: process.env.BASE_API_URL,
     BASE_WMS_URL: process.env.BASE_WMS_URL,
