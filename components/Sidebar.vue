@@ -56,8 +56,11 @@
       </v-list-item-group>
     </v-list>
     <div>
-      <p class="font-weight-regular caption" style="padding: 8px 16px">
+      <p class="font-weight-regular caption" style="padding: 8px 16px 0px">
         Powered by <a href="https://indrz.com/#contact" target="_blank">indrz.com</a>
+      </p>
+      <p class="font-weight-regular caption" style="padding: 0px 16px">
+        Version: {{ appVersion }}
       </p>
     </div>
   </div>
@@ -187,6 +190,9 @@ export default {
           text: this.locale.scanQRShowMyLocation
         }
       ];
+    },
+    appVersion () {
+      return env.APP_VERSION
     }
   },
 
