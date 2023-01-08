@@ -5,12 +5,12 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         color="rgba(0,60,136,0.5)"
         min-width="95px"
         class="pa-2"
         small
         dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -35,16 +35,16 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            @click="onDeletePoiClick"
             color="error darken-1"
             text
+            @click="onDeletePoiClick"
           >
             Yes
           </v-btn>
           <v-btn
-            @click="deleteConfirm = false"
             color="blue darken-1"
             text
+            @click="deleteConfirm = false"
           >
             Cancel
           </v-btn>
@@ -71,7 +71,7 @@ import Overlay from 'ol/Overlay';
 import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
-import AttributesOverlay from './attributesOverlay.vue'
+import AttributesOverlay from './AttributesOverlay.vue'
 import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import 'ol/ol.css';
@@ -519,10 +519,12 @@ export default {
       this.popup.setPosition(undefined)
     },
     saveAttributes (attributes) {
+      const { feature, data, imageFile } = attributes;
+
       if (attributes.feature) {
-        this.$emit('saveEditPoi', attributes.feature, attributes.data)
+        this.$emit('saveEditPoi', feature, data, imageFile)
       } else {
-        this.$emit('saveAddPoi', attributes.data)
+        this.$emit('saveAddPoi', data, imageFile)
       }
     },
     deleteAttribute (attributes) {

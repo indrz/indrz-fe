@@ -1,6 +1,6 @@
 <template>
   <div id="attributes-overlay" :style="{'min-width': popupSize.width}" scrollable class="ol-popup indrz-popup">
-    <div :style="{'max-height': popupSize.height}">
+    <div>
       <v-card flat>
         <v-toolbar
           dense
@@ -11,7 +11,7 @@
             {{ title }}
           </div> -->
           <v-spacer />
-          <v-btn @click="onCloseClick" icon>
+          <v-btn icon @click="onCloseClick">
             <v-icon>
               mdi-window-close
             </v-icon>
@@ -34,6 +34,14 @@
                     v-model="data.enabled"
                     label="enabled"
                     hide-details
+                    dense
+                  />
+                  <v-file-input
+                    v-model="imageFile"
+                    accept="image/*"
+                    label="Image"
+                    show-size
+                    :rules="imageUploadRules"
                   />
                 </v-col>
               </v-row>
@@ -42,14 +50,14 @@
         </v-card-text>
         <v-divider class="mt-5" />
         <v-card-actions>
-          <v-btn @click="onCloseClick" color="blue darken-1" text>
+          <v-btn color="blue darken-1" text @click="onCloseClick">
             Cancel
           </v-btn>
           <v-btn
             :disabled="!valid"
-            @click="onSaveClick"
             color="blue darken-1"
             text
+            @click="onSaveClick"
           >
             <v-icon left>
               mdi-content-save
@@ -58,9 +66,9 @@
           </v-btn>
           <v-spacer />
           <v-btn
-            @click="onDeleteClick"
             color="error darken-1"
             text
+            @click="onDeleteClick"
           >
             <v-icon left>
               mdi-delete
@@ -84,6 +92,9 @@ export default {
       requiredRule: [
         v => (v && v.trim().length > 0) || 'This field is required.'
       ],
+      imageUploadRules: [
+        value => !value || value.size < (20 * 1024000) || 'Image size should be less than 20 MB!'
+      ],
       data: {
         type: Object,
         default: function () {
@@ -95,6 +106,7 @@ export default {
           };
         }
       },
+      imageFile: null,
       feature: {
         type: Object,
         default: function () {
@@ -105,22 +117,10 @@ export default {
   },
   computed: {
     popupSize () {
-      const size = {
+      return {
         width: '354px',
-        height: '366px'
+        height: this.feature ? '395px' : '326px'
       };
-
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-          size.width = '150px';
-          size.height = '162px';
-          break;
-        case 'sm':
-          size.width = '270px';
-          size.height = '282px';
-          break;
-      }
-      return size;
     }
   },
   methods: {
@@ -130,7 +130,8 @@ export default {
     onSaveClick () {
       this.$emit('saveClick', {
         data: this.data,
-        feature: this.feature
+        feature: this.feature,
+        imageFile: this.imageFile
       })
     },
     onDeleteClick () {
@@ -146,6 +147,7 @@ export default {
       } else {
         this.feature = null;
       }
+      this.imageFile = null;
     }
   }
 };
