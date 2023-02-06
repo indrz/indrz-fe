@@ -42,7 +42,32 @@
                     label="Image"
                     show-size
                     :rules="imageUploadRules"
+                    prepend-icon=""
+                    append-icon="mdi-plus"
                   />
+                  <v-list dense>
+                    <div v-for="(image, index) in data.images" :key="image.url">
+                      <v-divider
+                        v-if="index !== 0"
+                        :key="`${index}-divider`"
+                      />
+                      <v-list-item
+                        class="pl-0"
+                      >
+                        <v-list-item-content>
+                          <v-list-item-title v-text="image.name" />
+                        </v-list-item-content>
+
+                        <v-list-item-action>
+                          <v-btn icon x-small @click="onPoiImageDeleteClick(image.url)">
+                            <v-icon color="error darken-1">
+                              mdi-delete
+                            </v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </div>
+                  </v-list>
                 </v-col>
               </v-row>
             </v-container>
@@ -102,7 +127,8 @@ export default {
             name: '',
             name_en: '',
             name_de: '',
-            enabled: true
+            enabled: true,
+            images: []
           };
         }
       },
@@ -137,6 +163,12 @@ export default {
     onDeleteClick () {
       this.$emit('deleteClick', {
         data: this.data,
+        feature: this.feature
+      })
+    },
+    onPoiImageDeleteClick (imageUrl) {
+      this.$emit('poiImageDeleteClick', {
+        url: imageUrl,
         feature: this.feature
       })
     },

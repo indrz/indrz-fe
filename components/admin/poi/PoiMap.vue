@@ -56,6 +56,7 @@
       @closeClick="closeAttributePopup"
       @saveClick="saveAttributes"
       @deleteClick="deleteAttribute"
+      @poiImageDeleteClick="poiImageDeleteClick"
     />
   </div>
 </template>
@@ -72,6 +73,7 @@ import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
 import AttributesOverlay from './AttributesOverlay.vue'
+// import api from '~/util/api';
 import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import 'ol/ol.css';
@@ -542,8 +544,35 @@ export default {
       }
       this.closeAttributePopup();
     },
-    openAttributesPopup (data, coordinate, feature) {
-      this.$refs.attributesOverlay.setData(data, feature);
+    poiImageDeleteClick (attributes) {
+      console.log(attributes)
+      // todo write the delete api and refresh the image list
+    },
+    getPoiImages (poiId) {
+      /* try {
+        const images = await api.request({
+          endPoint: `poi/images/${poiId}`
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+        console.log(images)
+      } catch (e) {
+        console.log(e)
+      } */
+      const dummyImages = [
+        'http://indrz:8000/media/poi_images/372-200x300-blur_2.jpg',
+        'http://indrz:8000/media/poi_images/378-200x300-grayscale.jpg'
+      ];
+      const files = dummyImages.map(img => ({
+        name: img.split('/').pop(),
+        url: img
+      }));
+      return files;
+    },
+    async openAttributesPopup (data, coordinate, feature) {
+      const images = await this.getPoiImages(feature.getId())
+      this.$refs.attributesOverlay.setData({ ...data, images }, feature);
       this.popup.setPosition(coordinate);
       this.popup.setOffset([0, -40]);
     }
