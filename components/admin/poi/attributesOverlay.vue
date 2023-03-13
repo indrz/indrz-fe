@@ -45,8 +45,11 @@
                     prepend-icon=""
                     append-icon="mdi-plus"
                   />
-                  <v-list dense>
-                    <div v-for="(image, index) in data.images" :key="image.url">
+                  <v-list
+                    style="max-height: 120px"
+                    class="overflow-y-auto"
+                  >
+                    <div v-for="(image, index) in data.images" :key="image.id">
                       <v-divider
                         v-if="index !== 0"
                         :key="`${index}-divider`"
@@ -55,11 +58,11 @@
                         class="pl-0"
                       >
                         <v-list-item-content>
-                          <v-list-item-title v-text="image.name" />
+                          <v-list-item-title v-text="image.alt_text" />
                         </v-list-item-content>
 
                         <v-list-item-action>
-                          <v-btn icon x-small @click="onPoiImageDeleteClick(image.url)">
+                          <v-btn icon x-small @click="onPoiImageDeleteClick(image.id)">
                             <v-icon color="error darken-1">
                               mdi-delete
                             </v-icon>
@@ -166,9 +169,9 @@ export default {
         feature: this.feature
       })
     },
-    onPoiImageDeleteClick (imageUrl) {
+    onPoiImageDeleteClick (id) {
       this.$emit('poiImageDeleteClick', {
-        url: imageUrl,
+        id,
         feature: this.feature
       })
     },
@@ -180,6 +183,9 @@ export default {
         this.feature = null;
       }
       this.imageFile = null;
+    },
+    setImages (images) {
+      this.data.images = images || [];
     }
   }
 };
