@@ -55,6 +55,7 @@
       ref="attributesOverlay"
       @closeClick="closeAttributePopup"
       @saveClick="saveAttributes"
+      @uploadImage="uploadPoiImage"
       @deleteClick="deleteAttribute"
       @poiImageDeleteClick="poiImageDeleteClick"
     />
@@ -524,10 +525,59 @@ export default {
       const { feature, data, imageFile } = attributes;
 
       if (attributes.feature) {
-        this.$emit('saveEditPoi', feature, data, imageFile)
+        // we can remove the imageFile here
+        this.$emit('saveEditPoi', feature, data)
       } else {
-        this.$emit('saveAddPoi', data, imageFile)
+        this.$emit('saveAddPoi', data, imageFile, (poiId, file) => {
+          this.uploadPoiImage({ poiId, imageFile: file })
+        })
       }
+    },
+    async uploadPoiImage ({ poiId, imageFile }) {
+      const blob = await this.readFileAsBlob(imageFile);
+      const fileStream = this.createReadableStream(blob);
+
+      try {
+        await api.postRequest({
+          endPoint: 'poi/images/',
+          method: 'POST',
+          data: {
+            poi: poiId,
+            images: fileStream,
+            sort_order: '1',
+            is_default: 'true',
+            alt_text: 'super image'
+          }
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+        await this.refreshImageList(poiId);
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Image upload failed');
+      }
+    },
+    readFileAsBlob (file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(file);
+      }).then(buffer => new Blob([buffer], { type: file.type }));
+    },
+    createReadableStream (blob) {
+      const stream = new ReadableStream({
+        start (controller) {
+          const reader = new FileReader();
+          reader.onload = () => {
+            controller.enqueue(reader.result);
+            controller.close();
+          };
+          reader.readAsArrayBuffer(blob);
+        }
+      });
+
+      return stream;
     },
     deleteAttribute (attributes) {
       if (attributes.feature) {
@@ -555,16 +605,13 @@ export default {
           token: process.env.TOKEN
         });
 
-        const response = await this.getPoi(feature.getId());
-        const images = response?.data?.properties?.images;
-
-        this.$refs.attributesOverlay.setImages(images);
+        await this.refreshImageList(feature.getId());
       } catch (e) {
         this.$store.commit('SET_SNACKBAR', e?.message || 'Image delete failed');
       }
     },
     openAttributesPopup (data, coordinate, feature) {
-      const images = feature.getProperties().images
+      const images = feature ? feature.getProperties().images : [];
       this.$refs.attributesOverlay.setData({ ...data, images }, feature);
       this.popup.setPosition(coordinate);
       this.popup.setOffset([0, -40]);
@@ -580,6 +627,12 @@ export default {
       } catch (e) {
         this.$store.commit('SET_SNACKBAR', e?.message || 'Fetch poi failed');
       }
+    },
+    async refreshImageList (poiId) {
+      const response = await this.getPoi(poiId);
+      const images = response?.data?.properties?.images;
+
+      this.$refs.attributesOverlay?.setImages(images);
     }
   }
 };

@@ -37,6 +37,7 @@
                     dense
                   />
                   <v-file-input
+                    ref="uploadImage"
                     v-model="imageFile"
                     accept="image/*"
                     label="Image"
@@ -44,6 +45,7 @@
                     :rules="imageUploadRules"
                     prepend-icon=""
                     append-icon="mdi-plus"
+                    @change="onImageUpload"
                   />
                   <v-list
                     style="max-height: 120px"
@@ -163,6 +165,18 @@ export default {
         imageFile: this.imageFile
       })
     },
+    onImageUpload () {
+      if (!this.imageFile) {
+        return;
+      }
+      if (this.feature) {
+        this.$emit('uploadImage', {
+          poiId: this.feature.getId(),
+          imageFile: this.imageFile
+        });
+        this.imageFile = null;
+      }
+    },
     onDeleteClick () {
       this.$emit('deleteClick', {
         data: this.data,
@@ -186,6 +200,8 @@ export default {
     },
     setImages (images) {
       this.data.images = images || [];
+      this.imageFile = null;
+      this.$refs.uploadImage.reset();
     }
   }
 };
