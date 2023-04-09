@@ -534,16 +534,13 @@ export default {
       }
     },
     async uploadPoiImage ({ poiId, imageFile }) {
-      const blob = await this.readFileAsBlob(imageFile);
-      const fileStream = this.createReadableStream(blob);
-
       try {
         await api.postRequest({
           endPoint: 'poi/images/',
           method: 'POST',
           data: {
             poi: poiId,
-            images: fileStream,
+            image: imageFile,
             sort_order: '1',
             is_default: 'true',
             alt_text: 'super image'
@@ -556,28 +553,6 @@ export default {
       } catch (e) {
         this.$store.commit('SET_SNACKBAR', e?.message || 'Image upload failed');
       }
-    },
-    readFileAsBlob (file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsArrayBuffer(file);
-      }).then(buffer => new Blob([buffer], { type: file.type }));
-    },
-    createReadableStream (blob) {
-      const stream = new ReadableStream({
-        start (controller) {
-          const reader = new FileReader();
-          reader.onload = () => {
-            controller.enqueue(reader.result);
-            controller.close();
-          };
-          reader.readAsArrayBuffer(blob);
-        }
-      });
-
-      return stream;
     },
     deleteAttribute (attributes) {
       if (attributes.feature) {
