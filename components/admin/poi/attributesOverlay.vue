@@ -60,7 +60,7 @@
                         class="pl-0"
                       >
                         <v-list-item-content>
-                          <v-list-item-title v-text="image.alt_text" />
+                          <v-list-item-title v-text="imageName(image)" />
                         </v-list-item-content>
 
                         <v-list-item-action>
@@ -202,6 +202,12 @@ export default {
       this.data.images = images || [];
       this.imageFile = null;
       this.$refs.uploadImage.reset();
+    },
+    imageName (image) {
+      if (image.image) {
+        return image.image.split('/').pop()
+      }
+      return image.alt_text
     }
   }
 };
