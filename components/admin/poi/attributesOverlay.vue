@@ -45,6 +45,7 @@
                     :rules="imageUploadRules"
                     prepend-icon=""
                     append-icon="mdi-plus"
+                    :disabled="isImageListLoading"
                     @change="onImageUpload"
                   />
                   <v-list
@@ -107,13 +108,24 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+      <confirm-dialog
+        :show="showConfirmDelete"
+        :busy="isImageListLoading"
+        @cancelClick="showConfirmDelete = false"
+        @confirmClick="deletePoiImage"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import ConfirmDialog from '@/components/ConfirmDialog';
+
 export default {
   name: 'AttributesOverlay',
+  components: {
+    ConfirmDialog
+  },
   props: {
   },
   data () {
@@ -125,6 +137,9 @@ export default {
       imageUploadRules: [
         value => !value || value.size < (20 * 1024000) || 'Image size should be less than 20 MB!'
       ],
+      isImageListLoading: false,
+      showConfirmDelete: false,
+      selectedPoiImageId: null,
       data: {
         type: Object,
         default: function () {
@@ -170,6 +185,7 @@ export default {
         return;
       }
       if (this.feature) {
+        this.isImageListLoading = true;
         this.$emit('uploadImage', {
           poiId: this.feature.getId(),
           imageFile: this.imageFile
@@ -183,11 +199,16 @@ export default {
         feature: this.feature
       })
     },
-    onPoiImageDeleteClick (id) {
+    deletePoiImage () {
+      this.isImageListLoading = true;
       this.$emit('poiImageDeleteClick', {
-        id,
+        id: this.selectedPoiImageId,
         feature: this.feature
       })
+    },
+    onPoiImageDeleteClick (imageId) {
+      this.showConfirmDelete = true;
+      this.selectedPoiImageId = imageId;
     },
     setData (data, feature) {
       this.data = { ...data };
@@ -202,6 +223,9 @@ export default {
       this.data.images = images || [];
       this.imageFile = null;
       this.$refs.uploadImage.reset();
+      this.isImageListLoading = false;
+      this.selectedPoiImageId = null;
+      this.showConfirmDelete = false;
     },
     imageName (image) {
       if (image.image) {
