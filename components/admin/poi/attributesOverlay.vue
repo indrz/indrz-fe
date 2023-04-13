@@ -45,7 +45,7 @@
                     :rules="imageUploadRules"
                     prepend-icon=""
                     append-icon="mdi-plus"
-                    :disabled="isImageListLoading"
+                    :disabled="isLoading"
                     @change="onImageUpload"
                   />
                   <v-list
@@ -99,7 +99,7 @@
           <v-btn
             color="error darken-1"
             text
-            @click="onDeleteClick"
+            @click="onDeletePoiClick"
           >
             <v-icon left>
               mdi-delete
@@ -109,10 +109,16 @@
         </v-card-actions>
       </v-card>
       <confirm-dialog
-        :show="showConfirmDelete"
-        :busy="isImageListLoading"
-        @cancelClick="showConfirmDelete = false"
+        :show="showConfirmPoiImageDelete"
+        :busy="isLoading"
+        @cancelClick="showConfirmPoiImageDelete = false"
         @confirmClick="deletePoiImage"
+      />
+      <confirm-dialog
+        :show="showConfirmPoiDelete"
+        :busy="isLoading"
+        @cancelClick="showConfirmPoiDelete = false"
+        @confirmClick="deletePoi"
       />
     </div>
   </div>
@@ -137,8 +143,9 @@ export default {
       imageUploadRules: [
         value => !value || value.size < (20 * 1024000) || 'Image size should be less than 20 MB!'
       ],
-      isImageListLoading: false,
-      showConfirmDelete: false,
+      isLoading: false,
+      showConfirmPoiDelete: false,
+      showConfirmPoiImageDelete: false,
       selectedPoiImageId: null,
       data: {
         type: Object,
@@ -185,7 +192,7 @@ export default {
         return;
       }
       if (this.feature) {
-        this.isImageListLoading = true;
+        this.isLoading = true;
         this.$emit('uploadImage', {
           poiId: this.feature.getId(),
           imageFile: this.imageFile
@@ -193,21 +200,26 @@ export default {
         this.imageFile = null;
       }
     },
-    onDeleteClick () {
+    deletePoi () {
+      this.isLoading = true;
       this.$emit('deleteClick', {
         data: this.data,
         feature: this.feature
       })
+      this.showConfirmPoiDelete = false;
+    },
+    onDeletePoiClick () {
+      this.showConfirmPoiDelete = true;
     },
     deletePoiImage () {
-      this.isImageListLoading = true;
+      this.isLoading = true;
       this.$emit('poiImageDeleteClick', {
         id: this.selectedPoiImageId,
         feature: this.feature
       })
     },
     onPoiImageDeleteClick (imageId) {
-      this.showConfirmDelete = true;
+      this.showConfirmPoiImageDelete = true;
       this.selectedPoiImageId = imageId;
     },
     setData (data, feature) {
@@ -223,9 +235,9 @@ export default {
       this.data.images = images || [];
       this.imageFile = null;
       this.$refs.uploadImage.reset();
-      this.isImageListLoading = false;
+      this.isLoading = false;
       this.selectedPoiImageId = null;
-      this.showConfirmDelete = false;
+      this.showConfirmPoiImageDelete = false;
     },
     imageName (image) {
       if (image.image) {
