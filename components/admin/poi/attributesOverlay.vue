@@ -49,20 +49,24 @@
                     @change="onImageUpload"
                   />
                   <v-list
+                    dense
                     style="max-height: 120px"
                     class="overflow-y-auto"
                   >
-                    <div v-for="(image, index) in data.images" :key="image.id">
-                      <v-divider
+                    <div v-for="(image) in data.images" :key="image.id">
+                      <!-- <v-divider
                         v-if="index !== 0"
                         :key="`${index}-divider`"
-                      />
+                      /> -->
                       <v-list-item
                         class="pl-0"
                       >
-                        <v-list-item-content>
-                          <v-list-item-title v-text="imageName(image)" />
-                        </v-list-item-content>
+                        <v-alert
+                          color="success"
+                          class="white--text text-center pa-1 ma-0"
+                          width="100%"
+                          v-text="imageName(image)"
+                        />
 
                         <v-list-item-action>
                           <v-btn icon x-small @click="onPoiImageDeleteClick(image.id)">
