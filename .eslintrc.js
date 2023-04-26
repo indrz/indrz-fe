@@ -24,6 +24,7 @@ module.exports = {
     'unicorn/escape-case': 0,
     'vue/require-component-is': 0,
     'vue/no-unused-components': 0,
-    'vue/comment-directive': 0
+    'vue/comment-directive': 0,
+    'vue/no-v-text-v-html-on-component': 0
   }
 }

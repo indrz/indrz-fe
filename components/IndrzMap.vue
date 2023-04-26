@@ -5,11 +5,11 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         min-width="95px"
         class="pa-2 map-switcher"
         small
         dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -198,6 +198,9 @@ export default {
       await MapUtil.loadMapWithParams(this, query);
     },
     openIndrzPopup (properties, coordinate, feature) {
+      this.$emit('open-poi-drawer', {
+        feature: properties
+      })
       MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
@@ -214,6 +217,7 @@ export default {
       if (fromEvent) {
         this.$emit('clearSearch');
       }
+      this.$emit('open-poi-drawer', {})
     },
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;

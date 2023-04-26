@@ -7,6 +7,49 @@
     flat
   >
     <v-navigation-drawer
+      v-model="shouldShowPoiDrawer"
+      style="width: 350px"
+      fixed
+      app
+    >
+      <div style="ma-2">
+        <v-card
+          class="mt-4"
+          flat
+        >
+          <v-card-title>
+            <v-toolbar
+              :max-width="toolbarWidth"
+              dense
+              rounded
+              floating
+            >
+              <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
+              <template v-if="isSmallScreen">
+                <v-btn icon @click="showSearch = !showSearch">
+                  <v-icon v-if="!showSearch">
+                    mdi-magnify
+                  </v-icon>
+                  <v-icon v-if="showSearch">
+                    mdi-chevron-left
+                  </v-icon>
+                </v-btn>
+              </template>
+              <v-expand-transition>
+                <campus-search v-show="!isSmallScreen || showSearch" ref="searchComp" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
+              </v-expand-transition>
+            </v-toolbar>
+          </v-card-title>
+          <v-card-text class="mt-5">
+            <div>
+              <h2>What is Lorem Ipsum?</h2>
+              <p><strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+            </div>
+          </v-card-text>
+        </v-card>
+      </div>
+    </v-navigation-drawer>
+    <v-navigation-drawer
       v-model="drawer"
       style="width: 275px"
       fixed
@@ -30,15 +73,16 @@
       />
     </v-navigation-drawer>
     <v-toolbar
+      v-show="!shouldShowPoiDrawer"
       :max-width="toolbarWidth"
       dense
       rounded
       floating
       class="ma-2"
     >
-      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
       <template v-if="isSmallScreen">
-        <v-btn @click="showSearch = !showSearch" icon>
+        <v-btn icon @click="showSearch = !showSearch">
           <v-icon v-if="!showSearch">
             mdi-magnify
           </v-icon>
@@ -48,7 +92,7 @@
         </v-btn>
       </template>
       <v-expand-transition>
-        <campus-search ref="searchComp" v-show="!isSmallScreen || showSearch" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
+        <campus-search v-show="!isSmallScreen || showSearch" ref="searchComp" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
       </v-expand-transition>
     </v-toolbar>
     <indrz-map
@@ -59,6 +103,7 @@
       @openPoiTree="onOpenPoiTree"
       @openPoiToPoiRoute="onOpenPoiToPoiRoute"
       @showSearchResult="onShowSearchResult"
+      @open-poi-drawer="onOpenPoiDrawer"
     />
     <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
     <snack-bar />
@@ -86,6 +131,7 @@ export default {
     return {
       clipped: false,
       drawer: false,
+      poiDrawer: false,
       fixed: false,
       loading: true,
       items: [
@@ -118,6 +164,13 @@ export default {
     },
     toolbarWidth () {
       return this.isSmallScreen ? '280px' : '320px';
+    },
+    shouldShowPoiDrawer: {
+      get () {
+        return this.poiDrawer && !this.drawer;
+      },
+      set () {
+      }
     }
   },
 
@@ -211,6 +264,13 @@ export default {
     },
     onShowSearch () {
       this.showSearch = true;
+    },
+    onOpenPoiDrawer ({ feature }) {
+      console.log(feature)
+      this.poiDrawer = !!feature;
+      if (this.poiDrawer) {
+        this.drawer = false;
+      }
     }
   }
 };
@@ -220,8 +280,5 @@ export default {
   header {
     position: absolute;
     z-index: 6;
-  }
-  nav {
-    z-index: 7
   }
 </style>
