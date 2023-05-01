@@ -6,49 +6,7 @@
     fluid
     flat
   >
-    <v-navigation-drawer
-      v-model="shouldShowPoiDrawer"
-      style="width: 350px"
-      fixed
-      app
-    >
-      <div style="ma-2">
-        <v-card
-          class="mt-4"
-          flat
-        >
-          <v-card-title>
-            <v-toolbar
-              :max-width="toolbarWidth"
-              dense
-              rounded
-              floating
-            >
-              <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
-              <template v-if="isSmallScreen">
-                <v-btn icon @click="showSearch = !showSearch">
-                  <v-icon v-if="!showSearch">
-                    mdi-magnify
-                  </v-icon>
-                  <v-icon v-if="showSearch">
-                    mdi-chevron-left
-                  </v-icon>
-                </v-btn>
-              </template>
-              <v-expand-transition>
-                <campus-search v-show="!isSmallScreen || showSearch" ref="searchComp" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
-              </v-expand-transition>
-            </v-toolbar>
-          </v-card-title>
-          <v-card-text class="mt-5">
-            <div>
-              <h2>{{ poiDrawerData.name }}</h2>
-              <p><strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
-            </div>
-          </v-card-text>
-        </v-card>
-      </div>
-    </v-navigation-drawer>
+    <poi-drawer :show="shouldShowPoiDrawer" :data="poiDrawerData" :map="currentMap" :drawer="drawer" @update:drawer="drawer = $event" />
     <v-navigation-drawer
       v-model="drawer"
       style="width: 275px"
@@ -118,6 +76,7 @@ import FloorChanger from '../../components/FloorChanger';
 import CampusSearch from '../../components/CampusSearch';
 import SnackBar from '../../components/SnackBar';
 import mapHandler from '../../util/mapHandler';
+import PoiDrawer from '@/components/drawers/PoiDrawer';
 
 export default {
   components: {
@@ -125,7 +84,8 @@ export default {
     IndrzMap,
     FloorChanger,
     CampusSearch,
-    SnackBar
+    SnackBar,
+    PoiDrawer
   },
   data () {
     return {
@@ -149,7 +109,8 @@ export default {
       openedPanels: [],
       initialPoiCatId: null,
       initialPoiId: null,
-      showSearch: false
+      showSearch: false,
+      currentMap: {}
     };
   },
 
@@ -190,6 +151,7 @@ export default {
     mapHandler.setI18n(this.$i18n);
     await this.loadFloors();
     mapComponent.loadLayers(this.floors);
+    this.currentMap = mapComponent;
     this.loading = false;
     if (this.setSelection) {
       this.selectFloorWithCss(this.setSelection);
