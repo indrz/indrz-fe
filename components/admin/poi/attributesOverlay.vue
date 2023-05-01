@@ -1,6 +1,6 @@
 <template>
   <div id="attributes-overlay" :style="{'min-width': popupSize.width}" scrollable class="ol-popup indrz-popup">
-    <div :style="{'max-height': popupSize.height}">
+    <div>
       <v-card flat>
         <v-toolbar
           dense
@@ -11,7 +11,7 @@
             {{ title }}
           </div> -->
           <v-spacer />
-          <v-btn @click="onCloseClick" icon>
+          <v-btn icon @click="onCloseClick">
             <v-icon>
               mdi-window-close
             </v-icon>
@@ -34,7 +34,50 @@
                     v-model="data.enabled"
                     label="enabled"
                     hide-details
+                    dense
                   />
+                  <v-file-input
+                    ref="uploadImage"
+                    v-model="imageFile"
+                    accept="image/*"
+                    label="Image"
+                    show-size
+                    :rules="imageUploadRules"
+                    prepend-icon=""
+                    append-icon="mdi-plus"
+                    :disabled="isLoading"
+                    @change="onImageUpload"
+                  />
+                  <v-list
+                    dense
+                    style="max-height: 120px"
+                    class="overflow-y-auto"
+                  >
+                    <div v-for="(image) in data.images" :key="image.id">
+                      <!-- <v-divider
+                        v-if="index !== 0"
+                        :key="`${index}-divider`"
+                      /> -->
+                      <v-list-item
+                        class="pl-0"
+                      >
+                        <v-alert
+                          color="success"
+                          class="white--text text-center pa-1 ma-0"
+                          width="100%"
+                          v-text="imageName(image)"
+                        />
+
+                        <v-list-item-action>
+                          <v-btn icon x-small @click="onPoiImageDeleteClick(image.id)">
+                            <v-icon color="error darken-1">
+                              mdi-delete
+                            </v-icon>
+                          </v-btn>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </div>
+                  </v-list>
                 </v-col>
               </v-row>
             </v-container>
@@ -42,14 +85,14 @@
         </v-card-text>
         <v-divider class="mt-5" />
         <v-card-actions>
-          <v-btn @click="onCloseClick" color="blue darken-1" text>
+          <v-btn color="blue darken-1" text @click="onCloseClick">
             Cancel
           </v-btn>
           <v-btn
             :disabled="!valid"
-            @click="onSaveClick"
             color="blue darken-1"
             text
+            @click="onSaveClick"
           >
             <v-icon left>
               mdi-content-save
@@ -58,9 +101,9 @@
           </v-btn>
           <v-spacer />
           <v-btn
-            @click="onDeleteClick"
             color="error darken-1"
             text
+            @click="onDeletePoiClick"
           >
             <v-icon left>
               mdi-delete
@@ -69,13 +112,30 @@
           </v-btn>
         </v-card-actions>
       </v-card>
+      <confirm-dialog
+        :show="showConfirmPoiImageDelete"
+        :busy="isLoading"
+        @cancelClick="showConfirmPoiImageDelete = false"
+        @confirmClick="deletePoiImage"
+      />
+      <confirm-dialog
+        :show="showConfirmPoiDelete"
+        :busy="isLoading"
+        @cancelClick="showConfirmPoiDelete = false"
+        @confirmClick="deletePoi"
+      />
     </div>
   </div>
 </template>
 
 <script>
+import ConfirmDialog from '@/components/ConfirmDialog';
+
 export default {
   name: 'AttributesOverlay',
+  components: {
+    ConfirmDialog
+  },
   props: {
   },
   data () {
@@ -84,6 +144,13 @@ export default {
       requiredRule: [
         v => (v && v.trim().length > 0) || 'This field is required.'
       ],
+      imageUploadRules: [
+        value => !value || value.size < (20 * 1024000) || 'Image size should be less than 20 MB!'
+      ],
+      isLoading: false,
+      showConfirmPoiDelete: false,
+      showConfirmPoiImageDelete: false,
+      selectedPoiImageId: null,
       data: {
         type: Object,
         default: function () {
@@ -91,10 +158,12 @@ export default {
             name: '',
             name_en: '',
             name_de: '',
-            enabled: true
+            enabled: true,
+            images: []
           };
         }
       },
+      imageFile: null,
       feature: {
         type: Object,
         default: function () {
@@ -105,22 +174,10 @@ export default {
   },
   computed: {
     popupSize () {
-      const size = {
+      return {
         width: '354px',
-        height: '366px'
+        height: this.feature ? '395px' : '326px'
       };
-
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-          size.width = '150px';
-          size.height = '162px';
-          break;
-        case 'sm':
-          size.width = '270px';
-          size.height = '282px';
-          break;
-      }
-      return size;
     }
   },
   methods: {
@@ -130,14 +187,44 @@ export default {
     onSaveClick () {
       this.$emit('saveClick', {
         data: this.data,
-        feature: this.feature
+        feature: this.feature,
+        imageFile: this.imageFile
       })
     },
-    onDeleteClick () {
+    onImageUpload () {
+      if (!this.imageFile) {
+        return;
+      }
+      if (this.feature) {
+        this.isLoading = true;
+        this.$emit('uploadImage', {
+          poiId: this.feature.getId(),
+          imageFile: this.imageFile
+        });
+        this.imageFile = null;
+      }
+    },
+    deletePoi () {
+      this.isLoading = true;
       this.$emit('deleteClick', {
         data: this.data,
         feature: this.feature
       })
+      this.showConfirmPoiDelete = false;
+    },
+    onDeletePoiClick () {
+      this.showConfirmPoiDelete = true;
+    },
+    deletePoiImage () {
+      this.isLoading = true;
+      this.$emit('poiImageDeleteClick', {
+        id: this.selectedPoiImageId,
+        feature: this.feature
+      })
+    },
+    onPoiImageDeleteClick (imageId) {
+      this.showConfirmPoiImageDelete = true;
+      this.selectedPoiImageId = imageId;
     },
     setData (data, feature) {
       this.data = { ...data };
@@ -146,6 +233,21 @@ export default {
       } else {
         this.feature = null;
       }
+      this.imageFile = null;
+    },
+    setImages (images) {
+      this.data.images = images || [];
+      this.imageFile = null;
+      this.$refs.uploadImage.reset();
+      this.isLoading = false;
+      this.selectedPoiImageId = null;
+      this.showConfirmPoiImageDelete = false;
+    },
+    imageName (image) {
+      if (image.image) {
+        return image.image.split('/').pop()
+      }
+      return image.alt_text
     }
   }
 };
