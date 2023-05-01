@@ -23,18 +23,18 @@
     <div class="save-btn-panel">
       <v-btn
         :disabled="!changes"
-        @click.stop.prevent="onSaveButtonClick(true)"
         color="primary"
         width="70px"
         small
+        @click.stop.prevent="onSaveButtonClick(true)"
       >
         Save
       </v-btn>
       <v-btn
-        @click.stop.prevent="cleanupAndRemoveInteraction(false)"
         color="primary"
         width="70px"
         small
+        @click.stop.prevent="cleanupAndRemoveInteraction(false)"
       >
         Cancel
       </v-btn>
@@ -56,16 +56,16 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            @click="onSaveButtonClick(false)"
             color="error darken-1"
             text
+            @click="onSaveButtonClick(false)"
           >
             Yes
           </v-btn>
           <v-btn
-            @click="cleanUp"
             color="blue darken-1"
             text
+            @click="cleanUp"
           >
             No
           </v-btn>
@@ -162,9 +162,7 @@ export default {
     onUpdatePoiCoord (editingPoi) {
       const foundPoi = this.mapComp.newPois.find((poi) => {
         const coord = JSON.parse(poi.geom).coordinates[0];
-        if (editingPoi.oldCoord[0] === coord[0] && editingPoi.oldCoord[1] === coord[1]) {
-          return poi;
-        }
+        return editingPoi.oldCoord[0] === coord[0] && editingPoi.oldCoord[1] === coord[1];
       });
       if (foundPoi) {
         foundPoi.geom = JSON.stringify({
@@ -206,13 +204,14 @@ export default {
 
       this.updateTreeAfterAddPoi(force);
     },
-    async saveAddPoi (poiData) {
-      await this.addSinglePoi(poiData);
+    async saveAddPoi (poiData, imageFile, uploadFunction) {
+      const { data } = await this.addSinglePoi(poiData);
 
+      data && await uploadFunction(data.id, imageFile);
       this.updateTreeAfterAddPoi(true);
     },
     async addSinglePoi (poiData) {
-      await api.postRequest({
+      return await api.postRequest({
         endPoint: 'poi/',
         method: 'POST',
         data: poiData
@@ -280,7 +279,7 @@ export default {
       }, {
         baseApiUrl: process.env.BASE_API_URL,
         token: process.env.TOKEN
-      })
+      });
     },
 
     updateTreeAfterEditPoi (poiCatId) {

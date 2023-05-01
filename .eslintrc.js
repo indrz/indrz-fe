@@ -26,7 +26,13 @@ module.exports = {
     'vue/require-component-is': 0,
     'vue/no-unused-components': 0,
     'vue/comment-directive': 0,
+    'import/namespace': 0,
+    'import/default': 0,
+    'import/no-named-as-default-member': 0,
+    'import/no-named-as-default': 0,
     'vue/no-v-text-v-html-on-component': 0,
+    'vue/require-explicit-emits': 0,
+    'vue/v-on-event-hyphenation': 0,
     'import-js/eslint-plugin-import': 0
   }
 }

@@ -5,12 +5,12 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         color="rgba(0,60,136,0.5)"
         min-width="95px"
         class="pa-2"
         small
         dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -35,16 +35,16 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            @click="onDeletePoiClick"
             color="error darken-1"
             text
+            @click="onDeletePoiClick"
           >
             Yes
           </v-btn>
           <v-btn
-            @click="deleteConfirm = false"
             color="blue darken-1"
             text
+            @click="deleteConfirm = false"
           >
             Cancel
           </v-btn>
@@ -55,7 +55,9 @@
       ref="attributesOverlay"
       @closeClick="closeAttributePopup"
       @saveClick="saveAttributes"
+      @uploadImage="uploadPoiImage"
       @deleteClick="deleteAttribute"
+      @poiImageDeleteClick="poiImageDeleteClick"
     />
   </div>
 </template>
@@ -71,7 +73,8 @@ import Overlay from 'ol/Overlay';
 import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
-import AttributesOverlay from './attributesOverlay.vue'
+import AttributesOverlay from './AttributesOverlay.vue'
+import api from '@/util/api'
 import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import 'ol/ol.css';
@@ -79,7 +82,7 @@ import 'ol/ol.css';
 const { env } = config;
 
 export default {
-  name: 'Map',
+  name: 'PoiMap',
   components: {
     AttributesOverlay
   },
@@ -519,10 +522,36 @@ export default {
       this.popup.setPosition(undefined)
     },
     saveAttributes (attributes) {
+      const { feature, data, imageFile } = attributes;
+
       if (attributes.feature) {
-        this.$emit('saveEditPoi', attributes.feature, attributes.data)
+        // we can remove the imageFile here
+        this.$emit('saveEditPoi', feature, data)
       } else {
-        this.$emit('saveAddPoi', attributes.data)
+        this.$emit('saveAddPoi', data, imageFile, (poiId, file) => {
+          this.uploadPoiImage({ poiId, imageFile: file })
+        })
+      }
+    },
+    async uploadPoiImage ({ poiId, imageFile }) {
+      try {
+        await api.postRequest({
+          endPoint: 'poi/images/',
+          method: 'POST',
+          data: {
+            poi: poiId,
+            image: imageFile,
+            sort_order: '1',
+            is_default: 'true',
+            alt_text: 'super image'
+          }
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+        await this.refreshImageList(poiId);
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Image upload failed');
       }
     },
     deleteAttribute (attributes) {
@@ -540,10 +569,45 @@ export default {
       }
       this.closeAttributePopup();
     },
+    async poiImageDeleteClick ({ id, feature }) {
+      try {
+        await api.postRequest({
+          endPoint: `poi/images/${id}`,
+          method: 'DELETE',
+          data: {}
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+
+        await this.refreshImageList(feature.getId());
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Image delete failed');
+      }
+    },
     openAttributesPopup (data, coordinate, feature) {
-      this.$refs.attributesOverlay.setData(data, feature);
+      const images = feature ? feature.getProperties().images : [];
+      this.$refs.attributesOverlay.setData({ ...data, images }, feature);
       this.popup.setPosition(coordinate);
       this.popup.setOffset([0, -40]);
+    },
+    getPoi (poiId) {
+      try {
+        return api.request({
+          endPoint: `poi/${poiId}`
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Fetch poi failed');
+      }
+    },
+    async refreshImageList (poiId) {
+      const response = await this.getPoi(poiId);
+      const images = response?.data?.properties?.images;
+
+      this.$refs.attributesOverlay?.setImages(images);
     }
   }
 };
