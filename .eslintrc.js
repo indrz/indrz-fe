@@ -33,6 +33,8 @@ module.exports = {
     'vue/no-v-text-v-html-on-component': 0,
     'vue/require-explicit-emits': 0,
     'vue/v-on-event-hyphenation': 0,
-    'import-js/eslint-plugin-import': 0
+    'import-js/eslint-plugin-import': 0,
+    'no-prototype-builtins': 0,
+    'no-deprecated-slot-attribute': 0
   }
 }

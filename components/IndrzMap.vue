@@ -129,6 +129,11 @@ export default {
     this.map.on('moveend', (e) => {
       this.$root.$emit('map-moved', e.map.getView().getCenter());
     });
+    this.$root.$on('popupRouteClick', this.onPopupRouteClick);
+    this.$root.$on('popupEntranceButtonClick', this.onPopupEntranceButtonClick);
+    this.$root.$on('popupMetroButtonClick', this.onPopupMetroButtonClick);
+    this.$root.$on('popupDefiButtonClick', this.onPopupDefiButtonClick);
+    this.$root.$on('shareClick', this.onShareButtonClick);
   },
 
   methods: {
@@ -239,8 +244,11 @@ export default {
     loadSinglePoi (poiId) {
       POIHandler
         .showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
-        .then((layer) => {
+        .then(({ layer, feature }) => {
           this.searchLayer = layer;
+          this.$emit('open-poi-drawer', {
+            feature
+          })
         });
     },
     loadPoiToPoiroute (startPoiId, endPoiId) {

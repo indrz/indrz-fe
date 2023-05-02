@@ -8,8 +8,8 @@
       />
     </div>
     <v-treeview
-      ref="poi"
       v-if="!loading"
+      ref="poi"
       v-model="tree"
       :multiple-active="multi"
       :items="poiData"

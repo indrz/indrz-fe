@@ -825,12 +825,14 @@ const loadMapFromSpaceIdToPoiIdRoute = (startSpaceId, endPoiId, mapInfo) => {
 };
 
 const getRouteDescriptionListItem = (label, value) => {
-  const listStartTemplate = `<li class="list-group-item"><span class="font-weight-medium">`;
-  const listEndTemplate = `</span></li>`;
+  const listStartTemplate = '<li class="list-group-item"><span class="font-weight-medium">';
+  const listEndTemplate = '</span></li>';
 
-  return value ? `${listStartTemplate}
+  return value
+    ? `${listStartTemplate}
                     ${label ? (label + ': ') : ''}${value}
-                  ${listEndTemplate}` : '';
+                  ${listEndTemplate}`
+    : '';
 };
 
 const createMapCanvas = (map) => {
