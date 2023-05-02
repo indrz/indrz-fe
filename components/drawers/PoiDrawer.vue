@@ -10,7 +10,13 @@
         class="mt-4"
         flat
       >
-        <drawer-search :map="map" :drawer="mainDrawer" @update:drawer="mainDrawer = $event" />
+        <v-img
+          :width="350"
+          :height="230"
+          src="../../images/default_poi_image.png"
+        >
+          <drawer-search :map="map" :drawer="mainDrawer" @update:drawer="mainDrawer = $event" />
+        </v-img>
         <v-card-text class="mt-5">
           <div>
             <h2>{{ data.name }}</h2>
