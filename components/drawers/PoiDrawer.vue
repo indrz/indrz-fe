@@ -10,16 +10,31 @@
         class="mt-4"
         flat
       >
-        <v-img
-          :width="350"
-          :height="230"
-          src="../../images/default_poi_image.png"
-        >
-          <drawer-search :map="map" :drawer="mainDrawer" @update:drawer="mainDrawer = $event" />
-        </v-img>
+        <v-row justify="center">
+          <v-img
+            :max-width="350"
+            :aspect-ratio="1.52"
+            :src="data.images ? `https://tuw-maps.tuwien.ac.at${data.images[0].image}` : '../../images/default_poi_image.png'"
+            lazy-src="../../images/default_poi_image.png"
+          >
+            <template v-slot:placeholder>
+              <v-row
+                class="fill-height ma-0"
+                align="center"
+                justify="center"
+              >
+                <v-progress-circular
+                  indeterminate
+                  color="primary lighten-1"
+                />
+              </v-row>
+            </template>
+            <drawer-search :map="map" :drawer="mainDrawer" @update:drawer="mainDrawer = $event" />
+          </v-img>
+        </v-row>
         <v-card-text class="mt-5">
           <div>
-            <h2>{{ data.name }}</h2>
+            <h2>{{ data.name_en }}</h2>
             <template v-if="data.text">
               <p>{{ data.text }}</p>
             </template>

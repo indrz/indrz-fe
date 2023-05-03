@@ -35,6 +35,7 @@ module.exports = {
     'vue/v-on-event-hyphenation': 0,
     'import-js/eslint-plugin-import': 0,
     'no-prototype-builtins': 0,
-    'no-deprecated-slot-attribute': 0
+    'no-deprecated-slot-attribute': 0,
+    'vue/v-slot-style': 0
   }
 }
