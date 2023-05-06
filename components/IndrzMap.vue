@@ -134,6 +134,7 @@ export default {
     this.$root.$on('popupMetroButtonClick', this.onPopupMetroButtonClick);
     this.$root.$on('popupDefiButtonClick', this.onPopupDefiButtonClick);
     this.$root.$on('shareClick', this.onShareButtonClick);
+    this.$root.$on('popupRouteClick', this.onPopupRouteClick);
   },
 
   methods: {

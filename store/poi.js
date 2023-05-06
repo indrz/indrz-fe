@@ -1,5 +1,5 @@
 import api from '~/util/api';
-const categoryEndpoint = `poi/category/`;
+const categoryEndpoint = 'poi/category/';
 
 export const state = () => ({
   poiData: [],
@@ -105,6 +105,7 @@ const findNode = (nodeId, poiData) => {
         return true;
       }
     }
+    return false
   });
   return foundData;
 };
