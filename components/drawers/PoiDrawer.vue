@@ -5,7 +5,7 @@
     fixed
     app
   >
-    <div style="ma-2">
+    <div v-if="!poiRoute" style="ma-2">
       <v-card
         flat
       >
@@ -40,7 +40,7 @@
             hide-slider
             class="ma-0"
           >
-            <v-tab v-for="(tabInfo, index) in tabs" :key="index">
+            <v-tab v-for="(tabInfo, index) in tabs" :key="index" @click="onTabClick(index)">
               {{ tabInfo.text }}
               <v-icon>{{ tabInfo.icon }}</v-icon>
             </v-tab>
@@ -213,7 +213,6 @@
                       small
                       text
                       color="wu"
-                      v-on="on"
                       @click.stop="onEntranceButtonClick"
                     >
                       <v-icon left>
@@ -231,7 +230,6 @@
                       text
                       color="wu"
                       class="ml-1"
-                      v-on="on"
                       @click.stop="onMetroButtonClick"
                     >
                       <v-icon left>
@@ -243,43 +241,15 @@
                 </v-row>
               </div>
             </v-tab-item>
+            <v-tab-item>
+              <div />
+            </v-tab-item>
           </v-tabs-items>
         </v-card-text>
-        <v-card-actions>
-          <v-tooltip top>
-            <template #activator="{ on }">
-              <v-btn
-                color="wu"
-                tile
-                dark
-                small
-                class="ml-1"
-                @click.stop="onDefiButtonClick"
-                v-on="on"
-              >
-                <v-icon>mdi-heart-flash</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ locale.defiButtonTip }}</span>
-          </v-tooltip>
-          <v-tooltip top>
-            <template #activator="{ on }">
-              <v-btn
-                color="wu"
-                tile
-                dark
-                small
-                class="ml-1"
-                @click.stop="onShareButtonClick"
-                v-on="on"
-              >
-                <v-icon>mdi-share-variant</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ locale.shareButtonTip }}</span>
-          </v-tooltip>
-        </v-card-actions>
       </v-card>
+    </div>
+    <div v-if="poiRoute">
+      Hello route
     </div>
   </v-navigation-drawer>
 </template>
@@ -323,6 +293,7 @@ export default {
   },
   data () {
     return {
+      poiRoute: false,
       locale: {
         entranceButtonText: this.$t('entrance_button_text'),
         metroButtonText: this.$t('metro_button_text'),
@@ -385,6 +356,13 @@ export default {
     },
     onRouteClick (path) {
       this.$root.$emit('popupRouteClick', path);
+    },
+    onTabClick (index) {
+      if (index === 2) {
+        this.onShareButtonClick()
+      } else if (index === 0) {
+        this.poiRoute = true;
+      }
     }
   }
 };
