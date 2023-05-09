@@ -50,7 +50,7 @@
         </v-btn>
       </template>
       <v-expand-transition>
-        <campus-search v-show="!isSmallScreen || showSearch" ref="searchComp" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
+        <campus-search v-show="!isSmallScreen || showSearch" ref="searchComp" show-route @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
       </v-expand-transition>
     </v-toolbar>
     <indrz-map
@@ -193,7 +193,7 @@ export default {
       this.drawer = true;
       this.openedPanels = [1];
       setTimeout(() => {
-        this.$refs.sideBar.setRoute(routeInfo);
+        routeInfo?.path && this.$refs.sideBar.setRoute(routeInfo);
       }, 500);
     },
     onOpenPoiTree (poiCatId, isPoiId = false) {

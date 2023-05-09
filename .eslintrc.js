@@ -37,6 +37,7 @@ module.exports = {
     'no-prototype-builtins': 0,
     'no-deprecated-slot-attribute': 0,
     'vue/v-slot-style': 0,
-    'no-case-declarations': 0
+    'no-case-declarations': 0,
+    'vue/no-deprecated-v-bind-sync': 0
   }
 }

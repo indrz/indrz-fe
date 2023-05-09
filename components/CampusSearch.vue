@@ -11,10 +11,6 @@
           :prepend-icon="icon"
           :no-filter="true"
           :label="routeLabel"
-          @click:clear="onClearClick"
-          @change="onSearchSelection"
-          @focus="focused = true"
-          @blur="focused = false"
           :hide-no-data="true"
           item-text="name"
           item-value="id"
@@ -23,6 +19,10 @@
           return-object
           flat
           hide-details
+          @click:clear="onClearClick"
+          @change="onSearchSelection"
+          @focus="focused = true"
+          @blur="focused = false"
         >
           <template v-slot:append>
             <v-icon class="search-btn">
@@ -74,8 +74,6 @@
         :search-input.sync="search"
         :no-filter="true"
         :label="searchLabel"
-        @click:clear="onClearClick"
-        @change="onSearchSelection"
         item-text="name"
         item-value="id"
         append-icon=""
@@ -84,6 +82,8 @@
         solo
         flat
         hide-details
+        @click:clear="onClearClick"
+        @change="onSearchSelection"
       >
         <template v-slot:append>
           <v-icon class="search-btn">
@@ -91,7 +91,10 @@
           </v-icon>
         </template>
         <template v-slot:append-outer>
-          <v-icon :color="activeClearColor" @click.stop="onClearClick">
+          <v-icon v-if="showRoute && !search?.length" color="blue darken-2" @click.stop="onRouteButtonClick">
+            mdi-directions
+          </v-icon>
+          <v-icon v-else :color="activeClearColor" @click.stop="onClearClick">
             mdi-close
           </v-icon>
         </template>
@@ -141,6 +144,12 @@ import api from '../util/api';
 export default {
   props: {
     isRoute: {
+      type: Boolean,
+      default: function () {
+        return false;
+      }
+    },
+    showRoute: {
       type: Boolean,
       default: function () {
         return false;
@@ -282,6 +291,9 @@ export default {
         this.$refs.searchField.blur();
         this.$emit('clearClicked');
       });
+    },
+    onRouteButtonClick () {
+      this.$root.$emit('popupRouteClick');
     },
     getValue () {
       return this.model;
