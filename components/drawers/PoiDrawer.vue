@@ -40,10 +40,8 @@
                 plain
                 @click="poiImages = !poiImages"
               >
-                <v-icon
-                  dark
-                >
-                  mdi-checkbox-marked-circle
+                <v-icon dark left>
+                  mdi-folder-multiple-image
                 </v-icon>
                 {{ data.images.length }} - Fotos
               </v-btn>
