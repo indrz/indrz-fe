@@ -249,25 +249,70 @@
       </v-card>
     </div>
     <div v-if="poiRoute">
-      <v-row>
-        <v-col>
+      <v-container>
+        <v-row class="d-flex justify-content-end">
           <v-btn
             icon
+            class="ml-auto"
             @click="poiRoute = !poiRoute"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
-        </v-col>
-      </v-row>
+        </v-row>
+        <v-row>
+          <v-col :cols="8" align-self="center">
+            <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <campus-search
+              ref="fromRoute"
+              :is-route="true"
+              :route-label="locale.startRouteLabel"
+              icon="mdi-flag"
+              route-type="from"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <campus-search
+              ref="toRoute"
+              :is-route="true"
+              :route-label="locale.endRouteLabel"
+              icon="mdi-flag-checkered"
+              route-type="to"
+            />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" />
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col>
+            <div id="route-description" />
+          </v-col>
+        </v-row>
+        <v-divider class="mt-2 mb-2" />
+      </v-container>
     </div>
   </v-navigation-drawer>
 </template>
 
 <script>
+import config from '../../util/indrzConfig';
+import CampusSearch from '../CampusSearch.vue';
 import DrawerSearch from './DrawerSearch.vue';
+
+const { env } = config;
+
 export default {
   name: 'PoiDrawer',
   components: {
+    CampusSearch,
     DrawerSearch
   },
 
@@ -303,6 +348,7 @@ export default {
   data () {
     return {
       poiRoute: false,
+      barrierFree: false,
       locale: {
         entranceButtonText: this.$t('entrance_button_text'),
         metroButtonText: this.$t('metro_button_text'),
@@ -318,7 +364,10 @@ export default {
         labelBuidingAdress: this.$t('label_building_adress'),
         labelBuildingCode: this.$t('label_building_code'),
         labelBuidingPlz: this.$t('label_building_plz'),
-        labelBuildingCity: this.$t('label_building_city')
+        labelBuildingCity: this.$t('label_building_city'),
+        startRouteLabel: this.$t('start_route'),
+        endRouteLabel: this.$t('end_route'),
+        barrierFreeLabel: this.$t('barrier_free_route')
       },
       tabs: [
         { icon: 'mdi-directions', text: 'Routing' },
@@ -344,6 +393,12 @@ export default {
       set: function (newValue) {
         this.$emit('update:drawer', newValue);
       }
+    },
+    logo () {
+      return {
+        file: env.LOGO_FILE,
+        enabled: (env.LOGO_ENABLED === true)
+      };
     }
   },
 
@@ -377,7 +432,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+.left-bar-logo {
+    width: auto;
+    height: 40px;
+    left: 10px;
+    vertical-align: middle;
+    display: block;
+    margin: 5px auto;
+  }
   .v-tab {
     font-size: .7rem;
   }
