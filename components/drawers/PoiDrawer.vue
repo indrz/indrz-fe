@@ -1,17 +1,17 @@
 <template>
   <v-navigation-drawer
     v-model="shouldShowPoiDrawer"
-    style="width: 350px"
+    style="width: 410px"
     fixed
     app
   >
-    <div v-if="!poiRoute" style="ma-2">
+    <div v-if="!poiRoute && !poiImages" style="ma-2">
       <v-card
         flat
       >
         <v-row justify="center">
           <v-img
-            :max-width="350"
+            :max-width="410"
             :aspect-ratio="1.52"
             :src="data.images ? `https://tuw-maps.tuwien.ac.at${data.images[0].image}` : '../../images/default_poi_image.png'"
             lazy-src="../../images/default_poi_image.png"
@@ -29,6 +29,25 @@
               </v-row>
             </template>
             <drawer-search :map="map" :drawer="mainDrawer" class="mt-4" @update:drawer="mainDrawer = $event" />
+            <div
+              v-if="data?.images?.length"
+              class="image-button"
+            >
+              <v-btn
+                class="ma-2"
+                color="gray"
+                dark
+                plain
+                @click="poiImages = !poiImages"
+              >
+                <v-icon
+                  dark
+                >
+                  mdi-checkbox-marked-circle
+                </v-icon>
+                {{ data.images.length }} - Fotos
+              </v-btn>
+            </div>
           </v-img>
         </v-row>
         <v-card-text class=" pa-0">
@@ -299,6 +318,28 @@
         <v-divider class="mt-2 mb-2" />
       </v-container>
     </div>
+
+    <div v-if="poiImages">
+      <v-container>
+        <v-row class="d-flex justify-content-end">
+          <v-btn
+            icon
+            class="ml-auto"
+            @click="poiImages = !poiImages"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-row>
+        <v-row v-for="(image, index) in data.images" :key="index" justify="center">
+          <v-img
+            :max-width="410"
+            :aspect-ratio="1.52"
+            :src="`https://tuw-maps.tuwien.ac.at${image.image}`"
+            lazy-src="../../images/default_poi_image.png"
+          />
+        </v-row>
+      </v-container>
+    </div>
   </v-navigation-drawer>
 </template>
 
@@ -348,6 +389,7 @@ export default {
   data () {
     return {
       poiRoute: false,
+      poiImages: false,
       barrierFree: false,
       locale: {
         entranceButtonText: this.$t('entrance_button_text'),
@@ -427,12 +469,19 @@ export default {
       } else if (index === 0) {
         this.poiRoute = true;
       }
+    },
+    onPhotoButtonClick () {
+      console.log('You have total: ', this.data.images.length)
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
+.image-button {
+  position: absolute;
+  bottom: 10px;
+}
 .left-bar-logo {
     width: auto;
     height: 40px;
