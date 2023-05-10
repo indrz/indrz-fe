@@ -69,15 +69,15 @@
             </v-tab-item>
             <v-tab-item>
               <div class="ma-2">
-                <v-row no-gutters>
-                  <v-col cols="1">
+                <v-row no-gutters class="ml-2">
+                  <v-col cols="1" class="title-items">
                     <v-img
-                      :width="20"
+                      :max-width="20"
                       :src="data.icon"
                     />
                   </v-col>
-                  <v-col cols="11">
-                    <span>{{ data.name_en }}</span>
+                  <v-col cols="11" class="title-items">
+                    <span class="primary--text subtitle-1">{{ data.name_en }}</span>
                   </v-col>
                 </v-row>
                 <v-row v-if="data.html_content">
@@ -319,14 +319,24 @@
 
     <div v-if="poiImages">
       <v-container>
-        <v-row class="d-flex justify-content-end">
-          <v-btn
-            icon
-            class="ml-auto"
-            @click="poiImages = !poiImages"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
+        <v-row no-gutters>
+          <v-col cols="2">
+            <v-btn
+              icon
+              @click="poiImages = !poiImages"
+            >
+              <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col cols="1" class="title-items">
+            <v-img
+              :max-width="20"
+              :src="data.icon"
+            />
+          </v-col>
+          <v-col cols="9" class="title-items">
+            <span class="primary--text subtitle-1">{{ data.name_en }}</span>
+          </v-col>
         </v-row>
         <v-row v-for="(image, index) in data.images" :key="index" justify="center">
           <v-img
@@ -490,5 +500,9 @@ export default {
   }
   .v-tab {
     font-size: .7rem;
+  }
+  .title-items {
+    display: flex;
+    align-items: center;
   }
 </style>
