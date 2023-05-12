@@ -30,6 +30,12 @@
                   <v-text-field v-model="data.name" :rules="requiredRule" label="name" />
                   <v-text-field v-model="data.name_en" label="name-en" />
                   <v-text-field v-model="data.name_de" label="name-de" />
+                  <v-textarea
+                    v-model="data.html_content"
+                    label="HTML Content"
+                    rows="2"
+                    row-height="25"
+                  />
                   <v-checkbox
                     v-model="data.enabled"
                     label="enabled"
@@ -158,6 +164,7 @@ export default {
             name: '',
             name_en: '',
             name_de: '',
+            html_content: '',
             enabled: true,
             images: []
           };
