@@ -13,7 +13,7 @@
           <v-img
             :max-width="410"
             :aspect-ratio="1.52"
-            :src="data.images ? `https://tuw-maps.tuwien.ac.at${data.images[0].image}` : '../../images/default_poi_image.png'"
+            :src="data.images ? `${baseUrl}${data.images[0].image}` : '../../images/default_poi_image.png'"
             lazy-src="../../images/default_poi_image.png"
           >
             <template v-slot:placeholder>
@@ -291,7 +291,7 @@
           <v-img
             :max-width="410"
             :aspect-ratio="1.52"
-            :src="`https://tuw-maps.tuwien.ac.at${image.image}`"
+            :src="`${baseUrl}${image.image}`"
             lazy-src="../../images/default_poi_image.png"
           />
         </v-row>
@@ -393,6 +393,9 @@ export default {
         file: env.LOGO_FILE,
         enabled: (env.LOGO_ENABLED === true)
       };
+    },
+    baseUrl () {
+      return env.BASE_URL
     }
   },
 
