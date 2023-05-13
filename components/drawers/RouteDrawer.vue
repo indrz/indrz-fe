@@ -2,20 +2,27 @@
   <v-navigation-drawer
     v-model="shouldShowRouteDrawer"
     bottom
-    style="width: 275px"
+    style="width: 410px"
     fixed
     app
   >
     <div style="ma-2">
       <v-container>
         <v-row class="d-flex justify-content-end">
-          <v-btn
-            icon
-            class="ml-auto"
-            @click="$emit('on-close')"
+          <v-img
+            :max-width="410"
+            :aspect-ratio="1.52"
+            :src="'../../images/default_poi_image.png'"
+            lazy-src="../../images/default_poi_image.png"
           >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
+            <v-btn
+              icon
+              class="ml-auto"
+              @click="$emit('on-close')"
+            >
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </v-img>
         </v-row>
         <v-row>
           <v-col :cols="8" align-self="center">
