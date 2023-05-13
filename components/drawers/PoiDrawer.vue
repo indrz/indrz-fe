@@ -36,15 +36,15 @@
             >
               <v-btn
                 class="ma-2"
-                color="gray"
+                color="rgba(0,0,0,0.4)"
                 dark
-                plain
+                tonal
                 @click="poiImages = !poiImages"
               >
                 <v-icon dark left>
                   mdi-folder-multiple-image
                 </v-icon>
-                {{ data.images.length }} - Fotos
+                {{ data.images.length }} - {{ locale.labelPoiPictures }}
               </v-btn>
             </div>
           </v-img>
@@ -362,7 +362,8 @@ export default {
         labelBuidingAdress: this.$t('label_building_adress'),
         labelBuildingCode: this.$t('label_building_code'),
         labelBuidingPlz: this.$t('label_building_plz'),
-        labelBuildingCity: this.$t('label_building_city')
+        labelBuildingCity: this.$t('label_building_city'),
+        labelPoiPictures: this.$t('poi_pictures')
       },
       tabs: [
         { icon: 'mdi-directions', text: 'Routing' },
