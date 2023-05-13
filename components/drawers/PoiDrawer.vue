@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="shouldShowPoiDrawer"
+    bottom
     style="width: 410px"
     fixed
     app

@@ -51,7 +51,7 @@ export default {
   },
   computed: {
     isSmallScreen () {
-      return this.$vuetify.breakpoint.mdAndDown;
+      return this.$vuetify.breakpoint.smAndDown;
     },
     toolbarWidth () {
       return this.isSmallScreen ? '280px' : '320px';

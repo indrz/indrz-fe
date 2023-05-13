@@ -24,6 +24,7 @@
     />
     <v-navigation-drawer
       v-model="drawer"
+      bottom
       style="width: 275px"
       fixed
       app
@@ -148,7 +149,7 @@ export default {
       return this.$refs.map;
     },
     isSmallScreen () {
-      return this.$vuetify.breakpoint.mdAndDown;
+      return this.$vuetify.breakpoint.smAndDown;
     },
     toolbarWidth () {
       return this.isSmallScreen ? '280px' : '320px';

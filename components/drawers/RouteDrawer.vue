@@ -1,6 +1,7 @@
 <template>
   <v-navigation-drawer
     v-model="shouldShowRouteDrawer"
+    bottom
     style="width: 275px"
     fixed
     app
