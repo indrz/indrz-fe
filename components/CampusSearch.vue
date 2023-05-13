@@ -293,7 +293,7 @@ export default {
       });
     },
     onRouteButtonClick () {
-      this.$root.$emit('popupRouteClick');
+      this.$emit('open-route-drawer');
     },
     getValue () {
       return this.model;

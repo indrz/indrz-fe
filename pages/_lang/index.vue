@@ -6,7 +6,22 @@
     fluid
     flat
   >
-    <poi-drawer :show="shouldShowPoiDrawer" :data="poiDrawerData" :map="currentMap" :drawer="drawer" @update:drawer="drawer = $event" />
+    <poi-drawer
+      :show="shouldShowPoiDrawer"
+      :data="poiDrawerData"
+      :map="currentMap"
+      :drawer="drawer"
+      @update:drawer="drawer = $event"
+      @open-route-drawer="onOpenRouteDrawer"
+    />
+    <route-drawer
+      :show="shouldShowRouteDrawer"
+      :data="routeDrawerData"
+      :map="currentMap"
+      :drawer="drawer"
+      @on-close="routeDrawer = false"
+      @update:drawer="drawer = $event"
+    />
     <v-navigation-drawer
       v-model="drawer"
       style="width: 275px"
@@ -50,7 +65,14 @@
         </v-btn>
       </template>
       <v-expand-transition>
-        <campus-search v-show="!isSmallScreen || showSearch" ref="searchComp" show-route @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
+        <campus-search
+          v-show="!isSmallScreen || showSearch"
+          ref="searchComp"
+          show-route
+          @selectSearhResult="onSearchSelect"
+          @showSearch="onShowSearch"
+          @open-route-drawer="onOpenRouteDrawer"
+        />
       </v-expand-transition>
     </v-toolbar>
     <indrz-map
@@ -77,6 +99,7 @@ import CampusSearch from '../../components/CampusSearch';
 import SnackBar from '../../components/SnackBar';
 import mapHandler from '../../util/mapHandler';
 import PoiDrawer from '@/components/drawers/PoiDrawer';
+import RouteDrawer from '@/components/drawers/RouteDrawer.vue';
 
 export default {
   components: {
@@ -85,14 +108,17 @@ export default {
     FloorChanger,
     CampusSearch,
     SnackBar,
-    PoiDrawer
+    PoiDrawer,
+    RouteDrawer
   },
   data () {
     return {
       clipped: false,
       drawer: false,
       poiDrawer: false,
+      routeDrawer: false,
       poiDrawerData: {},
+      routeDrawerData: {},
       fixed: false,
       loading: true,
       items: [
@@ -129,7 +155,14 @@ export default {
     },
     shouldShowPoiDrawer: {
       get () {
-        return this.poiDrawer && !this.drawer;
+        return this.poiDrawer && !this.drawer && !this.routeDrawer;
+      },
+      set () {
+      }
+    },
+    shouldShowRouteDrawer: {
+      get () {
+        return this.routeDrawer && !this.poiDrawer && !this.drawer;
       },
       set () {
       }
@@ -229,12 +262,22 @@ export default {
       this.showSearch = true;
     },
     onOpenPoiDrawer ({ feature }) {
-      // console.log(feature)
       this.poiDrawer = !!feature;
       if (this.poiDrawer) {
         this.drawer = false;
+        this.routeDrawer = false;
         this.poiDrawerData = feature;
       }
+    },
+    onOpenRouteDrawer () {
+      if (this.routeDrawer) {
+        this.routeDrawer = false;
+        return;
+      }
+      this.drawer = false;
+      this.poiDrawer = false;
+      this.routeDrawer = true;
+      this.routeDrawerData = {};
     }
   }
 };

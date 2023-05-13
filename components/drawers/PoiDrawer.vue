@@ -5,7 +5,7 @@
     fixed
     app
   >
-    <div v-if="!poiRoute && !poiImages" style="ma-2">
+    <div v-if="!poiImages" style="ma-2">
       <v-card
         flat
       >
@@ -265,57 +265,6 @@
         </v-card-text>
       </v-card>
     </div>
-    <div v-if="poiRoute">
-      <v-container>
-        <v-row class="d-flex justify-content-end">
-          <v-btn
-            icon
-            class="ml-auto"
-            @click="poiRoute = !poiRoute"
-          >
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </v-row>
-        <v-row>
-          <v-col :cols="8" align-self="center">
-            <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <campus-search
-              ref="fromRoute"
-              :is-route="true"
-              :route-label="locale.startRouteLabel"
-              icon="mdi-flag"
-              route-type="from"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <campus-search
-              ref="toRoute"
-              :is-route="true"
-              :route-label="locale.endRouteLabel"
-              icon="mdi-flag-checkered"
-              route-type="to"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <div id="route-description" />
-          </v-col>
-        </v-row>
-        <v-divider class="mt-2 mb-2" />
-      </v-container>
-    </div>
 
     <div v-if="poiImages">
       <v-container>
@@ -396,9 +345,7 @@ export default {
   },
   data () {
     return {
-      poiRoute: false,
       poiImages: false,
-      barrierFree: false,
       locale: {
         entranceButtonText: this.$t('entrance_button_text'),
         metroButtonText: this.$t('metro_button_text'),
@@ -414,10 +361,7 @@ export default {
         labelBuidingAdress: this.$t('label_building_adress'),
         labelBuildingCode: this.$t('label_building_code'),
         labelBuidingPlz: this.$t('label_building_plz'),
-        labelBuildingCity: this.$t('label_building_city'),
-        startRouteLabel: this.$t('start_route'),
-        endRouteLabel: this.$t('end_route'),
-        barrierFreeLabel: this.$t('barrier_free_route')
+        labelBuildingCity: this.$t('label_building_city')
       },
       tabs: [
         { icon: 'mdi-directions', text: 'Routing' },
@@ -475,11 +419,8 @@ export default {
       if (index === 2) {
         this.onShareButtonClick()
       } else if (index === 0) {
-        this.poiRoute = true;
+        this.$emit('open-route-drawer');
       }
-    },
-    onPhotoButtonClick () {
-      console.log('You have total: ', this.data.images.length)
     }
   }
 };
