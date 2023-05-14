@@ -47,13 +47,14 @@
                     ref="uploadImage"
                     v-model="imageFile"
                     accept="image/*"
-                    label="Image"
+                    label="Click here to upload Image"
                     show-size
                     :rules="imageUploadRules"
                     prepend-icon=""
                     append-icon="mdi-plus"
                     :disabled="isLoading"
                     @change="onImageUpload"
+                    @click:append="selectFile"
                   />
                   <v-list
                     dense
@@ -256,6 +257,11 @@ export default {
         return image.image.split('/').pop()
       }
       return image.alt_text
+    },
+    selectFile () {
+      const fileInput = this.$refs.uploadImage.$el.querySelector('input[type="file"]')
+      const clickEvent = new MouseEvent('click')
+      fileInput.dispatchEvent(clickEvent)
     }
   }
 };
