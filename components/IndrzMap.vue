@@ -198,12 +198,9 @@ export default {
           layerNamePrefix: env.LAYER_NAME_PREFIX
         });
       this.searchLayer = result.searchLayer;
-
-      if (properties.poiId) {
-        this.$emit('open-poi-drawer', {
-          feature: properties
-        })
-      }
+      this.$emit('open-poi-drawer', {
+        feature: properties
+      })
     },
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);

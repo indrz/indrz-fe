@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="dialog"
-    max-width="700"
+    max-width="2200"
   >
     <v-card>
       <v-toolbar

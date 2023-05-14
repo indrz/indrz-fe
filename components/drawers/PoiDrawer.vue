@@ -73,12 +73,20 @@
                 <v-row no-gutters class="ml-2">
                   <v-col cols="1" class="title-items">
                     <v-img
+                      v-if="data.icon"
                       :max-width="20"
                       :src="data.icon"
                     />
+                    <v-img
+                      v-if="data.src_icon"
+                      :src="getIconUrl(data.src_icon)"
+                      contain
+                      max-height="24"
+                      max-width="24"
+                    />
                   </v-col>
                   <v-col cols="11" class="title-items">
-                    <span class="primary--text subtitle-1">{{ data.name_en }}</span>
+                    <span class="primary--text subtitle-1">{{ data.name_en || data.name }}</span>
                   </v-col>
                 </v-row>
                 <v-row v-if="data.html_content">
@@ -135,7 +143,6 @@
                   </v-col>
                   <v-col cols="9">
                     <span>{{ data.room_code }}</span>
-                    <v-col />
                   </v-col>
                 </v-row>
                 <v-row v-if="data.floor_name && !data.xy">
@@ -377,7 +384,8 @@ export default {
         { icon: 'mdi-share', text: 'Share' }
       ],
       activeTabIndex: 1,
-      text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+      iconNames: ['book', 'department', 'person', 'poi', 'space'],
+      iconPath: '/images/icons/search/'
     }
   },
   computed: {
@@ -436,6 +444,17 @@ export default {
     onGalleryImageClick (index = 0) {
       this.galleryImageIndex = index;
       this.showGallery = !this.showGallery;
+    },
+    getIconUrl (iconName) {
+      if (!iconName) {
+        return '';
+      }
+      if (this.iconNames.includes(iconName)) {
+        return `${this.iconPath}/${iconName}.png`;
+      } else if (iconName.includes('.png')) {
+        return `${iconName}`
+      }
+      return `${this.iconPath}/poi.png`;
     }
   }
 };
