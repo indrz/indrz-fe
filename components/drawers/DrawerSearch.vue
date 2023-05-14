@@ -18,7 +18,14 @@
         </v-btn>
       </template>
       <v-expand-transition>
-        <campus-search v-show="!isSmallScreen || shouldShow" ref="searchComp" @selectSearhResult="onSearchSelect" @showSearch="shouldShow = true" />
+        <campus-search
+          v-show="!isSmallScreen || shouldShow"
+          ref="searchComp"
+          :should-search="shouldSearch"
+          @selectSearhResult="onSearchSelect"
+          @showSearch="shouldShow = true"
+          @clearClicked="onClearClick"
+        />
       </v-expand-transition>
     </v-toolbar>
   </v-card-title>
@@ -42,11 +49,18 @@ export default {
     map: {
       type: Object,
       required: true
+    },
+    searchTitle: {
+      type: String,
+      default () {
+        return ''
+      }
     }
   },
   data () {
     return {
-      shouldShow: false
+      shouldShow: false,
+      shouldSearch: true
     };
   },
   computed: {
@@ -63,11 +77,26 @@ export default {
       set: function (newValue) {
         this.$emit('update:drawer', newValue);
       }
+    },
+    searchField () {
+      return this.$refs.searchComp;
+    }
+  },
+  watch: {
+    searchTitle (title) {
+      this.shouldSearch = false;
+      this.searchField.search = title;
+      setTimeout(() => {
+        this.shouldSearch = true;
+      }, 1000)
     }
   },
   methods: {
     onSearchSelect (selectedItem) {
       this.map.onSearchSelect(selectedItem);
+    },
+    onClearClick () {
+      this.$emit('hide-poi-drawer')
     }
   }
 

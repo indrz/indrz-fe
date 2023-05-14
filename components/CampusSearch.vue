@@ -172,6 +172,12 @@ export default {
       default: function () {
         return '';
       }
+    },
+    shouldSearch: {
+      type: Boolean,
+      default: function () {
+        return true;
+      }
     }
   },
   data () {
@@ -204,7 +210,7 @@ export default {
       if (!text) {
         this.isPristine = true;
       }
-      this.term$.next(text);
+      this.shouldSearch && this.term$.next(text);
     }
   },
 

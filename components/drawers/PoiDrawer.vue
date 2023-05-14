@@ -29,7 +29,14 @@
                 />
               </v-row>
             </template>
-            <drawer-search :map="map" :drawer="mainDrawer" class="mt-4" @update:drawer="mainDrawer = $event" />
+            <drawer-search
+              :map="map"
+              :drawer="mainDrawer"
+              :search-title="searchTitle"
+              class="mt-4"
+              @update:drawer="mainDrawer = $event"
+              @hide-poi-drawer="$emit('hide-poi-drawer')"
+            />
             <div
               v-if="data?.images?.length"
               class="image-button"
@@ -86,7 +93,7 @@
                     />
                   </v-col>
                   <v-col cols="11" class="title-items">
-                    <span class="primary--text subtitle-1">{{ data.name_en || data.name }}</span>
+                    <span class="primary--text subtitle-1">{{ searchTitle }}</span>
                   </v-col>
                 </v-row>
                 <v-row v-if="data.html_content">
@@ -412,6 +419,10 @@ export default {
     },
     baseUrl () {
       return env.BASE_URL
+    },
+    searchTitle () {
+      const { data } = this;
+      return data.name_en || data.name;
     }
   },
 

@@ -13,6 +13,7 @@
       :drawer="drawer"
       @update:drawer="drawer = $event"
       @open-route-drawer="onOpenRouteDrawer"
+      @hide-poi-drawer="poiDrawer = false"
     />
     <route-drawer
       :show="shouldShowRouteDrawer"
