@@ -204,7 +204,11 @@ export default {
     },
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);
-      await MapUtil.loadMapWithParams(this, query);
+      const selectedItem = await MapUtil.loadMapWithParams(this, query);
+
+      this.$emit('open-poi-drawer', {
+        feature: selectedItem
+      })
     },
     openIndrzPopup (properties, coordinate, feature) {
       this.$emit('open-poi-drawer', {
