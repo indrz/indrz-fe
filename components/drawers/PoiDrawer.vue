@@ -35,7 +35,7 @@
               :search-title="searchTitle"
               class="mt-4"
               @update:drawer="mainDrawer = $event"
-              @hide-poi-drawer="$emit('hide-poi-drawer')"
+              @hide-poi-drawer="onHidePoiDrawer()"
             />
             <div
               v-if="data?.images?.length"
@@ -475,6 +475,10 @@ export default {
         return `${iconName}`
       }
       return `${this.iconPath}/poi.png`;
+    },
+    onHidePoiDrawer () {
+      this.$root.$emit('closeInfoPopup');
+      this.$emit('hide-poi-drawer');
     }
   }
 };

@@ -13,7 +13,7 @@
       :drawer="drawer"
       @update:drawer="drawer = $event"
       @open-route-drawer="onOpenRouteDrawer"
-      @hide-poi-drawer="poiDrawer = false"
+      @hide-poi-drawer="onHidePoiDrawer"
     />
     <route-drawer
       :show="shouldShowRouteDrawer"
@@ -280,6 +280,10 @@ export default {
       this.poiDrawer = false;
       this.routeDrawer = true;
       this.routeDrawerData = {};
+    },
+    onHidePoiDrawer () {
+      this.poiDrawerData = {};
+      this.poiDrawer = false;
     }
   }
 };
