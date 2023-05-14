@@ -426,6 +426,14 @@ export default {
       return data.name_en || data.name;
     }
   },
+  watch: {
+    shouldShowPoiDrawer (state) {
+      if (state) {
+        this.poiImages = false;
+        this.activeTabIndex = 1;
+      }
+    }
+  },
 
   methods: {
     onEntranceButtonClick () {
