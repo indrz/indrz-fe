@@ -294,16 +294,19 @@
             :aspect-ratio="1.52"
             :src="`${baseUrl}${image.image}`"
             lazy-src="../../images/default_poi_image.png"
+            @click="onGalleryImageClick(index)"
           />
         </v-row>
       </v-container>
     </div>
+    <photo-gallery :show="showGallery" :images="data.images" :selcted-index="galleryImageIndex" @gallery:show="showGallery=$event" />
   </v-navigation-drawer>
 </template>
 
 <script>
 import config from '../../util/indrzConfig';
 import CampusSearch from '../CampusSearch.vue';
+import PhotoGallery from '../PhotoGallery';
 import DrawerSearch from './DrawerSearch.vue';
 
 const { env } = config;
@@ -312,7 +315,8 @@ export default {
   name: 'PoiDrawer',
   components: {
     CampusSearch,
-    DrawerSearch
+    DrawerSearch,
+    PhotoGallery
   },
 
   props: {
@@ -347,6 +351,8 @@ export default {
   data () {
     return {
       poiImages: false,
+      showGallery: false,
+      galleryImageIndex: 0,
       locale: {
         entranceButtonText: this.$t('entrance_button_text'),
         metroButtonText: this.$t('metro_button_text'),
@@ -426,6 +432,10 @@ export default {
       } else if (index === 0) {
         this.$emit('open-route-drawer');
       }
+    },
+    onGalleryImageClick (index = 0) {
+      this.galleryImageIndex = index;
+      this.showGallery = !this.showGallery;
     }
   }
 };
