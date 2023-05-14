@@ -33,7 +33,8 @@
                   <v-textarea
                     v-model="data.html_content"
                     label="HTML Content"
-                    rows="2"
+                    rows="3"
+                    no-resize
                     row-height="25"
                   />
                   <v-checkbox
