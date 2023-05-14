@@ -308,6 +308,7 @@
             :aspect-ratio="1.52"
             :src="`${baseUrl}${image.image}`"
             lazy-src="../../images/default_poi_image.png"
+            class="gallery-thumb"
             @click="onGalleryImageClick(index)"
           />
         </v-row>
@@ -490,5 +491,8 @@ export default {
   .title-items {
     display: flex;
     align-items: center;
+  }
+  .gallery-thumb {
+    cursor: pointer;
   }
 </style>
