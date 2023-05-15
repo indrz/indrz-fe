@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="dialog"
-    max-width="2200"
+    max-width="1980"
   >
     <v-card>
       <v-toolbar
@@ -15,13 +15,13 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text>
-        <v-carousel :value="selctedIndex">
-          <v-carousel-item
-            v-for="(item,i) in images"
-            :key="i"
-            :src="`${baseUrl}${item.image}`"
-          />
+      <v-card-text class="pa-0" style="">
+        <v-carousel :value="selctedIndex" class="" height="80vh">
+          <v-carousel-item v-for="(image, i) in images" :key="i">
+            <div class="image-wrapper">
+              <img :src="`${baseUrl}${image.image}`" :alt="image.alt_text" class="image">
+            </div>
+          </v-carousel-item>
         </v-carousel>
       </v-card-text>
     </v-card>
@@ -57,7 +57,13 @@ export default {
     }
   },
   data () {
-    return {};
+    return {
+      items: [
+        { src: 'https://via.placeholder.com/1920x1080' },
+        { src: 'https://via.placeholder.com/1920x1080' },
+        { src: 'https://via.placeholder.com/1920x1080' }
+      ]
+    }
   },
   computed: {
     dialog: {
@@ -76,5 +82,16 @@ export default {
 </script>
 
 <style scoped>
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
 
+.image {
+  width: 100%;
+}
 </style>
