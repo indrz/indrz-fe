@@ -427,11 +427,9 @@ export default {
     }
   },
   watch: {
-    shouldShowPoiDrawer (state) {
-      if (state) {
-        this.poiImages = false;
-        this.activeTabIndex = 1;
-      }
+    data () {
+      this.poiImages = false;
+      this.activeTabIndex = 1;
     }
   },
 
