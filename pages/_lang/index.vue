@@ -264,12 +264,15 @@ export default {
       this.showSearch = true;
     },
     onOpenPoiDrawer ({ feature }) {
-      this.poiDrawer = !!feature;
-      if (this.poiDrawer) {
-        this.drawer = false;
-        this.routeDrawer = false;
-        this.poiDrawerData = feature;
-      }
+      this.poiDrawerData = { name_en: '', name: '' }
+      this.$nextTick(() => {
+        this.poiDrawer = !!feature;
+        if (this.poiDrawer) {
+          this.drawer = false;
+          this.routeDrawer = false;
+          this.poiDrawerData = feature;
+        }
+      })
     },
     onOpenRouteDrawer () {
       if (this.routeDrawer) {
