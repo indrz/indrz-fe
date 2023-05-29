@@ -38,6 +38,7 @@ module.exports = {
     'no-deprecated-slot-attribute': 0,
     'vue/v-slot-style': 0,
     'no-case-declarations': 0,
-    'vue/no-deprecated-v-bind-sync': 0
+    'vue/no-deprecated-v-bind-sync': 0,
+    'vue/multi-word-component-names': 0
   }
 }

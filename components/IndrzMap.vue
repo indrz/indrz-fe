@@ -129,7 +129,7 @@ export default {
     this.map.on('moveend', (e) => {
       this.$root.$emit('map-moved', e.map.getView().getCenter());
     });
-    this.$root.$on('popupRouteClick', this.onPopupRouteClick);
+
     this.$root.$on('popupEntranceButtonClick', this.onPopupEntranceButtonClick);
     this.$root.$on('popupMetroButtonClick', this.onPopupMetroButtonClick);
     this.$root.$on('popupDefiButtonClick', this.onPopupDefiButtonClick);
@@ -393,12 +393,15 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo (routeType = 0) {
-      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {
+      const routeResult = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {
         baseApiUrl: env.BASE_API_URL,
         layerNamePrefix: env.LAYER_NAME_PREFIX,
         token: env.TOKEN,
         locale: this.$i18n.locale
       });
+
+      this.globalRouteInfo.routeUrl = routeResult.routeUrl;
+      this.$root.$emit('setRouteInfo', routeResult);
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map, true);

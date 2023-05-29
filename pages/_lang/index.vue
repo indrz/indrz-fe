@@ -12,7 +12,7 @@
       :map="currentMap"
       :drawer="drawer"
       @update:drawer="drawer = $event"
-      @open-route-drawer="onOpenRouteDrawer"
+      @open-route-drawer="onOpenRouteDrawer(true)"
       @hide-poi-drawer="onHidePoiDrawer"
     />
     <route-drawer
@@ -22,6 +22,8 @@
       :drawer="drawer"
       @on-close="routeDrawer = false"
       @update:drawer="drawer = $event"
+      @setGlobalRoute="onSetGlobalRoute"
+      @routeGo="onRouteGo"
     />
     <v-navigation-drawer
       v-model="drawer"
@@ -73,7 +75,7 @@
           show-route
           @selectSearhResult="onSearchSelect"
           @showSearch="onShowSearch"
-          @open-route-drawer="onOpenRouteDrawer"
+          @open-route-drawer="onOpenRouteDrawer(true)"
         />
       </v-expand-transition>
     </v-toolbar>
@@ -225,10 +227,9 @@ export default {
       this.$refs.searchComp.clearSearch();
     },
     onPopupRouteClick (routeInfo) {
-      this.drawer = true;
-      this.openedPanels = [1];
+      this.onOpenRouteDrawer()
       setTimeout(() => {
-        routeInfo?.path && this.$refs.sideBar.setRoute(routeInfo);
+        routeInfo?.path && this.$root.$emit('setRoute', routeInfo);
       }, 500);
     },
     onOpenPoiTree (poiCatId, isPoiId = false) {
@@ -274,8 +275,8 @@ export default {
         }
       })
     },
-    onOpenRouteDrawer () {
-      if (this.routeDrawer) {
+    onOpenRouteDrawer (alter = false) {
+      if (this.routeDrawer && alter) {
         this.routeDrawer = false;
         return;
       }
