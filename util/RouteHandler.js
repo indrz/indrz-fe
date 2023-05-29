@@ -261,7 +261,7 @@ const getDirections = async (
           }
         }
 
-        insertRouteDescriptionText(startName, endName, routeData);
+        // insertRouteDescriptionText(startName, endName, routeData);
         if (startName && endName) {
           mapInfo.$root.$emit('updateRouteFields', {
             fromData: {
