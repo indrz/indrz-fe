@@ -33,8 +33,26 @@ View the `/assets/custom_css` folder to find   here you can place your custom cs
 
 ## Create production build
 ```
-yarn run generate
+yarn generate
 ```
+
+To bump the version number run any of the following commands:
+
+### To bump the major version
+```
+yarn generate.major
+```
+
+### To bump the minor version
+```
+yarn generate.minor
+```
+
+### To bump the patch version
+```
+yarn generate.patch
+```
+
 Now just copy the `/dist` folder to your favourite webserver or static file server to serve it up using
 nginx, S3, GCP cloud storage, Netlify, you name it.
 ## Customize style
