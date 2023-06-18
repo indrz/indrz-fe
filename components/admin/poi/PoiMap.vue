@@ -71,7 +71,7 @@ import Overlay from 'ol/Overlay';
 import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
-import AttributesOverlay from './attributesOverlay.vue'
+import AttributesOverlay from './AttributesOverlay.vue'
 import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import 'ol/ol.css';
