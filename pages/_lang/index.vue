@@ -6,49 +6,55 @@
     fluid
     flat
   >
-    <poi-drawer
-      :show="shouldShowPoiDrawer"
-      :data="poiDrawerData"
-      :map="currentMap"
-      :drawer="drawer"
-      @update:drawer="drawer = $event"
-      @open-route-drawer="onOpenRouteDrawer(true)"
-      @hide-poi-drawer="onHidePoiDrawer"
-    />
-    <route-drawer
-      :show="shouldShowRouteDrawer"
-      :data="routeDrawerData"
-      :map="currentMap"
-      :drawer="drawer"
-      @on-close="routeDrawer = false"
-      @update:drawer="drawer = $event"
-      @setGlobalRoute="onSetGlobalRoute"
-      @routeGo="onRouteGo"
-    />
-    <v-navigation-drawer
-      v-model="drawer"
-      bottom
-      style="width: 275px"
-      fixed
-      app
-    >
-      <sidebar
-        ref="sideBar"
-        :menu-items="items"
-        :opened-panels="openedPanels"
-        :initial-poi-cat-id="initialPoiCatId"
-        :initial-poi-id="initialPoiId"
-        @menuButtonClick="onMenuButtonClick"
-        @locationClick="onLocationClick"
+    <template v-if="shouldShowPoiDrawer">
+      <poi-drawer
+        :show="shouldShowPoiDrawer"
+        :data="poiDrawerData"
+        :map="currentMap"
+        :drawer="drawer"
+        @update:drawer="drawer = $event"
+        @open-route-drawer="onOpenRouteDrawer(true)"
+        @hide-poi-drawer="onHidePoiDrawer"
+      />
+    </template>
+    <template v-if="shouldShowRouteDrawer">
+      <route-drawer
+        :show="shouldShowRouteDrawer"
+        :data="routeDrawerData"
+        :map="currentMap"
+        :drawer="drawer"
+        @on-close="routeDrawer = false"
+        @update:drawer="drawer = $event"
         @setGlobalRoute="onSetGlobalRoute"
         @routeGo="onRouteGo"
-        @clearRoute="onClearRoute"
-        @shareClick="onShareClick"
-        @poiLoad="onPoiLoad"
-        @loadSinglePoi="loadSinglePoi"
-        @hideSidebar="drawer = false"
       />
-    </v-navigation-drawer>
+    </template>
+    <template v-if="drawer">
+      <v-navigation-drawer
+        v-model="drawer"
+        bottom
+        style="width: 275px"
+        fixed
+        app
+      >
+        <sidebar
+          ref="sideBar"
+          :menu-items="items"
+          :opened-panels="openedPanels"
+          :initial-poi-cat-id="initialPoiCatId"
+          :initial-poi-id="initialPoiId"
+          @menuButtonClick="onMenuButtonClick"
+          @locationClick="onLocationClick"
+          @setGlobalRoute="onSetGlobalRoute"
+          @routeGo="onRouteGo"
+          @clearRoute="onClearRoute"
+          @shareClick="onShareClick"
+          @poiLoad="onPoiLoad"
+          @loadSinglePoi="loadSinglePoi"
+          @hideSidebar="drawer = false"
+        />
+      </v-navigation-drawer>
+    </template>
     <v-toolbar
       v-show="!shouldShowPoiDrawer"
       :max-width="toolbarWidth"
