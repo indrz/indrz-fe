@@ -58,19 +58,8 @@
       class="ma-2"
     >
       <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
-      <template v-if="isSmallScreen">
-        <v-btn icon @click="showSearch = !showSearch">
-          <v-icon v-if="!showSearch">
-            mdi-magnify
-          </v-icon>
-          <v-icon v-if="showSearch">
-            mdi-chevron-left
-          </v-icon>
-        </v-btn>
-      </template>
       <v-expand-transition>
         <campus-search
-          v-show="!isSmallScreen || showSearch"
           ref="searchComp"
           show-route
           @selectSearhResult="onSearchSelect"
