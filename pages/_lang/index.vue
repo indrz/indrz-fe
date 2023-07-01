@@ -15,6 +15,7 @@
         @update:drawer="drawer = $event"
         @open-route-drawer="onOpenRouteDrawer(true)"
         @hide-poi-drawer="onHidePoiDrawer"
+        @update:show="poiDrawer = $event"
       />
     </template>
     <template v-if="shouldShowRouteDrawer">
@@ -25,6 +26,7 @@
         :drawer="drawer"
         @on-close="routeDrawer = false"
         @update:drawer="drawer = $event"
+        @update:show="routeDrawer = $event"
         @setGlobalRoute="onSetGlobalRoute"
         @routeGo="onRouteGo"
       />
@@ -263,6 +265,7 @@ export default {
       this.poiDrawerData = { name_en: '', name: '' }
       this.$nextTick(() => {
         this.poiDrawer = !!feature;
+        debugger;
         if (this.poiDrawer) {
           this.drawer = false;
           this.routeDrawer = false;

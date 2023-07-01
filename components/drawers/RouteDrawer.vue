@@ -157,7 +157,8 @@ export default {
       get: function () {
         return this.show;
       },
-      set: function () {
+      set: function (value) {
+        this.$emit('update:show', value)
       }
     },
     logo () {

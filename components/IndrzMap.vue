@@ -105,6 +105,9 @@ export default {
     },
     homePageUrl () {
       return env.HOME_PAGE_URL
+    },
+    isSmallScreen () {
+      return this.$vuetify.breakpoint.smAndDown;
     }
   },
 
@@ -215,7 +218,7 @@ export default {
       this.$emit('open-poi-drawer', {
         feature: properties
       })
-      MapHandler.openIndrzPopup(
+      !this.isSmallScreen && MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorNum, this.popup,
