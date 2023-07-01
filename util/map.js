@@ -680,6 +680,7 @@ const loadMapWithParams = async (mapInfo, query) => {
     if (query.q !== 'coords') {
       response = await searchThroughAPI(query.q, env.SHARE_SPACE_URL);
     }
+
     const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
       mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.$i18n.locale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
       mapInfo.routeFromValTemp, mapInfo.activeFloorNum, mapInfo.popup, response);
@@ -699,6 +700,8 @@ const loadMapWithParams = async (mapInfo, query) => {
       mapInfo.globalSearchInfo.selectedItem = result.selectedItem;
     }
     mapInfo.searchLayer = result.searchLayer;
+
+    return result?.selectedItem || response?.properties;
   }
   if (query['poi-cat-id']) {
     mapInfo.$emit('openPoiTree', query['poi-cat-id']);
@@ -825,12 +828,14 @@ const loadMapFromSpaceIdToPoiIdRoute = (startSpaceId, endPoiId, mapInfo) => {
 };
 
 const getRouteDescriptionListItem = (label, value) => {
-  const listStartTemplate = `<li class="list-group-item"><span class="font-weight-medium">`;
-  const listEndTemplate = `</span></li>`;
+  const listStartTemplate = '<li class="list-group-item"><span class="font-weight-medium">';
+  const listEndTemplate = '</span></li>';
 
-  return value ? `${listStartTemplate}
+  return value
+    ? `${listStartTemplate}
                     ${label ? (label + ': ') : ''}${value}
-                  ${listEndTemplate}` : '';
+                  ${listEndTemplate}`
+    : '';
 };
 
 const createMapCanvas = (map) => {

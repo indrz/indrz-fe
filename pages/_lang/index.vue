@@ -6,8 +6,28 @@
     fluid
     flat
   >
+    <poi-drawer
+      :show="shouldShowPoiDrawer"
+      :data="poiDrawerData"
+      :map="currentMap"
+      :drawer="drawer"
+      @update:drawer="drawer = $event"
+      @open-route-drawer="onOpenRouteDrawer(true)"
+      @hide-poi-drawer="onHidePoiDrawer"
+    />
+    <route-drawer
+      :show="shouldShowRouteDrawer"
+      :data="routeDrawerData"
+      :map="currentMap"
+      :drawer="drawer"
+      @on-close="routeDrawer = false"
+      @update:drawer="drawer = $event"
+      @setGlobalRoute="onSetGlobalRoute"
+      @routeGo="onRouteGo"
+    />
     <v-navigation-drawer
       v-model="drawer"
+      bottom
       style="width: 275px"
       fixed
       app
@@ -30,15 +50,16 @@
       />
     </v-navigation-drawer>
     <v-toolbar
+      v-show="!shouldShowPoiDrawer"
       :max-width="toolbarWidth"
       dense
       rounded
       floating
       class="ma-2"
     >
-      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer" />
+      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
       <template v-if="isSmallScreen">
-        <v-btn @click="showSearch = !showSearch" icon>
+        <v-btn icon @click="showSearch = !showSearch">
           <v-icon v-if="!showSearch">
             mdi-magnify
           </v-icon>
@@ -48,7 +69,14 @@
         </v-btn>
       </template>
       <v-expand-transition>
-        <campus-search ref="searchComp" v-show="!isSmallScreen || showSearch" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
+        <campus-search
+          v-show="!isSmallScreen || showSearch"
+          ref="searchComp"
+          show-route
+          @selectSearhResult="onSearchSelect"
+          @showSearch="onShowSearch"
+          @open-route-drawer="onOpenRouteDrawer(true)"
+        />
       </v-expand-transition>
     </v-toolbar>
     <indrz-map
@@ -59,6 +87,7 @@
       @openPoiTree="onOpenPoiTree"
       @openPoiToPoiRoute="onOpenPoiToPoiRoute"
       @showSearchResult="onShowSearchResult"
+      @open-poi-drawer="onOpenPoiDrawer"
     />
     <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
     <snack-bar />
@@ -73,6 +102,8 @@ import FloorChanger from '../../components/FloorChanger';
 import CampusSearch from '../../components/CampusSearch';
 import SnackBar from '../../components/SnackBar';
 import mapHandler from '../../util/mapHandler';
+import PoiDrawer from '@/components/drawers/PoiDrawer';
+import RouteDrawer from '@/components/drawers/RouteDrawer.vue';
 
 export default {
   components: {
@@ -80,12 +111,18 @@ export default {
     IndrzMap,
     FloorChanger,
     CampusSearch,
-    SnackBar
+    SnackBar,
+    PoiDrawer,
+    RouteDrawer
   },
   data () {
     return {
       clipped: false,
       drawer: false,
+      poiDrawer: false,
+      routeDrawer: false,
+      poiDrawerData: {},
+      routeDrawerData: {},
       fixed: false,
       loading: true,
       items: [
@@ -102,7 +139,8 @@ export default {
       openedPanels: [],
       initialPoiCatId: null,
       initialPoiId: null,
-      showSearch: false
+      showSearch: false,
+      currentMap: {}
     };
   },
 
@@ -114,10 +152,24 @@ export default {
       return this.$refs.map;
     },
     isSmallScreen () {
-      return this.$vuetify.breakpoint.mdAndDown;
+      return this.$vuetify.breakpoint.smAndDown;
     },
     toolbarWidth () {
       return this.isSmallScreen ? '280px' : '320px';
+    },
+    shouldShowPoiDrawer: {
+      get () {
+        return this.poiDrawer && !this.drawer && !this.routeDrawer;
+      },
+      set () {
+      }
+    },
+    shouldShowRouteDrawer: {
+      get () {
+        return this.routeDrawer && !this.poiDrawer && !this.drawer;
+      },
+      set () {
+      }
     }
   },
 
@@ -136,6 +188,7 @@ export default {
     mapHandler.setI18n(this.$i18n);
     await this.loadFloors();
     mapComponent.loadLayers(this.floors);
+    this.currentMap = mapComponent;
     this.loading = false;
     if (this.setSelection) {
       this.selectFloorWithCss(this.setSelection);
@@ -174,10 +227,9 @@ export default {
       this.$refs.searchComp.clearSearch();
     },
     onPopupRouteClick (routeInfo) {
-      this.drawer = true;
-      this.openedPanels = [1];
+      this.onOpenRouteDrawer()
       setTimeout(() => {
-        this.$refs.sideBar.setRoute(routeInfo);
+        routeInfo?.path && this.$root.$emit('setRoute', routeInfo);
       }, 500);
     },
     onOpenPoiTree (poiCatId, isPoiId = false) {
@@ -211,6 +263,31 @@ export default {
     },
     onShowSearch () {
       this.showSearch = true;
+    },
+    onOpenPoiDrawer ({ feature }) {
+      this.poiDrawerData = { name_en: '', name: '' }
+      this.$nextTick(() => {
+        this.poiDrawer = !!feature;
+        if (this.poiDrawer) {
+          this.drawer = false;
+          this.routeDrawer = false;
+          this.poiDrawerData = feature;
+        }
+      })
+    },
+    onOpenRouteDrawer (alter = false) {
+      if (this.routeDrawer && alter) {
+        this.routeDrawer = false;
+        return;
+      }
+      this.drawer = false;
+      this.poiDrawer = false;
+      this.routeDrawer = true;
+      this.routeDrawerData = {};
+    },
+    onHidePoiDrawer () {
+      this.poiDrawerData = {};
+      this.poiDrawer = false;
     }
   }
 };
@@ -220,8 +297,5 @@ export default {
   header {
     position: absolute;
     z-index: 6;
-  }
-  nav {
-    z-index: 7
   }
 </style>

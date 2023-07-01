@@ -261,7 +261,7 @@ const getDirections = async (
           }
         }
 
-        insertRouteDescriptionText(startName, endName, routeData);
+        // insertRouteDescriptionText(startName, endName, routeData);
         if (startName && endName) {
           mapInfo.$root.$emit('updateRouteFields', {
             fromData: {
@@ -305,7 +305,12 @@ const getDirections = async (
       const extent = source.getExtent();
       map.getView().fit(extent);
 
-      return routeUrl;
+      return {
+        ...routeData.route_info,
+        start_name: startName,
+        end_name: endName,
+        routeUrl
+      };
     });
   } catch ({ response }) {
     if ((response && response.status === 404) || (response.data.error && response.data.error === 'no geometry')) {

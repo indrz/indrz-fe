@@ -567,6 +567,7 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
                 return dataProperties;
               }
             }
+            return false;
           });
 
           mapInfo.globalSearchInfo = {

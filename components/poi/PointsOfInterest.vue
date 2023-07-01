@@ -8,8 +8,8 @@
       />
     </div>
     <v-treeview
-      ref="poi"
       v-if="!loading"
+      ref="poi"
       v-model="tree"
       :multiple-active="multi"
       :items="poiData"
@@ -21,8 +21,8 @@
       dense
       style="overflow: auto; width: auto;"
     >
-      <template slot="label" slot-scope="{ item }">
-        <span @click="onTreeClick(item)" style="white-space: normal">
+      <template v-slot:label="{ item }">
+        <span style="white-space: normal" @click="onTreeClick(item)">
           {{ item['name_' + $i18n.locale] }}
         </span>
       </template>

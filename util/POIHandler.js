@@ -177,7 +177,10 @@ const showSinglePoi = async (poiId, globalPopupInfo, zlevel, map, popup, activeF
     null, offSetPos, layerNamePrefix);
   MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
-  return poiLayer;
+  return {
+    layer: poiLayer,
+    feature: properties
+  };
 };
 
 const setPoiFeatureVisibility = (map, activeFloorNum, layerNamePrefix) => {

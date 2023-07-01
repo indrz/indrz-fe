@@ -1,12 +1,14 @@
 <template>
   <div id="indrz-popup" :style="{'min-width': popupSize.width}" scrollable title="indrz info" class="ol-popup indrz-popup">
+    <div style="height: 10px">
+      <a id="popup-closer" href="#" class="ol-popup-closer" @click.stop="onPopupCloseClick" />
+    </div>
     <div :style="{'max-height': popupSize.height, 'overflow': 'auto'}">
-      <a id="popup-closer" @click.stop="onPopupCloseClick" href="#" class="ol-popup-closer" />
       <div id="popup-content" />
       <div id="popup-links">
         <v-row no-gutters>
           <v-col>
-            <v-btn @click.stop="onRouteClick('from')" text color="wu" small>
+            <v-btn text color="wu" small @click.stop="onRouteClick('from')">
               <v-icon left>
                 mdi-map-marker
               </v-icon> {{ locale.routeFromHereText }}
@@ -15,7 +17,7 @@
         </v-row>
         <v-row no-gutters>
           <v-col>
-            <v-btn @click.stop="onRouteClick('to')" text color="wu" small>
+            <v-btn text color="wu" small @click.stop="onRouteClick('to')">
               <v-icon left>
                 mdi-map-marker
               </v-icon> {{ locale.routeToHereText }}
@@ -29,12 +31,12 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-btn
-                  v-on="on"
-                  @click.stop="onEntranceButtonClick"
                   tile
                   small
                   dark
                   color="wu"
+                  v-on="on"
+                  @click.stop="onEntranceButtonClick"
                 >
                   <v-icon left>
                     mdi-routes
@@ -49,12 +51,12 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-btn
-                  v-on="on"
-                  @click.stop="onMetroButtonClick"
                   small
                   tile
                   dark
                   color="wu"
+                  v-on="on"
+                  @click.stop="onMetroButtonClick"
                 >
                   <v-icon left>
                     mdi-routes
@@ -69,12 +71,12 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click.stop="onDefiButtonClick"
-                  v-on="on"
                   color="wu"
                   tile
                   dark
                   small
+                  @click.stop="onDefiButtonClick"
+                  v-on="on"
                 >
                   <v-icon>mdi-heart-flash</v-icon>
                 </v-btn>
@@ -86,12 +88,12 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click.stop="onShareButtonClick"
-                  v-on="on"
                   color="wu"
                   tile
                   dark
                   small
+                  @click.stop="onShareButtonClick"
+                  v-on="on"
                 >
                   <v-icon>mdi-share-variant</v-icon>
                 </v-btn>
