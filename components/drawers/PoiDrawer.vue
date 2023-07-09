@@ -1,14 +1,18 @@
 <template>
   <v-navigation-drawer
+    ref="drawer"
     v-model="shouldShowPoiDrawer"
     bottom
-    style="width: 410px"
+    :style="{ width: '410px', height: drawerHeight + 'px' }"
     fixed
     app
+    @transitionend="onTransitionEnd"
   >
+    <div class="draggable-handle" style="mb-2" @mousedown="startDrag" />
     <div v-if="!poiImages" style="ma-2">
       <v-card
         flat
+        style="margin-top: 20px"
       >
         <v-row justify="center">
           <v-img
@@ -365,6 +369,8 @@ export default {
   },
   data () {
     return {
+      dragHandle: null,
+      drawerHeight: 0,
       poiImages: false,
       showGallery: false,
       galleryImageIndex: 0,
@@ -434,7 +440,41 @@ export default {
     }
   },
 
+  mounted () {
+    this.$nextTick(() => {
+      this.drawerHeight = this.$parent.$el.clientHeight / 2
+    })
+  },
+
   methods: {
+    onTransitionEnd () {
+      this.$refs.drawer.$el.style.transition = ''
+    },
+    startDrag (event) {
+      event.preventDefault()
+      this.$refs.drawer.$el.style.transition = 'none'
+      this.dragHandle = event.target
+      const initialHeight = this.drawerHeight
+      const startY = event.clientY
+
+      const drag = (event) => {
+        if (event.buttons === 0) {
+          stopDrag()
+          return
+        }
+        const deltaY = startY - event.clientY
+        this.drawerHeight = initialHeight + deltaY
+      }
+
+      const stopDrag = () => {
+        window.removeEventListener('mousemove', drag)
+        window.removeEventListener('mouseup', stopDrag)
+        this.dragHandle = null
+      }
+
+      window.addEventListener('mousemove', drag)
+      window.addEventListener('mouseup', stopDrag)
+    },
     onEntranceButtonClick () {
       this.$root.$emit('popupRouteClick', 'from');
       this.$root.$emit('popupEntranceButtonClick');
@@ -505,5 +545,19 @@ export default {
   }
   .gallery-thumb {
     cursor: pointer;
+  }
+
+  .draggable-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 10px;
+    cursor: ns-resize;
+  }
+
+  .v-navigation-drawer--is-mobile {
+    max-height: 100%;
+    min-height: 20%;
   }
 </style>
