@@ -1,11 +1,15 @@
 <template>
   <v-navigation-drawer
-    v-model="shouldShowRouteDrawer"
+    ref="drawer"
+    v-model="shouldShowDrawer"
+    class="resizable"
     bottom
-    style="width: 410px"
+    :style="{ width: '410px', height: drawerHeight + 'px' }"
     fixed
     app
+    @transitionend="onTransitionEnd"
   >
+    <div class="draggable-handle" style="mb-2" @mousedown="startDrag" />
     <div style="ma-2">
       <v-container>
         <v-row class="d-flex justify-content-end">
@@ -100,6 +104,7 @@
 <script>
 import config from '../../util/indrzConfig';
 import CampusSearch from '../CampusSearch.vue';
+import BaseDrawer from './BaseDrawer';
 
 const { env } = config;
 
@@ -108,36 +113,8 @@ export default {
   components: {
     CampusSearch
   },
+  mixins: [BaseDrawer],
 
-  props: {
-    drawer: {
-      type: Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    show: {
-      type: Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    data: {
-      type: Object,
-      default: function () {
-        return {
-          name: ''
-        }
-      }
-    },
-    map: {
-      type: Object,
-      required: true,
-      default: function () {
-        return {}
-      }
-    }
-  },
   data () {
     return {
       poiRoute: false,
@@ -153,14 +130,6 @@ export default {
     }
   },
   computed: {
-    shouldShowRouteDrawer: {
-      get: function () {
-        return this.show;
-      },
-      set: function (value) {
-        this.$emit('update:show', value)
-      }
-    },
     logo () {
       return {
         file: env.LOGO_FILE,
