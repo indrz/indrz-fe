@@ -35,7 +35,7 @@
               </v-row>
             </template>
             <drawer-search
-              :map="map"
+              :map="baseMap"
               :drawer="mainDrawer"
               :search-title="searchTitle"
               class="mt-4"

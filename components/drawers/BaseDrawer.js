@@ -1,7 +1,7 @@
 export default {
   name: 'BaseDrawer',
   props: {
-    drawer: {
+    navigation: {
       type: Boolean,
       default: function () {
         return false;
@@ -21,9 +21,9 @@ export default {
         }
       }
     },
-    map: {
+    baseMap: {
       type: Object,
-      required: true,
+      required: false,
       default: function () {
         return {}
       }
@@ -46,7 +46,7 @@ export default {
     },
     mainDrawer: {
       get: function () {
-        return this.drawer;
+        return this.navigation;
       },
       set: function (newValue) {
         this.$emit('update:drawer', newValue);

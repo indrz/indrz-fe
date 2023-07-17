@@ -10,8 +10,8 @@
       <poi-drawer
         :show="shouldShowPoiDrawer"
         :data="poiDrawerData"
-        :map="currentMap"
-        :drawer="drawer"
+        :base-map="currentMap"
+        :navigation="drawer"
         @update:drawer="drawer = $event"
         @open-route-drawer="onOpenRouteDrawer(true)"
         @hide-poi-drawer="onHidePoiDrawer"
@@ -22,8 +22,8 @@
       <route-drawer
         :show="shouldShowRouteDrawer"
         :data="routeDrawerData"
-        :map="currentMap"
-        :drawer="drawer"
+        :base-map="currentMap"
+        :navigation="drawer"
         @on-close="routeDrawer = false"
         @update:drawer="drawer = $event"
         @update:show="routeDrawer = $event"
@@ -33,12 +33,16 @@
     </template>
     <template v-if="drawer">
       <v-navigation-drawer
+        ref="drawer"
         v-model="drawer"
+        class="resizable"
         bottom
-        style="width: 275px"
+        :style="{ width: '275px', height: drawerHeight + 'px' }"
         fixed
         app
+        @transitionend="onTransitionEnd"
       >
+        <div class="draggable-handle" style="mb-2" @mousedown="startDrag" />
         <sidebar
           ref="sideBar"
           :menu-items="items"
@@ -101,6 +105,7 @@ import SnackBar from '../../components/SnackBar';
 import mapHandler from '../../util/mapHandler';
 import PoiDrawer from '@/components/drawers/PoiDrawer';
 import RouteDrawer from '@/components/drawers/RouteDrawer.vue';
+import BaseDrawer from '@/components/drawers/BaseDrawer'
 
 export default {
   components: {
@@ -112,6 +117,7 @@ export default {
     PoiDrawer,
     RouteDrawer
   },
+  mixins: [BaseDrawer],
   data () {
     return {
       clipped: false,
