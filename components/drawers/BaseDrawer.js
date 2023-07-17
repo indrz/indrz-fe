@@ -51,16 +51,26 @@ export default {
       set: function (newValue) {
         this.$emit('update:drawer', newValue);
       }
+    },
+    isMobile () {
+      return this.$vuetify.breakpoint.mobile;
     }
   },
 
   mounted () {
-    this.$nextTick(() => {
-      this.drawerHeight = this.$parent.$el.clientHeight / 2;
-    })
+    this.$nextTick(() =>
+      this.setHeight()
+    )
+    window.onresize = () => {
+      this.setHeight();
+    };
   },
 
   methods: {
+    setHeight () {
+      const height = this.$parent.$el.clientHeight;
+      this.drawerHeight = this.isMobile ? height / 2 : height;
+    },
     onTransitionEnd () {
       this.$refs.drawer.$el.style.transition = ''
     },

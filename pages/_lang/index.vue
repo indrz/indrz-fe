@@ -37,12 +37,12 @@
         v-model="drawer"
         class="resizable"
         bottom
-        :style="{ width: '275px', height: drawerHeight + 'px' }"
+        :style="isMobile ? { width: '275px', height: drawerHeight + 'px' } : {width: '275px'}"
         fixed
         app
         @transitionend="onTransitionEnd"
       >
-        <div class="draggable-handle" style="mb-2" @mousedown="startDrag" />
+        <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
         <sidebar
           ref="sideBar"
           :menu-items="items"
@@ -271,7 +271,6 @@ export default {
       this.poiDrawerData = { name_en: '', name: '' }
       this.$nextTick(() => {
         this.poiDrawer = !!feature;
-        debugger;
         if (this.poiDrawer) {
           this.drawer = false;
           this.routeDrawer = false;

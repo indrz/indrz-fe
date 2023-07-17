@@ -9,7 +9,7 @@
     app
     @transitionend="onTransitionEnd"
   >
-    <div class="draggable-handle" style="mb-2" @mousedown="startDrag" />
+    <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
     <div v-if="!poiImages" style="ma-2">
       <v-card
         flat
