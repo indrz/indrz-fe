@@ -1,7 +1,8 @@
 <template>
   <v-navigation-drawer
     ref="drawer"
-    v-model="shouldShowPoiDrawer"
+    v-model="shouldShowDrawer"
+    class="resizable"
     bottom
     :style="{ width: '410px', height: drawerHeight + 'px' }"
     fixed
@@ -327,6 +328,7 @@ import config from '../../util/indrzConfig';
 import CampusSearch from '../CampusSearch.vue';
 import PhotoGallery from '../PhotoGallery';
 import DrawerSearch from './DrawerSearch.vue';
+import BaseDrawer from './BaseDrawer';
 
 const { env } = config;
 
@@ -337,40 +339,9 @@ export default {
     DrawerSearch,
     PhotoGallery
   },
-
-  props: {
-    drawer: {
-      type: Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    show: {
-      type: Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    data: {
-      type: Object,
-      default: function () {
-        return {
-          name: ''
-        }
-      }
-    },
-    map: {
-      type: Object,
-      required: true,
-      default: function () {
-        return {}
-      }
-    }
-  },
+  mixins: [BaseDrawer],
   data () {
     return {
-      dragHandle: null,
-      drawerHeight: 0,
       poiImages: false,
       showGallery: false,
       galleryImageIndex: 0,
@@ -403,22 +374,6 @@ export default {
     }
   },
   computed: {
-    shouldShowPoiDrawer: {
-      get: function () {
-        return this.show;
-      },
-      set: function (value) {
-        this.$emit('update:show', value)
-      }
-    },
-    mainDrawer: {
-      get: function () {
-        return this.drawer;
-      },
-      set: function (newValue) {
-        this.$emit('update:drawer', newValue);
-      }
-    },
     logo () {
       return {
         file: env.LOGO_FILE,
@@ -440,41 +395,7 @@ export default {
     }
   },
 
-  mounted () {
-    this.$nextTick(() => {
-      this.drawerHeight = this.$parent.$el.clientHeight / 2
-    })
-  },
-
   methods: {
-    onTransitionEnd () {
-      this.$refs.drawer.$el.style.transition = ''
-    },
-    startDrag (event) {
-      event.preventDefault()
-      this.$refs.drawer.$el.style.transition = 'none'
-      this.dragHandle = event.target
-      const initialHeight = this.drawerHeight
-      const startY = event.clientY
-
-      const drag = (event) => {
-        if (event.buttons === 0) {
-          stopDrag()
-          return
-        }
-        const deltaY = startY - event.clientY
-        this.drawerHeight = initialHeight + deltaY
-      }
-
-      const stopDrag = () => {
-        window.removeEventListener('mousemove', drag)
-        window.removeEventListener('mouseup', stopDrag)
-        this.dragHandle = null
-      }
-
-      window.addEventListener('mousemove', drag)
-      window.addEventListener('mouseup', stopDrag)
-    },
     onEntranceButtonClick () {
       this.$root.$emit('popupRouteClick', 'from');
       this.$root.$emit('popupEntranceButtonClick');
@@ -545,19 +466,5 @@ export default {
   }
   .gallery-thumb {
     cursor: pointer;
-  }
-
-  .draggable-handle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 10px;
-    cursor: ns-resize;
-  }
-
-  .v-navigation-drawer--is-mobile {
-    max-height: 100%;
-    min-height: 20%;
   }
 </style>

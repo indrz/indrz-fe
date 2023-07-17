@@ -114,7 +114,6 @@ export default {
     CampusSearch
   },
   mixins: [BaseDrawer],
-
   data () {
     return {
       poiRoute: false,
