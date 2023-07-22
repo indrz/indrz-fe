@@ -11,8 +11,8 @@
   >
     <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
     <div style="ma-2">
-      <v-container>
-        <v-row class="d-flex justify-content-end">
+      <v-container justify="center" class="pa-0" style="margin-top: 20px; max-width: 410px">
+        <v-row class="ma-0">
           <v-img
             :max-width="410"
             :aspect-ratio="1.52"
