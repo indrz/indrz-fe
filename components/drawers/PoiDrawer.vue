@@ -76,13 +76,13 @@
             </v-tab>
           </v-tabs>
 
-          <v-tabs-items v-model="activeTabIndex">
+          <v-tabs-items v-model="activeTabIndex" class="row justify-center ma-0">
             <v-tab-item>
               <div />
             </v-tab-item>
             <v-tab-item>
-              <div class="ma-2">
-                <v-row no-gutters class="ml-2">
+              <div style="width: 410px">
+                <v-row no-gutters>
                   <v-col cols="1" class="title-items">
                     <v-img
                       v-if="data.icon"
