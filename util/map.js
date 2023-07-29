@@ -29,11 +29,11 @@ import POIHandler from '~/util/POIHandler';
 
 const { env } = config;
 const initializeMap = ({
-  mapId, predefinedPopup, isMobile
+  mapId, predefinedPopup, center, zoom
 }) => {
   const view = new View({
-    center: getStartCenter(isMobile),
-    zoom: getStartZoom(isMobile),
+    center,
+    zoom,
     maxZoom: 23
   });
 
@@ -604,9 +604,6 @@ const getLayers = () => {
   }
 }
 
-const getStartCenter = isMobile => isMobile ? env.MOBILE_START_CENTER_XY : env.DEFAULT_CENTER_XY;
-const getStartZoom = isMobile => isMobile ? env.MOBILE_START_ZOOM : env.DEFAULT_START_ZOOM;
-
 const getMapControls = () => {
   const attributionControl = new Attribution({
     collapsible: false
@@ -873,8 +870,6 @@ const createMapCanvas = (map) => {
 
 export default {
   initializeMap,
-  getStartCenter,
-  getStartZoom,
   getMapControls,
   getWmsLayers,
   getLayers,

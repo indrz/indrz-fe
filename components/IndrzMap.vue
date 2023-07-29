@@ -123,7 +123,8 @@ export default {
 
     const { view, map, layers, popup } = MapUtil.initializeMap({
       mapId: this.mapId,
-      isMobile: this.isMobile
+      center: this.defaultCenter,
+      zoom: this.defaultZoom
     });
 
     this.view = view;

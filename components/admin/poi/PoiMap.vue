@@ -134,6 +134,9 @@ export default {
     defaultCenter () {
       return this.isMobile ? env.MOBILE_START_CENTER_XY : env.DEFAULT_CENTER_XY
     },
+    defaultZoom () {
+      return this.isMobile ? env.MOBILE_START_ZOOM : env.DEFAULT_START_ZOOM;
+    },
     env () {
       return {
         homePageUrl: env.HOME_PAGE_URL,
@@ -168,7 +171,8 @@ export default {
       const { view, map, layers } = MapUtil.initializeMap({
         mapId: this.mapId,
         predefinedPopup: this.popup,
-        isMobile: this.isMobile
+        center: this.defaultCenter,
+        zoom: this.defaultZoom
       });
 
       this.view = view;
