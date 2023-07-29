@@ -5,11 +5,11 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         min-width="95px"
         class="pa-2 map-switcher"
         small
         dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -105,6 +105,15 @@ export default {
     },
     homePageUrl () {
       return env.HOME_PAGE_URL
+    },
+    isMobile () {
+      return this.$vuetify.breakpoint.mobile;
+    },
+    defaultCenter () {
+      return this.isMobile ? env.MOBILE_START_CENTER_XY : env.DEFAULT_CENTER_XY
+    },
+    defaultZoom () {
+      return this.isMobile ? env.MOBILE_START_ZOOM : env.DEFAULT_START_ZOOM;
     }
   },
 
@@ -112,7 +121,10 @@ export default {
     const query = queryString.parse(location.search);
     this.showHideHeaderFooter(query);
 
-    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
+    const { view, map, layers, popup } = MapUtil.initializeMap({
+      mapId: this.mapId,
+      isMobile: this.isMobile
+    });
 
     this.view = view;
     this.map = map;
@@ -300,7 +312,7 @@ export default {
     onMenuButtonClick (type) {
       switch (type) {
         case 'zoom-home':
-          menuHandler.handleZoomToHome(this, env.DEFAULT_CENTER_XY);
+          menuHandler.handleZoomToHome(this, this.defaultCenter, this.defaultZoom);
           break;
         case 'download':
           menuHandler.handleDownLoad(this);

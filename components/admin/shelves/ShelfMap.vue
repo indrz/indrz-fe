@@ -5,12 +5,12 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         color="rgba(0,60,136,0.5)"
         min-width="95px"
         class="pa-2"
         small
         dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -61,6 +61,12 @@ export default {
     };
   },
   computed: {
+    isMobile () {
+      return this.$vuetify.breakpoint.mobile;
+    },
+    defaultCenter () {
+      return this.isMobile ? env.MOBILE_START_CENTER_XY : env.DEFAULT_CENTER_XY
+    },
     env () {
       return {
         homePageUrl: env.HOME_PAGE_URL,
@@ -70,7 +76,7 @@ export default {
         baseWmsUrl: env.BASE_WMS_URL,
         geoServerLayerPrefix: env.GEO_SERVER_LAYER_PREFIX,
         layerNamePrefix: env.LAYER_NAME_PREFIX,
-        center: env.DEFAULT_CENTER_XY
+        center: this.defaultCenter
       };
     },
     ...mapState({
@@ -86,7 +92,10 @@ export default {
   },
   methods: {
     initializeMap () {
-      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
+      const { view, map, layers, popup } = MapUtil.initializeMap({
+        mapId: this.mapId,
+        isMobile: this.isMobile
+      });
 
       this.view = view;
       this.map = map;

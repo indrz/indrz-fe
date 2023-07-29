@@ -28,10 +28,12 @@ import config from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
 
 const { env } = config;
-const initializeMap = (mapId, predefinedPopup) => {
+const initializeMap = ({
+  mapId, predefinedPopup, isMobile
+}) => {
   const view = new View({
-    center: getStartCenter(),
-    zoom: getStartZoom(),
+    center: getStartCenter(isMobile),
+    zoom: getStartZoom(isMobile),
     maxZoom: 23
   });
 
@@ -602,8 +604,8 @@ const getLayers = () => {
   }
 }
 
-const getStartCenter = () => env.DEFAULT_CENTER_XY;
-const getStartZoom = (zoom = 15) => env.DEFAULT_START_ZOOM;
+const getStartCenter = isMobile => isMobile ? env.MOBILE_START_CENTER_XY : env.DEFAULT_CENTER_XY;
+const getStartZoom = isMobile => isMobile ? env.MOBILE_START_ZOOM : env.DEFAULT_START_ZOOM;
 
 const getMapControls = () => {
   const attributionControl = new Attribution({
@@ -825,12 +827,14 @@ const loadMapFromSpaceIdToPoiIdRoute = (startSpaceId, endPoiId, mapInfo) => {
 };
 
 const getRouteDescriptionListItem = (label, value) => {
-  const listStartTemplate = `<li class="list-group-item"><span class="font-weight-medium">`;
-  const listEndTemplate = `</span></li>`;
+  const listStartTemplate = '<li class="list-group-item"><span class="font-weight-medium">';
+  const listEndTemplate = '</span></li>';
 
-  return value ? `${listStartTemplate}
+  return value
+    ? `${listStartTemplate}
                     ${label ? (label + ': ') : ''}${value}
-                  ${listEndTemplate}` : '';
+                  ${listEndTemplate}`
+    : '';
 };
 
 const createMapCanvas = (map) => {
