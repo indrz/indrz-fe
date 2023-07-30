@@ -75,13 +75,14 @@
               <v-icon>{{ tabInfo.icon }}</v-icon>
             </v-tab>
           </v-tabs>
-
           <v-tabs-items v-model="activeTabIndex" class="row justify-center ma-0">
             <v-tab-item>
               <div />
             </v-tab-item>
+
             <v-tab-item>
-              <div style="width: 410px">
+              <v-divider class="mt-5 mb-5" />
+              <div class="panel-section-items">
                 <v-row no-gutters>
                   <v-col cols="1" class="title-items">
                     <v-img
@@ -98,9 +99,14 @@
                     />
                   </v-col>
                   <v-col cols="11" class="title-items">
-                    <span class="primary--text subtitle-1">{{ searchTitle }}</span>
+                    <span class="text-h6 primary--text">{{ searchTitle }}</span>
                   </v-col>
                 </v-row>
+              </div>
+
+              <v-divider v-if="data.room_code" class="mt-5 mb-5" />
+              <v-divider v-else-if="data.street" class="mt-5 mb-5" />
+              <div class="panel-section-items">
                 <v-row v-if="data.html_content">
                   <v-col>
                     <span v-html="data.html_content" />
@@ -224,7 +230,9 @@
                     </v-col>
                   </v-row>
                 </template>
-                <v-divider class="mt-5 mb-5" />
+              </div>
+              <v-divider class="mt-5 mb-5" />
+              <div class="panel-section-items">
                 <v-row no-gutters>
                   <v-col>
                     <v-btn text color="wu" small @click.stop="onRouteClick('from')">
@@ -466,5 +474,9 @@ export default {
   }
   .gallery-thumb {
     cursor: pointer;
+  }
+  .panel-section-items{
+    width: 410px;
+    padding: 5px 20px 5px 20px;
   }
 </style>
