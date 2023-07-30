@@ -6,49 +6,61 @@
     fluid
     flat
   >
-    <poi-drawer
-      :show="shouldShowPoiDrawer"
-      :data="poiDrawerData"
-      :map="currentMap"
-      :drawer="drawer"
-      @update:drawer="drawer = $event"
-      @open-route-drawer="onOpenRouteDrawer(true)"
-      @hide-poi-drawer="onHidePoiDrawer"
-    />
-    <route-drawer
-      :show="shouldShowRouteDrawer"
-      :data="routeDrawerData"
-      :map="currentMap"
-      :drawer="drawer"
-      @on-close="routeDrawer = false"
-      @update:drawer="drawer = $event"
-      @setGlobalRoute="onSetGlobalRoute"
-      @routeGo="onRouteGo"
-    />
-    <v-navigation-drawer
-      v-model="drawer"
-      bottom
-      style="width: 275px"
-      fixed
-      app
-    >
-      <sidebar
-        ref="sideBar"
-        :menu-items="items"
-        :opened-panels="openedPanels"
-        :initial-poi-cat-id="initialPoiCatId"
-        :initial-poi-id="initialPoiId"
-        @menuButtonClick="onMenuButtonClick"
-        @locationClick="onLocationClick"
+    <template v-if="shouldShowPoiDrawer">
+      <poi-drawer
+        :show="shouldShowPoiDrawer"
+        :data="poiDrawerData"
+        :base-map="currentMap"
+        :navigation="drawer"
+        @update:drawer="drawer = $event"
+        @open-route-drawer="onOpenRouteDrawer(true)"
+        @hide-poi-drawer="onHidePoiDrawer"
+        @update:show="poiDrawer = $event"
+      />
+    </template>
+    <template v-if="shouldShowRouteDrawer">
+      <route-drawer
+        :show="shouldShowRouteDrawer"
+        :data="routeDrawerData"
+        :base-map="currentMap"
+        :navigation="drawer"
+        @on-close="routeDrawer = false"
+        @update:drawer="drawer = $event"
+        @update:show="routeDrawer = $event"
         @setGlobalRoute="onSetGlobalRoute"
         @routeGo="onRouteGo"
-        @clearRoute="onClearRoute"
-        @shareClick="onShareClick"
-        @poiLoad="onPoiLoad"
-        @loadSinglePoi="loadSinglePoi"
-        @hideSidebar="drawer = false"
       />
-    </v-navigation-drawer>
+    </template>
+    <template v-if="drawer">
+      <v-navigation-drawer
+        ref="drawer"
+        v-model="drawer"
+        class="resizable"
+        bottom
+        :style="isMobile ? { width: '275px', height: drawerHeight + 'px' } : {width: '275px'}"
+        fixed
+        app
+        @transitionend="onTransitionEnd"
+      >
+        <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
+        <sidebar
+          ref="sideBar"
+          :menu-items="items"
+          :opened-panels="openedPanels"
+          :initial-poi-cat-id="initialPoiCatId"
+          :initial-poi-id="initialPoiId"
+          @menuButtonClick="onMenuButtonClick"
+          @locationClick="onLocationClick"
+          @setGlobalRoute="onSetGlobalRoute"
+          @routeGo="onRouteGo"
+          @clearRoute="onClearRoute"
+          @shareClick="onShareClick"
+          @poiLoad="onPoiLoad"
+          @loadSinglePoi="loadSinglePoi"
+          @hideSidebar="drawer = false"
+        />
+      </v-navigation-drawer>
+    </template>
     <v-toolbar
       v-show="!shouldShowPoiDrawer"
       :max-width="toolbarWidth"
@@ -58,19 +70,8 @@
       class="ma-2"
     >
       <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
-      <template v-if="isSmallScreen">
-        <v-btn icon @click="showSearch = !showSearch">
-          <v-icon v-if="!showSearch">
-            mdi-magnify
-          </v-icon>
-          <v-icon v-if="showSearch">
-            mdi-chevron-left
-          </v-icon>
-        </v-btn>
-      </template>
       <v-expand-transition>
         <campus-search
-          v-show="!isSmallScreen || showSearch"
           ref="searchComp"
           show-route
           @selectSearhResult="onSearchSelect"
@@ -104,6 +105,7 @@ import SnackBar from '../../components/SnackBar';
 import mapHandler from '../../util/mapHandler';
 import PoiDrawer from '@/components/drawers/PoiDrawer';
 import RouteDrawer from '@/components/drawers/RouteDrawer.vue';
+import BaseDrawer from '@/components/drawers/BaseDrawer'
 
 export default {
   components: {
@@ -115,6 +117,7 @@ export default {
     PoiDrawer,
     RouteDrawer
   },
+  mixins: [BaseDrawer],
   data () {
     return {
       clipped: false,

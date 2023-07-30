@@ -1,14 +1,19 @@
 <template>
   <v-navigation-drawer
-    v-model="shouldShowPoiDrawer"
+    ref="drawer"
+    v-model="shouldShowDrawer"
+    class="resizable"
     bottom
-    style="width: 410px"
+    :style="{ width: '410px', height: drawerHeight + 'px' }"
     fixed
     app
+    @transitionend="onTransitionEnd"
   >
+    <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
     <div v-if="!poiImages" style="ma-2">
       <v-card
         flat
+        style="margin-top: 20px"
       >
         <v-row justify="center">
           <v-img
@@ -30,7 +35,7 @@
               </v-row>
             </template>
             <drawer-search
-              :map="map"
+              :map="baseMap"
               :drawer="mainDrawer"
               :search-title="searchTitle"
               class="mt-4"
@@ -71,13 +76,13 @@
             </v-tab>
           </v-tabs>
 
-          <v-tabs-items v-model="activeTabIndex">
+          <v-tabs-items v-model="activeTabIndex" class="row justify-center ma-0">
             <v-tab-item>
               <div />
             </v-tab-item>
             <v-tab-item>
-              <div class="ma-2">
-                <v-row no-gutters class="ml-2">
+              <div style="width: 410px">
+                <v-row no-gutters>
                   <v-col cols="1" class="title-items">
                     <v-img
                       v-if="data.icon"
@@ -323,6 +328,7 @@ import config from '../../util/indrzConfig';
 import CampusSearch from '../CampusSearch.vue';
 import PhotoGallery from '../PhotoGallery';
 import DrawerSearch from './DrawerSearch.vue';
+import BaseDrawer from './BaseDrawer';
 
 const { env } = config;
 
@@ -333,36 +339,7 @@ export default {
     DrawerSearch,
     PhotoGallery
   },
-
-  props: {
-    drawer: {
-      type: Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    show: {
-      type: Boolean,
-      default: function () {
-        return false;
-      }
-    },
-    data: {
-      type: Object,
-      default: function () {
-        return {
-          name: ''
-        }
-      }
-    },
-    map: {
-      type: Object,
-      required: true,
-      default: function () {
-        return {}
-      }
-    }
-  },
+  mixins: [BaseDrawer],
   data () {
     return {
       poiImages: false,
@@ -397,21 +374,6 @@ export default {
     }
   },
   computed: {
-    shouldShowPoiDrawer: {
-      get: function () {
-        return this.show;
-      },
-      set: function () {
-      }
-    },
-    mainDrawer: {
-      get: function () {
-        return this.drawer;
-      },
-      set: function (newValue) {
-        this.$emit('update:drawer', newValue);
-      }
-    },
     logo () {
       return {
         file: env.LOGO_FILE,
