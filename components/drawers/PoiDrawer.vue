@@ -107,183 +107,89 @@
               <v-divider v-if="data.room_code" class="mt-5 mb-5" />
               <v-divider v-else-if="data.street" class="mt-5 mb-5" />
               <div class="panel-section-items">
-                <v-row v-if="data.html_content">
-                  <v-col>
+                <v-list class="list-label-value">
+                  <v-list-item v-if="data.html_content">
                     <span v-html="data.html_content" />
-                  </v-col>
-                </v-row>
-                <v-row v-if="data.src === 'wms_campus'">
-                  <v-col cols="3">
+                  </v-list-item>
+                  <v-list-item v-if="data.src === 'wms_campus'">
                     <span>{{ locale.labelBuidingAdress }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.description }}</span>
-                    <v-col />
-                  </v-col>
-                </v-row>
-                <template v-if="data.street">
-                  <v-row>
-                    <v-col cols="3">
+                  </v-list-item>
+                  <template v-if="data.street">
+                    <v-list-item>
                       <span>{{ locale.labelBuidingAdress }}</span>
-                    </v-col>
-                    <v-col cols="9">
                       <span>{{ data.street }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="3">
+                    </v-list-item>
+                    <v-list-item>
                       <span>{{ locale.labelBuildingCode }}</span>
-                    </v-col>
-                    <v-col cols="9">
                       <span>{{ data.name }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="3">
+                    </v-list-item>
+                    <v-list-item>
                       <span>{{ locale.labelBuidingPlz }}</span>
-                    </v-col>
-                    <v-col cols="9">
                       <span>{{ data.postal_code }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="3">
+                    </v-list-item>
+                    <v-list-item>
                       <span>{{ locale.labelBuildingCity }}</span>
-                    </v-col>
-                    <v-col cols="9">
                       <span>{{ data.city }}</span>
-                    </v-col>
-                  </v-row>
-                </template>
-                <v-row v-if="data.room_code">
-                  <v-col cols="3">
+                    </v-list-item>
+                  </template>
+                  <v-list-item v-if="data.room_code">
                     <span>{{ locale.labelRoomCode }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.room_code }}</span>
-                  </v-col>
-                </v-row>
-                <v-row v-if="data.floor_name && !data.xy">
-                  <v-col cols="3">
+                  </v-list-item>
+                  <v-list-item v-if="data.floor_name && !data.xy">
                     <span>{{ locale.labelFloorName }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.floor_name }}</span>
-                  </v-col>
-                </v-row>
-                <v-row v-if="data.building_name || data.building">
-                  <v-col cols="3">
+                  </v-list-item>
+                  <v-list-item v-if="data.building_name || data.building">
                     <span>{{ locale.labelBuildingName }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.building_name || data.building }}</span>
-                  </v-col>
-                </v-row>
-                <v-row v-if="data.category_en">
-                  <v-col cols="3">
+                  </v-list-item>
+                  <v-list-item v-if="data.category_en">
                     <span>{{ locale.labelCategory }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.category_en }}</span>
-                    <v-col />
-                  </v-col>
-                </v-row>
-                <v-row v-if="data.nearest_entrance">
-                  <v-col cols="3">
+                  </v-list-item>
+                  <v-list-item v-if="data.nearest_entrance">
                     <span>{{ locale.labelPoiName }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.nearest_entrance }}</span>
-                  </v-col>
-                </v-row>
-                <v-row v-if="data.room_external_id">
-                  <v-col cols="3">
+                  </v-list-item>
+                  <v-list-item v-if="data.room_external_id">
                     <span>{{ locale.labelRoomId }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.room_external_id }}</span>
-                  </v-col>
-                </v-row>
-                <v-row v-if="data.capacity">
-                  <v-col cols="3">
+                  </v-list-item>
+                  <v-list-item v-if="data.capacity">
                     <span>{{ locale.labelCapacity }}</span>
-                  </v-col>
-                  <v-col cols="9">
                     <span>{{ data.capacity }}</span>
-                  </v-col>
-                </v-row>
-                <template v-if="data.xy">
-                  <v-row>
-                    <v-col cols="3">
-                      <span>X</span>
-                    </v-col>
-                    <v-col cols="9">
+                  </v-list-item>
+                  <template v-if="data.xy">
+                    <v-list-item>
+                      <span>{{ X }}</span>
                       <span>{{ data.xy[0].toFixed(3) }}</span>
-                    </v-col>
-                  </v-row>
-                  <v-row>
-                    <v-col cols="3">
-                      <span>Y</span>
-                    </v-col>
-                    <v-col cols="9">
+                    </v-list-item>
+                    <v-list-item>
+                      <span>{{ Y }}</span>
                       <span>{{ data.xy[1].toFixed(3) }}</span>
-                    </v-col>
-                  </v-row>
-                </template>
+                    </v-list-item>
+                  </template>
+                </v-list>
               </div>
               <v-divider class="mt-5 mb-5" />
               <div class="panel-section-items">
-                <v-row no-gutters>
-                  <v-col>
-                    <v-btn text color="wu" small @click.stop="onRouteClick('from')">
-                      <v-icon left>
-                        mdi-map-marker
-                      </v-icon> {{ locale.routeFromHereText }}
-                    </v-btn>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col>
-                    <v-btn text color="wu" small @click.stop="onRouteClick('to')">
-                      <v-icon left>
-                        mdi-map-marker
-                      </v-icon> {{ locale.routeToHereText }}
-                    </v-btn>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col>
+                <v-list class="list-buttons">
+                  <v-list-item v-for="(button, index) in listButtons" :key="index">
                     <v-btn
-                      tile
                       small
                       text
                       color="wu"
-                      @click.stop="onEntranceButtonClick"
+                      @click.stop="button.handler"
                     >
                       <v-icon left>
-                        mdi-routes
+                        {{ button.icon }}
                       </v-icon>
-                      {{ locale.entranceButtonText }}
+                      {{ button.label }}
                     </v-btn>
-                  </v-col>
-                </v-row>
-                <v-row no-gutters>
-                  <v-col>
-                    <v-btn
-                      small
-                      tile
-                      text
-                      color="wu"
-                      class="ml-1"
-                      @click.stop="onMetroButtonClick"
-                    >
-                      <v-icon left>
-                        mdi-routes
-                      </v-icon>
-                      {{ locale.metroButtonText }}
-                    </v-btn>
-                  </v-col>
-                </v-row>
+                  </v-list-item>
+                </v-list>
               </div>
             </v-tab-item>
             <v-tab-item>
@@ -394,6 +300,30 @@ export default {
     searchTitle () {
       const { data } = this;
       return data.name_en || data.name;
+    },
+    listButtons () {
+      return [
+        {
+          icon: 'mdi-map-marker',
+          label: this.locale.routeFromHereText,
+          handler: () => { return this.onRouteClick('from') }
+        },
+        {
+          icon: 'mdi-map-marker',
+          label: this.locale.routeToHereText,
+          handler: () => { return this.onRouteClick('to') }
+        },
+        {
+          icon: 'mdi-routes',
+          label: this.locale.entranceButtonText,
+          handler: this.onEntranceButtonClick
+        },
+        {
+          icon: 'mdi-routes',
+          label: this.locale.metroButtonText,
+          handler: this.onMetroButtonClick
+        }
+      ]
     }
   },
   watch: {
@@ -478,5 +408,21 @@ export default {
   .panel-section-items{
     width: 410px;
     padding: 5px 20px 5px 20px;
+  }
+  .list-label-value {
+    .v-list-item {
+      min-height: 24px;
+      span:first-child {
+        width: 110px;
+      }
+      span:nth-child(2) {
+        margin-left: 10px;
+      }
+    }
+  }
+  .list-buttons {
+    .v-list-item {
+      min-height: 28px;
+    }
   }
 </style>
