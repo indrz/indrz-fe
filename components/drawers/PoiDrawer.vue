@@ -75,123 +75,130 @@
               <v-icon>{{ tabInfo.icon }}</v-icon>
             </v-tab>
           </v-tabs>
-          <v-tabs-items v-model="activeTabIndex" class="row justify-center ma-0">
+          <v-tabs-items v-model="activeTabIndex">
             <v-tab-item>
               <div />
             </v-tab-item>
 
             <v-tab-item>
               <v-divider class="mt-5 mb-5" />
-              <div class="panel-section-items">
-                <v-list>
-                  <v-list-item>
-                    <v-list-item-icon>
-                      <v-img
-                        v-if="data.icon"
-                        :max-width="20"
-                        :src="data.icon"
-                      />
-                      <v-img
-                        v-if="data.src_icon"
-                        :src="getIconUrl(data.src_icon)"
-                        contain
-                        max-height="24"
-                        max-width="24"
-                      />
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title class="text-h6 primary--text" v-text="searchTitle" />
-                    </v-list-item-content>
-                  </v-list-item>
-                </v-list>
+              <div class="row justify-center">
+                <div class="panel-section-items">
+                  <v-list>
+                    <v-list-item>
+                      <v-list-item-icon v-if="data.icon || data.src_icon">
+                        <v-img
+                          v-if="data.icon"
+                          :max-width="20"
+                          :src="data.icon"
+                        />
+                        <v-img
+                          v-if="data.src_icon"
+                          :src="getIconUrl(data.src_icon)"
+                          contain
+                          max-height="24"
+                          max-width="24"
+                        />
+                      </v-list-item-icon>
+                      <v-list-item-content>
+                        <v-list-item-title class="text-h6 primary--text" v-text="searchTitle" />
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list>
+                </div>
               </div>
 
-              <v-divider v-if="data.room_code" class="mt-5 mb-5" />
-              <v-divider v-else-if="data.street" class="mt-5 mb-5" />
-              <div class="panel-section-items">
-                <v-list class="list-label-value">
-                  <v-list-item v-if="data.html_content">
-                    <span v-html="data.html_content" />
-                  </v-list-item>
-                  <v-list-item v-if="data.src === 'wms_campus'">
-                    <span>{{ locale.labelBuidingAdress }}</span>
-                    <span>{{ data.description }}</span>
-                  </v-list-item>
-                  <template v-if="data.street">
-                    <v-list-item>
+              <v-divider class="mt-5 mb-5" />
+
+              <div class="row justify-center">
+                <div class="panel-section-items">
+                  <v-list class="list-label-value">
+                    <v-list-item v-if="data.html_content">
+                      <span v-html="data.html_content" />
+                    </v-list-item>
+                    <v-list-item v-if="data.src === 'wms_campus'">
                       <span>{{ locale.labelBuidingAdress }}</span>
-                      <span>{{ data.street }}</span>
+                      <span>{{ data.description }}</span>
                     </v-list-item>
-                    <v-list-item>
-                      <span>{{ locale.labelBuildingCode }}</span>
-                      <span>{{ data.name }}</span>
+                    <template v-if="data.street">
+                      <v-list-item>
+                        <span>{{ locale.labelBuidingAdress }}</span>
+                        <span>{{ data.street }}</span>
+                      </v-list-item>
+                      <v-list-item>
+                        <span>{{ locale.labelBuildingCode }}</span>
+                        <span>{{ data.name }}</span>
+                      </v-list-item>
+                      <v-list-item>
+                        <span>{{ locale.labelBuidingPlz }}</span>
+                        <span>{{ data.postal_code }}</span>
+                      </v-list-item>
+                      <v-list-item>
+                        <span>{{ locale.labelBuildingCity }}</span>
+                        <span>{{ data.city }}</span>
+                      </v-list-item>
+                    </template>
+                    <v-list-item v-if="data.room_code">
+                      <span>{{ locale.labelRoomCode }}</span>
+                      <span>{{ data.room_code }}</span>
                     </v-list-item>
-                    <v-list-item>
-                      <span>{{ locale.labelBuidingPlz }}</span>
-                      <span>{{ data.postal_code }}</span>
+                    <v-list-item v-if="data.floor_name && !data.xy">
+                      <span>{{ locale.labelFloorName }}</span>
+                      <span>{{ data.floor_name }}</span>
                     </v-list-item>
-                    <v-list-item>
-                      <span>{{ locale.labelBuildingCity }}</span>
-                      <span>{{ data.city }}</span>
+                    <v-list-item v-if="data.building_name || data.building">
+                      <span>{{ locale.labelBuildingName }}</span>
+                      <span>{{ data.building_name || data.building }}</span>
                     </v-list-item>
-                  </template>
-                  <v-list-item v-if="data.room_code">
-                    <span>{{ locale.labelRoomCode }}</span>
-                    <span>{{ data.room_code }}</span>
-                  </v-list-item>
-                  <v-list-item v-if="data.floor_name && !data.xy">
-                    <span>{{ locale.labelFloorName }}</span>
-                    <span>{{ data.floor_name }}</span>
-                  </v-list-item>
-                  <v-list-item v-if="data.building_name || data.building">
-                    <span>{{ locale.labelBuildingName }}</span>
-                    <span>{{ data.building_name || data.building }}</span>
-                  </v-list-item>
-                  <v-list-item v-if="data.category_en">
-                    <span>{{ locale.labelCategory }}</span>
-                    <span>{{ data.category_en }}</span>
-                  </v-list-item>
-                  <v-list-item v-if="data.nearest_entrance">
-                    <span>{{ locale.labelPoiName }}</span>
-                    <span>{{ data.nearest_entrance }}</span>
-                  </v-list-item>
-                  <v-list-item v-if="data.room_external_id">
-                    <span>{{ locale.labelRoomId }}</span>
-                    <span>{{ data.room_external_id }}</span>
-                  </v-list-item>
-                  <v-list-item v-if="data.capacity">
-                    <span>{{ locale.labelCapacity }}</span>
-                    <span>{{ data.capacity }}</span>
-                  </v-list-item>
-                  <template v-if="data.xy">
-                    <v-list-item>
-                      <span>{{ X }}</span>
-                      <span>{{ data.xy[0].toFixed(3) }}</span>
+                    <v-list-item v-if="data.category_en">
+                      <span>{{ locale.labelCategory }}</span>
+                      <span>{{ data.category_en }}</span>
                     </v-list-item>
-                    <v-list-item>
-                      <span>{{ Y }}</span>
-                      <span>{{ data.xy[1].toFixed(3) }}</span>
+                    <v-list-item v-if="data.nearest_entrance">
+                      <span>{{ locale.labelPoiName }}</span>
+                      <span>{{ data.nearest_entrance }}</span>
                     </v-list-item>
-                  </template>
-                </v-list>
+                    <v-list-item v-if="data.room_external_id">
+                      <span>{{ locale.labelRoomId }}</span>
+                      <span>{{ data.room_external_id }}</span>
+                    </v-list-item>
+                    <v-list-item v-if="data.capacity">
+                      <span>{{ locale.labelCapacity }}</span>
+                      <span>{{ data.capacity }}</span>
+                    </v-list-item>
+                    <template v-if="data.xy">
+                      <v-list-item>
+                        <span>{{ X }}</span>
+                        <span>{{ data.xy[0].toFixed(3) }}</span>
+                      </v-list-item>
+                      <v-list-item>
+                        <span>{{ Y }}</span>
+                        <span>{{ data.xy[1].toFixed(3) }}</span>
+                      </v-list-item>
+                    </template>
+                  </v-list>
+                </div>
               </div>
               <v-divider class="mt-5 mb-5" />
-              <div class="panel-section-items">
-                <v-list class="list-buttons">
-                  <v-list-item v-for="(button, index) in listButtons" :key="index">
-                    <v-btn
-                      small
-                      text
-                      color="wu"
-                      @click.stop="button.handler"
-                    >
-                      <v-icon left>
-                        {{ button.icon }}
-                      </v-icon>
-                      {{ button.label }}
-                    </v-btn>
-                  </v-list-item>
-                </v-list>
+              <div class="row justify-center">
+                <div class="panel-section-items">
+                  <v-list class="list-buttons">
+                    <v-list-item v-for="(button, index) in listButtons" :key="index">
+                      <v-btn
+                        small
+                        text
+                        color="wu"
+                        class="pl-0"
+                        @click.stop="button.handler"
+                      >
+                        <v-icon left>
+                          {{ button.icon }}
+                        </v-icon>
+                        {{ button.label }}
+                      </v-btn>
+                    </v-list-item>
+                  </v-list>
+                </div>
               </div>
             </v-tab-item>
             <v-tab-item>
@@ -411,6 +418,11 @@ export default {
   .panel-section-items{
     width: 410px;
     padding: 5px 20px 5px 20px;
+    .v-list {
+      .v-list-item {
+        padding: 0
+      }
+    }
   }
   .list-label-value {
     .v-list-item {
@@ -427,5 +439,9 @@ export default {
     .v-list-item {
       min-height: 28px;
     }
+  }
+
+  .v-window-item {
+    width: 100%;
   }
 </style>
