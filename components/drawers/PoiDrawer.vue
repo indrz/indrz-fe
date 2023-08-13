@@ -83,25 +83,27 @@
             <v-tab-item>
               <v-divider class="mt-5 mb-5" />
               <div class="panel-section-items">
-                <v-row no-gutters>
-                  <v-col cols="1" class="title-items">
-                    <v-img
-                      v-if="data.icon"
-                      :max-width="20"
-                      :src="data.icon"
-                    />
-                    <v-img
-                      v-if="data.src_icon"
-                      :src="getIconUrl(data.src_icon)"
-                      contain
-                      max-height="24"
-                      max-width="24"
-                    />
-                  </v-col>
-                  <v-col cols="11" class="title-items">
-                    <span class="text-h6 primary--text">{{ searchTitle }}</span>
-                  </v-col>
-                </v-row>
+                <v-list>
+                  <v-list-item>
+                    <v-list-item-icon>
+                      <v-img
+                        v-if="data.icon"
+                        :max-width="20"
+                        :src="data.icon"
+                      />
+                      <v-img
+                        v-if="data.src_icon"
+                        :src="getIconUrl(data.src_icon)"
+                        contain
+                        max-height="24"
+                        max-width="24"
+                      />
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title class="text-h6 primary--text" v-text="searchTitle" />
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
               </div>
 
               <v-divider v-if="data.room_code" class="mt-5 mb-5" />
@@ -243,6 +245,7 @@ import CampusSearch from '../CampusSearch.vue';
 import PhotoGallery from '../PhotoGallery';
 import DrawerSearch from './DrawerSearch.vue';
 import BaseDrawer from './BaseDrawer';
+import MapHandler from '@/util/mapHandler';
 
 const { env } = config;
 
@@ -299,7 +302,7 @@ export default {
     },
     searchTitle () {
       const { data } = this;
-      return data.name_en || data.name;
+      return MapHandler.getTitle(data)
     },
     listButtons () {
       return [
