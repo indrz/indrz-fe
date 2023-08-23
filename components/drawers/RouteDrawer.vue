@@ -217,6 +217,9 @@ export default {
         geometry: {}
       };
       const field = this.$refs[routeInfo.path + 'Route'];
+      if (!field) {
+        return;
+      }
       const { properties } = data;
       const model = { ...properties, ...{ floorNum: properties.floor_num, roomCode: properties.room_code } };
 
