@@ -33,8 +33,7 @@
                   @click.stop="onEntranceButtonClick"
                   tile
                   small
-                  dark
-                  color="wu"
+                  color="blue"
                 >
                   <v-icon left>
                     mdi-routes
@@ -53,8 +52,7 @@
                   @click.stop="onMetroButtonClick"
                   small
                   tile
-                  dark
-                  color="wu"
+                  color="blue"
                 >
                   <v-icon left>
                     mdi-routes
@@ -71,9 +69,8 @@
                 <v-btn
                   @click.stop="onDefiButtonClick"
                   v-on="on"
-                  color="wu"
+                  color="blue"
                   tile
-                  dark
                   small
                 >
                   <v-icon>mdi-heart-flash</v-icon>
@@ -88,9 +85,8 @@
                 <v-btn
                   @click.stop="onShareButtonClick"
                   v-on="on"
-                  color="wu"
+                  color="blue"
                   tile
-                  dark
                   small
                 >
                   <v-icon>mdi-share-variant</v-icon>

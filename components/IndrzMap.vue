@@ -8,7 +8,6 @@
         min-width="95px"
         class="pa-2 map-switcher"
         small
-        dark
         @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
