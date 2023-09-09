@@ -4,7 +4,7 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 10px;
+  height: 20px;
   cursor: ns-resize;
   border-top: 1px solid #a9a9a9;
   border-bottom: 1px solid #ccc;
@@ -16,7 +16,7 @@
 .draggable-handle::before {
   content: '...';
   position: absolute;
-  top: -1px;
+  top: 2px;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 20px;
@@ -25,6 +25,6 @@
 }
 
 .resizable.v-navigation-drawer--is-mobile {
-  max-height: 100% !important;
+  max-height: 80% !important;
   min-height: 20% !important;
 }
