@@ -109,7 +109,7 @@ import BaseDrawer from './BaseDrawer';
 const { env } = config;
 
 export default {
-  name: 'PoiDrawer',
+  name: 'RouteDrawer',
   components: {
     CampusSearch
   },

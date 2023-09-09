@@ -18,19 +18,20 @@
         @update:show="poiDrawer = $event"
       />
     </template>
-    <template v-if="shouldShowRouteDrawer">
-      <route-drawer
-        :show="shouldShowRouteDrawer"
-        :data="routeDrawerData"
-        :base-map="currentMap"
-        :navigation="drawer"
-        @on-close="routeDrawer = false"
-        @update:drawer="drawer = $event"
-        @update:show="routeDrawer = $event"
-        @setGlobalRoute="onSetGlobalRoute"
-        @routeGo="onRouteGo"
-      />
-    </template>
+
+    <route-drawer
+      :v-show="shouldShowRouteDrawer"
+      :show="shouldShowRouteDrawer"
+      :data="routeDrawerData"
+      :base-map="currentMap"
+      :navigation="drawer"
+      @on-close="routeDrawer = false"
+      @update:drawer="drawer = $event"
+      @update:show="routeDrawer = $event"
+      @setGlobalRoute="onSetGlobalRoute"
+      @routeGo="onRouteGo"
+    />
+
     <template v-if="drawer">
       <v-navigation-drawer
         ref="drawer"
