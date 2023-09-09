@@ -9,8 +9,8 @@ export default {
   ** Headers of the page
   */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    titleTemplate: process.env.TITLE || '',
+    title: process.env.TITLE || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -83,10 +83,12 @@ export default {
     SHARE_SPACE_URL: process.env.SHARE_SPACE_URL,
     HOME_PAGE_URL: process.env.HOME_PAGE_URL,
     DEFAULT_CENTER_XY: process.env.DEFAULT_CENTER_XY,
+    MOBILE_START_CENTER_XY: process.env.MOBILE_START_CENTER_XY,
     LAYER_NAME_PREFIX: process.env.LAYER_NAME_PREFIX,
     GEO_SERVER_LAYER_PREFIX: process.env.GEO_SERVER_LAYER_PREFIX,
     DEFAULT_START_FLOOR: process.env.DEFAULT_START_FLOOR,
     DEFAULT_START_ZOOM: process.env.DEFAULT_START_ZOOM,
+    MOBILE_START_ZOOM: process.env.MOBILE_START_ZOOM,
     TITLE: process.env.TITLE,
     PDF_TITLE: process.env.PDF_TITLE,
     TOKEN: process.env.TOKEN,

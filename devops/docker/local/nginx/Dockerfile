@@ -14,11 +14,12 @@ RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object
 # Set the NODE_OPTIONS environment variable
 ENV NODE_OPTIONS="--openssl-legacy-provider"
 
+
 # Copy the entire app directory to the container
 COPY . .
 
-# Build the static site using the generate command
-RUN npm run generate
+# Generate the Nuxt.js static files
+RUN npm version patch --git-tag-version false && npx nuxt generate
 
 # Use the official Nginx image as the base image
 FROM nginx:1.22.1

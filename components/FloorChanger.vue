@@ -2,7 +2,6 @@
   <v-card
     id="floorList"
     :max-height="containerHeight"
-    dark
     class="mx-auto floor-changer"
   >
     <v-list v-if="!isSmallScreen" dense>

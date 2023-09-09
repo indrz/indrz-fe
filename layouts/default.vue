@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-main>
       <div class="box">
         <div :id="headerId" class="box-row header">

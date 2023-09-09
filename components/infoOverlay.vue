@@ -31,12 +31,11 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-btn
-                  tile
-                  small
-                  dark
-                  color="wu"
                   v-on="on"
                   @click.stop="onEntranceButtonClick"
+                  tile
+                  small
+                  color="blue"
                 >
                   <v-icon left>
                     mdi-routes
@@ -51,12 +50,11 @@
             <v-tooltip top>
               <template v-slot:activator="{ on }">
                 <v-btn
-                  small
-                  tile
-                  dark
-                  color="wu"
                   v-on="on"
                   @click.stop="onMetroButtonClick"
+                  small
+                  tile
+                  color="blue"
                 >
                   <v-icon left>
                     mdi-routes
@@ -67,40 +65,37 @@
               <span>{{ locale.metroButtonTip }}</span>
             </v-tooltip>
           </div>
-          <div style="padding-top:5px;">
-            <div :class="{'ml-1': !multiRowButton, 'mt-1': multiRowButton}">
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    color="wu"
-                    tile
-                    dark
-                    small
-                    @click.stop="onDefiButtonClick"
-                    v-on="on"
-                  >
-                    <v-icon>mdi-heart-flash</v-icon>
-                  </v-btn>
-                </template>
-                <span>{{ locale.defiButtonTip }}</span>
-              </v-tooltip>
-
-              <v-tooltip top>
-                <template v-slot:activator="{ on }">
-                  <v-btn
-                    color="wu"
-                    tile
-                    dark
-                    small
-                    @click.stop="onShareButtonClick"
-                    v-on="on"
-                  >
-                    <v-icon>mdi-share-variant</v-icon>
-                  </v-btn>
-                </template>
-                <span>{{ locale.shareButtonTip }}</span>
-              </v-tooltip>
-            </div>
+          <div :class="{'ml-1': !multiRowButton, 'mt-1': multiRowButton}">
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  @click.stop="onDefiButtonClick"
+                  v-on="on"
+                  color="blue"
+                  tile
+                  small
+                >
+                  <v-icon>mdi-heart-flash</v-icon>
+                </v-btn>
+              </template>
+              <span>{{ locale.defiButtonTip }}</span>
+            </v-tooltip>
+          </div>
+          <div :class="{'ml-1': !multiRowButton, 'mt-1': multiRowButton}">
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  @click.stop="onShareButtonClick"
+                  v-on="on"
+                  color="blue"
+                  tile
+                  small
+                >
+                  <v-icon>mdi-share-variant</v-icon>
+                </v-btn>
+              </template>
+              <span>{{ locale.shareButtonTip }}</span>
+            </v-tooltip>
           </div>
         </v-row>
       </div>

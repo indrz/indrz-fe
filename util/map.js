@@ -28,10 +28,12 @@ import config from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
 
 const { env } = config;
-const initializeMap = (mapId, predefinedPopup) => {
+const initializeMap = ({
+  mapId, predefinedPopup, center, zoom
+}) => {
   const view = new View({
-    center: getStartCenter(),
-    zoom: getStartZoom(),
+    center,
+    zoom,
     maxZoom: 23
   });
 
@@ -602,9 +604,6 @@ const getLayers = () => {
   }
 }
 
-const getStartCenter = () => env.DEFAULT_CENTER_XY;
-const getStartZoom = (zoom = 15) => env.DEFAULT_START_ZOOM;
-
 const getMapControls = () => {
   const attributionControl = new Attribution({
     collapsible: false
@@ -874,8 +873,6 @@ const createMapCanvas = (map) => {
 
 export default {
   initializeMap,
-  getStartCenter,
-  getStartZoom,
   getMapControls,
   getWmsLayers,
   getLayers,

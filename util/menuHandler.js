@@ -6,11 +6,11 @@ import config from '~/util/indrzConfig';
 
 const { env } = config;
 
-const handleZoomToHome = (mapInfo, center) => {
+const handleZoomToHome = (mapInfo, center, zoom) => {
   mapInfo.view.animate({
     center,
     duration: 2000,
-    zoom: env.DEFAULT_START_ZOOM
+    zoom
   });
 };
 

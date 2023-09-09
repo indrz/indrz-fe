@@ -15,7 +15,7 @@
         dense
         class="elevation-1"
         loading-text="Loading... Please wait"
-        hide-default-footer
+        items-per-page="-1"
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -33,7 +33,7 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:[`item.actions`]="{ item }">
           <v-icon
             @click="editShelfData(item)"
             small
@@ -77,7 +77,7 @@ export default {
   props: {
     height: {
       type: Number,
-      default: 285
+      default: 600
     }
   },
   data () {
@@ -87,6 +87,7 @@ export default {
       shelfDataAddEditDialog: false,
       showConfirmDeleteShelfData: false,
       selected: [],
+      pagination: {},
       headers: [
         {
           text: 'External Id',
@@ -184,7 +185,9 @@ export default {
     onShelfDataClick (data) {
       this.setSelectedShelfData(data);
     },
-
+    onShelfClick (shelf) {
+      this.setSelectedShelf(shelf);
+    },
     addShelfData () {
       const { id: bookshelf } = this.selectedShelf;
 
