@@ -54,7 +54,7 @@
             </v-list>
           </div>
         </div>
-        <v-divider class="mt-5 mb-5" />
+        <v-divider class="mt-5 mb-5" v-if="routeInfo" />
         <div class="row justify-center" v-if="routeInfo">
           <div class="panel-section-items">
             <v-list class="list-label-value">
@@ -116,6 +116,23 @@
                     </v-btn>
                   </template>
                   <span>{{ locale.shareRoute }}</span>
+                </v-tooltip>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      :disabled="!isRouteAvailable"
+                      @click="onClearRoute"
+                      v-on="on"
+                      color="blue-grey"
+                      class="white--text ml-2"
+                      small
+                    >
+                      <v-icon dark>
+                        mdi-close
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Clear Route</span>
                 </v-tooltip>
               </v-list-item>
             </v-list>
@@ -212,6 +229,7 @@ export default {
       this.toRoute = null;
       this.$refs.toRoute.clearSearch('');
       this.clearRoute();
+      this.$root.$emit('clearRoute')
     },
     clearRoute () {
       this.routeInfo = null;

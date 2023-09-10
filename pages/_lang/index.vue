@@ -198,6 +198,7 @@ export default {
       this.selectFloorWithCss(this.setSelection);
     }
     this.$root.$on('poiLoad', this.onPoiLoad);
+    this.$root.$on('clearRoute', this.onClearRoute);
   },
   methods: {
     ...mapActions({
