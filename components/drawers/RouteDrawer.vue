@@ -85,6 +85,25 @@
           </v-row>
           </v-col>
         </v-row>
+        <v-row>
+          <v-tooltip top>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              :disabled="!isRouteAvailable"
+              @click="onShareRoute"
+              v-on="on"
+              color="blue-grey"
+              class="white--text"
+              small
+            >
+              <v-icon dark>
+                mdi-share
+              </v-icon>
+            </v-btn>
+          </template>
+          <span>{{ locale.shareRoute }}</span>
+        </v-tooltip>
+        </v-row>
         <!-- <v-row>
           <v-col>
             <div id="route-description" />
@@ -133,7 +152,8 @@ export default {
         endRouteLabel: this.$t('end_route'),
         barrierFreeLabel: this.$t('barrier_free_route'),
         routeLabel: this.$t('route'),
-        noRouteFoundText: this.$t('no_route_found')
+        noRouteFoundText: this.$t('no_route_found'),
+        shareRoute: this.$t('shareRoute')
       },
       routeInfo: {},
       noRouteFound: false,
@@ -146,6 +166,9 @@ export default {
         file: env.LOGO_FILE,
         enabled: (env.LOGO_ENABLED === true)
       };
+    },
+    isRouteAvailable () {
+      return this.fromRoute && this.toRoute;
     }
   },
 
@@ -179,7 +202,7 @@ export default {
       this.$emit('routeGo', this.barrierFree ? 1 : 0);
     },
     onShareRoute () {
-      this.$emit('shareClick');
+      this.$root.$emit('shareClick', true);
     },
     onClearSearchField (routeType) {
       this[routeType + 'Route'] = null;
