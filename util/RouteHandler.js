@@ -316,7 +316,6 @@ const getDirections = async (
       };
     });
   } catch ({ response }) {
-    debugger;
     if ((response && response.status === 404) || (response.data.error && response.data.error === 'no geometry')) {
       // setNoRouteFoundText();
       return {

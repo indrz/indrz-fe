@@ -23,106 +23,104 @@
             <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
           </v-col>
         </v-row>
-        <v-row>
-          <v-col>
-            <campus-search
-              ref="fromRoute"
-              :is-route="true"
-              :route-label="locale.startRouteLabel"
-              icon="mdi-flag"
-              route-type="from"
-              @selectSearhResult="onSearchSelect"
-              @clearClicked="onClearSearchField('from')"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <campus-search
-              ref="toRoute"
-              :is-route="true"
-              :route-label="locale.endRouteLabel"
-              icon="mdi-flag-checkered"
-              route-type="to"
-              @selectSearhResult="onSearchSelect"
-              @clearClicked="onClearSearchField('to')"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" @change="onBarrierFreeChange" />
-          </v-col>
-        </v-row>
-        <v-divider class="mt-2 mb-2" />
-        <v-row v-if="routeInfo">
-          <v-col>
-            <v-row v-if="routeInfo?.walk_time">
-            <v-col cols="12" class="d-flex justify-center align-center">
-              <span class="primary--text text-h5 font-weight-bold text-center">{{ routeInfo.walk_time }} ({{ routeInfo.route_length }} m)</span>
-            </v-col>
-          </v-row>
-          <v-row v-if="routeInfo?.start_name">
-            <v-col>
-              <v-icon class="search-btn">
-                mdi-flag
-              </v-icon> <span>Start: {{ routeInfo.start_name }}</span>
-            </v-col>
-          </v-row>
-          <v-row v-if="routeInfo?.start_name">
-            <v-col>
-              <v-icon class="search-btn">
-                mdi-map-marker
-              </v-icon> <span>Passes </span>
-            </v-col>
-          </v-row>
-          <v-row v-if="routeInfo?.end_name">
-            <v-col>
-              <v-icon class="search-btn">
-                mdi-flag-checkered
-              </v-icon> <span>Destinamtion: {{ routeInfo.end_name }}</span>
-            </v-col>
-          </v-row>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-tooltip top>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              :disabled="!isRouteAvailable"
-              @click="onShareRoute"
-              v-on="on"
-              color="blue-grey"
-              class="white--text"
-              small
-            >
-              <v-icon dark>
-                mdi-share
-              </v-icon>
-            </v-btn>
-          </template>
-          <span>{{ locale.shareRoute }}</span>
-        </v-tooltip>
-        </v-row>
-        <!-- <v-row>
-          <v-col>
-            <div id="route-description" />
-          </v-col>
-        </v-row> -->
-        <v-row v-if="noRouteFound">
-          <v-col>
-            <span style="color: red">
-              {{ locale.noRouteFoundText }}
-            </span>
-          </v-col>
-        </v-row>
-        <v-row v-if="error">
-          <v-col>
-            <span style="color: red">
-              {{ error }}
-            </span>
-          </v-col>
-        </v-row>
+        <div class="row justify-left ml-5">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item>
+                <campus-search
+                  ref="fromRoute"
+                  :is-route="true"
+                  :route-label="locale.startRouteLabel"
+                  icon="mdi-flag"
+                  route-type="from"
+                  @selectSearhResult="onSearchSelect"
+                  @clearClicked="onClearSearchField('from')"
+                />
+              </v-list-item>
+              <v-list-item>
+                <campus-search
+                  ref="toRoute"
+                  :is-route="true"
+                  :route-label="locale.endRouteLabel"
+                  icon="mdi-flag-checkered"
+                  route-type="to"
+                  @selectSearhResult="onSearchSelect"
+                  @clearClicked="onClearSearchField('to')"
+                />
+              </v-list-item>
+              <v-list-item>
+                <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" @change="onBarrierFreeChange" />
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
+        <v-divider class="mt-5 mb-5" />
+        <div class="row justify-center" v-if="routeInfo">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item v-if="routeInfo?.walk_time">
+                <span class="primary--text text-h5 font-weight-bold text-center">{{ routeInfo.walk_time }} ({{ routeInfo.route_length }} m)</span>
+              </v-list-item>
+              <v-list-item v-if="routeInfo?.start_name">
+                <v-icon class="search-btn">
+                  mdi-flag
+                </v-icon> <span>Start: {{ routeInfo.start_name }}</span>
+              </v-list-item>
+              <v-list-item v-if="routeInfo?.start_name">
+                <v-icon class="search-btn">
+                  mdi-map-marker
+                </v-icon> <span>Passes </span>
+              </v-list-item>
+              <v-list-item v-if="routeInfo?.end_name">
+                <v-icon class="search-btn">
+                  mdi-flag-checkered
+                </v-icon> <span>Destinamtion: {{ routeInfo.end_name }}</span>
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
+        <div class="row justify-left ml-5">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item v-if="noRouteFound">
+                <span style="color: red">
+                  {{ locale.noRouteFoundText }}
+                </span>
+              </v-list-item>
+              <v-list-item v-if="error">
+                <span style="color: red">
+                  {{ error }}
+                </span>
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
+        <v-divider class="mt-5 mb-5" />
+        <div class="row justify-left ml-5">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      :disabled="!isRouteAvailable"
+                      @click="onShareRoute"
+                      v-on="on"
+                      color="blue-grey"
+                      class="white--text"
+                      small
+                    >
+                      <v-icon dark>
+                        mdi-share
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ locale.shareRoute }}</span>
+                </v-tooltip>
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
       </v-container>
     </div>
   </v-navigation-drawer>
