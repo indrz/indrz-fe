@@ -12,21 +12,11 @@
     <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
     <div style="ma-2">
       <v-container justify="center" class="pa-0" style="margin-top: 20px; max-width: 410px">
-        <v-row class="ma-0">
-          <v-img
-            :max-width="410"
-            :aspect-ratio="1.52"
-            :src="'../../images/default_poi_image.png'"
-            lazy-src="../../images/default_poi_image.png"
-          >
-            <v-btn
-              icon
-              class="ml-auto"
-              @click="$emit('on-close')"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </v-img>
+        <v-row class="ma-0" justify="center">
+          <v-chip>{{ locale.routeLabel }}</v-chip>
+          <v-btn icon @click="$emit('on-close')">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </v-row>
         <v-row>
           <v-col :cols="8" align-self="center">
@@ -123,7 +113,8 @@ export default {
       locale: {
         startRouteLabel: this.$t('start_route'),
         endRouteLabel: this.$t('end_route'),
-        barrierFreeLabel: this.$t('barrier_free_route')
+        barrierFreeLabel: this.$t('barrier_free_route'),
+        routeLabel: this.$t('route')
       },
       routeInfo: {}
     }
@@ -139,7 +130,8 @@ export default {
 
   mounted () {
     this.$root.$on('setRoute', this.setRoute);
-    this.$root.$on('setRouteInfo', this.setRouteInfo)
+    this.$root.$on('setRouteInfo', this.setRouteInfo);
+    this.$root.$on('updateRouteFields', this.setSearchFieldRouteText)
   },
 
   methods: {
