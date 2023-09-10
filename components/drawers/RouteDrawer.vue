@@ -55,30 +55,34 @@
           </v-col>
         </v-row>
         <v-divider class="mt-2 mb-2" />
-        <v-row v-if="routeInfo?.walk_time">
-          <v-col cols="12" class="d-flex justify-center align-center">
-            <span class="primary--text text-h5 font-weight-bold text-center">{{ routeInfo.walk_time }} ({{ routeInfo.route_length }} m)</span>
-          </v-col>
-        </v-row>
-        <v-row v-if="routeInfo?.start_name">
+        <v-row v-if="routeInfo">
           <v-col>
-            <v-icon class="search-btn">
-              mdi-flag
-            </v-icon> <span>Start: {{ routeInfo.start_name }}</span>
-          </v-col>
-        </v-row>
-        <v-row v-if="routeInfo?.start_name">
-          <v-col>
-            <v-icon class="search-btn">
-              mdi-map-marker
-            </v-icon> <span>Passes </span>
-          </v-col>
-        </v-row>
-        <v-row v-if="routeInfo?.end_name">
-          <v-col>
-            <v-icon class="search-btn">
-              mdi-flag-checkered
-            </v-icon> <span>Destinamtion: {{ routeInfo.end_name }}</span>
+            <v-row v-if="routeInfo?.walk_time">
+            <v-col cols="12" class="d-flex justify-center align-center">
+              <span class="primary--text text-h5 font-weight-bold text-center">{{ routeInfo.walk_time }} ({{ routeInfo.route_length }} m)</span>
+            </v-col>
+          </v-row>
+          <v-row v-if="routeInfo?.start_name">
+            <v-col>
+              <v-icon class="search-btn">
+                mdi-flag
+              </v-icon> <span>Start: {{ routeInfo.start_name }}</span>
+            </v-col>
+          </v-row>
+          <v-row v-if="routeInfo?.start_name">
+            <v-col>
+              <v-icon class="search-btn">
+                mdi-map-marker
+              </v-icon> <span>Passes </span>
+            </v-col>
+          </v-row>
+          <v-row v-if="routeInfo?.end_name">
+            <v-col>
+              <v-icon class="search-btn">
+                mdi-flag-checkered
+              </v-icon> <span>Destinamtion: {{ routeInfo.end_name }}</span>
+            </v-col>
+          </v-row>
           </v-col>
         </v-row>
         <!-- <v-row>
@@ -86,6 +90,20 @@
             <div id="route-description" />
           </v-col>
         </v-row> -->
+        <v-row v-if="noRouteFound">
+          <v-col>
+            <span style="color: red">
+              {{ locale.noRouteFoundText }}
+            </span>
+          </v-col>
+        </v-row>
+        <v-row v-if="error">
+          <v-col>
+            <span style="color: red">
+              {{ error }}
+            </span>
+          </v-col>
+        </v-row>
       </v-container>
     </div>
   </v-navigation-drawer>
@@ -114,9 +132,12 @@ export default {
         startRouteLabel: this.$t('start_route'),
         endRouteLabel: this.$t('end_route'),
         barrierFreeLabel: this.$t('barrier_free_route'),
-        routeLabel: this.$t('route')
+        routeLabel: this.$t('route'),
+        noRouteFoundText: this.$t('no_route_found')
       },
-      routeInfo: {}
+      routeInfo: {},
+      noRouteFound: false,
+      error: null
     }
   },
   computed: {
@@ -131,6 +152,8 @@ export default {
   mounted () {
     this.$root.$on('setRoute', this.setRoute);
     this.$root.$on('setRouteInfo', this.setRouteInfo);
+    this.$root.$on('noRouteFound', this.setNoRouteFound);
+    this.$root.$on('routeError', this.setRouteError);
     this.$root.$on('updateRouteFields', this.setSearchFieldRouteText)
   },
 
@@ -170,8 +193,8 @@ export default {
       this.clearRoute();
     },
     clearRoute () {
-      document.getElementById('route-description').innerHTML = '';
-      this.$emit('clearRoute');
+      this.routeInfo = null;
+      this.error = null;
     },
     onBarrierFreeChange () {
       if (this.fromRoute && this.toRoute) {
@@ -234,6 +257,7 @@ export default {
     },
 
     setRouteInfo (routeInfo) {
+      this.clearRoute();
       this.setSearchFieldRouteText({
         fromData: {
           name: routeInfo.start_name
@@ -242,6 +266,9 @@ export default {
           name: routeInfo.end_name
         }
       })
+      if (routeInfo) {
+        this.setNoRouteFound(false)
+      }
       const routeTime = routeInfo.walk_time;
       const minutes = Math.floor(routeTime / 60);
       const seconds = routeTime - minutes * 60;
@@ -250,6 +277,15 @@ export default {
       const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
 
       this.routeInfo = { ...routeInfo, walk_time: walkTimeString };
+    },
+    setNoRouteFound (state = true) {
+      this.noRouteFound = state
+      state && this.clearRoute()
+    },
+    setRouteError (error) {
+      this.error = error;
+      this.setNoRouteFound(false)
+      this.routeInfo = null
     }
   }
 };

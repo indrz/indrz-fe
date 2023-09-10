@@ -411,9 +411,16 @@ export default {
         token: env.TOKEN,
         locale: this.$i18n.locale
       });
+      const { noRouteFound, error, routeUrl } = routeResult
 
-      this.globalRouteInfo.routeUrl = routeResult.routeUrl;
-      this.$root.$emit('setRouteInfo', routeResult);
+      if (noRouteFound) {
+        this.$root.$emit('noRouteFound', true);
+      } else if (error) {
+        this.$root.$emit('routeError', error)
+      } else {
+        this.globalRouteInfo.routeUrl = routeUrl;
+        this.$root.$emit('setRouteInfo', routeResult);
+      }
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map, true);
