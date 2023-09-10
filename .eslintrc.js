@@ -31,6 +31,8 @@ module.exports = {
     'import/no-named-as-default': 0,
     'vue/no-v-text-v-html-on-component': 0,
     'vue/require-explicit-emits': 0,
-    'vue/v-on-event-hyphenation': 0
+    'vue/v-on-event-hyphenation': 0,
+    'vue/no-deprecated-v-bind-sync': 0,
+    'no-prototype-builtins': 0
   }
 }
