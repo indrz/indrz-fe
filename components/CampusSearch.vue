@@ -44,7 +44,7 @@
               />
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title v-text="item.name" />
+              <v-list-item-title v-text="getSearchTitle(item)" />
               <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}${searchResultFloorLabel} ${item.floorNum})`" />
             </v-list-item-content>
           </template>
@@ -127,7 +127,7 @@
             />
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title v-text="item.name" />
+            <v-list-item-title v-text="getSearchTitle(item)" />
             <v-list-item-subtitle v-text="`(${item.code ? item.code + ', ': ''}${searchResultFloorLabel} ${item.floorNum})`" />
           </v-list-item-content>
         </template>
@@ -271,7 +271,7 @@ export default {
           }
         };
 
-        if (properties.hasOwnProperty('category')) {
+        if (properties.category) {
           properties.poiId = id;
         }
 
@@ -329,6 +329,10 @@ export default {
         return `${iconName}`
       }
       return `${this.iconPath}/poi.png`;
+    },
+    getSearchTitle (data) {
+      // return name_*locale if available, name otherwise
+      return data[`name_${this.$i18n.locale}`] || data.name
     }
   }
 };
