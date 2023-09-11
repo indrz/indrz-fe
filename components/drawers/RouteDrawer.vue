@@ -79,7 +79,7 @@
             </v-list>
           </div>
         </div>
-        <div class="row justify-left ml-5">
+        <div class="row justify-left ml-5" v-if="noRouteFound || error">
           <div class="panel-section-items">
             <v-list class="list-label-value">
               <v-list-item v-if="noRouteFound">
@@ -100,6 +100,18 @@
           <div class="panel-section-items">
             <v-list class="list-label-value">
               <v-list-item>
+                <v-btn
+                  :disabled="!isRouteAvailable"
+                  @click="onGoButtonClick"
+                  color="blue-grey"
+                  class="white--text"
+                  small
+                >
+                  <v-icon left dark>
+                    mdi-run
+                  </v-icon>
+                  <span>{{ locale.goLabel }}!</span>
+                </v-btn>
                 <v-tooltip top>
                   <template v-slot:activator="{ on }">
                     <v-btn
@@ -107,7 +119,7 @@
                       @click="onShareRoute"
                       v-on="on"
                       color="blue-grey"
-                      class="white--text"
+                      class="white--text ml-1"
                       small
                     >
                       <v-icon dark>
@@ -124,7 +136,7 @@
                       @click="onClearRoute"
                       v-on="on"
                       color="blue-grey"
-                      class="white--text ml-2"
+                      class="white--text ml-1"
                       small
                     >
                       <v-icon dark>
@@ -168,9 +180,10 @@ export default {
         barrierFreeLabel: this.$t('barrier_free_route'),
         routeLabel: this.$t('route'),
         noRouteFoundText: this.$t('no_route_found'),
-        shareRoute: this.$t('shareRoute')
+        shareRoute: this.$t('shareRoute'),
+        goLabel: this.$t('go')
       },
-      routeInfo: {},
+      routeInfo: null,
       noRouteFound: false,
       error: null
     }
@@ -221,17 +234,18 @@ export default {
     },
     onClearSearchField (routeType) {
       this[routeType + 'Route'] = null;
-      this.clearRoute();
+      this.setRouteError(null);
+      this.$root.$emit('clearRoute')
     },
     onClearRoute () {
       this.$refs.fromRoute.clearSearch();
       this.fromRoute = null;
       this.toRoute = null;
       this.$refs.toRoute.clearSearch('');
-      this.clearRoute();
+      this.setRouteError(null);
       this.$root.$emit('clearRoute')
     },
-    clearRoute () {
+    clearMessages () {
       this.routeInfo = null;
       this.error = null;
     },
@@ -296,7 +310,7 @@ export default {
     },
 
     setRouteInfo (routeInfo) {
-      this.clearRoute();
+      this.clearMessages();
       this.setSearchFieldRouteText({
         fromData: {
           name: routeInfo.start_name
@@ -319,7 +333,7 @@ export default {
     },
     setNoRouteFound (state = true) {
       this.noRouteFound = state
-      state && this.clearRoute()
+      state && this.clearMessages()
     },
     setRouteError (error) {
       this.error = error;
