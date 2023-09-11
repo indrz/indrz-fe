@@ -14,8 +14,8 @@ import config from '~/util/indrzConfig';
 const { env } = config;
 
 // let store = null;
-let scope = null;
-let translate = null;
+/* let scope = null;
+let translate = null; */
 
 const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
@@ -93,7 +93,10 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
       env.locale
     );
   } else {
-    setNoRouteFoundText();
+    // setNoRouteFoundText();
+    return {
+      noRouteFound: true
+    }
   }
   return routeUrl;
 };
@@ -314,9 +317,12 @@ const getDirections = async (
     });
   } catch ({ response }) {
     if ((response && response.status === 404) || (response.data.error && response.data.error === 'no geometry')) {
-      setNoRouteFoundText();
+      // setNoRouteFoundText();
+      return {
+        noRouteFound: true
+      }
     } else {
-      console.log(response.data.error);
+      return { error: response.data.error };
     }
   }
 };
@@ -600,11 +606,11 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 */
 };
 
-const setNoRouteFoundText = () => {
+/* const setNoRouteFoundText = () => {
   const text = translate.call(scope, 'no_route_found');
   const descriptionEl = document.getElementById('route-description');
   descriptionEl.innerHTML = `<span style="color: red">${text}</span>`;
-};
+}; */
 
 const insertRouteDescriptionText = (startSearchText, endSearchText, routeData) => {
   const ulList = '<span class="font-weight-medium list-group">Route Description</span><ul class="list-group">';
@@ -635,10 +641,11 @@ const insertRouteDescriptionText = (startSearchText, endSearchText, routeData) =
   descriptionEl.innerHTML = ulList + routeInfo + '</ul>';
 };
 
-export default function (_store, _$t, _scope) {
+/* export default function (_store, _$t, _scope) {
   translate = _$t;
   scope = _scope;
-
+ */
+export default function (_store) {
   return {
     getDirections,
     getNearestEntrance,

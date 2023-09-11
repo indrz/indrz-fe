@@ -23,69 +23,133 @@
             <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
           </v-col>
         </v-row>
-        <v-row>
-          <v-col>
-            <campus-search
-              ref="fromRoute"
-              :is-route="true"
-              :route-label="locale.startRouteLabel"
-              icon="mdi-flag"
-              route-type="from"
-              @selectSearhResult="onSearchSelect"
-              @clearClicked="onClearSearchField('from')"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <campus-search
-              ref="toRoute"
-              :is-route="true"
-              :route-label="locale.endRouteLabel"
-              icon="mdi-flag-checkered"
-              route-type="to"
-              @selectSearhResult="onSearchSelect"
-              @clearClicked="onClearSearchField('to')"
-            />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col>
-            <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" @change="onBarrierFreeChange" />
-          </v-col>
-        </v-row>
-        <v-divider class="mt-2 mb-2" />
-        <v-row v-if="routeInfo?.walk_time">
-          <v-col cols="12" class="d-flex justify-center align-center">
-            <span class="primary--text text-h5 font-weight-bold text-center">{{ routeInfo.walk_time }} ({{ routeInfo.route_length }} m)</span>
-          </v-col>
-        </v-row>
-        <v-row v-if="routeInfo?.start_name">
-          <v-col>
-            <v-icon class="search-btn">
-              mdi-flag
-            </v-icon> <span>Start: {{ routeInfo.start_name }}</span>
-          </v-col>
-        </v-row>
-        <v-row v-if="routeInfo?.start_name">
-          <v-col>
-            <v-icon class="search-btn">
-              mdi-map-marker
-            </v-icon> <span>Passes </span>
-          </v-col>
-        </v-row>
-        <v-row v-if="routeInfo?.end_name">
-          <v-col>
-            <v-icon class="search-btn">
-              mdi-flag-checkered
-            </v-icon> <span>Destinamtion: {{ routeInfo.end_name }}</span>
-          </v-col>
-        </v-row>
-        <!-- <v-row>
-          <v-col>
-            <div id="route-description" />
-          </v-col>
-        </v-row> -->
+        <div class="row justify-left ml-5">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item>
+                <campus-search
+                  ref="fromRoute"
+                  :is-route="true"
+                  :route-label="locale.startRouteLabel"
+                  icon="mdi-flag"
+                  route-type="from"
+                  @selectSearhResult="onSearchSelect"
+                  @clearClicked="onClearSearchField('from')"
+                />
+              </v-list-item>
+              <v-list-item>
+                <campus-search
+                  ref="toRoute"
+                  :is-route="true"
+                  :route-label="locale.endRouteLabel"
+                  icon="mdi-flag-checkered"
+                  route-type="to"
+                  @selectSearhResult="onSearchSelect"
+                  @clearClicked="onClearSearchField('to')"
+                />
+              </v-list-item>
+              <v-list-item>
+                <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" @change="onBarrierFreeChange" />
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
+        <v-divider class="mt-5 mb-5" v-if="routeInfo" />
+        <div class="row justify-center" v-if="routeInfo">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item v-if="routeInfo?.walk_time">
+                <span class="primary--text text-h5 font-weight-bold text-center">{{ routeInfo.walk_time }} ({{ routeInfo.route_length }} m)</span>
+              </v-list-item>
+              <v-list-item v-if="routeInfo?.start_name">
+                <v-icon class="search-btn">
+                  mdi-flag
+                </v-icon> <span>Start: {{ routeInfo.start_name }}</span>
+              </v-list-item>
+              <v-list-item v-if="routeInfo?.start_name">
+                <v-icon class="search-btn">
+                  mdi-map-marker
+                </v-icon> <span>Passes </span>
+              </v-list-item>
+              <v-list-item v-if="routeInfo?.end_name">
+                <v-icon class="search-btn">
+                  mdi-flag-checkered
+                </v-icon> <span>Destinamtion: {{ routeInfo.end_name }}</span>
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
+        <div class="row justify-left ml-5" v-if="noRouteFound || error">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item v-if="noRouteFound">
+                <span style="color: red">
+                  {{ locale.noRouteFoundText }}
+                </span>
+              </v-list-item>
+              <v-list-item v-if="error">
+                <span style="color: red">
+                  {{ error }}
+                </span>
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
+        <v-divider class="mt-5 mb-5" />
+        <div class="row justify-left ml-5">
+          <div class="panel-section-items">
+            <v-list class="list-label-value">
+              <v-list-item>
+                <v-btn
+                  :disabled="!isRouteAvailable"
+                  @click="onGoButtonClick"
+                  color="blue-grey"
+                  class="white--text"
+                  small
+                >
+                  <v-icon left dark>
+                    mdi-run
+                  </v-icon>
+                  <span>{{ locale.goLabel }}!</span>
+                </v-btn>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      :disabled="!isRouteAvailable"
+                      @click="onShareRoute"
+                      v-on="on"
+                      color="blue-grey"
+                      class="white--text ml-1"
+                      small
+                    >
+                      <v-icon dark>
+                        mdi-share
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>{{ locale.shareRoute }}</span>
+                </v-tooltip>
+                <v-tooltip top>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      :disabled="!isRouteAvailable"
+                      @click="onClearRoute"
+                      v-on="on"
+                      color="blue-grey"
+                      class="white--text ml-1"
+                      small
+                    >
+                      <v-icon dark>
+                        mdi-close
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  <span>Clear Route</span>
+                </v-tooltip>
+              </v-list-item>
+            </v-list>
+          </div>
+        </div>
       </v-container>
     </div>
   </v-navigation-drawer>
@@ -114,9 +178,14 @@ export default {
         startRouteLabel: this.$t('start_route'),
         endRouteLabel: this.$t('end_route'),
         barrierFreeLabel: this.$t('barrier_free_route'),
-        routeLabel: this.$t('route')
+        routeLabel: this.$t('route'),
+        noRouteFoundText: this.$t('no_route_found'),
+        shareRoute: this.$t('shareRoute'),
+        goLabel: this.$t('go')
       },
-      routeInfo: {}
+      routeInfo: null,
+      noRouteFound: false,
+      error: null
     }
   },
   computed: {
@@ -125,12 +194,17 @@ export default {
         file: env.LOGO_FILE,
         enabled: (env.LOGO_ENABLED === true)
       };
+    },
+    isRouteAvailable () {
+      return this.fromRoute && this.toRoute;
     }
   },
 
   mounted () {
     this.$root.$on('setRoute', this.setRoute);
     this.$root.$on('setRouteInfo', this.setRouteInfo);
+    this.$root.$on('noRouteFound', this.setNoRouteFound);
+    this.$root.$on('routeError', this.setRouteError);
     this.$root.$on('updateRouteFields', this.setSearchFieldRouteText)
   },
 
@@ -156,22 +230,24 @@ export default {
       this.$emit('routeGo', this.barrierFree ? 1 : 0);
     },
     onShareRoute () {
-      this.$emit('shareClick');
+      this.$root.$emit('shareClick', true);
     },
     onClearSearchField (routeType) {
       this[routeType + 'Route'] = null;
-      this.clearRoute();
+      this.setRouteError(null);
+      this.$root.$emit('clearRoute')
     },
     onClearRoute () {
       this.$refs.fromRoute.clearSearch();
       this.fromRoute = null;
       this.toRoute = null;
       this.$refs.toRoute.clearSearch('');
-      this.clearRoute();
+      this.setRouteError(null);
+      this.$root.$emit('clearRoute')
     },
-    clearRoute () {
-      document.getElementById('route-description').innerHTML = '';
-      this.$emit('clearRoute');
+    clearMessages () {
+      this.routeInfo = null;
+      this.error = null;
     },
     onBarrierFreeChange () {
       if (this.fromRoute && this.toRoute) {
@@ -234,6 +310,7 @@ export default {
     },
 
     setRouteInfo (routeInfo) {
+      this.clearMessages();
       this.setSearchFieldRouteText({
         fromData: {
           name: routeInfo.start_name
@@ -242,6 +319,9 @@ export default {
           name: routeInfo.end_name
         }
       })
+      if (routeInfo) {
+        this.setNoRouteFound(false)
+      }
       const routeTime = routeInfo.walk_time;
       const minutes = Math.floor(routeTime / 60);
       const seconds = routeTime - minutes * 60;
@@ -250,6 +330,15 @@ export default {
       const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
 
       this.routeInfo = { ...routeInfo, walk_time: walkTimeString };
+    },
+    setNoRouteFound (state = true) {
+      this.noRouteFound = state
+      state && this.clearMessages()
+    },
+    setRouteError (error) {
+      this.error = error;
+      this.setNoRouteFound(false)
+      this.routeInfo = null
     }
   }
 };
