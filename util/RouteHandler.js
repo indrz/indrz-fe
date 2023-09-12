@@ -264,7 +264,6 @@ const getDirections = async (
           }
         }
 
-        // insertRouteDescriptionText(startName, endName, routeData);
         if (startName && endName) {
           mapInfo.$root.$emit('updateRouteFields', {
             fromData: {
@@ -606,41 +605,6 @@ const routeToPoiFromPoi = (startPoiId, endPoiId) => {
 */
 };
 
-/* const setNoRouteFoundText = () => {
-  const text = translate.call(scope, 'no_route_found');
-  const descriptionEl = document.getElementById('route-description');
-  descriptionEl.innerHTML = `<span style="color: red">${text}</span>`;
-}; */
-
-const insertRouteDescriptionText = (startSearchText, endSearchText, routeData) => {
-  const ulList = '<span class="font-weight-medium list-group">Route Description</span><ul class="list-group">';
-  const routeTime = routeData.route_info.walk_time;
-  const minutes = Math.floor(routeTime / 60);
-  const seconds = routeTime - minutes * 60;
-  const mins = 'minutes';
-  const secs = 'seconds';
-  const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
-  const descriptionEl = document.getElementById('route-description');
-  let routeInfo = '';
-  let frontOfficeTemplate = '';
-
-  if (routeData.frontOffice) {
-    const { name, room_code: roomCode } = routeData.frontOffice;
-    frontOfficeTemplate = `Please first visit the ${name}, ${roomCode} front office`;
-  } else if (!startSearchText) {
-    startSearchText = routeData.route_info.start_name;
-    endSearchText = routeData.route_info.end_name;
-  }
-  routeInfo = `
-  ${MapUtil.getRouteDescriptionListItem('Start', startSearchText)}
-  ${MapUtil.getRouteDescriptionListItem('', frontOfficeTemplate)}
-  ${MapUtil.getRouteDescriptionListItem('Destination', endSearchText)}
-  ${MapUtil.getRouteDescriptionListItem('Aprox. distance', routeData.route_info.route_length ? routeData.route_info.route_length + ' m' : '')}
-  ${MapUtil.getRouteDescriptionListItem('Aprox. walk time', walkTimeString)}`;
-
-  descriptionEl.innerHTML = ulList + routeInfo + '</ul>';
-};
-
 /* export default function (_store, _$t, _scope) {
   translate = _$t;
   scope = _scope;
@@ -653,7 +617,6 @@ export default function (_store) {
     getNearestDefi,
     routeGo,
     routeToPoiFromPoi,
-    clearRouteData,
-    insertRouteDescriptionText
+    clearRouteData
   };
 }
