@@ -21,7 +21,6 @@
       <v-select
         v-model="selectedFloor"
         :items="floors"
-        @change="(selectedFloor) => {onFloorClick(selectedFloor, true)}"
         item-text="short_name"
         item-value="id"
         flat
@@ -29,6 +28,7 @@
         solo
         dense
         return-object
+        @change="(selectedFloor) => {onFloorClick(selectedFloor, true)}"
       />
     </div>
   </v-card>
@@ -53,7 +53,7 @@ export default {
       floors: state => state.floor.floors
     }),
     isSmallScreen () {
-      return this.$vuetify.breakpoint.mdAndDown;
+      return this.$vuetify.breakpoint.smAndDown;
     },
     containerHeight () {
       return this.isSmallScreen ? '100px' : '400px';

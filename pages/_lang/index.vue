@@ -6,49 +6,79 @@
     fluid
     flat
   >
-    <v-navigation-drawer
-      v-model="drawer"
-      style="width: 275px"
-      fixed
-      app
-    >
-      <sidebar
-        ref="sideBar"
-        :menu-items="items"
-        :opened-panels="openedPanels"
-        :initial-poi-cat-id="initialPoiCatId"
-        :initial-poi-id="initialPoiId"
-        @menuButtonClick="onMenuButtonClick"
-        @locationClick="onLocationClick"
-        @setGlobalRoute="onSetGlobalRoute"
-        @routeGo="onRouteGo"
-        @clearRoute="onClearRoute"
-        @shareClick="onShareClick"
-        @poiLoad="onPoiLoad"
-        @loadSinglePoi="loadSinglePoi"
-        @hideSidebar="drawer = false"
+    <template v-if="shouldShowPoiDrawer">
+      <poi-drawer
+        :show="shouldShowPoiDrawer"
+        :data="poiDrawerData"
+        :base-map="currentMap"
+        :navigation="drawer"
+        @update:drawer="drawer = $event"
+        @open-route-drawer="onOpenRouteDrawer(true)"
+        @hide-poi-drawer="onHidePoiDrawer"
+        @update:show="poiDrawer = $event"
       />
-    </v-navigation-drawer>
+    </template>
+
+    <route-drawer
+      :v-show="shouldShowRouteDrawer"
+      :show="shouldShowRouteDrawer"
+      :data="routeDrawerData"
+      :base-map="currentMap"
+      :navigation="drawer"
+      @on-close="routeDrawer = false"
+      @update:drawer="drawer = $event"
+      @update:show="routeDrawer = $event"
+      @setGlobalRoute="onSetGlobalRoute"
+      @routeGo="onRouteGo"
+    />
+
+    <template v-if="drawer">
+      <v-navigation-drawer
+        ref="drawer"
+        v-model="drawer"
+        class="resizable"
+        bottom
+        :style="isMobile ? { width: '275px', height: drawerHeight + 'px' } : {width: '275px'}"
+        fixed
+        app
+        @transitionend="onTransitionEnd"
+      >
+        <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
+        <sidebar
+          ref="sideBar"
+          :menu-items="items"
+          :opened-panels="openedPanels"
+          :initial-poi-cat-id="initialPoiCatId"
+          :initial-poi-id="initialPoiId"
+          @menuButtonClick="onMenuButtonClick"
+          @locationClick="onLocationClick"
+          @setGlobalRoute="onSetGlobalRoute"
+          @routeGo="onRouteGo"
+          @clearRoute="onClearRoute"
+          @shareClick="onShareClick"
+          @poiLoad="onPoiLoad"
+          @loadSinglePoi="loadSinglePoi"
+          @hideSidebar="drawer = false"
+        />
+      </v-navigation-drawer>
+    </template>
     <v-toolbar
+      v-show="!shouldShowPoiDrawer"
       :max-width="toolbarWidth"
       dense
       rounded
       floating
       class="ma-2"
     >
-      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer" />
-      <template v-if="isSmallScreen">
-        <v-btn @click="showSearch = !showSearch" icon>
-          <v-icon v-if="!showSearch">
-            mdi-magnify
-          </v-icon>
-          <v-icon v-if="showSearch">
-            mdi-chevron-left
-          </v-icon>
-        </v-btn>
-      </template>
+      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
       <v-expand-transition>
-        <campus-search ref="searchComp" v-show="!isSmallScreen || showSearch" @selectSearhResult="onSearchSelect" @showSearch="onShowSearch" />
+        <campus-search
+          ref="searchComp"
+          show-route
+          @selectSearhResult="onSearchSelect"
+          @showSearch="onShowSearch"
+          @open-route-drawer="onOpenRouteDrawer(true)"
+        />
       </v-expand-transition>
     </v-toolbar>
     <indrz-map
@@ -59,6 +89,7 @@
       @openPoiTree="onOpenPoiTree"
       @openPoiToPoiRoute="onOpenPoiToPoiRoute"
       @showSearchResult="onShowSearchResult"
+      @open-poi-drawer="onOpenPoiDrawer"
     />
     <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
     <snack-bar />
@@ -73,6 +104,9 @@ import FloorChanger from '../../components/FloorChanger';
 import CampusSearch from '../../components/CampusSearch';
 import SnackBar from '../../components/SnackBar';
 import mapHandler from '../../util/mapHandler';
+import PoiDrawer from '@/components/drawers/PoiDrawer';
+import RouteDrawer from '@/components/drawers/RouteDrawer.vue';
+import BaseDrawer from '@/components/drawers/BaseDrawer'
 
 export default {
   components: {
@@ -80,12 +114,19 @@ export default {
     IndrzMap,
     FloorChanger,
     CampusSearch,
-    SnackBar
+    SnackBar,
+    PoiDrawer,
+    RouteDrawer
   },
+  mixins: [BaseDrawer],
   data () {
     return {
       clipped: false,
       drawer: false,
+      poiDrawer: false,
+      routeDrawer: false,
+      poiDrawerData: {},
+      routeDrawerData: {},
       fixed: false,
       loading: true,
       items: [
@@ -102,7 +143,8 @@ export default {
       openedPanels: [],
       initialPoiCatId: null,
       initialPoiId: null,
-      showSearch: false
+      showSearch: false,
+      currentMap: {}
     };
   },
 
@@ -114,10 +156,24 @@ export default {
       return this.$refs.map;
     },
     isSmallScreen () {
-      return this.$vuetify.breakpoint.mdAndDown;
+      return this.$vuetify.breakpoint.smAndDown;
     },
     toolbarWidth () {
       return this.isSmallScreen ? '280px' : '320px';
+    },
+    shouldShowPoiDrawer: {
+      get () {
+        return this.poiDrawer && !this.drawer && !this.routeDrawer;
+      },
+      set () {
+      }
+    },
+    shouldShowRouteDrawer: {
+      get () {
+        return this.routeDrawer && !this.poiDrawer && !this.drawer;
+      },
+      set () {
+      }
     }
   },
 
@@ -136,11 +192,13 @@ export default {
     mapHandler.setI18n(this.$i18n);
     await this.loadFloors();
     mapComponent.loadLayers(this.floors);
+    this.currentMap = mapComponent;
     this.loading = false;
     if (this.setSelection) {
       this.selectFloorWithCss(this.setSelection);
     }
     this.$root.$on('poiLoad', this.onPoiLoad);
+    this.$root.$on('clearRoute', this.onClearRoute);
   },
   methods: {
     ...mapActions({
@@ -174,10 +232,9 @@ export default {
       this.$refs.searchComp.clearSearch();
     },
     onPopupRouteClick (routeInfo) {
-      this.drawer = true;
-      this.openedPanels = [1];
+      this.onOpenRouteDrawer()
       setTimeout(() => {
-        this.$refs.sideBar.setRoute(routeInfo);
+        routeInfo?.path && this.$root.$emit('setRoute', routeInfo);
       }, 500);
     },
     onOpenPoiTree (poiCatId, isPoiId = false) {
@@ -211,6 +268,31 @@ export default {
     },
     onShowSearch () {
       this.showSearch = true;
+    },
+    onOpenPoiDrawer ({ feature }) {
+      this.poiDrawerData = { name_en: '', name: '' }
+      this.$nextTick(() => {
+        this.poiDrawer = !!feature;
+        if (this.poiDrawer) {
+          this.drawer = false;
+          this.routeDrawer = false;
+          this.poiDrawerData = feature;
+        }
+      })
+    },
+    onOpenRouteDrawer (alter = false) {
+      if (this.routeDrawer && alter) {
+        this.routeDrawer = false;
+        return;
+      }
+      this.drawer = false;
+      this.poiDrawer = false;
+      this.routeDrawer = true;
+      this.routeDrawerData = {};
+    },
+    onHidePoiDrawer () {
+      this.poiDrawerData = {};
+      this.poiDrawer = false;
     }
   }
 };
@@ -220,8 +302,5 @@ export default {
   header {
     position: absolute;
     z-index: 6;
-  }
-  nav {
-    z-index: 7
   }
 </style>

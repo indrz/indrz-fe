@@ -30,6 +30,13 @@
                   <v-text-field v-model="data.name" :rules="requiredRule" label="name" />
                   <v-text-field v-model="data.name_en" label="name-en" />
                   <v-text-field v-model="data.name_de" label="name-de" />
+                  <v-textarea
+                    v-model="data.html_content"
+                    label="HTML Content"
+                    rows="3"
+                    no-resize
+                    row-height="25"
+                  />
                   <v-checkbox
                     v-model="data.enabled"
                     label="enabled"
@@ -40,13 +47,14 @@
                     ref="uploadImage"
                     v-model="imageFile"
                     accept="image/*"
-                    label="Image"
+                    label="Click here to upload Image"
                     show-size
                     :rules="imageUploadRules"
                     prepend-icon=""
                     append-icon="mdi-plus"
                     :disabled="isLoading"
                     @change="onImageUpload"
+                    @click:append="selectFile"
                   />
                   <v-list
                     dense
@@ -158,6 +166,7 @@ export default {
             name: '',
             name_en: '',
             name_de: '',
+            html_content: '',
             enabled: true,
             images: []
           };
@@ -248,6 +257,11 @@ export default {
         return image.image.split('/').pop()
       }
       return image.alt_text
+    },
+    selectFile () {
+      const fileInput = this.$refs.uploadImage.$el.querySelector('input[type="file"]')
+      const clickEvent = new MouseEvent('click')
+      fileInput.dispatchEvent(clickEvent)
     }
   }
 };

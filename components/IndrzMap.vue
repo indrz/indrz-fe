@@ -141,6 +141,13 @@ export default {
     this.map.on('moveend', (e) => {
       this.$root.$emit('map-moved', e.map.getView().getCenter());
     });
+
+    this.$root.$on('popupEntranceButtonClick', this.onPopupEntranceButtonClick);
+    this.$root.$on('popupMetroButtonClick', this.onPopupMetroButtonClick);
+    this.$root.$on('popupDefiButtonClick', this.onPopupDefiButtonClick);
+    this.$root.$on('shareClick', this.onShareButtonClick);
+    this.$root.$on('popupRouteClick', this.onPopupRouteClick);
+    this.$root.$on('closeInfoPopup', this.closeIndrzPopup);
   },
 
   methods: {
@@ -204,13 +211,23 @@ export default {
           layerNamePrefix: env.LAYER_NAME_PREFIX
         });
       this.searchLayer = result.searchLayer;
+      this.$emit('open-poi-drawer', {
+        feature: properties
+      })
     },
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);
-      await MapUtil.loadMapWithParams(this, query);
+      const selectedItem = await MapUtil.loadMapWithParams(this, query);
+
+      this.$emit('open-poi-drawer', {
+        feature: selectedItem
+      })
     },
     openIndrzPopup (properties, coordinate, feature) {
-      MapHandler.openIndrzPopup(
+      this.$emit('open-poi-drawer', {
+        feature: properties
+      })
+      !this.isSmallScreen && MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorNum, this.popup,
@@ -226,6 +243,7 @@ export default {
       if (fromEvent) {
         this.$emit('clearSearch');
       }
+      this.$emit('open-poi-drawer', {})
     },
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
@@ -241,8 +259,11 @@ export default {
     loadSinglePoi (poiId) {
       POIHandler
         .showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
-        .then((layer) => {
+        .then(({ layer, feature }) => {
           this.searchLayer = layer;
+          this.$emit('open-poi-drawer', {
+            feature
+          })
         });
     },
     loadPoiToPoiroute (startPoiId, endPoiId) {
@@ -384,12 +405,22 @@ export default {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo (routeType = 0) {
-      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {
+      const routeResult = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {
         baseApiUrl: env.BASE_API_URL,
         layerNamePrefix: env.LAYER_NAME_PREFIX,
         token: env.TOKEN,
         locale: this.$i18n.locale
       });
+      const { noRouteFound, error, routeUrl } = routeResult
+
+      if (noRouteFound) {
+        this.$root.$emit('noRouteFound', true);
+      } else if (error) {
+        this.$root.$emit('routeError', error)
+      } else {
+        this.globalRouteInfo.routeUrl = routeUrl;
+        this.$root.$emit('setRouteInfo', routeResult);
+      }
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map, true);
