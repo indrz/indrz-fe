@@ -3,10 +3,10 @@
   "campus_locations": "Campus Locations",
   "route": "Directions",
   "shareRoute": "Share Route",
-  "start_route": "From",
+  "start_route": "Search for a start location",
   "route_from_here": "Route from here",
   "route_to_here": "Route to here",
-  "end_route": "To",
+  "end_route": "Search for a destination",
   "barrier_free_route": "Barrier Free Route",
   "go": "Go",
   "points_of_interest": "Points Of Interest",
@@ -53,5 +53,6 @@
   "label_building_city": "City",
   "label_building_plz": "Postal Code",
   "label_building_adress": "Adress",
-  "pdf_title": "University Plan"
+  "pdf_title": "University Plan",
+  "poi_pictures": "Pictures"
 }

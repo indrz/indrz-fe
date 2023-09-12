@@ -3,10 +3,10 @@
   "campus_locations": "Campus Standorte",
   "route": "Directions",
   "shareRoute": "Route Teilen",
-  "start_route": "Von",
+  "start_route": "Startpunkt wählen",
   "route_from_here": "Route von hier",
   "route_to_here": "Route nach hier",
-  "end_route": "Bis",
+  "end_route": "Reiseziel eingeben",
   "barrier_free_route": "Barrierefreier Weg",
   "go": "Start",
   "points_of_interest": "Points of Interest",
@@ -53,5 +53,6 @@
   "label_building_city": "Stadt",
   "label_building_plz": "Plz",
   "label_building_adress": "Adresse",
-  "pdf_title": "Universität Plan"
+  "pdf_title": "Universität Plan",
+  "poi_pictures": "Bilder"
 }

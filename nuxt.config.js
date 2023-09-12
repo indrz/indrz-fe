@@ -35,6 +35,7 @@ export default {
     '@/assets/css/main.scss',
     '@/assets/css/ol.scss',
     '@/assets/css/popup.scss',
+    '@/assets/css/draggable_drawer.scss',
     '@/assets/custom_css/floor_changer.scss'
   ],
   /*
