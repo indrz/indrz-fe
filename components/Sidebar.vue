@@ -69,7 +69,6 @@
 <script>
 import config from '../util/indrzConfig';
 import CampusLocations from './CampusLocations';
-import Route from './Route';
 import SearchResult from './SearchResult';
 import PointsOfInterest from './poi/PointsOfInterest';
 
@@ -79,7 +78,6 @@ export default {
   name: 'SideBar',
   components: {
     CampusLocations,
-    Route,
     PointsOfInterest,
     SearchResult
   },
@@ -107,7 +105,6 @@ export default {
     return {
       locale: {
         campusLocations: this.$t('campus_locations'),
-        route: this.$t('route'),
         searchResult: this.$t('search_result'),
         pointsOfInterest: this.$t('points_of_interest'),
         zooToHome: this.$t('zoom_to_home'),
@@ -135,10 +132,6 @@ export default {
         {
           type: 'CampusLocations',
           title: this.locale.campusLocations
-        },
-        {
-          type: 'Route',
-          title: this.locale.route
         },
         {
           type: 'PointsOfInterest',
@@ -221,9 +214,6 @@ export default {
     onClearRoute () {
       this.$emit('clearRoute');
     },
-    setRoute (routeInfo) {
-      this.$refs.Route[0].setRoute(routeInfo);
-    },
     addPoi (data) {
       this.$emit('poiLoad', data);
     },
@@ -245,18 +235,6 @@ export default {
     vertical-align: middle;
     display: block;
     margin: 5px auto;
-  }
-  /*
-  Style for Route Room to Room
-   */
-  .route-room-to-room {
-    margin-right: 10px;
-    ::v-deep .v-label {
-      /*
-      font-family: "Roboto", sans-serif;
-      font-size: .8125rem !important;
-      */
-    }
   }
   /*
   Style for Tree
