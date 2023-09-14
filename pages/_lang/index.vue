@@ -43,7 +43,7 @@
         app
         @transitionend="onTransitionEnd"
       >
-        <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
+        <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
         <sidebar
           ref="sideBar"
           :menu-items="items"

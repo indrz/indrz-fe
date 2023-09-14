@@ -9,7 +9,7 @@
     app
     @transitionend="onTransitionEnd"
   >
-    <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" />
+    <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
     <div style="ma-2">
       <v-container justify="center" class="pa-0" style="margin-top: 20px; max-width: 410px">
         <v-row class="ma-0" justify="center">
@@ -54,8 +54,8 @@
             </v-list>
           </div>
         </div>
-        <v-divider class="mt-5 mb-5" v-if="routeInfo" />
-        <div class="row justify-center" v-if="routeInfo">
+        <v-divider v-if="routeInfo" class="mt-5 mb-5" />
+        <div v-if="routeInfo" class="row justify-center">
           <div class="panel-section-items">
             <v-list class="list-label-value">
               <v-list-item v-if="routeInfo?.walk_time">
@@ -79,7 +79,7 @@
             </v-list>
           </div>
         </div>
-        <div class="row justify-left ml-5" v-if="noRouteFound || error">
+        <div v-if="noRouteFound || error" class="row justify-left ml-5">
           <div class="panel-section-items">
             <v-list class="list-label-value">
               <v-list-item v-if="noRouteFound">
@@ -102,10 +102,10 @@
               <v-list-item>
                 <v-btn
                   :disabled="!isRouteAvailable"
-                  @click="onGoButtonClick"
                   color="blue-grey"
                   class="white--text"
                   small
+                  @click="onGoButtonClick"
                 >
                   <v-icon left dark>
                     mdi-run
@@ -116,11 +116,11 @@
                   <template v-slot:activator="{ on }">
                     <v-btn
                       :disabled="!isRouteAvailable"
-                      @click="onShareRoute"
-                      v-on="on"
                       color="blue-grey"
                       class="white--text ml-1"
                       small
+                      @click="onShareRoute"
+                      v-on="on"
                     >
                       <v-icon dark>
                         mdi-share
@@ -133,11 +133,11 @@
                   <template v-slot:activator="{ on }">
                     <v-btn
                       :disabled="!isRouteAvailable"
-                      @click="onClearRoute"
-                      v-on="on"
                       color="blue-grey"
                       class="white--text ml-1"
                       small
+                      @click="onClearRoute"
+                      v-on="on"
                     >
                       <v-icon dark>
                         mdi-close
