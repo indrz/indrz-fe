@@ -75,29 +75,32 @@ export default {
       this.$refs.drawer.$el.style.transition = ''
     },
     startDrag (event) {
-      event.preventDefault()
-      this.$refs.drawer.$el.style.transition = 'none'
-      this.dragHandle = event.target
-      const initialHeight = this.drawerHeight
-      const startY = event.clientY
+      event.preventDefault();
+      this.$refs.drawer.$el.style.transition = 'none';
+
+      const initialHeight = parseFloat(window.getComputedStyle(this.$refs.drawer.$el).height); // Ensure initialHeight is correct
+      const startY = event.clientY || event.touches[0].clientY;
 
       const drag = (event) => {
-        if (event.buttons === 0) {
-          stopDrag()
-          return
-        }
-        const deltaY = startY - event.clientY
-        this.drawerHeight = initialHeight + deltaY
-      }
+        const currentY = event.clientY || event.touches[0].clientY;
+        const deltaY = currentY - startY; // Note the flipped operands
+        this.drawerHeight = initialHeight - deltaY; // Note the change here
+      };
 
       const stopDrag = () => {
-        window.removeEventListener('mousemove', drag)
-        window.removeEventListener('mouseup', stopDrag)
-        this.dragHandle = null
-      }
+        window.removeEventListener('mousemove', drag);
+        window.removeEventListener('mouseup', stopDrag);
+        window.removeEventListener('touchmove', drag);
+        window.removeEventListener('touchend', stopDrag);
+        this.$refs.drawer.$el.style.transition = ''; // Resetting transition, if any
+        this.dragHandle = null;
+      };
 
-      window.addEventListener('mousemove', drag)
-      window.addEventListener('mouseup', stopDrag)
+      window.addEventListener('mousemove', drag);
+      window.addEventListener('mouseup', stopDrag);
+      window.addEventListener('touchmove', drag);
+      window.addEventListener('touchend', stopDrag);
     }
+
   }
 };
