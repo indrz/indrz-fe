@@ -96,7 +96,8 @@ export default {
     LOGO_ENABLED: process.env.LOGO_ENABLED,
     NEAREST_METRO_POIID: process.env.NEAREST_METRO_POIID,
     NEAREST_DEFI_POIID: process.env.NEAREST_DEFI_POIID,
-    NEAREST_ENTRANCE_POIID: process.env.NEAREST_ENTRANCE_POIID
+    NEAREST_ENTRANCE_POIID: process.env.NEAREST_ENTRANCE_POIID,
+    DEFAULT_POI_IMAGE: process.env.DEFAULT_POI_IMAGE
   },
   privateRuntimeConfig: {
     TOKEN: process.env.TOKEN

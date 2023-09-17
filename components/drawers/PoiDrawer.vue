@@ -19,8 +19,8 @@
           <v-img
             :max-width="410"
             :aspect-ratio="1.52"
-            :src="data.images ? `${baseUrl}${data.images[0].image}` : '../../images/default_poi_image.png'"
-            lazy-src="../../images/default_poi_image.png"
+            :src="data.images ? `${baseUrl}${data.images[0].image}` : `${defaultPoiImage}`"
+            lazy-src="`${defaultPoiImage}`"
           >
             <template v-slot:placeholder>
               <v-row
@@ -235,7 +235,7 @@
             :max-width="410"
             :aspect-ratio="1.52"
             :src="`${baseUrl}${image.image}`"
-            lazy-src="../../images/default_poi_image.png"
+            lazy-src="`${defaultPoiImage}`"
             class="gallery-thumb"
             @click="onGalleryImageClick(index)"
           />
@@ -303,6 +303,9 @@ export default {
         file: env.LOGO_FILE,
         enabled: (env.LOGO_ENABLED === true)
       };
+    },
+    defaultPoiImage () {
+      return env.DEFAULT_POI_IMAGE
     },
     baseUrl () {
       return env.BASE_URL
