@@ -8,7 +8,7 @@
       <div id="popup-links">
         <v-row no-gutters>
           <v-col>
-            <v-btn text color="wu" small @click.stop="onRouteClick('from')">
+            <v-btn text small @click.stop="onRouteClick('from')">
               <v-icon left>
                 mdi-map-marker
               </v-icon> {{ locale.routeFromHereText }}
@@ -17,7 +17,7 @@
         </v-row>
         <v-row no-gutters>
           <v-col>
-            <v-btn text color="wu" small @click.stop="onRouteClick('to')">
+            <v-btn text small @click.stop="onRouteClick('to')">
               <v-icon left>
                 mdi-map-marker
               </v-icon> {{ locale.routeToHereText }}
@@ -35,7 +35,6 @@
                   @click.stop="onEntranceButtonClick"
                   tile
                   small
-                  color="blue"
                 >
                   <v-icon left>
                     mdi-routes
@@ -54,7 +53,6 @@
                   @click.stop="onMetroButtonClick"
                   small
                   tile
-                  color="blue"
                 >
                   <v-icon left>
                     mdi-routes
@@ -71,7 +69,6 @@
                 <v-btn
                   @click.stop="onDefiButtonClick"
                   v-on="on"
-                  color="blue"
                   tile
                   small
                 >
@@ -87,7 +84,6 @@
                 <v-btn
                   @click.stop="onShareButtonClick"
                   v-on="on"
-                  color="blue"
                   tile
                   small
                 >
