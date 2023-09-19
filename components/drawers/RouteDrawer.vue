@@ -64,17 +64,17 @@
               <v-list-item v-if="routeInfo?.start_name">
                 <v-icon class="search-btn">
                   mdi-flag
-                </v-icon> <span>Start: {{ routeInfo.start_name }}</span>
+                </v-icon> <span>{{ locale.startRouteLabel }} : {{ routeInfo.start_name }}</span>
               </v-list-item>
-              <v-list-item v-if="routeInfo?.start_name">
+              <v-list-item v-if="routeInfo?.passes">
                 <v-icon class="search-btn">
                   mdi-map-marker
-                </v-icon> <span>Passes </span>
+                </v-icon> <span>{{ locale.routePassessLabel }} </span>
               </v-list-item>
               <v-list-item v-if="routeInfo?.end_name">
                 <v-icon class="search-btn">
                   mdi-flag-checkered
-                </v-icon> <span>Destinamtion: {{ routeInfo.end_name }}</span>
+                </v-icon> <span>{{ locale.endRouteLabel }} : {{ routeInfo.end_name }}</span>
               </v-list-item>
             </v-list>
           </div>
@@ -144,7 +144,7 @@
                       </v-icon>
                     </v-btn>
                   </template>
-                  <span>Clear Route</span>
+                  <span>{{ locale.clearRouteLabel }}</span>
                 </v-tooltip>
               </v-list-item>
             </v-list>
@@ -175,8 +175,10 @@ export default {
       fromRoute: null,
       toRoute: null,
       locale: {
-        startRouteLabel: this.$t('start_route'),
-        endRouteLabel: this.$t('end_route'),
+        startRouteLabel: this.$t('route_from_here'),
+        endRouteLabel: this.$t('route_to_here'),
+        clearRouteLabel: this.$t('clear_route'),
+        routePassessLabel: this.$t('route_passess'),
         barrierFreeLabel: this.$t('barrier_free_route'),
         routeLabel: this.$t('route'),
         noRouteFoundText: this.$t('no_route_found'),

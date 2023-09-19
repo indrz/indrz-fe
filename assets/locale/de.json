@@ -2,6 +2,8 @@
   "search_our_campus": "Durchsuchen Sie unseren Campus",
   "campus_locations": "Campus Standorte",
   "route": "Directions",
+  "clear_route": "Route entfernen",
+  "route_passess": "Route führt an POI vorbei",
   "shareRoute": "Route Teilen",
   "start_route": "Startpunkt wählen",
   "route_from_here": "Route von hier",
