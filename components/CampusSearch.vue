@@ -210,7 +210,7 @@ export default {
       if (!text) {
         this.isPristine = true;
       }
-      this.shouldSearch && this.term$.next(text);
+      this.shouldSearch && (this.model?.name !== text) && this.term$.next(text);
     }
   },
 
