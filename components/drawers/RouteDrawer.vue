@@ -25,7 +25,7 @@
         </v-row>
         <div class="row justify-left ml-5">
           <div class="panel-section-items">
-            <v-list class="list-label-value">
+            <v-list class="list-label-value" style="height: 120px;">
               <v-list-item>
                 <campus-search
                   ref="fromRoute"
@@ -48,6 +48,8 @@
                   @clearClicked="onClearSearchField('to')"
                 />
               </v-list-item>
+            </v-list>
+            <v-list class="list-label-value">
               <v-list-item>
                 <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" @change="onBarrierFreeChange" />
               </v-list-item>
@@ -227,6 +229,10 @@ export default {
       }
       this[selectedItem.routeType + 'Route'] = currentSelection.data;
       this.$emit('setGlobalRoute', selectedItem);
+
+      if (this.fromRoute && this.toRoute) {
+        this.onGoButtonClick();
+      }
     },
     onGoButtonClick () {
       this.$emit('routeGo', this.barrierFree ? 1 : 0);
