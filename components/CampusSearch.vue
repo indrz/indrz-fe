@@ -12,7 +12,7 @@
           :no-filter="true"
           :label="routeLabel"
           :hide-no-data="true"
-          item-text="name"
+          :item-text="activeNameProperty"
           item-value="id"
           append-icon=""
           single-line
@@ -203,6 +203,9 @@ export default {
   computed: {
     activeClearColor () {
       return this.search && this.search.length ? 'blue darken-2' : 'grey';
+    },
+    activeNameProperty () {
+      return this.$i18n.locale === 'en' ? 'name' : `name_${this.$i18n.locale}`
     }
   },
   watch: {
