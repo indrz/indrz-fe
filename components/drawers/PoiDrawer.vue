@@ -312,7 +312,7 @@ export default {
     },
     searchTitle () {
       const { data } = this;
-      return MapHandler.getTitle(data)
+      return MapHandler.getTitle(data, this.$i18n.locale)
     },
     listButtons () {
       return [

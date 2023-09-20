@@ -12,7 +12,7 @@
           :no-filter="true"
           :label="routeLabel"
           :hide-no-data="true"
-          item-text="name"
+          :item-text="getSearchTitle"
           item-value="id"
           append-icon=""
           single-line
@@ -210,7 +210,7 @@ export default {
       if (!text) {
         this.isPristine = true;
       }
-      this.shouldSearch && this.term$.next(text);
+      this.shouldSearch && (this.model?.name !== text) && this.term$.next(text);
     }
   },
 
