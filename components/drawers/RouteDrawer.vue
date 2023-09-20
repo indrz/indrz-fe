@@ -297,7 +297,7 @@ export default {
         return;
       }
       const { properties } = data;
-      const model = { ...properties, ...{ floorNum: properties.floor_num, roomCode: properties.room_code } };
+      const model = { ...properties, ...{ floorNum: properties.floor_num || properties.floor, roomCode: properties.room_code } };
 
       field.stopSearch = true;
       field.apiResponse = [data];
@@ -319,7 +319,7 @@ export default {
 
     setRouteInfo (routeInfo) {
       this.clearMessages();
-      this.setSearchFieldRouteText({
+      routeInfo.start_name && routeInfo.end_name && this.setSearchFieldRouteText({
         fromData: {
           name: routeInfo.start_name
         },
