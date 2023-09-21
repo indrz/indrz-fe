@@ -332,6 +332,9 @@ export default {
     },
     onMenuButtonClick (type) {
       switch (type) {
+        case 'directions':
+          this.$emit('open-route-drawer');
+          break;
         case 'zoom-home':
           menuHandler.handleZoomToHome(this, this.defaultCenter, this.defaultZoom);
           break;
