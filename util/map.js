@@ -738,7 +738,7 @@ const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
     data: {
       coords: startCoords,
       name: 'XY Location',
-      floor_num: startFloor
+      floor: startFloor
     }
   });
   mapInfo.$emit('popupRouteClick', {
@@ -746,7 +746,7 @@ const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
     data: {
       coords: endCoords,
       name: 'XY Location',
-      floor_num: endFloor
+      floor: endFloor
     }
   });
 };
@@ -764,11 +764,11 @@ const loadMapFromPoiToPoiRoute = async (startPoiId, endPoiId, mapInfo) => {
   ]);
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: { ...startPoiData?.data?.properties, poiId: startPoiId }
+    data: { ...startPoiData?.data?.properties, poiId: startPoiId, floor: startPoiData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: { ...endPoiData?.data?.properties, poiId: endPoiId }
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
   });
 };
 
@@ -783,14 +783,14 @@ const loadMapFromPoiToCoords = async (startPoiId, endXyQuery, mapInfo) => {
 
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: { ...poiData?.data?.properties, poiId: startPoiId }
+    data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
     data: {
       coords: endCoords,
       name: 'XY Location',
-      floor_num: endFloor
+      floor: endFloor
     }
   });
 };
@@ -804,13 +804,14 @@ const loadMapFromSpaceIdToSpaceIdRoute = async (startSpaceId, endSpaceId, mapInf
       endPoint: `space/${endSpaceId}`
     })
   ]);
+
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId }
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: { ...endSpaceIdData?.data?.properties, spaceid: endSpaceId }
+    data: { ...endSpaceIdData?.data?.properties, spaceid: endSpaceId, floor: endSpaceIdData?.data?.properties?.floor_num }
   });
 };
 
@@ -825,11 +826,11 @@ const loadMapFromSpaceIdToPoiIdRoute = async (startSpaceId, endPoiId, mapInfo) =
   ]);
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId }
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: { ...endPoiData?.data?.properties, poiId: endPoiId }
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
   });
 };
 
