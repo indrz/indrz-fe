@@ -184,8 +184,6 @@ const getDirections = async (
   const map = mapInfo.map;
   clearRouteData(map);
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
-  let startName = '';
-  let endName = '';
   let geoJsonUrl = '';
   let routeUrl = '';
 
@@ -244,11 +242,6 @@ const getDirections = async (
       }
 
       if (routeInfo) {
-        const { start, end } = routeInfo;
-
-        startName = start ? start.properties['name_' + locale] : routeInfo.start_name;
-        endName = start ? end.properties['name_' + locale] : routeInfo.end_name;
-
         if (searchType === 'coords') {
           routeUrl = `?start-xy=${startSearchText.join(',')},${startFloor}&end-xy=${endSearchText.join(',')},${endFloor}`;
         } else if (searchType === 'poiToCoords') {
@@ -262,17 +255,6 @@ const getDirections = async (
           if (foid) {
             routeUrl += '&foid=' + foid;
           }
-        }
-
-        if (startName && endName) {
-          mapInfo.$root.$emit('updateRouteFields', {
-            fromData: {
-              name: startName
-            },
-            toData: {
-              name: endName
-            }
-          });
         }
       }
 
@@ -309,8 +291,6 @@ const getDirections = async (
 
       return {
         ...routeData.route_info,
-        start_name: startName,
-        end_name: endName,
         routeUrl
       };
     });

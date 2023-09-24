@@ -751,36 +751,39 @@ const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
   });
 };
 
-const loadMapFromPoiToPoiRoute = (startPoiId, endPoiId, mapInfo) => {
+const loadMapFromPoiToPoiRoute = async (startPoiId, endPoiId, mapInfo) => {
   mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
 
+  const [startPoiData, endPoiData] = await Promise.all([
+    api.request({
+      endPoint: `poi/${startPoiId}`
+    }),
+    api.request({
+      endPoint: `poi/${endPoiId}`
+    })
+  ]);
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      poiId: startPoiId,
-      name: startPoiId
-    }
+    data: { ...startPoiData?.data?.properties, poiId: startPoiId }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: {
-      poiId: endPoiId,
-      name: endPoiId
-    }
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId }
   });
 };
 
-const loadMapFromPoiToCoords = (startPoiId, endXyQuery, mapInfo) => {
+const loadMapFromPoiToCoords = async (startPoiId, endXyQuery, mapInfo) => {
   const endXy = endXyQuery.split(',');
   const endCoords = [endXy[0], endXy[1]];
   const endFloor = endXy[2];
 
+  const poiData = await api.request({
+    endPoint: `poi/${startPoiId}`
+  })
+
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      poiId: startPoiId,
-      name: startPoiId
-    }
+    data: { ...poiData?.data?.properties, poiId: startPoiId }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
@@ -792,37 +795,41 @@ const loadMapFromPoiToCoords = (startPoiId, endXyQuery, mapInfo) => {
   });
 };
 
-const loadMapFromSpaceIdToSpaceIdRoute = (startSpaceId, endSpaceId, mapInfo) => {
+const loadMapFromSpaceIdToSpaceIdRoute = async (startSpaceId, endSpaceId, mapInfo) => {
+  const [startSpaceIdData, endSpaceIdData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `space/${endSpaceId}`
+    })
+  ]);
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      spaceid: startSpaceId,
-      name: startSpaceId
-    }
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: {
-      spaceid: endSpaceId,
-      name: endSpaceId
-    }
+    data: { ...endSpaceIdData?.data?.properties, spaceid: endSpaceId }
   });
 };
 
-const loadMapFromSpaceIdToPoiIdRoute = (startSpaceId, endPoiId, mapInfo) => {
+const loadMapFromSpaceIdToPoiIdRoute = async (startSpaceId, endPoiId, mapInfo) => {
+  const [startSpaceIdData, endPoiData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `poi/${endPoiId}`
+    })
+  ]);
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      spaceid: startSpaceId,
-      name: startSpaceId
-    }
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: {
-      poiId: endPoiId,
-      name: endPoiId
-    }
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId }
   });
 };
 
