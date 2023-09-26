@@ -200,6 +200,9 @@ export default {
     }
     this.$root.$on('poiLoad', this.onPoiLoad);
     this.$root.$on('clearRoute', this.onClearRoute);
+    this.$root.$on('update-opened-panels', (openedPanels) => {
+      this.openedPanels = openedPanels
+    })
   },
   methods: {
     ...mapActions({
@@ -239,13 +242,18 @@ export default {
       }, 500);
     },
     onOpenPoiTree (poiCatId, isPoiId = false) {
-      this.drawer = false;
-      this.openedPanels = [2];
+      this.drawer = true;
+      this.openedPanels = [1];
+
       if (isPoiId) {
         this.initialPoiId = poiCatId;
       } else {
         this.initialPoiCatId = poiCatId.split(',').map(id => Number.parseInt(id, 10)).filter(id => !Number.isNaN(id));
       }
+      setTimeout(() => {
+        this.initialPoiId = null;
+        this.initialPoiCatId = null;
+      }, 2000)
     },
     onOpenPoiToPoiRoute (startPoiId, endPoiId) {
       this.map.loadPoiToPoiroute(startPoiId, endPoiId);

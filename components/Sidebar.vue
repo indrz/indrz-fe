@@ -116,7 +116,6 @@ export default {
         scanQRShowMyLocation: this.$t('scan_qr_show_my_location'),
         directions: this.$t('route')
       },
-      expanded: [],
       searchResult: []
     };
   },
@@ -192,12 +191,14 @@ export default {
     },
     appVersion () {
       return env.APP_VERSION
-    }
-  },
-
-  watch: {
-    openedPanels (value) {
-      this.expanded = value;
+    },
+    expanded: {
+      get () {
+        return this.openedPanels;
+      },
+      set (value) {
+        this.$root.$emit('update-opened-panels', value)
+      }
     }
   },
 
