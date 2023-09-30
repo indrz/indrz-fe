@@ -790,7 +790,7 @@ const loadMapFromPoiToCoords = async (startPoiId, endXyQuery, mapInfo) => {
     data: {
       coords: endCoords,
       name: 'XY Location',
-      floor: endFloor
+      floor_num: endFloor
     }
   });
 };
