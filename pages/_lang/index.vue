@@ -90,6 +90,7 @@
       @openPoiToPoiRoute="onOpenPoiToPoiRoute"
       @showSearchResult="onShowSearchResult"
       @open-poi-drawer="onOpenPoiDrawer"
+      @open-route-drawer="onOpenRouteDrawer(true)"
     />
     <floor-changer ref="floorChanger" @floorClick="onFloorClick" />
     <snack-bar />

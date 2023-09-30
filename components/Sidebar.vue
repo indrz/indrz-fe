@@ -113,7 +113,8 @@ export default {
         pdf: this.$t('pdf'),
         helpLegendInfos: this.$t('help_legend_infos'),
         aboutTermsConditions: this.$t('about_terms_conditions'),
-        scanQRShowMyLocation: this.$t('scan_qr_show_my_location')
+        scanQRShowMyLocation: this.$t('scan_qr_show_my_location'),
+        directions: this.$t('route')
       },
       searchResult: []
     };
@@ -146,6 +147,11 @@ export default {
     },
     menuButtons () {
       return [
+        {
+          icon: 'directions',
+          type: 'directions',
+          text: this.locale.directions
+        },
         {
           icon: 'home',
           type: 'zoom-home',

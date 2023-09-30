@@ -267,7 +267,7 @@ export default {
             building: properties.building,
             src_icon: properties.src_icon || properties.icon,
             code,
-            id
+            id: properties.id
           }
         };
 
@@ -282,7 +282,7 @@ export default {
       let data = null;
 
       if (selection) {
-        data = this.apiResponse.find(responseData => responseData.id === selection.id);
+        data = this.apiResponse.find(({ properties }) => properties.id === selection.id);
       }
 
       this.$emit('selectSearhResult', {
