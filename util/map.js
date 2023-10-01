@@ -723,6 +723,9 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query['start-spaceid'] && query['end-poi-id']) {
     loadMapFromSpaceIdToPoiIdRoute(query['start-spaceid'], query['end-poi-id'], mapInfo);
   }
+  if (query['start-poi-id'] && query['end-book']) {
+    loadMapFromPoiToBook(query['start-poi-id'], query['end-book'], mapInfo);
+  }
 };
 
 const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
@@ -792,6 +795,24 @@ const loadMapFromPoiToCoords = async (startPoiId, endXyQuery, mapInfo) => {
       name: endCoords,
       floor_num: endFloor
     }
+  });
+};
+
+const loadMapFromPoiToBook = async (startPoiId, book, mapInfo) => {
+  const poiData = await api.request({
+    endPoint: `poi/${startPoiId}`
+  })
+  const bookData = await api.request({
+    endPoint: `search/${book}`
+  })
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
+  });
+  bookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
   });
 };
 

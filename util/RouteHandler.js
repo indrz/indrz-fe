@@ -350,7 +350,7 @@ const getDirections = async (
             routeUrl = '?from-book=' + startSearchText.key + `&end-xy=${endSearchText.join(',')},${endFloor}`;
             break;
           case 'poiIdToBook':
-            routeUrl = `?poi-id=${startSearchText}&book=${endSearchText.key}`
+            routeUrl = `?start-poi-id=${startSearchText}&end-book=${endSearchText.key}`
             break;
           case 'bookToBook':
             routeUrl = '?from-book=' + startSearchText.key + '&to-book=' + endSearchText.key;
