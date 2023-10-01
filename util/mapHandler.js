@@ -234,7 +234,7 @@ const openIndrzPopup = (
 
   popupContent.innerHTML += '</p></div>';
 
-  globalPopupInfo.name = properties.xy ? translate.t('xy_location') : titlePopup;
+  globalPopupInfo.name = titlePopup;
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorNum;
   globalPopupInfo.room_code = roomCode;

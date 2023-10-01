@@ -737,7 +737,7 @@ const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
     path: 'from',
     data: {
       coords: startCoords,
-      name: 'XY Location',
+      name: startCoords,
       floor: startFloor
     }
   });
@@ -745,7 +745,7 @@ const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
     path: 'to',
     data: {
       coords: endCoords,
-      name: 'XY Location',
+      name: endCoords,
       floor: endFloor
     }
   });
@@ -789,7 +789,7 @@ const loadMapFromPoiToCoords = async (startPoiId, endXyQuery, mapInfo) => {
     path: 'to',
     data: {
       coords: endCoords,
-      name: 'XY Location',
+      name: endCoords,
       floor_num: endFloor
     }
   });
