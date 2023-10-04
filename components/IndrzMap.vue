@@ -220,7 +220,7 @@ export default {
       const selectedItem = await MapUtil.loadMapWithParams(this, query);
 
       this.$emit('open-poi-drawer', {
-        feature: selectedItem
+        feature: selectedItem?.properties
       })
     },
     openIndrzPopup (properties, coordinate, feature) {
