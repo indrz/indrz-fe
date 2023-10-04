@@ -720,6 +720,9 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query['start-spaceid'] && query['end-spaceid']) {
     loadMapFromSpaceIdToSpaceIdRoute(query['start-spaceid'], query['end-spaceid'], mapInfo);
   }
+  if (query['start-spaceid'] && query['end-book']) {
+    loadMapFromSpaceIdToBook(query['start-spaceid'], query['end-book'], mapInfo);
+  }
   if (query['start-spaceid'] && query['end-poi-id']) {
     loadMapFromSpaceIdToPoiIdRoute(query['start-spaceid'], query['end-poi-id'], mapInfo);
   }
@@ -799,12 +802,14 @@ const loadMapFromPoiToCoords = async (startPoiId, endXyQuery, mapInfo) => {
 };
 
 const loadMapFromPoiToBook = async (startPoiId, book, mapInfo) => {
-  const poiData = await api.request({
-    endPoint: `poi/${startPoiId}`
-  })
-  const bookData = await api.request({
-    endPoint: `search/${book}`
-  })
+  const [poiData, bookData] = await Promise.all([
+    api.request({
+      endPoint: `poi/${startPoiId}`
+    }),
+    api.request({
+      endPoint: `search/${book}`
+    })
+  ]);
 
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
@@ -813,6 +818,26 @@ const loadMapFromPoiToBook = async (startPoiId, book, mapInfo) => {
   bookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
     path: 'to',
     data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
+  });
+};
+
+const loadMapFromSpaceIdToBook = async (startSpaceId, book, mapInfo) => {
+  const [startSpaceIdData, endBookData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `search/${book}`
+    })
+  ]);
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: { ...endBookData?.data?.features[0]?.properties, coords: endBookData.data.features[0].geometry.coordinates }
   });
 };
 

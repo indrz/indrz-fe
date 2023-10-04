@@ -344,7 +344,7 @@ const getDirections = async (
             }
             break;
           case 'spaceIdToBook':
-            routeUrl = '?start-spaceid=' + startSearchText + '&to-book=' + endSearchText.key;
+            routeUrl = '?start-spaceid=' + startSearchText + '&end-book=' + endSearchText.key;
             break;
           case 'bookToCoords':
             routeUrl = '?from-book=' + startSearchText.key + `&end-xy=${endSearchText.join(',')},${endFloor}`;
