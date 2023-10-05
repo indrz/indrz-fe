@@ -729,6 +729,9 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query['start-poi-id'] && query['end-book']) {
     loadMapFromPoiToBook(query['start-poi-id'], query['end-book'], mapInfo);
   }
+  if (query['from-book'] && query['end-xy']) {
+    loadMapFromBookToCoords(query['from-book'], query['end-xy'], mapInfo);
+  }
 };
 
 const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
@@ -790,6 +793,29 @@ const loadMapFromPoiToCoords = async (startPoiId, endXyQuery, mapInfo) => {
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
     data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: {
+      coords: endCoords,
+      name: endCoords,
+      floor_num: endFloor
+    }
+  });
+};
+
+const loadMapFromBookToCoords = async (book, endXyQuery, mapInfo) => {
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  const bookData = await api.request({
+    endPoint: `search/${book}`
+  })
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',

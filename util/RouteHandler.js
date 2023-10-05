@@ -256,6 +256,8 @@ const getDirections = async (
   const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
   let geoJsonUrl = '';
   let routeUrl = '';
+  const floatTypeStartFloor = Number(startFloor).toFixed(1);
+  const floatTypeEndFloor = Number(endFloor).toFixed(1);
 
   switch (searchType) {
     case 'coords':
@@ -280,10 +282,10 @@ const getDirections = async (
       geoJsonUrl = baseApiRoutingUrl + 'start-poi-id=' + startSearchText + '&' + 'end-poi-id=' + endSearchText;
       break;
     case 'spaceIdToBook':
-      geoJsonUrl = `${baseApiRoutingUrl}space-id=${startSearchText}&xyz=${endSearchText.coords.join(',')},${endFloor.toFixed(1)}`;
+      geoJsonUrl = `${baseApiRoutingUrl}space-id=${startSearchText}&xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
       break;
     case 'bookToCoords':
-      geoJsonUrl = `${baseApiRoutingUrl}xyz=${startSearchText.coords.join(',')}&xyz=${endSearchText}&floor=${endFloor}`;
+      geoJsonUrl = `${baseApiRoutingUrl}xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&xyz=${endSearchText},${floatTypeEndFloor}`;
       break;
     case 'poiIdToBook':
       geoJsonUrl = `${baseApiRoutingUrl}poi-id=${startSearchText}&xyz=${endSearchText.coords.join(',')}&floor=${endFloor}`;
@@ -347,7 +349,7 @@ const getDirections = async (
             routeUrl = '?start-spaceid=' + startSearchText + '&end-book=' + endSearchText.key;
             break;
           case 'bookToCoords':
-            routeUrl = '?from-book=' + startSearchText.key + `&end-xy=${endSearchText.join(',')},${endFloor}`;
+            routeUrl = '?from-book=' + startSearchText.key + `&end-xy=${endSearchText.join(',')},${floatTypeEndFloor}`;
             break;
           case 'poiIdToBook':
             routeUrl = `?start-poi-id=${startSearchText}&end-book=${endSearchText.key}`
