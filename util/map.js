@@ -708,29 +708,29 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query['poi-id']) {
     mapInfo.$emit('openPoiTree', query['poi-id'], true);
   }
-  if (query['start-xy'] && query['end-xy']) {
-    loadMapFromXyToXyRoute(query['start-xy'], query['end-xy'], mapInfo);
+  if (query['from-xy'] && query['to-xy']) {
+    loadMapFromXyToXyRoute(query['from-xy'], query['to-xy'], mapInfo);
   }
-  if (query['start-poi-id'] && query['end-poi-id']) {
-    loadMapFromPoiToPoiRoute(query['start-poi-id'], query['end-poi-id'], mapInfo);
+  if (query['from-poi'] && query['to-poi']) {
+    loadMapFromPoiToPoiRoute(query['from-poi'], query['to-poi'], mapInfo);
   }
-  if (query['start-poi-id'] && query['end-xy']) {
-    loadMapFromPoiToCoords(query['start-poi-id'], query['end-xy'], mapInfo);
+  if (query['from-poi'] && query['to-xy']) {
+    loadMapFromPoiToCoords(query['from-poi'], query['to-xy'], mapInfo);
   }
-  if (query['start-spaceid'] && query['end-spaceid']) {
-    loadMapFromSpaceIdToSpaceIdRoute(query['start-spaceid'], query['end-spaceid'], mapInfo);
+  if (query['from-space'] && query['to-space']) {
+    loadMapFromSpaceIdToSpaceIdRoute(query['from-space'], query['to-space'], mapInfo);
   }
-  if (query['start-spaceid'] && query['end-book']) {
-    loadMapFromSpaceIdToBook(query['start-spaceid'], query['end-book'], mapInfo);
+  if (query['from-space'] && query['to-book']) {
+    loadMapFromSpaceIdToBook(query['from-space'], query['to-book'], mapInfo);
   }
-  if (query['start-spaceid'] && query['end-poi-id']) {
-    loadMapFromSpaceIdToPoiIdRoute(query['start-spaceid'], query['end-poi-id'], mapInfo);
+  if (query['from-space'] && query['to-poi']) {
+    loadMapFromSpaceIdToPoiIdRoute(query['from-space'], query['to-poi'], mapInfo);
   }
-  if (query['start-poi-id'] && query['end-book']) {
-    loadMapFromPoiToBook(query['start-poi-id'], query['end-book'], mapInfo);
+  if (query['from-poi'] && query['to-book']) {
+    loadMapFromPoiToBook(query['from-poi'], query['to-book'], mapInfo);
   }
-  if (query['from-book'] && query['end-xy']) {
-    loadMapFromBookToCoords(query['from-book'], query['end-xy'], mapInfo);
+  if (query['from-book'] && query['to-xy']) {
+    loadMapFromBookToCoords(query['from-book'], query['to-xy'], mapInfo);
   }
 };
 

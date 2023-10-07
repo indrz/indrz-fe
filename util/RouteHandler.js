@@ -285,7 +285,7 @@ const getDirections = async (
       geoJsonUrl = `${baseApiRoutingUrl}space-id=${startSearchText}&xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
       break;
     case 'bookToCoords':
-      geoJsonUrl = `${baseApiRoutingUrl}xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&xyz=${endSearchText},${floatTypeEndFloor}`;
+      geoJsonUrl = `${baseApiRoutingUrl}start_xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&end_xyz=${endSearchText},${floatTypeEndFloor}`;
       break;
     case 'poiIdToBook':
       geoJsonUrl = `${baseApiRoutingUrl}poi-id=${startSearchText}&xyz=${endSearchText.coords.join(',')}&floor=${endFloor}`;
@@ -328,31 +328,31 @@ const getDirections = async (
       if (routeInfo) {
         switch (searchType) {
           case 'coords':
-            routeUrl = `?start-xy=${startSearchText.join(',')},${startFloor}&end-xy=${endSearchText.join(',')},${endFloor}`;
+            routeUrl = `?from-xy=${startSearchText.join(',')},${startFloor}&to-xy=${endSearchText.join(',')},${endFloor}`;
             break;
           case 'poiToCoords':
-            routeUrl = '?start-poi-id=' + routeInfo.start.id + `&end-xy=${endSearchText.join(',')},${endFloor}`;
+            routeUrl = '?from-poi=' + routeInfo.start.id + `&to-xy=${endSearchText.join(',')},${endFloor}`;
             break;
           case 'poiIdToPoiId':
-            routeUrl = '?start-poi-id=' + routeInfo.start.id + '&end-poi-id=' + routeInfo.end.id;
+            routeUrl = '?from-poi=' + routeInfo.start.id + '&to-poi=' + routeInfo.end.id;
             break;
           case 'spaceIdToPoiId':
-            routeUrl = '?start-spaceid=' + startSearchText + '&end-poi-id=' + endSearchText;
+            routeUrl = '?from-space=' + startSearchText + '&to-poi=' + endSearchText;
             break;
           case 'spaceIdToSpaceId':
-            routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType;
+            routeUrl = '?from-space=' + startSearchText + '&to-space=' + endSearchText;
             if (foid) {
               routeUrl += '&foid=' + foid;
             }
             break;
           case 'spaceIdToBook':
-            routeUrl = '?start-spaceid=' + startSearchText + '&end-book=' + endSearchText.key;
+            routeUrl = '?from-space=' + startSearchText + '&to-book=' + endSearchText.key;
             break;
           case 'bookToCoords':
-            routeUrl = '?from-book=' + startSearchText.key + `&end-xy=${endSearchText.join(',')},${floatTypeEndFloor}`;
+            routeUrl = '?from-book=' + startSearchText.key + `&to-xy=${endSearchText.join(',')},${floatTypeEndFloor}`;
             break;
           case 'poiIdToBook':
-            routeUrl = `?start-poi-id=${startSearchText}&end-book=${endSearchText.key}`
+            routeUrl = `?from-poi=${startSearchText}&to-book=${endSearchText.key}`
             break;
           case 'bookToBook':
             routeUrl = '?from-book=' + startSearchText.key + '&to-book=' + endSearchText.key;
