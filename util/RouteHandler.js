@@ -291,7 +291,7 @@ const getDirections = async (
       geoJsonUrl = `${baseApiRoutingUrl}poi-id=${startSearchText}&xyz=${endSearchText.coords.join(',')}&floor=${endFloor}`;
       break;
     case 'bookToBook':
-      geoJsonUrl = `${baseApiRoutingUrl}xyz=${startSearchText.coords.join(',')}&floor=${startFloor}&xyz=${endSearchText.coords.join(',')},${endFloor}`;
+      geoJsonUrl = `${baseApiRoutingUrl}start_xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&end_xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
       break;
     default:
       break;
