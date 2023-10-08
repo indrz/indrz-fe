@@ -57,7 +57,8 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
         endSearchText: (from.properties.poiId || to.properties.poiId),
         endFloor: to.properties.floor_num,
         routeType,
-        searchType: 'spaceIdToPoiId'
+        searchType: 'spaceIdToPoiId',
+        reversed: !(from.properties.space_id)
       }
     );
   } else if (
@@ -244,7 +245,8 @@ const getDirections = async ({
   endFloor,
   routeType,
   searchType,
-  foid
+  foid,
+  reversed = false
 }) => {
   let geoJsonUrl = '';
   let routeUrl = '';
@@ -258,34 +260,34 @@ const getDirections = async ({
 
   switch (searchType) {
     case 'coords':
-      geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}&reversed=false`;
+      geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}`;
       break;
     case 'string':
-      geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}startstr=${startSearchText}&endstr=${endSearchText}`;
       break;
     case 'poiToCoords':
-      geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&floor=' + endFloor + '&reversed=' + false;
+      geoJsonUrl = `${baseApiRoutingUrl}poi=${startSearchText}&xyz=${endSearchText},${floatTypeEndFloor}`;
       break;
     case 'spaceIdToPoiId':
-      geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}space=${startSearchText}&poi=${endSearchText}`;
       break;
     case 'spaceIdToSpaceId':
-      geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}space=${startSearchText}&space=${endSearchText}`;
       if (foid) {
         geoJsonUrl += '&foid=' + foid;
       }
       break;
     case 'poiIdToPoiId':
-      geoJsonUrl = baseApiRoutingUrl + 'start-poi-id=' + startSearchText + '&' + 'end-poi-id=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}poi=${startSearchText}&poi=${endSearchText}`;
       break;
     case 'spaceIdToBook':
-      geoJsonUrl = `${baseApiRoutingUrl}space-id=${startSearchText}&xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
+      geoJsonUrl = `${baseApiRoutingUrl}space=${startSearchText}&xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
       break;
     case 'bookToCoords':
       geoJsonUrl = `${baseApiRoutingUrl}start_xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&end_xyz=${endSearchText},${floatTypeEndFloor}`;
       break;
     case 'poiIdToBook':
-      geoJsonUrl = `${baseApiRoutingUrl}poi-id=${startSearchText}&xyz=${endSearchText.coords.join(',')}&floor=${endFloor}`;
+      geoJsonUrl = `${baseApiRoutingUrl}poi=${startSearchText}&xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
       break;
     case 'bookToBook':
       geoJsonUrl = `${baseApiRoutingUrl}start_xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&end_xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
@@ -294,7 +296,7 @@ const getDirections = async ({
       break;
   }
 
-  geoJsonUrl += `&type=${routeType}`;
+  geoJsonUrl += `&reversed=${reversed}&type=${routeType}`;
 
   const source = new SourceVector();
   let floorNum = '';
@@ -358,6 +360,8 @@ const getDirections = async ({
             break;
         }
       }
+
+      routeUrl += `&reversed=${reversed}&type=${routeType}`;
 
       if (typeof (features[0]) !== 'undefined') {
         floorNum = features[0].getProperties().floor;
