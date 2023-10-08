@@ -13,55 +13,52 @@ import config from '~/util/indrzConfig';
 
 const { env } = config;
 
-// let store = null;
-/* let scope = null;
-let translate = null; */
-
 const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
   if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.space_id,
-      from.properties.floor_num,
-      to.properties.space_id,
-      to.properties.floor_num,
-      routeType,
-      'spaceIdToSpaceId',
-      to.properties.frontoffice?.space_id,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: from.properties.space_id,
+        startFloor: from.properties.floor_num,
+        endSearchText: to.properties.space_id,
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'spaceIdToSpaceId',
+        foid: to.properties.frontoffice?.space_id
+      }
     );
   } else if (from.properties.poiId && to.properties.poiId) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.poiId,
-      from.properties.floor_num,
-      to.properties.poiId,
-      to.properties.floor_num,
-      routeType,
-      'poiIdToPoiId',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: from.properties.poiId,
+        startFloor: from.properties.floor_num,
+        endSearchText: to.properties.poiId,
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'poiIdToPoiId'
+      }
     );
   } else if (
     (from.properties.poiId && to.properties.space_id) ||
     (from.properties.space_id && to.properties.poiId)
   ) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      (from.properties.space_id || to.properties.space_id),
-      from.properties.floor_num,
-      (from.properties.poiId || to.properties.poiId),
-      to.properties.floor_num,
-      routeType,
-      'spaceIdToPoiId',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: (from.properties.space_id || to.properties.space_id),
+        startFloor: from.properties.floor_num,
+        endSearchText: (from.properties.poiId || to.properties.poiId),
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'spaceIdToPoiId'
+      }
     );
   } else if (
     (from.properties.shelfId && to.properties.coords) ||
@@ -70,16 +67,16 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     const toProperties = to.properties.coords ? to.properties : from.properties;
 
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      fromProperties,
-      fromProperties.floor_num,
-      toProperties.coords,
-      toProperties.floor_num,
-      routeType,
-      'bookToCoords',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties.coords,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'bookToCoords'
+      }
     );
   } else if (
     (from.properties.shelfId && to.properties.poiId) ||
@@ -88,16 +85,16 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     const toProperties = to.properties.shelfId ? to.properties : from.properties;
 
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      fromProperties.poiId,
-      fromProperties.floor_num,
-      toProperties,
-      toProperties.floor_num,
-      routeType,
-      'poiIdToBook',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties.poiId,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'poiIdToBook'
+      }
     );
   } else if (
     (from.properties.space_id && to.properties.shelfId) ||
@@ -106,61 +103,61 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     const toProperties = to.properties.shelfId ? to.properties : from.properties;
 
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      fromProperties.space_id,
-      fromProperties.floor_num,
-      toProperties,
-      toProperties.floor_num,
-      routeType,
-      'spaceIdToBook',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties.space_id,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'spaceIdToBook'
+      }
     );
   } else if (from.properties.shelfId && to.properties.shelfId) {
     const fromProperties = from.properties;
     const toProperties = to.properties;
 
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      fromProperties,
-      fromProperties.floor_num,
-      toProperties,
-      toProperties.floor_num,
-      routeType,
-      'bookToBook',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'bookToBook'
+      }
     );
   } else if (
     (from.properties.coords && to.properties.poiId) ||
     (from.properties.poiId && to.properties.coords)
   ) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      (from.properties.poiId || to.properties.poiId),
-      null,
-      (from.properties.coords || to.properties.coords),
-      (from.properties.coords ? from.properties.floor_num : to.properties.floor_num),
-      routeType,
-      'poiToCoords',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: (from.properties.poiId || to.properties.poiId),
+        startFloor: null,
+        endSearchText: (from.properties.coords || to.properties.coords),
+        endFloor: (from.properties.coords ? from.properties.floor_num : to.properties.floor_num),
+        routeType,
+        searchType: 'poiToCoords'
+      }
     );
   } else if (from.properties.coords && to.properties.coords) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.coords,
-      from.properties.floor_num,
-      to.properties.coords,
-      to.properties.floor_num,
-      routeType,
-      'coords',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: from.properties.coords,
+        startFloor: from.properties.floor_num,
+        endSearchText: to.properties.coords,
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'coords'
+      }
     );
   } else {
     // setNoRouteFoundText();
@@ -238,7 +235,7 @@ const getNearestDefi = async (globalPopupInfo) => {
   }
 };
 
-const getDirections = async (
+const getDirections = async ({
   mapInfo,
   layers,
   startSearchText,
@@ -247,17 +244,17 @@ const getDirections = async (
   endFloor,
   routeType,
   searchType,
-  foid,
-  locale,
-  type = 0
-) => {
-  const map = mapInfo.map;
-  clearRouteData(map);
-  const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
+  foid
+}) => {
   let geoJsonUrl = '';
   let routeUrl = '';
+
+  const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
   const floatTypeStartFloor = Number(startFloor).toFixed(1);
   const floatTypeEndFloor = Number(endFloor).toFixed(1);
+  const map = mapInfo.map;
+
+  clearRouteData(map);
 
   switch (searchType) {
     case 'coords':
