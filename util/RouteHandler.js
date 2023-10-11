@@ -13,84 +13,152 @@ import config from '~/util/indrzConfig';
 
 const { env } = config;
 
-// let store = null;
-/* let scope = null;
-let translate = null; */
-
 const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
   if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.space_id,
-      from.properties.floor_num,
-      to.properties.space_id,
-      to.properties.floor_num,
-      routeType,
-      'spaceIdToSpaceId',
-      to.properties.frontoffice?.space_id,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: from.properties.space_id,
+        startFloor: from.properties.floor_num,
+        endSearchText: to.properties.space_id,
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'spaceIdToSpaceId',
+        foid: to.properties.frontoffice?.space_id
+      }
     );
   } else if (from.properties.poiId && to.properties.poiId) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.poiId,
-      from.properties.floor_num,
-      to.properties.poiId,
-      to.properties.floor_num,
-      routeType,
-      'poiIdToPoiId',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: from.properties.poiId,
+        startFloor: from.properties.floor_num,
+        endSearchText: to.properties.poiId,
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'poiIdToPoiId'
+      }
     );
   } else if (
     (from.properties.poiId && to.properties.space_id) ||
     (from.properties.space_id && to.properties.poiId)
   ) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      (from.properties.space_id || to.properties.space_id),
-      from.properties.floor_num,
-      (from.properties.poiId || to.properties.poiId),
-      to.properties.floor_num,
-      routeType,
-      'spaceIdToPoiId',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: (from.properties.space_id || to.properties.space_id),
+        startFloor: from.properties.floor_num,
+        endSearchText: (from.properties.poiId || to.properties.poiId),
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'spaceIdToPoiId',
+        reversed: !(from.properties.space_id)
+      }
+    );
+  } else if (
+    (from.properties.shelfId && to.properties.coords) ||
+    (from.properties.coords && to.properties.shelfId)) {
+    const fromProperties = from.properties.shelfId ? from.properties : to.properties;
+    const toProperties = to.properties.coords ? to.properties : from.properties;
+
+    routeUrl = await getDirections(
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties.coords,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'bookToCoords'
+      }
+    );
+  } else if (
+    (from.properties.shelfId && to.properties.poiId) ||
+    (from.properties.poiId && to.properties.shelfId)) {
+    const fromProperties = from.properties.poiId ? from.properties : to.properties;
+    const toProperties = to.properties.shelfId ? to.properties : from.properties;
+
+    routeUrl = await getDirections(
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties.poiId,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'poiIdToBook'
+      }
+    );
+  } else if (
+    (from.properties.space_id && to.properties.shelfId) ||
+    (from.properties.shelfId && to.properties.space_id)) {
+    const fromProperties = from.properties.space_id ? from.properties : to.properties;
+    const toProperties = to.properties.shelfId ? to.properties : from.properties;
+
+    routeUrl = await getDirections(
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties.space_id,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'spaceIdToBook'
+      }
+    );
+  } else if (from.properties.shelfId && to.properties.shelfId) {
+    const fromProperties = from.properties;
+    const toProperties = to.properties;
+
+    routeUrl = await getDirections(
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'bookToBook'
+      }
     );
   } else if (
     (from.properties.coords && to.properties.poiId) ||
     (from.properties.poiId && to.properties.coords)
   ) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      (from.properties.poiId || to.properties.poiId),
-      null,
-      (from.properties.coords || to.properties.coords),
-      (from.properties.coords ? from.properties.floor_num : to.properties.floor_num),
-      routeType,
-      'poiToCoords',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: (from.properties.poiId || to.properties.poiId),
+        startFloor: null,
+        endSearchText: (from.properties.coords || to.properties.coords),
+        endFloor: (from.properties.coords ? from.properties.floor_num : to.properties.floor_num),
+        routeType,
+        searchType: 'poiToCoords'
+      }
     );
   } else if (from.properties.coords && to.properties.coords) {
     routeUrl = await getDirections(
-      mapInfo,
-      layers,
-      from.properties.coords,
-      from.properties.floor_num,
-      to.properties.coords,
-      to.properties.floor_num,
-      routeType,
-      'coords',
-      null,
-      env.locale
+      {
+        mapInfo,
+        layers,
+        startSearchText: from.properties.coords,
+        startFloor: from.properties.floor_num,
+        endSearchText: to.properties.coords,
+        endFloor: to.properties.floor_num,
+        routeType,
+        searchType: 'coords'
+      }
     );
   } else {
     // setNoRouteFoundText();
@@ -168,7 +236,7 @@ const getNearestDefi = async (globalPopupInfo) => {
   }
 };
 
-const getDirections = async (
+const getDirections = async ({
   mapInfo,
   layers,
   startSearchText,
@@ -178,44 +246,57 @@ const getDirections = async (
   routeType,
   searchType,
   foid,
-  locale,
-  type = 0
-) => {
-  const map = mapInfo.map;
-  clearRouteData(map);
-  const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
-  let startName = '';
-  let endName = '';
+  reversed = false
+}) => {
   let geoJsonUrl = '';
   let routeUrl = '';
 
+  const baseApiRoutingUrl = env.BASE_API_URL + 'directions/';
+  const floatTypeStartFloor = Number(startFloor).toFixed(1);
+  const floatTypeEndFloor = Number(endFloor).toFixed(1);
+  const map = mapInfo.map;
+
+  clearRouteData(map);
+
   switch (searchType) {
     case 'coords':
-      geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}&reversed=false`;
+      geoJsonUrl = `${baseApiRoutingUrl}${startSearchText.join(',')},${startFloor}&${endSearchText.join(',')},${endFloor}`;
       break;
     case 'string':
-      geoJsonUrl = baseApiRoutingUrl + 'startstr=' + startSearchText + '&' + 'endstr=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}startstr=${startSearchText}&endstr=${endSearchText}`;
       break;
     case 'poiToCoords':
-      geoJsonUrl = baseApiRoutingUrl + 'poi-id=' + startSearchText + '&' + 'xyz=' + endSearchText + '&floor=' + endFloor + '&reversed=' + false;
+      geoJsonUrl = `${baseApiRoutingUrl}poi=${startSearchText}&xyz=${endSearchText},${floatTypeEndFloor}`;
       break;
     case 'spaceIdToPoiId':
-      geoJsonUrl = baseApiRoutingUrl + 'space-id=' + startSearchText + '&' + 'poi-id=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}space=${startSearchText}&poi=${endSearchText}`;
       break;
     case 'spaceIdToSpaceId':
-      geoJsonUrl = baseApiRoutingUrl + 'startid=' + startSearchText + '&' + 'endid=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}space=${startSearchText}&space=${endSearchText}`;
       if (foid) {
         geoJsonUrl += '&foid=' + foid;
       }
       break;
     case 'poiIdToPoiId':
-      geoJsonUrl = baseApiRoutingUrl + 'start-poi-id=' + startSearchText + '&' + 'end-poi-id=' + endSearchText;
+      geoJsonUrl = `${baseApiRoutingUrl}poi=${startSearchText}&poi=${endSearchText}`;
+      break;
+    case 'spaceIdToBook':
+      geoJsonUrl = `${baseApiRoutingUrl}space=${startSearchText}&xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
+      break;
+    case 'bookToCoords':
+      geoJsonUrl = `${baseApiRoutingUrl}start_xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&end_xyz=${endSearchText},${floatTypeEndFloor}`;
+      break;
+    case 'poiIdToBook':
+      geoJsonUrl = `${baseApiRoutingUrl}poi=${startSearchText}&xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
+      break;
+    case 'bookToBook':
+      geoJsonUrl = `${baseApiRoutingUrl}start_xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&end_xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
       break;
     default:
       break;
   }
 
-  geoJsonUrl += `&type=${routeType}`;
+  geoJsonUrl += `&reversed=${reversed}&type=${routeType}`;
 
   const source = new SourceVector();
   let floorNum = '';
@@ -244,37 +325,43 @@ const getDirections = async (
       }
 
       if (routeInfo) {
-        const { start, end } = routeInfo;
-
-        startName = start ? start.properties['name_' + locale] : routeInfo.start_name;
-        endName = start ? end.properties['name_' + locale] : routeInfo.end_name;
-
-        if (searchType === 'coords') {
-          routeUrl = `?start-xy=${startSearchText.join(',')},${startFloor}&end-xy=${endSearchText.join(',')},${endFloor}`;
-        } else if (searchType === 'poiToCoords') {
-          routeUrl = '?start-poi-id=' + routeInfo.start.id + `&end-xy=${endSearchText.join(',')},${endFloor}`;
-        } else if (searchType === 'poiIdToPoiId') {
-          routeUrl = '?start-poi-id=' + routeInfo.start.id + '&end-poi-id=' + routeInfo.end.id;
-        } else if (searchType === 'spaceIdToPoiId') {
-          routeUrl = '?start-spaceid=' + startSearchText + '&end-poi-id=' + endSearchText;
-        } else if (searchType === 'spaceIdToSpaceId') {
-          routeUrl = '?start-spaceid=' + startSearchText + '&end-spaceid=' + endSearchText + '&type=' + routeType;
-          if (foid) {
-            routeUrl += '&foid=' + foid;
-          }
-        }
-
-        if (startName && endName) {
-          mapInfo.$root.$emit('updateRouteFields', {
-            fromData: {
-              name: startName
-            },
-            toData: {
-              name: endName
+        switch (searchType) {
+          case 'coords':
+            routeUrl = `?from-xy=${startSearchText.join(',')},${startFloor}&to-xy=${endSearchText.join(',')},${endFloor}`;
+            break;
+          case 'poiToCoords':
+            routeUrl = '?from-poi=' + routeInfo.start.id + `&to-xy=${endSearchText.join(',')},${endFloor}`;
+            break;
+          case 'poiIdToPoiId':
+            routeUrl = '?from-poi=' + routeInfo.start.id + '&to-poi=' + routeInfo.end.id;
+            break;
+          case 'spaceIdToPoiId':
+            routeUrl = '?from-space=' + startSearchText + '&to-poi=' + endSearchText;
+            break;
+          case 'spaceIdToSpaceId':
+            routeUrl = '?from-space=' + startSearchText + '&to-space=' + endSearchText;
+            if (foid) {
+              routeUrl += '&foid=' + foid;
             }
-          });
+            break;
+          case 'spaceIdToBook':
+            routeUrl = '?from-space=' + startSearchText + '&to-book=' + endSearchText.key;
+            break;
+          case 'bookToCoords':
+            routeUrl = '?from-book=' + startSearchText.key + `&to-xy=${endSearchText.join(',')},${floatTypeEndFloor}`;
+            break;
+          case 'poiIdToBook':
+            routeUrl = `?from-poi=${startSearchText}&to-book=${endSearchText.key}`
+            break;
+          case 'bookToBook':
+            routeUrl = '?from-book=' + startSearchText.key + '&to-book=' + endSearchText.key;
+            break;
+          default:
+            break;
         }
       }
+
+      routeUrl += `&reversed=${reversed}&type=${routeType}`;
 
       if (typeof (features[0]) !== 'undefined') {
         floorNum = features[0].getProperties().floor;
@@ -309,8 +396,6 @@ const getDirections = async (
 
       return {
         ...routeData.route_info,
-        start_name: startName,
-        end_name: endName,
         routeUrl
       };
     });

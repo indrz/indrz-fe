@@ -708,24 +708,37 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query['poi-id']) {
     mapInfo.$emit('openPoiTree', query['poi-id'], true);
   }
-  if (query['start-xy'] && query['end-xy']) {
-    loadMapFromXyToXyRoute(query['start-xy'], query['end-xy'], mapInfo);
+  if (query['from-xy'] && query['to-xy']) {
+    loadMapFromXyToXyRoute(query, mapInfo);
   }
-  if (query['start-poi-id'] && query['end-poi-id']) {
-    loadMapFromPoiToPoiRoute(query['start-poi-id'], query['end-poi-id'], mapInfo);
+  if (query['from-poi'] && query['to-poi']) {
+    loadMapFromPoiToPoiRoute(query, mapInfo);
   }
-  if (query['start-poi-id'] && query['end-xy']) {
-    loadMapFromPoiToCoords(query['start-poi-id'], query['end-xy'], mapInfo);
+  if (query['from-poi'] && query['to-xy']) {
+    loadMapFromPoiToCoords(query, mapInfo);
   }
-  if (query['start-spaceid'] && query['end-spaceid']) {
-    loadMapFromSpaceIdToSpaceIdRoute(query['start-spaceid'], query['end-spaceid'], mapInfo);
+  if (query['from-space'] && query['to-space']) {
+    loadMapFromSpaceIdToSpaceIdRoute(query, mapInfo);
   }
-  if (query['start-spaceid'] && query['end-poi-id']) {
-    loadMapFromSpaceIdToPoiIdRoute(query['start-spaceid'], query['end-poi-id'], mapInfo);
+  if (query['from-space'] && query['to-book']) {
+    loadMapFromSpaceIdToBook(query, mapInfo);
+  }
+  if (query['from-space'] && query['to-poi']) {
+    loadMapFromSpaceIdToPoiIdRoute(query, mapInfo);
+  }
+  if (query['from-poi'] && query['to-book']) {
+    loadMapFromPoiToBook(query, mapInfo);
+  }
+  if (query['from-book'] && query['to-xy']) {
+    loadMapFromBookToCoords(query, mapInfo);
+  }
+  if (query['from-book'] && query['to-book']) {
+    loadMapFromBookToBook(query, mapInfo);
   }
 };
 
-const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
+// TODO add reversed parameter
+const loadMapFromXyToXyRoute = ({ 'from-xy': startXyQuery, 'to-xy': endXyQuery }, mapInfo) => {
   const startXy = startXyQuery.split(',');
   const startCoords = [startXy[0], startXy[1]];
   const startFloor = startXy[2];
@@ -737,92 +750,183 @@ const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
     path: 'from',
     data: {
       coords: startCoords,
-      name: 'XY Location',
-      floor_num: startFloor
+      name: startCoords,
+      floor: startFloor
     }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
     data: {
       coords: endCoords,
-      name: 'XY Location',
-      floor_num: endFloor
+      name: endCoords,
+      floor: endFloor
     }
   });
 };
 
-const loadMapFromPoiToPoiRoute = (startPoiId, endPoiId, mapInfo) => {
+const loadMapFromPoiToPoiRoute = async ({ 'from-poi': startPoiId, 'to-poi': endPoiId }, mapInfo) => {
   mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
 
+  const [startPoiData, endPoiData] = await Promise.all([
+    api.request({
+      endPoint: `poi/${startPoiId}`
+    }),
+    api.request({
+      endPoint: `poi/${endPoiId}`
+    })
+  ]);
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      poiId: startPoiId,
-      name: startPoiId
-    }
+    data: { ...startPoiData?.data?.properties, poiId: startPoiId, floor: startPoiData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: {
-      poiId: endPoiId,
-      name: endPoiId
-    }
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
   });
 };
 
-const loadMapFromPoiToCoords = (startPoiId, endXyQuery, mapInfo) => {
+const loadMapFromPoiToCoords = async ({ 'from-poi': startPoiId, 'to-xy': endXyQuery }, mapInfo) => {
   const endXy = endXyQuery.split(',');
   const endCoords = [endXy[0], endXy[1]];
   const endFloor = endXy[2];
 
+  const poiData = await api.request({
+    endPoint: `poi/${startPoiId}`
+  })
+
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      poiId: startPoiId,
-      name: startPoiId
-    }
+    data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
     data: {
       coords: endCoords,
-      name: 'XY Location',
+      name: endCoords,
       floor_num: endFloor
     }
   });
 };
 
-const loadMapFromSpaceIdToSpaceIdRoute = (startSpaceId, endSpaceId, mapInfo) => {
+const loadMapFromBookToCoords = async ({ 'from-book': book, 'to-xy': endXyQuery }, mapInfo) => {
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  const bookData = await api.request({
+    endPoint: `search/${book}`
+  })
+
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      spaceid: startSpaceId,
-      name: startSpaceId
-    }
+    data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
     data: {
-      spaceid: endSpaceId,
-      name: endSpaceId
+      coords: endCoords,
+      name: endCoords,
+      floor_num: endFloor
     }
   });
 };
 
-const loadMapFromSpaceIdToPoiIdRoute = (startSpaceId, endPoiId, mapInfo) => {
+const loadMapFromPoiToBook = async ({ 'from-poi': startPoiId, 'to-book': book }, mapInfo) => {
+  const [poiData, bookData] = await Promise.all([
+    api.request({
+      endPoint: `poi/${startPoiId}`
+    }),
+    api.request({
+      endPoint: `search/${book}`
+    })
+  ]);
+
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
-    data: {
-      spaceid: startSpaceId,
-      name: startSpaceId
-    }
+    data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
+  });
+  bookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
+  });
+};
+
+const loadMapFromBookToBook = async ({ 'from-book': fromBook, 'to-book': toBook }, mapInfo) => {
+  const [fromBookData, toBookData] = await Promise.all([
+    api.request({
+      endPoint: `search/${fromBook}`
+    }),
+    api.request({
+      endPoint: `search/${toBook}`
+    })
+  ]);
+
+  fromBookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...fromBookData.data.features[0].properties, coords: fromBookData.data.features[0].geometry.coordinates }
+  });
+  toBookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: { ...toBookData.data.features[0].properties, coords: toBookData.data.features[0].geometry.coordinates }
+  });
+};
+
+const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book': book }, mapInfo) => {
+  const [startSpaceIdData, endBookData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `search/${book}`
+    })
+  ]);
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
-    data: {
-      poiId: endPoiId,
-      name: endPoiId
-    }
+    data: { ...endBookData?.data?.features[0]?.properties, coords: endBookData.data.features[0].geometry.coordinates }
+  });
+};
+
+const loadMapFromSpaceIdToSpaceIdRoute = async ({ 'from-space': startSpaceId, 'to-space': endSpaceId }, mapInfo) => {
+  const [startSpaceIdData, endSpaceIdData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `space/${endSpaceId}`
+    })
+  ]);
+
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: { ...endSpaceIdData?.data?.properties, spaceid: endSpaceId, floor: endSpaceIdData?.data?.properties?.floor_num }
+  });
+};
+
+const loadMapFromSpaceIdToPoiIdRoute = async ({ 'from-space': startSpaceId, 'to-poi': endPoiId }, mapInfo) => {
+  const [startSpaceIdData, endPoiData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `poi/${endPoiId}`
+    })
+  ]);
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
   });
 };
 

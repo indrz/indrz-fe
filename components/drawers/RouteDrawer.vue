@@ -319,17 +319,11 @@ export default {
 
     setRouteInfo (routeInfo) {
       this.clearMessages();
-      routeInfo.start_name && routeInfo.end_name && this.setSearchFieldRouteText({
-        fromData: {
-          name: routeInfo.start_name
-        },
-        toData: {
-          name: routeInfo.end_name
-        }
-      })
-      if (routeInfo) {
-        this.setNoRouteFound(false)
+      if (!routeInfo) {
+        this.setNoRouteFound(true)
+        return;
       }
+      this.setNoRouteFound(false)
       const routeTime = routeInfo.walk_time;
       const minutes = Math.floor(routeTime / 60);
       const seconds = routeTime - minutes * 60;
