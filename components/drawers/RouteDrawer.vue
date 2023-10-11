@@ -277,7 +277,8 @@ export default {
       });
     },
     setRoute (routeInfo) {
-      const routeData = { ...routeInfo.data };
+      const routeData = { ...routeInfo.data, ...this.getInputFieldDisplayName() };
+
       if (!routeData.name && routeData.room_code) {
         routeData.name = routeData.room_code;
       }
@@ -324,6 +325,7 @@ export default {
         return;
       }
       this.setNoRouteFound(false)
+
       const routeTime = routeInfo.walk_time;
       const minutes = Math.floor(routeTime / 60);
       const seconds = routeTime - minutes * 60;
@@ -331,7 +333,16 @@ export default {
       const secs = 'seconds';
       const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
 
-      this.routeInfo = { ...routeInfo, walk_time: walkTimeString };
+      this.routeInfo = { ...routeInfo, walk_time: walkTimeString, ...this.getInputFieldDisplayName() };
+    },
+    getInputFieldDisplayName () {
+      const fromData = this.$refs.fromRoute.$data.model;
+      const toData = this.$refs.toRoute.$data.model;
+
+      return {
+        start_name: fromData[`name_${this.$i18n.locale}`] || fromData.name,
+        end_name: toData[`name_${this.$i18n.locale}`] || toData.name
+      }
     },
     setNoRouteFound (state = true) {
       this.noRouteFound = state
