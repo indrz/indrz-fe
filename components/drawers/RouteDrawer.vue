@@ -340,8 +340,8 @@ export default {
       const toData = this.$refs.toRoute.$data.model;
 
       return {
-        start_name: fromData[`name_${this.$i18n.locale}`] || fromData.name,
-        end_name: toData[`name_${this.$i18n.locale}`] || toData.name
+        start_name: (fromData[`name_${this.$i18n.locale}`] !== undefined && fromData[`name_${this.$i18n.locale}`] !== null) ? fromData[`name_${this.$i18n.locale}`] : fromData.name,
+        end_name: (toData[`name_${this.$i18n.locale}`] !== undefined && toData[`name_${this.$i18n.locale}`] !== null) ? toData[`name_${this.$i18n.locale}`] : toData.name
       }
     },
     setNoRouteFound (state = true) {
