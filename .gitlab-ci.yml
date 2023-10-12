@@ -17,7 +17,7 @@ trigger_downstream_merge_requests:
         echo "Processing downstream repository: $downstream_repo";
 
         # Check if a merge request already exists
-        existing_mr_response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" "https://gitlab.example.com/api/v4/projects/$downstream_repo/merge_requests?state=opened&source_branch=main&target_branch=main")
+        existing_mr_response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$downstream_repo/merge_requests?state=opened&source_branch=main&target_branch=main")
         existing_mr=$(echo "$existing_mr_response" | sed -e 's/HTTP_STATUS\:.*//g')
         http_status=$(echo "$existing_mr_response" | tr -d '\n' | sed -e 's/.*HTTP_STATUS://')
 
@@ -28,7 +28,7 @@ trigger_downstream_merge_requests:
 
         if [ $(echo "$existing_mr" | jq 'length') -eq 0 ]; then
           # Create new merge request
-          response=$(curl -s --request POST "https://gitlab.example.com/api/v4/projects/$downstream_repo/merge_requests" \
+          response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo/merge_requests" \
             --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" \
             --form "source_branch=main" \
             --form "target_branch=main" \
