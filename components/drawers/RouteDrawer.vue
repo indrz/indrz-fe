@@ -285,8 +285,7 @@ export default {
       });
     },
     setRoute (routeInfo) {
-      const routeData = { ...routeInfo.data };
-      // const routeData = { ...routeInfo.data, ...this.getInputFieldDisplayName() };
+      const routeData = { ...routeInfo.data, ...this.getInputFieldDisplayName() };
 
       if (!routeData.name && routeData.room_code) {
         routeData.name = routeData.room_code;
@@ -342,18 +341,23 @@ export default {
       const secs = 'seconds';
       const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
 
-      this.routeInfo = { ...routeInfo, walk_time: walkTimeString };
-      // this.routeInfo = { ...routeInfo, walk_time: walkTimeString, ...this.getInputFieldDisplayName() };
+      this.routeInfo = { ...routeInfo, walk_time: walkTimeString, ...this.getInputFieldDisplayName() };
     },
-    // getInputFieldDisplayName () {
-    //   const fromData = this.$refs.fromRoute.$data.model;
-    //   const toData = this.$refs.toRoute.$data.model;
-    //
-    //   return {
-    //     start_name: getName(fromData, this.$i18n.locale),
-    //     end_name: getName(toData, this.$i18n.locale)
-    //   };
-    // },
+    getInputFieldDisplayName () {
+      const fromData = this.$refs.fromRoute?.$data?.model;
+      const toData = this.$refs.toRoute?.$data?.model;
+
+      const names = {}
+
+      if (fromData) {
+        names.start_name = fromData[`name_${this.$i18n.locale}`] || fromData.name
+      }
+      if (toData) {
+        names.end_name = toData[`name_${this.$i18n.locale}`] || toData.name
+      }
+
+      return names;
+    },
     setNoRouteFound (state = true) {
       this.noRouteFound = state
       state && this.clearMessages()
