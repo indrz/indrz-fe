@@ -336,13 +336,19 @@ export default {
       this.routeInfo = { ...routeInfo, walk_time: walkTimeString, ...this.getInputFieldDisplayName() };
     },
     getInputFieldDisplayName () {
-      const fromData = this.$refs.fromRoute.$data.model;
-      const toData = this.$refs.toRoute.$data.model;
+      const fromData = this.$refs.fromRoute?.$data?.model;
+      const toData = this.$refs.toRoute?.$data?.model;
 
-      return {
-        start_name: fromData[`name_${this.$i18n.locale}`] || fromData.name,
-        end_name: toData[`name_${this.$i18n.locale}`] || toData.name
+      const names = {}
+
+      if (fromData) {
+        names.start_name = fromData[`name_${this.$i18n.locale}`] || fromData.name
       }
+      if (toData) {
+        names.end_name = toData[`name_${this.$i18n.locale}`] || toData.name
+      }
+
+      return names;
     },
     setNoRouteFound (state = true) {
       this.noRouteFound = state
