@@ -285,8 +285,7 @@ export default {
       });
     },
     setRoute (routeInfo) {
-      const routeData = { ...routeInfo.data };
-      // const routeData = { ...routeInfo.data, ...this.getInputFieldDisplayName() };
+      const routeData = { ...routeInfo.data, ...this.getInputFieldDisplayName() };
 
       if (!routeData.name && routeData.room_code) {
         routeData.name = routeData.room_code;
@@ -342,8 +341,7 @@ export default {
       const secs = 'seconds';
       const walkTimeString = minutes + ' ' + mins + ' ' + Math.floor(seconds) + ' ' + secs;
 
-      this.routeInfo = { ...routeInfo, walk_time: walkTimeString };
-      // this.routeInfo = { ...routeInfo, walk_time: walkTimeString, ...this.getInputFieldDisplayName() };
+      this.routeInfo = { ...routeInfo, walk_time: walkTimeString, ...this.getInputFieldDisplayName() };
     },
     getInputFieldDisplayName () {
       const fromData = this.$refs.fromRoute?.$data?.model;
