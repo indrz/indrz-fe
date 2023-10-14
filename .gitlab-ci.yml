@@ -14,7 +14,7 @@ trigger_downstream_merge_requests:
     - apt-get install -y curl
     - >
       for downstream_repo_id in $(echo $DOWNSTREAM_REPO_IDS | tr "," "\n"); do
-        echo "Attempting to create merge request in downstream repository: downstream_repo_id";
+        echo "Attempting to create merge request in downstream repository: $downstream_repo_id";
 
         # Create new merge request
         response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo_id/merge_requests" \
@@ -23,10 +23,13 @@ trigger_downstream_merge_requests:
           --form "target_branch=main" \
           --form "title=Automated Merge Request" \
           --form "description=This is an automated merge request triggered by an update to the main repository.")
-
-        if [ "$(echo "$response" | grep -o 'id')" ]; then
-          echo "Merge request created successfully in $downstream_repo_id."
+      
+      
+        http_status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTP_STATUS://')
+  
+        if [ "$http_status" != "200" ]; then
+          echo "Merge request created successfully in $downstream_repo_id ."
         else
-          echo "Failed to create merge request in $downstream_repo_id. Response: $response"
+          echo "Failed to create merge request in $downstream_repo_id. Response: $response and fail code $http_status"
         fi
       done
