@@ -12,16 +12,18 @@ trigger_downstream_merge_requests:
   script:
     - apt-get update -qy
     - apt-get install -y curl
+    - datetime=$(date '+%Y-%m-%d %H:%M:%S')
     - >
       for downstream_repo in $(echo $DOWNSTREAM_REPOS | tr "," "\n"); do
-        echo "Attempting to create merge request in downstream repository: $downstream_repo";
+        echo "Attempting to create merge request in downstream repository at $datetime: $downstream_repo";
 
-        # Create new merge request
+        # Create new merge request with datetime in title
+        title="Automated Merge Request - $datetime"
         response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo/merge_requests" \
           --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" \
           --form "source_branch=main" \
           --form "target_branch=main" \
-          --form "title=Automated Merge Request" \
+          --form "title=$title" \
           --form "description=This is an automated merge request triggered by an update to the main repository.")
 
         if [ "$(echo "$response" | grep -o 'id')" ]; then
