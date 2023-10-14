@@ -28,7 +28,7 @@ trigger_downstream_merge_requests:
         http_status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTP_STATUS://')
   
         if [ "$http_status" != "200" ]; then
-          echo "Merge request created successfully in $downstream_repo_id ."
+          echo "Merge request created successfully in $downstream_repo_id .  Response: $response and status code $http_status"
         else
           echo "Failed to create merge request in $downstream_repo_id. Response: $response and fail code $http_status"
         fi
