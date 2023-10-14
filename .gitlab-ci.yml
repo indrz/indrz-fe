@@ -2,7 +2,7 @@ stages:
   - trigger_downstream_merge_requests
 
 variables:
-  DOWNSTREAM_REPOS: "gomogi/indrz/aau/indrz-frontend-aau,gomogi/indrz/wu/indrz-frontend-wu,gomogi/indrz/tu/indrz-frontend-tu"  # Comma-separated list of downstream repositories
+  DOWNSTREAM_REPO_IDS: "14108617,23077745,23077517"  # aau, tu, wu
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
@@ -14,17 +14,17 @@ trigger_downstream_merge_requests:
     - apt-get install -y curl
     - datetime=$(date '+%Y-%m-%d %H:%M:%S')
     - >
-      for downstream_repo in $(echo $DOWNSTREAM_REPOS | tr "," "\n"); do
-        echo "Attempting to create merge request in downstream repository at $datetime: $downstream_repo";
+      for downstream_repo_id in $(echo $DOWNSTREAM_REPOS_IDS | tr "," "\n"); do
+        echo "Attempting to create merge request in downstream repository at $datetime: $downstream_repo_id";
 
         # Create new merge request with datetime in title
         title="Automated Merge Request - $datetime"
-        response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo/merge_requests" \
+        response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo_id/merge_requests" \
           --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" \
           --form "source_branch=main" \
           --form "target_branch=main" \
           --form "title=$title" \
-          --form "description=This is an automated merge request triggered by an update to the main repository.")
+          --form "description=This is an automated merge request triggered on $datetime by an update to the indrz-frontend main repository.")
 
         if [ "$(echo "$response" | grep -o 'id')" ]; then
           echo "Merge request created successfully in $downstream_repo."
