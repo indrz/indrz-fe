@@ -17,7 +17,7 @@ trigger_downstream_merge_requests:
         echo "Attempting to create merge request in downstream repository: $downstream_repo";
 
         # Create new merge request
-        response=$(curl -s --request POST "https://gitlab.example.com/api/v4/projects/$downstream_repo/merge_requests" \
+        response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo/merge_requests" \
           --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" \
           --form "source_branch=source_branch_in_downstream" \
           --form "target_branch=main" \
