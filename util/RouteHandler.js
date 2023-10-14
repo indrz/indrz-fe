@@ -393,6 +393,8 @@ const getDirections = async ({
 
       const extent = source.getExtent();
       map.getView().fit(extent);
+      const curZoom = map.getView().getZoom();
+      map.getView().setZoom(curZoom - 1);
 
       return {
         ...routeData.route_info,
@@ -520,7 +522,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
           const startMarker = new Feature({
             geometry: startPoint
           });
-          startMarker.setStyle([MapStyles.faCircleSolidStyle]);
+          startMarker.setStyle([MapStyles.routeMarkerCStyle]);
           markerFeatures.push(startMarker);
         }
 
@@ -547,7 +549,7 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
         }
       }
     } else {
-      const startPoint = new Point(routeFeatures[0].getGeometry().getFirstCoordinate());
+      const startPoint = new Point(routeFeatures[0].getGeometry().getLastCoordinate());
       const endPoint = new Point(routeFeatures[routeFeatures.length - 1].getGeometry().getLastCoordinate());
       const startMarker = new Feature({
         geometry: startPoint
@@ -555,8 +557,9 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
       const endMarker = new Feature({
         geometry: endPoint
       });
-      endMarker.setGeometry(endPoint);
-      endMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
+      // endMarker.setGeometry(endPoint);
+      endMarker.setStyle([MapStyles.faCircleSolidStyle]);
+      startMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
       markerFeatures.push(startMarker);
       markerFeatures.push(endMarker);
     }
