@@ -1,35 +1,45 @@
 stages:
   - trigger_downstream_merge_requests
 
+#variables:
+#  DOWNSTREAM_REPO_IDS: "gomogi/indrz/aau/indrz-frontend-aau,23077745,23077517"  # aau, tu, wu
+
 variables:
-  DOWNSTREAM_REPO_IDS: "gomogi/indrz/aau/indrz-frontend-aau,23077745,23077517"  # aau, tu, wu
+  SOURCE_BRANCH: "main"  # Replace with the source branch name in the main repository
+  DOWNSTREAM_REPOS: "gomogi/indrz/aau/indrz-frontend-aau:main,gomogi/indrz/tu/indrz-frontend-tu:main"  # Replace with your own repo:branch combinations
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
   only:
     refs:
-      - main
+      - main  # Trigger only when the main branch changes
   script:
     - apt-get update -qy
-    - apt-get install -y curl
+    - apt-get install -y curl jq
+    - datetime=$(date '+%Y-%m-%d %H:%M:%S')
     - >
-      for downstream_repo_id in $(echo $DOWNSTREAM_REPO_IDS | tr "," "\n"); do
-        echo "Attempting to create merge request in downstream repository: $downstream_repo_id";
+      for downstream_repo_branch in $(echo $DOWNSTREAM_REPOS | tr "," "\n"); do
+        repo_with_namespace=$(echo "$downstream_repo_branch" | cut -d: -f1)
+        target_branch=$(echo "$downstream_repo_branch" | cut -d: -f2)
+        
+        # Get the Project ID for downstream repository
+        project_id=$(curl -s --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects?search=$repo_with_namespace" | jq -r '.[0].id')
+        
+        echo "Attempting to create merge request in downstream repository: $repo_with_namespace (ID: $project_id) to target branch: $target_branch";
 
-        # Create new merge request
-        response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo_id/merge_requests" \
+        # Create new merge request with datetime in title
+        title="Automated Merge Request - $datetime"
+        response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$project_id/merge_requests" \
           --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" \
-          --form "source_branch=main" \
-          --form "target_branch=main" \
-          --form "title=Automated Merge Request" \
+          --form "source_project_id=$CI_PROJECT_ID" \
+          --form "source_branch=$SOURCE_BRANCH" \
+          --form "target_branch=$target_branch" \
+          --form "title=$title" \
           --form "description=This is an automated merge request triggered by an update to the main repository.")
-      
-      
-        http_status=$(echo "$response" | tr -d '\n' | sed -e 's/.*HTTP_STATUS://')
-  
-        if [ "$http_status" != "200" ]; then
-          echo "Merge request created successfully in $downstream_repo_id .  Response: $response and status code $http_status"
+
+        if [ "$(echo "$response" | jq -r '.id')" ]; then
+          echo "Merge request created successfully in $repo_with_namespace."
         else
-          echo "Failed to create merge request in $downstream_repo_id. Response: $response and fail code $http_status"
+          echo "Failed to create merge request in $repo_with_namespace. Response: $response"
         fi
       done
