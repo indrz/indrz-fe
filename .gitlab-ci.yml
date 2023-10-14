@@ -2,7 +2,7 @@ stages:
   - trigger_downstream_merge_requests
 
 variables:
-  DOWNSTREAM_REPOS: "gomogi/indrz/aau/indrz-frontend-aau,gomogi/indrz/wu/indrz-frontend-wu"  # Comma-separated list of downstream repositories
+  DOWNSTREAM_REPOS: "gomogi/indrz/aau/indrz-frontend-aau,gomogi/indrz/wu/indrz-frontend-wu,gomogi/indrz/tu/indrz-frontend-tu"  # Comma-separated list of downstream repositories
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
@@ -11,36 +11,22 @@ trigger_downstream_merge_requests:
       - main
   script:
     - apt-get update -qy
-    - apt-get install -y jq curl
+    - apt-get install -y curl
     - >
       for downstream_repo in $(echo $DOWNSTREAM_REPOS | tr "," "\n"); do
-        echo "Processing downstream repository: $downstream_repo";
+        echo "Attempting to create merge request in downstream repository: $downstream_repo";
 
-        # Check if a merge request already exists
-        existing_mr_response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" "https://gitlab.com/api/v4/projects/$downstream_repo/merge_requests?state=opened&source_branch=main&target_branch=main")
-        existing_mr=$(echo "$existing_mr_response" | sed -e 's/HTTP_STATUS\:.*//g')
-        http_status=$(echo "$existing_mr_response" | tr -d '\n' | sed -e 's/.*HTTP_STATUS://')
+        # Create new merge request
+        response=$(curl -s --request POST "https://gitlab.example.com/api/v4/projects/$downstream_repo/merge_requests" \
+          --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" \
+          --form "source_branch=source_branch_in_downstream" \
+          --form "target_branch=main" \
+          --form "title=Automated Merge Request" \
+          --form "description=This is an automated merge request triggered by an update to the main repository.")
 
-        if [ "$http_status" != "200" ]; then
-          echo "Failed to fetch existing merge requests. HTTP Status: $http_status"
-          continue
-        fi
-
-        if [ $(echo "$existing_mr" | jq 'length') -eq 0 ]; then
-          # Create new merge request
-          response=$(curl -s --request POST "https://gitlab.com/api/v4/projects/$downstream_repo/merge_requests" \
-            --header "PRIVATE-TOKEN: $PRIVATE_ACCESS_TOKEN" \
-            --form "source_branch=main" \
-            --form "target_branch=main" \
-            --form "title=Automated Merge Request" \
-            --form "description=This is an automated merge request triggered by an update to the main repository.")
-          
-          if [ $(echo "$response" | jq -r '.id') ]; then
-            echo "Merge request created successfully."
-          else
-            echo "Failed to create merge request. Response: $response"
-          fi
+        if [ "$(echo "$response" | grep -o 'id')" ]; then
+          echo "Merge request created successfully in $downstream_repo."
         else
-          echo "Merge request already exists. Skipping..."
+          echo "Failed to create merge request in $downstream_repo. Response: $response"
         fi
       done
