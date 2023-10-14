@@ -2,7 +2,7 @@ stages:
   - trigger_downstream_merge_requests
 
 variables:
-  DOWNSTREAM_REPO_IDS: "14108617,23077745,23077517"  # aau, tu, wu
+  DOWNSTREAM_REPO_IDS: "gomogi/indrz/aau/indrz-frontend-aau,23077745,23077517"  # aau, tu, wu
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
