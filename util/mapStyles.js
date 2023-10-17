@@ -39,7 +39,7 @@ const routeActiveStyleFront = new Style({
 const routeActiveStyleBackground = new Style({
   stroke: new Stroke({
     color: '#ffffff',
-    width: 10,
+    width: 9,
     opacity: 0.5
   }),
   zIndex: 6
@@ -60,7 +60,7 @@ const routeInactiveStyleForeground = new Style({
   stroke: new Stroke({
     color: '#1f9ffc',
     width: 4,
-    lineDash: [1, 4],
+    lineDash: [1, 10],
     opacity: 0.2
   }),
   zIndex: 6
