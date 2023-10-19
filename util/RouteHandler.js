@@ -17,7 +17,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
 
-  if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
+  if (from.properties.space_id && to.properties.space_id) {
     routeUrl = await getDirections(
       {
         mapInfo,
@@ -48,14 +48,16 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     (from.properties.poiId && to.properties.space_id) ||
     (from.properties.space_id && to.properties.poiId)
   ) {
+    const fromProperties = from.properties.space_id ? from.properties : to.properties;
+    const toProperties = to.properties.poiId ? to.properties : from.properties;
     routeUrl = await getDirections(
       {
         mapInfo,
         layers,
-        startSearchText: (from.properties.space_id || to.properties.space_id),
-        startFloor: from.properties.floor_num,
-        endSearchText: (from.properties.poiId || to.properties.poiId),
-        endFloor: to.properties.floor_num,
+        startSearchText: fromProperties.space_id,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties.poiId,
+        endFloor: toProperties.floor_num,
         routeType,
         searchType: 'spaceIdToPoiId',
         reversed: !(from.properties.space_id)
