@@ -228,7 +228,7 @@ export default {
       const currentSelection = { ...selectedItem };
       const { id, properties } = selectedItem.data;
 
-      if (properties?.src_icon === 'space') {
+      if (properties?.src_icon === 'space' || properties?.space_type_id) {
         properties.space_id = id;
       }
 
@@ -290,7 +290,7 @@ export default {
       if (!routeData.name && routeData.room_code) {
         routeData.name = routeData.room_code;
       }
-      if (!routeData.space_id && routeData?.src_icon === 'space') {
+      if (!routeData.space_id && (routeData?.src_icon === 'space' || routeData?.space_type_id)) {
         routeData.space_id = routeData.id;
       }
       const data = {
