@@ -558,8 +558,8 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
         geometry: endPoint
       });
       // endMarker.setGeometry(endPoint);
-      endMarker.setStyle([MapStyles.faCircleSolidStyle]);
-      startMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
+      endMarker.setStyle([MapStyles.faFlagCheckeredStyle]);
+      startMarker.setStyle([MapStyles.faCircleSolidStyle]);
       markerFeatures.push(startMarker);
       markerFeatures.push(endMarker);
     }
