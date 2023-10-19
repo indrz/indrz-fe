@@ -149,6 +149,25 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
         searchType: 'poiToCoords'
       }
     );
+  } else if (
+    (from.properties.coords && to.properties.space_id) ||
+    (from.properties.space_id && to.properties.coords)
+  ) {
+    const fromProperties = from.properties.space_id ? from.properties : to.properties;
+    const toProperties = to.properties.coords ? to.properties : from.properties;
+
+    routeUrl = await getDirections(
+      {
+        mapInfo,
+        layers,
+        startSearchText: fromProperties.space_id,
+        startFloor: fromProperties.floor_num,
+        endSearchText: toProperties.coords,
+        endFloor: toProperties.floor_num,
+        routeType,
+        searchType: 'spaceIdToCoords'
+      }
+    );
   } else if (from.properties.coords && to.properties.coords) {
     routeUrl = await getDirections(
       {
@@ -294,6 +313,9 @@ const getDirections = async ({
     case 'bookToBook':
       geoJsonUrl = `${baseApiRoutingUrl}start_xyz=${startSearchText.coords.join(',')},${floatTypeStartFloor}&end_xyz=${endSearchText.coords.join(',')},${floatTypeEndFloor}`;
       break;
+    case 'spaceIdToCoords':
+      geoJsonUrl = `${baseApiRoutingUrl}space=${startSearchText}&xyz=${endSearchText},${floatTypeEndFloor}`;
+      break;
     default:
       break;
   }
@@ -357,6 +379,9 @@ const getDirections = async ({
             break;
           case 'bookToBook':
             routeUrl = '?from-book=' + startSearchText.key + '&to-book=' + endSearchText.key;
+            break;
+          case 'spaceIdToCoords':
+            routeUrl = `?from-space=${startSearchText}&to-xy=${endSearchText.join(',')},${floatTypeEndFloor}`;
             break;
           default:
             break;
