@@ -16,8 +16,10 @@ const { env } = config;
 const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
-
-  if (from.properties.space_id && to.properties.space_id) {
+  console.log('from.properties.space_id:', from.properties.space_id);
+  console.log('to.properties.space_id:', to.properties.space_id);
+  console.log('to.properties.poiId:', to.properties.poiId);
+  if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
     routeUrl = await getDirections(
       {
         mapInfo,
@@ -46,18 +48,16 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     );
   } else if (
     (from.properties.poiId && to.properties.space_id) ||
-    (from.properties.space_id && to.properties.poiId)
+        (from.properties.space_id && to.properties.poiId)
   ) {
-    const fromProperties = from.properties.space_id ? from.properties : to.properties;
-    const toProperties = to.properties.poiId ? to.properties : from.properties;
     routeUrl = await getDirections(
       {
         mapInfo,
         layers,
-        startSearchText: fromProperties.space_id,
-        startFloor: fromProperties.floor_num,
-        endSearchText: toProperties.poiId,
-        endFloor: toProperties.floor_num,
+        startSearchText: (from.properties.space_id || to.properties.space_id),
+        startFloor: from.properties.floor_num,
+        endSearchText: (from.properties.poiId || to.properties.poiId),
+        endFloor: to.properties.floor_num,
         routeType,
         searchType: 'spaceIdToPoiId',
         reversed: !(from.properties.space_id)
@@ -65,7 +65,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     );
   } else if (
     (from.properties.shelfId && to.properties.coords) ||
-    (from.properties.coords && to.properties.shelfId)) {
+        (from.properties.coords && to.properties.shelfId)) {
     const fromProperties = from.properties.shelfId ? from.properties : to.properties;
     const toProperties = to.properties.coords ? to.properties : from.properties;
 
@@ -83,7 +83,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     );
   } else if (
     (from.properties.shelfId && to.properties.poiId) ||
-    (from.properties.poiId && to.properties.shelfId)) {
+        (from.properties.poiId && to.properties.shelfId)) {
     const fromProperties = from.properties.poiId ? from.properties : to.properties;
     const toProperties = to.properties.shelfId ? to.properties : from.properties;
 
@@ -101,7 +101,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     );
   } else if (
     (from.properties.space_id && to.properties.shelfId) ||
-    (from.properties.shelfId && to.properties.space_id)) {
+        (from.properties.shelfId && to.properties.space_id)) {
     const fromProperties = from.properties.space_id ? from.properties : to.properties;
     const toProperties = to.properties.shelfId ? to.properties : from.properties;
 
@@ -135,7 +135,7 @@ const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => 
     );
   } else if (
     (from.properties.coords && to.properties.poiId) ||
-    (from.properties.poiId && to.properties.coords)
+        (from.properties.poiId && to.properties.coords)
   ) {
     routeUrl = await getDirections(
       {
@@ -580,119 +580,119 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
 };
 
 const routeToPoiFromPoi = (startPoiId, endPoiId) => {
-/*
-  globalRouteInfo.startPoiId = startPoiId
-  globalRouteInfo.endPoiId = endPoiId
+  /*
+      globalRouteInfo.startPoiId = startPoiId
+      globalRouteInfo.endPoiId = endPoiId
 
-  // http://localhost:8000/en/?start-poi-id=1049&end-poi-id=251
-  globalRouteInfo.routeUrl = '?start-poi-id=' + startPoiId + '&end-poi-id=' + endPoiId
+      // http://localhost:8000/en/?start-poi-id=1049&end-poi-id=251
+      globalRouteInfo.routeUrl = '?start-poi-id=' + startPoiId + '&end-poi-id=' + endPoiId
 
-  geoJsonUrl = baseApiRoutingUrl + 'foo/start-poi-id=' + startPoiId + '&' + 'end-poi-id=' + endPoiId + '?format=json'
+      geoJsonUrl = baseApiRoutingUrl + 'foo/start-poi-id=' + startPoiId + '&' + 'end-poi-id=' + endPoiId + '?format=json'
 
-  if (routeLayer) {
-    map.removeLayer(routeLayer)
-    clearRouteDescription()
+      if (routeLayer) {
+        map.removeLayer(routeLayer)
+        clearRouteDescription()
 
-    //map.getLayers().pop();
-  }
-
-  var source = new ol.source.Vector()
-  indrzApiCall(geoJsonUrl).then(function (response) {
-    //console.log("response", response);
-    var geojsonFormat = new ol.format.GeoJSON()
-    var features = geojsonFormat.readFeatures(response,
-      {featureProjection: 'EPSG:4326'})
-    source.addFeatures(features)
-    //
-    //
-    var routeJson = JSON.stringify(response)
-
-    var routeData = JSON.parse(routeJson)
-
-    var routeStartName = routeData.route_info.start_name
-    var routeEndName = routeData.route_info.end_name
-    var routeMidName = routeData.route_info.mid_name
-
-    globalRouteInfo.startInfo = routeData.route_info.start
-    globalRouteInfo.endInfo = routeData.route_info.end
-
-    // startName = startPoiId;
-    // endName = endPoiId;
-
-    var startName = globalRouteInfo.startInfo.properties.name
-    var endName = globalRouteInfo.endInfo.properties.name
-
-    if (req_locale === 'de') {
-      startName = globalRouteInfo.startInfo.properties.name_de
-      endName = globalRouteInfo.endInfo.properties.name_de
-    }
-
-    globalRouteInfo.startName = startName
-    globalRouteInfo.endName = endName
-
-    var route_markers_data = routeData.route_info.route_markers
-    temp_route_data.test = routeData.route_info
-
-    if (routeData.route_info.mid_name !== '') {
-      insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, true)
-    } else {
-      insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, false)
-    }
-
-    addMarkers(features, routeData.route_info)
-
-    var start_floor = 0
-    // active the floor of the start point
-    if (typeof(features[0]) !== 'undefined') {
-      start_floor = features[0].getProperties().floor
-    }
-
-    for (var i = 0; i < floor_layers.length; i++) {
-      if (start_floor == floor_layers[i].floor_num) {
-        activateLayer(i)
+        //map.getLayers().pop();
       }
-    }
 
-    // center up the route
-    var extent = source.getExtent()
-    map.getView().fit(extent)
-  })
+      var source = new ol.source.Vector()
+      indrzApiCall(geoJsonUrl).then(function (response) {
+        //console.log("response", response);
+        var geojsonFormat = new ol.format.GeoJSON()
+        var features = geojsonFormat.readFeatures(response,
+          {featureProjection: 'EPSG:4326'})
+        source.addFeatures(features)
+        //
+        //
+        var routeJson = JSON.stringify(response)
 
-  routeLayer = new ol.layer.Vector({
-    //url: geoJsonUrl,
-    //format: new ol.format.GeoJSON(),
-    source: source,
-    style: function (feature, resolution) {
-      var feature_floor = feature.getProperties().floor
-      if (feature_floor == active_floor_num) {
-        feature.setStyle(route_active_style)
-      } else {
-        feature.setStyle(route_inactive_style)
-      }
-    },
-    title: 'RoutePoiToPoi',
-    name: 'RoutePoiToPoi',
-    visible: true,
-    layer_id: 20070,
-    zIndex: 4
-  })
+        var routeData = JSON.parse(routeJson)
 
-  map.getLayers().push(routeLayer)
+        var routeStartName = routeData.route_info.start_name
+        var routeEndName = routeData.route_info.end_name
+        var routeMidName = routeData.route_info.mid_name
 
-  $('#clearRoute').removeClass('hide')
-  $('#shareRoute').removeClass('hide')
-  $('#routeText').removeClass('hide')
-  $('#collapseRouting').collapse('show')
-  $('#collapsePoi').collapse('hide')
-  // $("#RouteDescription").removeClass("hide");
+        globalRouteInfo.startInfo = routeData.route_info.start
+        globalRouteInfo.endInfo = routeData.route_info.end
 
-  window.location.href = '#map'
+        // startName = startPoiId;
+        // endName = endPoiId;
 
-  $('html,body').animate({
-      scrollTop: $('#map').offset().top
-    },
-    'slow')
-*/
+        var startName = globalRouteInfo.startInfo.properties.name
+        var endName = globalRouteInfo.endInfo.properties.name
+
+        if (req_locale === 'de') {
+          startName = globalRouteInfo.startInfo.properties.name_de
+          endName = globalRouteInfo.endInfo.properties.name_de
+        }
+
+        globalRouteInfo.startName = startName
+        globalRouteInfo.endName = endName
+
+        var route_markers_data = routeData.route_info.route_markers
+        temp_route_data.test = routeData.route_info
+
+        if (routeData.route_info.mid_name !== '') {
+          insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, true)
+        } else {
+          insertRouteDescriptionText(globalRouteInfo.startName, globalRouteInfo.endName, routeData, false)
+        }
+
+        addMarkers(features, routeData.route_info)
+
+        var start_floor = 0
+        // active the floor of the start point
+        if (typeof(features[0]) !== 'undefined') {
+          start_floor = features[0].getProperties().floor
+        }
+
+        for (var i = 0; i < floor_layers.length; i++) {
+          if (start_floor == floor_layers[i].floor_num) {
+            activateLayer(i)
+          }
+        }
+
+        // center up the route
+        var extent = source.getExtent()
+        map.getView().fit(extent)
+      })
+
+      routeLayer = new ol.layer.Vector({
+        //url: geoJsonUrl,
+        //format: new ol.format.GeoJSON(),
+        source: source,
+        style: function (feature, resolution) {
+          var feature_floor = feature.getProperties().floor
+          if (feature_floor == active_floor_num) {
+            feature.setStyle(route_active_style)
+          } else {
+            feature.setStyle(route_inactive_style)
+          }
+        },
+        title: 'RoutePoiToPoi',
+        name: 'RoutePoiToPoi',
+        visible: true,
+        layer_id: 20070,
+        zIndex: 4
+      })
+
+      map.getLayers().push(routeLayer)
+
+      $('#clearRoute').removeClass('hide')
+      $('#shareRoute').removeClass('hide')
+      $('#routeText').removeClass('hide')
+      $('#collapseRouting').collapse('show')
+      $('#collapsePoi').collapse('hide')
+      // $("#RouteDescription").removeClass("hide");
+
+      window.location.href = '#map'
+
+      $('html,body').animate({
+          scrollTop: $('#map').offset().top
+        },
+        'slow')
+    */
 };
 
 /* export default function (_store, _$t, _scope) {
