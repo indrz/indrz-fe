@@ -61,22 +61,27 @@
           <div class="panel-section-items">
             <v-list class="list-label-value">
               <v-list-item v-if="routeInfo?.walk_time">
-                <span class="primary--text text-h5 font-weight-bold text-center">{{ routeInfo.walk_time }} ({{ routeInfo.route_length }} m)</span>
+                <span class="primary--text text-h5 font-weight-bold text-center">{{
+                  routeInfo.walk_time
+                }} ({{ routeInfo.route_length }} m)</span>
               </v-list-item>
               <v-list-item v-if="routeInfo?.start_name">
                 <v-icon class="search-btn">
                   mdi-flag
-                </v-icon> <span>{{ locale.startRouteLabel }} : {{ routeInfo.start_name }}</span>
+                </v-icon>
+                <span>{{ locale.startRouteLabel }} : {{ routeInfo.start_name }}</span>
               </v-list-item>
               <v-list-item v-if="routeInfo?.passes">
                 <v-icon class="search-btn">
                   mdi-map-marker
-                </v-icon> <span>{{ locale.routePassessLabel }} </span>
+                </v-icon>
+                <span>{{ locale.routePassessLabel }} </span>
               </v-list-item>
               <v-list-item v-if="routeInfo?.end_name">
                 <v-icon class="search-btn">
                   mdi-flag-checkered
-                </v-icon> <span>{{ locale.endRouteLabel }} : {{ routeInfo.end_name }}</span>
+                </v-icon>
+                <span>{{ locale.endRouteLabel }} : {{ routeInfo.end_name }}</span>
               </v-list-item>
             </v-list>
           </div>
@@ -235,6 +240,10 @@ export default {
       } else if (properties.shelfId) {
         properties.coords = currentSelection.data.geometry.coordinates;
       }
+
+      if (properties.shelfId) {
+        properties.coords = currentSelection.data.geometry.coordinates;
+      }
       this[selectedItem.routeType + 'Route'] = currentSelection.data;
       this.$emit('setGlobalRoute', selectedItem);
 
@@ -306,7 +315,13 @@ export default {
         return;
       }
       const { properties } = data;
-      const model = { ...properties, ...{ floorNum: properties.floor_num || properties.floor, roomCode: properties.room_code } };
+      const model = {
+        ...properties,
+        ...{
+          floorNum: properties.floor_num || properties.floor,
+          roomCode: properties.room_code
+        }
+      };
 
       field.stopSearch = true;
       field.apiResponse = [data];
@@ -373,10 +388,10 @@ export default {
 
 <style scoped>
 .left-bar-logo {
-    width: auto;
-    height: 40px;
-    left: 10px;
-    display: block;
-    margin: 5px auto;
-  }
+  width: auto;
+  height: 40px;
+  left: 10px;
+  display: block;
+  margin: 5px auto;
+}
 </style>
