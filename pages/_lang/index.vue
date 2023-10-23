@@ -32,7 +32,7 @@
       @routeGo="onRouteGo"
     />
 
-    <template v-if="drawer">
+    <div v-show="drawer">
       <v-navigation-drawer
         ref="drawer"
         v-model="drawer"
@@ -61,7 +61,7 @@
           @hideSidebar="drawer = false"
         />
       </v-navigation-drawer>
-    </template>
+    </div>
     <v-toolbar
       v-show="!shouldShowPoiDrawer"
       :max-width="toolbarWidth"
