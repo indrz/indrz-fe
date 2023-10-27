@@ -1,12 +1,56 @@
 <template>
-  <v-card
-    class="mx-auto"
-    width="400"
-  >
-    <v-list>
+  <v-list>
+    <v-toolbar
+      color="purple"
+      dark
+    >
+      <v-icon>mdi-layers</v-icon>
+      <v-spacer>
+        <v-toolbar-title>Layers</v-toolbar-title>
+      </v-spacer>
+    </v-toolbar>
+    <v-list-group
+      :value="true"
+      no-action
+    >
+      <template v-slot:activator>
+        <v-list-item-icon>
+          <v-icon small>
+            mdi-account-group
+          </v-icon>
+        </v-list-item-icon>
+        <v-list-item-content>
+          <v-list-item-title>All Organizations</v-list-item-title>
+        </v-list-item-content>
+      </template>
+
+      <v-list-item
+        v-for="([title, icon, iconColor], i) in allOrgs"
+        :key="i"
+        link
+      >
+        <v-list-item-action>
+          <v-checkbox :input-value="active" />
+        </v-list-item-action>
+        <v-list-item-title v-text="title" />
+
+        <v-list-item-icon>
+          <v-icon :color="iconColor" v-text="icon" />
+        </v-list-item-icon>
+      </v-list-item>
+    </v-list-group>
+    <v-list-group
+      :value="true"
+      prepend-icon="mdi-office-building"
+    >
+      <template v-slot:activator>
+        <v-list-item-title>Zoneplans</v-list-item-title>
+      </template>
+
       <v-list-group
         :value="true"
         no-action
+        sub-group
       >
         <template v-slot:activator>
           <v-list-item-icon>
@@ -15,15 +59,18 @@
             </v-icon>
           </v-list-item-icon>
           <v-list-item-content>
-            <v-list-item-title>All Organizations</v-list-item-title>
+            <v-list-item-title>Organizations</v-list-item-title>
           </v-list-item-content>
         </template>
 
         <v-list-item
-          v-for="([title, icon, iconColor], i) in allOrgs"
+          v-for="([title, icon, iconColor], i) in mainOrgs"
           :key="i"
           link
         >
+          <v-list-item-action>
+            <v-checkbox :input-value="active" />
+          </v-list-item-action>
           <v-list-item-title v-text="title" />
 
           <v-list-item-icon>
@@ -31,89 +78,62 @@
           </v-list-item-icon>
         </v-list-item>
       </v-list-group>
-      <v-list-group
-        :value="true"
-        prepend-icon="mdi-office-building"
-      >
-        <template v-slot:activator>
-          <v-list-item-title>Zoneplans</v-list-item-title>
-        </template>
 
-        <v-list-group
-          :value="true"
-          no-action
-          sub-group
-        >
-          <template v-slot:activator>
-            <v-list-item-icon>
-              <v-icon small>
-                mdi-account-group
-              </v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title>Organizations</v-list-item-title>
-            </v-list-item-content>
-          </template>
-
-          <v-list-item
-            v-for="([title, icon, iconColor], i) in mainOrgs"
-            :key="i"
-            link
-          >
-            <v-list-item-title v-text="title" />
-
-            <v-list-item-icon>
-              <v-icon :color="iconColor" v-text="icon" />
-            </v-list-item-icon>
-          </v-list-item>
-        </v-list-group>
-
-        <v-list-group
-          no-action
-          sub-group
-        >
-          <template v-slot:activator>
-            <v-list-item-content>
-              <v-list-item-title>Sub Org E100</v-list-item-title>
-            </v-list-item-content>
-          </template>
-
-          <v-list-item
-            v-for="([title, icon, iconColor], i) in subOrgs"
-            :key="i"
-            link
-          >
-            <v-list-item-title v-text="title" />
-
-            <v-list-item-icon>
-              <v-icon :color="iconColor" v-text="icon" />
-            </v-list-item-icon>
-          </v-list-item>
-        </v-list-group>
-      </v-list-group>
       <v-list-group
         no-action
+        sub-group
       >
         <template v-slot:activator>
           <v-list-item-content>
-            <v-list-item-title>Usage Types</v-list-item-title>
+            <v-list-item-title>Sub Org E100</v-list-item-title>
           </v-list-item-content>
         </template>
 
         <v-list-item
-          v-for="([title, icon, iconColor], i) in spaceTypes"
+          v-for="([title, icon, iconColor], i) in subOrgs"
           :key="i"
           link
         >
+          <v-list-item-action>
+            <v-checkbox :input-value="active" />
+          </v-list-item-action>
           <v-list-item-title v-text="title" />
-
           <v-list-item-icon>
             <v-icon :color="iconColor" v-text="icon" />
           </v-list-item-icon>
         </v-list-item>
       </v-list-group>
-    </v-list>
-  </v-card>
+    </v-list-group>
+    <v-list-group
+      no-action
+      prepend-icon="mdi-office-building"
+    >
+      <template v-slot:activator>
+        <v-list-item-content>
+          <v-list-item-title>Usage Types</v-list-item-title>
+        </v-list-item-content>
+      </template>
+
+      <v-list-item
+        v-for="([title, icon, iconColor], i) in spaceTypes"
+        :key="i"
+        link
+      >
+        <v-list-item-action>
+          <v-checkbox :input-value="active" />
+        </v-list-item-action>
+        <v-list-item-title v-text="title" />
+        <v-list-item-icon>
+          <v-icon :color="iconColor" v-text="icon" />
+        </v-list-item-icon>
+      </v-list-item>
+    </v-list-group>
+    <v-divider inset></v-divider>
+    <v-treeview
+      selectable
+      :items="items"
+    />
+  </v-list>
 </template>
 
 <script>
@@ -135,13 +155,13 @@ export default {
     ],
     allOrgs: [
       ['E010R', 'mdi-floor-plan', 'blue'],
-      ['E010V', 'mdi-floor-plan', 'blue'],
-      ['E014', 'mdi-floor-plan', 'blue'],
-      ['E100', 'mdi-floor-plan', 'blue'],
-      ['E130', 'mdi-floor-plan', 'blue'],
-      ['E150', 'mdi-floor-plan', 'blue'],
-      ['E180', 'mdi-floor-plan', 'blue'],
-      ['E200', 'mdi-floor-plan', 'blue'],
+      ['E010V', 'mdi-floor-plan', 'green'],
+      ['E014', 'mdi-floor-plan', 'red'],
+      ['E100', 'mdi-floor-plan', 'yellow'],
+      ['E130', 'mdi-floor-plan', 'grey'],
+      ['E150', 'mdi-floor-plan', 'purple'],
+      ['E180', 'mdi-floor-plan', 'pink'],
+      ['E200', 'mdi-floor-plan', 'cyan'],
       ['E250', 'mdi-floor-plan', 'blue'],
       ['E300', 'mdi-floor-plan', 'blue'],
       ['E350', 'mdi-floor-plan', 'blue'],
@@ -204,6 +224,27 @@ export default {
       ['9.4 Fahrzeugverkehrsflächen', 'mdi-square', 'orange'],
       ['9.9 Sonstige Verkehrsflächen', 'mdi-square', 'orange'],
       ['', 'mdi-square', 'orange']
+    ],
+    items: [
+      {
+        id: 1,
+        name: 'Organizations :',
+        children: [
+          { id: 2, name: 'E100' },
+          { id: 3, name: 'E200' },
+          { id: 4, name: 'E300' }
+        ]
+      },
+      {
+        id: 5,
+        name: 'Usage Types :',
+        children: [
+          {
+            id: 6,
+            name: '2.1 Büroräume :'
+          }
+        ]
+      }
     ]
   })
 }
