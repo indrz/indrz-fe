@@ -1,12 +1,12 @@
 <template>
   <div>
-    <H1>DEMO MOCKUP</H1>
+    <H1>BETA EVENTS MOCKUP</H1>
     <v-data-table
       :headers="headers"
       :items="indrzEvents"
       class="elevation-1"
     >
-      <template v-slot:item.enabled="{ item }">
+      <template v-slot: item.enabled="{ item }">
         <v-simple-checkbox
           v-model="item.enabled"
           disabled
@@ -32,15 +32,15 @@ export default {
           enabled: true
         },
         {
-          name: 'Ice cream sandwich',
+          name: 'Opening Green Room',
           startDate: '12.08.2021',
           endDate: '01.09.2021',
-          roomCode: 'EA02456',
+          roomCode: 'EA02456, EA02455',
           otherAreas: 'geom',
           enabled: false
         },
         {
-          name: 'Eclair',
+          name: 'Hackathon',
           startDate: '10.08.2021',
           endDate: '01.09.2021',
           roomCode: 'EA02456',
@@ -48,7 +48,7 @@ export default {
           enabled: false
         },
         {
-          name: 'Cupcake',
+          name: 'Innovation day',
           startDate: '07.07.2021',
           endDate: '01.09.2021',
           roomCode: 'EA02456',
@@ -62,7 +62,7 @@ export default {
         { text: 'Start Date', value: 'startDate' },
         { text: 'End Date', value: 'endDate' },
         { text: 'Room Code(s)', value: 'roomCode' },
-        { text: 'Geom', value: 'otherAreas' },
+        { text: 'Map', value: 'otherAreas' },
         { text: 'Enabled', value: 'enabled' }
       ]
     }

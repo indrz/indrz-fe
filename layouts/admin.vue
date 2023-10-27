@@ -56,8 +56,13 @@ export default {
         route: { name: 'poi', path: '/admin/poi' }
       },
       {
-        text: 'Event Manager',
-        icon: 'calendar-blank-multiple',
+        text: 'Zoneplan',
+        icon: 'floor-plan',
+        route: { name: 'zoneplans', path: '/admin/zoneplans' }
+      },
+      {
+        text: 'BETA, Event Manager',
+        icon: 'party-popper',
         route: { name: 'events', path: '/admin/events' }
       }
     ]
