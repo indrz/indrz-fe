@@ -16,9 +16,6 @@ const { env } = config;
 const routeGo = async (mapInfo, layers, globalRouteInfo, routeType = 0, env) => {
   let routeUrl = '';
   const { from, to } = globalRouteInfo;
-  console.log('from.properties.space_id:', from.properties.space_id);
-  console.log('to.properties.space_id:', to.properties.space_id);
-  console.log('to.properties.poiId:', to.properties.poiId);
   if (from.properties.space_id && to.properties.space_id && !to.properties.poiId) {
     routeUrl = await getDirections(
       {
