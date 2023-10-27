@@ -1,10 +1,10 @@
 <template>
   <div>
     <div id="map" class="map">
-      <pre id="info"/>
+      <pre id="info" />
     </div>
 
-    <div id="mouse-position"/>
+    <div id="mouse-position" />
     <form>
       <label for="projection">Projection </label>
       <select id="projection">
