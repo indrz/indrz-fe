@@ -128,11 +128,29 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
-    <v-divider inset></v-divider>
+    <v-divider inset />
+    <v-treeview
+      :multiple-active="multi"
+      :items="items"
+      selected-color="indigo"
+      selectable
+      item-key="id"
+      dense
+      style="overflow: auto; width: auto;"
+    >
+      <template v-slot:append>
+        <v-icon color="blue">mdi-square</v-icon>
+      </template>
+    </v-treeview>
     <v-treeview
       selectable
       :items="items"
     />
+    <template v-slot:prepend="{ item }">
+      <v-icon v-if="!item.children">
+        mdi-account
+      </v-icon>
+    </template>
   </v-list>
 </template>
 
@@ -229,18 +247,21 @@ export default {
       {
         id: 1,
         name: 'Organizations :',
+        icon: 'mdi-account-group',
         children: [
-          { id: 2, name: 'E100' },
-          { id: 3, name: 'E200' },
-          { id: 4, name: 'E300' }
+          { id: 2, name: 'E100', icon: 'mdi-square' },
+          { id: 3, name: 'E200', icon: 'mdi-square' },
+          { id: 4, name: 'E300', icon: 'mdi-square' }
         ]
       },
       {
         id: 5,
         name: 'Usage Types :',
+        icon: 'mdi-square',
         children: [
           {
             id: 6,
+            icon: 'mdi-square',
             name: '2.1 Büroräume :'
           }
         ]
