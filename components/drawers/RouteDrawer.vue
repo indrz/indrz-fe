@@ -235,10 +235,8 @@ export default {
 
       if (!properties.space_id && properties.spaceid) {
         properties.space_id = properties.spaceid;
-      } else if (!properties.space_id && id) {
+      } else if (properties?.src_icon === 'space' || properties?.space_type_id || properties?.space_type) {
         properties.space_id = id;
-      } else if (properties.shelfId) {
-        properties.coords = currentSelection.data.geometry.coordinates;
       }
 
       if (properties.shelfId) {
@@ -299,10 +297,7 @@ export default {
       if (!routeData.name && routeData.room_code) {
         routeData.name = routeData.room_code;
       }
-      if (!routeData.space_id && routeData.spaceid) {
-        routeData.space_id = routeData.spaceid;
-      }
-      if (!routeData.space_id && routeData.id) {
+      if (!routeData.space_id && (routeData?.src_icon === 'space' || routeData?.space_type_id || routeData?.space_type)) {
         routeData.space_id = routeData.id;
       }
       const data = {
