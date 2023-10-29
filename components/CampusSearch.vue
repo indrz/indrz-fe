@@ -74,7 +74,7 @@
         :search-input.sync="search"
         :no-filter="true"
         :label="searchLabel"
-        item-text="name"
+        :item-text="getSearchTitle"
         item-value="id"
         append-icon=""
         single-line
