@@ -735,6 +735,9 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query['from-book'] && query['to-book']) {
     loadMapFromBookToBook(query, mapInfo);
   }
+  if (query['from-space'] && query['to-xy']) {
+    loadMapFromSpaceToCoords(query, mapInfo);
+  }
 };
 
 // TODO add reversed parameter
@@ -820,6 +823,28 @@ const loadMapFromBookToCoords = async ({ 'from-book': book, 'to-xy': endXyQuery 
   mapInfo.$emit('popupRouteClick', {
     path: 'from',
     data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'to',
+    data: {
+      coords: endCoords,
+      name: endCoords,
+      floor_num: endFloor
+    }
+  });
+};
+
+const loadMapFromSpaceToCoords = async ({ 'from-space': spaceId, 'to-xy': endXyQuery }, mapInfo) => {
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  const spaceData = await api.request({
+    endPoint: `space/${spaceId}`
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: 'from',
+    data: { ...spaceData?.data?.properties, spaceid: spaceId, floor: spaceData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
     path: 'to',
