@@ -235,11 +235,8 @@ export default {
 
       if (!properties.space_id && properties.spaceid) {
         properties.space_id = properties.spaceid;
-      } else if (!properties.space_id && id) {
-      if (properties?.src_icon === 'space' || properties?.space_type_id) {
+      } else if (properties?.src_icon === 'space' || properties?.space_type_id) {
         properties.space_id = id;
-      } else if (properties.shelfId) {
-        properties.coords = currentSelection.data.geometry.coordinates;
       }
 
       if (properties.shelfId) {
