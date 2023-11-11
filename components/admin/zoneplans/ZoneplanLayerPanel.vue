@@ -9,104 +9,33 @@
         <v-toolbar-title>Layers</v-toolbar-title>
       </v-spacer>
     </v-toolbar>
-    <v-list-group
-      :value="true"
-      no-action
-    >
+    <v-list-group no-action prepend-icon="mdi-office-building">
       <template v-slot:activator>
-        <v-list-item-icon>
-          <v-icon small>
-            mdi-account-group
-          </v-icon>
-        </v-list-item-icon>
         <v-list-item-content>
-          <v-list-item-title>All Organizations</v-list-item-title>
+          <v-list-item-title>Organizations</v-list-item-title>
         </v-list-item-content>
       </template>
 
-      <v-list-item
-        v-for="([title, icon, iconColor], i) in allOrgs"
-        :key="i"
-        link
-      >
+      <v-list-item v-for="org in organizations" :key="org" link>
         <v-list-item-action>
-          <v-checkbox :input-value="active" />
+          <v-checkbox />
         </v-list-item-action>
-        <v-list-item-title v-text="title" />
+
+        <!-- Wrap the title and subtitle in v-list-item-content -->
+        <v-list-item-content>
+          <v-list-item-title v-text="org.orgcode" />
+          <v-list-item-subtitle v-text="org.name" />
+        </v-list-item-content>
 
         <v-list-item-icon>
-          <v-icon :color="iconColor" v-text="icon" />
+          <v-icon :color="iconColor" v-text="org.icon" />
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
-    <v-list-group
-      :value="true"
-      prepend-icon="mdi-office-building"
-    >
-      <template v-slot:activator>
-        <v-list-item-title>Zoneplans</v-list-item-title>
-      </template>
 
-      <v-list-group
-        :value="true"
-        no-action
-        sub-group
-      >
-        <template v-slot:activator>
-          <v-list-item-icon>
-            <v-icon small>
-              mdi-account-group
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>Organizations</v-list-item-title>
-          </v-list-item-content>
-        </template>
-
-        <v-list-item
-          v-for="([title, icon, iconColor], i) in mainOrgs"
-          :key="i"
-          link
-        >
-          <v-list-item-action>
-            <v-checkbox :input-value="active" />
-          </v-list-item-action>
-          <v-list-item-title v-text="title" />
-
-          <v-list-item-icon>
-            <v-icon :color="iconColor" v-text="icon" />
-          </v-list-item-icon>
-        </v-list-item>
-      </v-list-group>
-
-      <v-list-group
-        no-action
-        sub-group
-      >
-        <template v-slot:activator>
-          <v-list-item-content>
-            <v-list-item-title>Sub Org E100</v-list-item-title>
-          </v-list-item-content>
-        </template>
-
-        <v-list-item
-          v-for="([title, icon, iconColor], i) in subOrgs"
-          :key="i"
-          link
-        >
-          <v-list-item-action>
-            <v-checkbox :input-value="active" />
-          </v-list-item-action>
-          <v-list-item-title v-text="title" />
-          <v-list-item-icon>
-            <v-icon :color="iconColor" v-text="icon" />
-          </v-list-item-icon>
-        </v-list-item>
-      </v-list-group>
-    </v-list-group>
     <v-list-group
       no-action
-      prepend-icon="mdi-office-building"
+      prepend-icon="mdi-file-table-box-outline"
     >
       <template v-slot:activator>
         <v-list-item-content>
@@ -120,7 +49,7 @@
         link
       >
         <v-list-item-action>
-          <v-checkbox :input-value="active" />
+          <v-checkbox />
         </v-list-item-action>
         <v-list-item-title v-text="title" />
         <v-list-item-icon>
@@ -128,36 +57,22 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
-    <v-divider inset />
-    <v-treeview
-      :multiple-active="multi"
-      :items="items"
-      selected-color="indigo"
-      selectable
-      item-key="id"
-      dense
-      style="overflow: auto; width: auto;"
-    >
-      <template v-slot:append>
-        <v-icon color="blue">mdi-square</v-icon>
-      </template>
-    </v-treeview>
-    <v-treeview
-      selectable
-      :items="items"
-    />
-    <template v-slot:prepend="{ item }">
-      <v-icon v-if="!item.children">
-        mdi-account
-      </v-icon>
-    </template>
   </v-list>
 </template>
 
 <script>
 
+import axios from 'axios';
+
 export default {
   data: () => ({
+    organizations: [],
+    orgcodes: [{
+      id: 1,
+      name: 'Organizations :',
+      icon: 'mdi-account-group',
+      children: []
+    }],
     mainOrgs: [
       ['E100', 'mdi-floor-plan', 'blue'],
       ['E200', 'mdi-floor-plan', 'green'],
@@ -241,7 +156,7 @@ export default {
       ['9.3 Schächte für Förderanlagen', 'mdi-square', 'orange'],
       ['9.4 Fahrzeugverkehrsflächen', 'mdi-square', 'orange'],
       ['9.9 Sonstige Verkehrsflächen', 'mdi-square', 'orange'],
-      ['', 'mdi-square', 'orange']
+      ['', 'mdi-square', 'grey']
     ],
     items: [
       {
@@ -267,7 +182,40 @@ export default {
         ]
       }
     ]
-  })
+  }),
+
+  // Fetch organization codes when component is created
+  created () {
+    this.fetchOrganizationCodes();
+  },
+  mounted () {
+    console.log(this.orgcodes);
+  },
+  methods: {
+
+    async fetchOrganizationCodes () {
+      const apiURL = 'http://localhost/api/v1/orgcode/'; // Replace with the actual API URL
+
+      // If the token is stored in local storage or some state management
+      // const token = localStorage.getItem('token'); // or however you store your token
+
+      const axiosInstance = axios.create({
+        baseURL: apiURL,
+        headers: {
+          Authorization: 'Token 449dacbbc14522dc7c0888e7fdf31a3bdc677bf3' // Assuming you are using token-based auth
+        }
+      });
+
+      try {
+        const response = await axiosInstance.get();
+        this.orgcodes[0].children = response.data;
+        this.organizations = response.data;
+      } catch (error) {
+        this.error = error.response ? error.response.data : error.message;
+      }
+    }
+  }
+
 }
 </script>
 <style scoped>
