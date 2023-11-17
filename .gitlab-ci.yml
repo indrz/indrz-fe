@@ -13,10 +13,8 @@ variables:
 
 code_quality:
   stage: test
-  variables:
-    REPORT_FORMAT: html
   artifacts:
-    paths: [gl-code-quality-report.html]
+    paths: [gl-code-quality-report.json]
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
