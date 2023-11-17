@@ -13,10 +13,10 @@ variables:
 
 code_quality:
   stage: code_quality
-  rules:
-    - when: manual
-  script:
-    - /analyzer run
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+    paths: [gl-code-quality-report.html]
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
