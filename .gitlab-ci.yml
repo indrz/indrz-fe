@@ -9,9 +9,6 @@ variables:
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
-  only:
-    refs:
-      - main  # Trigger only when the main branch changes
   script:
     - apt-get update -qy
     - apt-get install -y curl
