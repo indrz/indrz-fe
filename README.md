@@ -27,6 +27,13 @@ yarn cache clean
 yarn install
 ```
 
+## Git Commit Guide
+1. Create a branch from `main`
+1. Name the branch like `123-add-red-button` where it starts with the issue number then a short name no spaces uses a `-`
+1. Commit small and often to your new branch, it helps for Quick code-reviews. Commit messages 
+1. Create a merge request to `main` and reference the issue.
+
+
 ## Customize Style
 View the `/assets/custom_css` folder to find   here you can place your custom css styles
 
