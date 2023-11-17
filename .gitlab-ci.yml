@@ -11,7 +11,7 @@ variables:
   SOURCE_PROJECT_ID: 14108617  # ID of indrz/indrz-frontend repo the source repository
 
 code_quality:
-  stage: code_quality
+  stage: tests
   script:
     - /analyzer run
   only:
