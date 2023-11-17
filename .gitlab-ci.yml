@@ -13,11 +13,15 @@ variables:
 
 code_quality:
   stage: code_quality
+  rules:
+    - when: manual
   script:
     - /analyzer run
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
+  rules:
+    - when: manual
   script:
     - apt-get update -qy
     - apt-get install -y curl
