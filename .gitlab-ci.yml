@@ -2,7 +2,7 @@ include:
   - template: Code-Quality.gitlab-ci.yml
 
 stages:
-  - code_quality
+  - test
   - trigger_downstream_merge_requests
 
 variables:
@@ -12,7 +12,7 @@ variables:
   SOURCE_PROJECT_ID: 14108617  # ID of indrz/indrz-frontend repo the source repository
 
 code_quality:
-  stage: code_quality
+  stage: test
   variables:
     REPORT_FORMAT: html
   artifacts:
