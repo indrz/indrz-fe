@@ -25,6 +25,9 @@
 import 'ol/ol.css';
 import Map from 'ol/Map';
 import View from 'ol/View';
+import Style from 'ol/style/Style';
+import Fill from 'ol/style/Fill';
+import Stroke from 'ol/style/Stroke';
 import TileLayer from 'ol/layer/Tile';
 import WMTS from 'ol/source/WMTS';
 import MousePosition from 'ol/control/MousePosition';
@@ -32,6 +35,9 @@ import { get as getProjection } from 'ol/proj';
 import { createStringXY } from 'ol/coordinate';
 import { defaults as defaultControls } from 'ol/control';
 import TileGrid from 'ol/tilegrid/WMTS';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import GeoJSON from 'ol/format/GeoJSON';
 
 const createWmtsLayer = function (layerSrcName, type, isVisible, sourceName) {
   const sm = getProjection('EPSG:3857');
@@ -132,7 +138,8 @@ export default {
     return {
       map: null,
       center: [1822279.3104, 6139940.224], // Adjust center as needed
-      zoom: 18
+      zoom: 18,
+      layers: {}
     };
   },
   mounted () {
@@ -161,6 +168,7 @@ export default {
           zoom: this.zoom
         })
       });
+
       const projectionSelect = document.getElementById('projection');
       projectionSelect.addEventListener('change', function (event) {
         mousePositionControl.setProjection(event.target.value);
@@ -171,6 +179,39 @@ export default {
         const format = createStringXY(event.target.valueAsNumber);
         mousePositionControl.setCoordinateFormat(format);
       });
+    },
+
+    addLayer (layerName, color, geojsonData) {
+      const defaultStyle = new Style({
+        fill: new Fill({
+          color: color
+        }),
+        stroke: new Stroke({
+          color: '#640a59',
+          width: 1
+        })
+      });
+
+      if (!this.layers[layerName]) {
+        const vectorLayer = new VectorLayer({
+          source: new VectorSource({
+            features: new GeoJSON().readFeatures(geojsonData, {
+              dataProjection: 'EPSG:3857',
+              featureProjection: 'EPSG:3857'
+            })
+          }),
+          style: defaultStyle
+        });
+        this.layers[layerName] = vectorLayer;
+        this.map.addLayer(vectorLayer);
+      }
+    },
+    removeLayer (layerName) {
+      const layer = this.layers[layerName];
+      if (layer) {
+        this.map.removeLayer(layer);
+        delete this.layers[layerName];
+      }
     }
   }
 };

@@ -6,7 +6,7 @@
     >
       <v-icon>mdi-layers</v-icon>
       <v-spacer>
-        <v-toolbar-title>Layers</v-toolbar-title>
+        <v-toolbar-title>Map Layers</v-toolbar-title>
       </v-spacer>
     </v-toolbar>
     <v-list-group no-action prepend-icon="mdi-office-building">
@@ -28,7 +28,7 @@
         </v-list-item-content>
 
         <v-list-item-icon>
-          <v-icon :color="iconColor" v-text="org.icon" />
+          <v-icon :color="org.color" v-text="org.icon" />
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
@@ -57,6 +57,28 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
+    <v-list-group no-action prepend-icon="mdi-layers">
+      <template v-slot:activator>
+        <v-list-item-content>
+          <v-list-item-title>Map Layers</v-list-item-title>
+        </v-list-item-content>
+      </template>
+
+      <v-list-item v-for="layer in layers" :key="layer.name" link>
+        <v-list-item-action>
+          <v-checkbox :value="layer.active" @change="toggleLayer(layer)" />
+        </v-list-item-action>
+        <!-- Wrap the title and subtitle in v-list-item-content -->
+        <v-list-item-content>
+          <v-list-item-title v-text="layer.orgcode" />
+          <v-list-item-subtitle v-text="layer.name" />
+        </v-list-item-content>
+
+        <v-list-item-icon>
+          <v-icon :color="layer.color" v-text="layer.icon" />
+        </v-list-item-icon>
+      </v-list-item>
+    </v-list-group>
   </v-list>
 </template>
 
@@ -66,6 +88,7 @@ import axios from 'axios';
 
 export default {
   data: () => ({
+    layers: [],
     organizations: [],
     orgcodes: [{
       id: 1,
@@ -210,9 +233,15 @@ export default {
         const response = await axiosInstance.get();
         this.orgcodes[0].children = response.data;
         this.organizations = response.data;
+        this.layers = response.data;
       } catch (error) {
         this.error = error.response ? error.response.data : error.message;
       }
+    },
+    toggleLayer (layer) {
+      layer.active = !layer.active;
+      console.log('toggleLayer', layer);
+      this.$emit('layer-toggled', { name: layer.name, orgcode: layer.orgcode, active: layer.active, color: layer.color });
     }
   }
 
