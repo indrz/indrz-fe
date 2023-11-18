@@ -12,15 +12,14 @@
     <v-list-group no-action prepend-icon="mdi-office-building">
       <template v-slot:activator>
         <v-list-item-content>
-          <v-list-item-title>Organizations</v-list-item-title>
+          <v-list-item-title>Organization</v-list-item-title>
         </v-list-item-content>
       </template>
 
-      <v-list-item v-for="org in organizations" :key="org" link>
+      <v-list-item v-for="org in organizations" :key="org.id" link>
         <v-list-item-action>
-          <v-checkbox />
+          <v-checkbox :value="org.active" @change="toggleLayer(org)" />
         </v-list-item-action>
-
         <!-- Wrap the title and subtitle in v-list-item-content -->
         <v-list-item-content>
           <v-list-item-title v-text="org.orgcode" />
@@ -32,7 +31,6 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
-
     <v-list-group
       no-action
       prepend-icon="mdi-file-table-box-outline"
@@ -57,28 +55,6 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
-    <v-list-group no-action prepend-icon="mdi-layers">
-      <template v-slot:activator>
-        <v-list-item-content>
-          <v-list-item-title>Map Layers</v-list-item-title>
-        </v-list-item-content>
-      </template>
-
-      <v-list-item v-for="layer in layers" :key="layer.name" link>
-        <v-list-item-action>
-          <v-checkbox :value="layer.active" @change="toggleLayer(layer)" />
-        </v-list-item-action>
-        <!-- Wrap the title and subtitle in v-list-item-content -->
-        <v-list-item-content>
-          <v-list-item-title v-text="layer.orgcode" />
-          <v-list-item-subtitle v-text="layer.name" />
-        </v-list-item-content>
-
-        <v-list-item-icon>
-          <v-icon :color="layer.color" v-text="layer.icon" />
-        </v-list-item-icon>
-      </v-list-item>
-    </v-list-group>
   </v-list>
 </template>
 
@@ -88,46 +64,7 @@ import axios from 'axios';
 
 export default {
   data: () => ({
-    layers: [],
     organizations: [],
-    orgcodes: [{
-      id: 1,
-      name: 'Organizations :',
-      icon: 'mdi-account-group',
-      children: []
-    }],
-    mainOrgs: [
-      ['E100', 'mdi-floor-plan', 'blue'],
-      ['E200', 'mdi-floor-plan', 'green'],
-      ['E300', 'mdi-floor-plan', 'green'],
-      ['E600', 'mdi-floor-plan', 'green'],
-      ['E900', 'mdi-floor-plan', 'green']
-    ],
-    subOrgs: [
-      ['E100', 'mdi-floor-plan', 'blue'],
-      ['E130', 'mdi-floor-plan', 'green'],
-      ['E150', 'mdi-floor-plan', 'green'],
-      ['E180', 'mdi-floor-plan', 'green']
-    ],
-    allOrgs: [
-      ['E010R', 'mdi-floor-plan', 'blue'],
-      ['E010V', 'mdi-floor-plan', 'green'],
-      ['E014', 'mdi-floor-plan', 'red'],
-      ['E100', 'mdi-floor-plan', 'yellow'],
-      ['E130', 'mdi-floor-plan', 'grey'],
-      ['E150', 'mdi-floor-plan', 'purple'],
-      ['E180', 'mdi-floor-plan', 'pink'],
-      ['E200', 'mdi-floor-plan', 'cyan'],
-      ['E250', 'mdi-floor-plan', 'blue'],
-      ['E300', 'mdi-floor-plan', 'blue'],
-      ['E350', 'mdi-floor-plan', 'blue'],
-      ['E600', 'mdi-floor-plan', 'blue'],
-      ['E610', 'mdi-floor-plan', 'blue'],
-      ['E620', 'mdi-floor-plan', 'blue'],
-      ['E630', 'mdi-floor-plan', 'blue'],
-      ['E640', 'mdi-floor-plan', 'blue'],
-      ['E936', 'mdi-floor-plan', 'blue']
-    ],
     spaceTypes: [
       ['1.2 Gemeinschaftsräume', 'mdi-square', 'green'],
       ['1.4 Warteräume', 'mdi-square', 'green'],
@@ -180,30 +117,6 @@ export default {
       ['9.4 Fahrzeugverkehrsflächen', 'mdi-square', 'orange'],
       ['9.9 Sonstige Verkehrsflächen', 'mdi-square', 'orange'],
       ['', 'mdi-square', 'grey']
-    ],
-    items: [
-      {
-        id: 1,
-        name: 'Organizations :',
-        icon: 'mdi-account-group',
-        children: [
-          { id: 2, name: 'E100', icon: 'mdi-square' },
-          { id: 3, name: 'E200', icon: 'mdi-square' },
-          { id: 4, name: 'E300', icon: 'mdi-square' }
-        ]
-      },
-      {
-        id: 5,
-        name: 'Usage Types :',
-        icon: 'mdi-square',
-        children: [
-          {
-            id: 6,
-            icon: 'mdi-square',
-            name: '2.1 Büroräume :'
-          }
-        ]
-      }
     ]
   }),
 
@@ -211,9 +124,7 @@ export default {
   created () {
     this.fetchOrganizationCodes();
   },
-  mounted () {
-    console.log(this.orgcodes);
-  },
+  mounted () {},
   methods: {
 
     async fetchOrganizationCodes () {
@@ -231,9 +142,7 @@ export default {
 
       try {
         const response = await axiosInstance.get();
-        this.orgcodes[0].children = response.data;
         this.organizations = response.data;
-        this.layers = response.data;
       } catch (error) {
         this.error = error.response ? error.response.data : error.message;
       }

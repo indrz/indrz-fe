@@ -139,7 +139,8 @@ export default {
       map: null,
       center: [1822279.3104, 6139940.224], // Adjust center as needed
       zoom: 18,
-      layers: {}
+      layers: {},
+      activeLayers: []
     };
   },
   mounted () {
@@ -187,7 +188,7 @@ export default {
           color: color
         }),
         stroke: new Stroke({
-          color: '#640a59',
+          color: '#575757',
           width: 1
         })
       });
@@ -220,7 +221,7 @@ export default {
 <style>
 #map {
   width: 100%;
-  height: 500px;
+  height: 900px;
 }
 #info {
   z-index: 1;
