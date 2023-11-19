@@ -3,6 +3,7 @@
     <v-list-item
       v-for="floor in floors"
       :key="floor.id"
+      :class="{ 'floor-item-selected': floor.floor_num === currentFloorNum }"
       @click="selectFloor(floor.floor_num)"
     >
       <v-list-item-content>
@@ -12,7 +13,7 @@
   </v-list>
 </template>
 <script>
-import axios from 'axios';
+import { fetchFloors } from '@/components/admin/zoneplans/api'
 
 export default {
   name: 'FloorChanger',
@@ -23,36 +24,26 @@ export default {
     };
   },
   mounted () {
-    this.fetchFloors();
+    this.fetchFloorsWrapper();
   },
   methods: {
-    async fetchFloors () {
-      const apiURL = 'http://localhost/api/v1/floor/'; // Replace with the actual API URL
-
-      // If the token is stored in local storage or some state management
-      // const token = localStorage.getItem('token'); // or however you store your token
-
-      const axiosInstance = axios.create({
-        baseURL: apiURL,
-        headers: {
-          Authorization: 'Token 449dacbbc14522dc7c0888e7fdf31a3bdc677bf3' // Assuming you are using token-based auth
-        }
-      });
+    async fetchFloorsWrapper () {
       try {
-        const response = await axiosInstance.get();
-        this.floors = response.data.results;
+        const floors = await fetchFloors();
+        this.floors = floors;
         this.selectDefaultFloor();
       } catch (error) {
-        console.error('Error fetching floors:', error);
         // Handle error appropriately
       }
     },
     selectFloor (floorNum) {
       // Existing method to select a floor
+      this.currentFloorNum = floorNum;
       this.$emit('floor-selected', floorNum);
     },
     selectDefaultFloor () {
-      const defaultFloor = this.floors.find(floor => floor.floor_num === 0.0);
+      const defaultFloor = 0.0
+      // const defaultFloor = this.floors.find(floor => floor.floor_num === 0.0);
       if (defaultFloor) {
         this.selectFloor(defaultFloor.floor_num);
       }
@@ -69,5 +60,9 @@ export default {
   width: 100px;
   max-height: 300px;
   overflow-y: auto; /* Enables vertical scrolling */
+  scrollbar-width: thin;
+}
+.floor-item-selected {
+  background-color: #456e8d; /* or any other color to indicate selection */
 }
 </style>

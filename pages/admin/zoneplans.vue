@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import axios from 'axios';
 import ZoneplanLayerPanel from '@/components/admin/zoneplans/ZoneplanLayerPanel';
 import BaseMap from '@/components/BaseMap';
 import FloorChanger from '@/components/admin/zoneplans/FloorChanger';
+import { fetchOrgcodeData } from '@/components/admin/zoneplans/api';
 
 export default {
   name: 'Zoneplans',
@@ -44,57 +44,46 @@ export default {
     async handleLayerToggle (layerInfo) {
       const baseMapComponent = this.$refs.baseMap;
       if (layerInfo.active) {
-        const apiURL = `http://localhost/api/v1/orgcode/${layerInfo.orgcode}/?floor_num=${this.currentFloorNum}`;
-        // const apiURL = 'http://localhost/api/v1/orgcode/' + layerInfo.orgcode + '/?floor_num=0.0'; // Replace with the actual API URL
-        const axiosInstance = axios.create({
-          baseURL: apiURL,
-          headers: {
-            Authorization: 'Token 449dacbbc14522dc7c0888e7fdf31a3bdc677bf3' // Assuming you are using token-based auth
-          }
-        });
         try {
-          const response = await axiosInstance.get();
-          console.log('handleLayerToggle', layerInfo, response.data);
-          baseMapComponent.addLayer(layerInfo.name, layerInfo.color, response.data);
           this.activeLayers.push(layerInfo); // Add layer info to activeLayers
+          const layerData = await fetchOrgcodeData(layerInfo.orgcode, this.currentFloorNum);
+          if (layerData) {
+            baseMapComponent.addLayer(layerInfo.name, layerInfo.color, layerData);
+          } else {
+            console.log('No features found for layer:', layerInfo.name);
+          }
+          // baseMapComponent.addLayer(layerInfo.name, layerInfo.color, layerData);
+          // this.activeLayers.push(layerInfo); // Add layer info to activeLayers
         } catch (error) {
           console.error('Error fetching GeoJSON:', error);
           // Handle the error appropriately
         }
       } else {
         baseMapComponent.removeLayer(layerInfo.name);
-        // Remove layer info from activeLayers
         this.activeLayers = this.activeLayers.filter(layer => layer.name !== layerInfo.name);
       }
     },
+
     async refreshLayersForNewFloor () {
       const baseMapComponent = this.$refs.baseMap;
+      this.activeLayers.forEach(layer => baseMapComponent.removeLayer(layer.name));
 
-      // Remove all current layers
-      this.activeLayers.forEach((layer) => {
-        baseMapComponent.removeLayer(layer.name);
-      });
-
-      // Re-add layers with updated floor data
       for (const layerInfo of this.activeLayers) {
-        const apiURL = `http://localhost/api/v1/orgcode/${layerInfo.orgcode}/?floor_num=${this.currentFloorNum}`;
         try {
-          const axiosInstance = axios.create({
-            baseURL: apiURL,
-            headers: {
-              Authorization: 'Token 449dacbbc14522dc7c0888e7fdf31a3bdc677bf3' // Assuming you are using token-based auth
-            }
-          });
-
-          const response = await axiosInstance.get(apiURL);
-          baseMapComponent.addLayer(layerInfo.name, layerInfo.color, response.data);
+          const layerData = await fetchOrgcodeData(layerInfo.orgcode, this.currentFloorNum);
+          if (layerData) {
+            baseMapComponent.addLayer(layerInfo.name, layerInfo.color, layerData);
+          } else {
+            console.log('No features found for layer:', layerInfo.name);
+          }
         } catch (error) {
           console.error('Error refreshing layer:', layerInfo.name, error);
         }
       }
     },
     onFloorSelected (floorNum) {
-      console.log('Selected floor:', floorNum);
+      console.log("current floor's number is: ", floorNum);
+      console.log('active layers are: ', this.activeLayers);
       this.currentFloorNum = floorNum;
       this.refreshLayersForNewFloor();
     }

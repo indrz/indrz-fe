@@ -16,7 +16,7 @@
         </v-list-item-content>
       </template>
 
-      <v-list-item v-for="org in organizations" :key="org.id" link>
+      <v-list-item v-for="org in organizations" :key="org.id" link dense>
         <v-list-item-action>
           <v-checkbox :value="org.active" @change="toggleLayer(org)" />
         </v-list-item-action>
@@ -45,6 +45,7 @@
         v-for="([title, icon, iconColor], i) in spaceTypes"
         :key="i"
         link
+        dense
       >
         <v-list-item-action>
           <v-checkbox />
@@ -149,7 +150,6 @@ export default {
     },
     toggleLayer (layer) {
       layer.active = !layer.active;
-      console.log('toggleLayer', layer);
       this.$emit('layer-toggled', { name: layer.name, orgcode: layer.orgcode, active: layer.active, color: layer.color });
     }
   }
