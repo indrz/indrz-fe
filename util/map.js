@@ -896,13 +896,17 @@ const loadMapFromBookToBook = async ({ 'from-book': fromBook, 'to-book': toBook 
   });
 };
 
-const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book': book }, mapInfo) => {
+const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book': book, reversed }, mapInfo) => {
+  const tempStart = startSpaceId
+  const isReversed = reversed === 'true' ? true : null
+  startSpaceId = isReversed ? book : startSpaceId
+  book = isReversed ? tempStart : book
   const [startSpaceIdData, endBookData] = await Promise.all([
     api.request({
-      endPoint: `space/${startSpaceId}`
+      endPoint: isReversed ? `search/${startSpaceId}` : `space/${startSpaceId}`
     }),
     api.request({
-      endPoint: `search/${book}`
+      endPoint: isReversed ? `space/${book}` : `search/${book}`
     })
   ]);
 
@@ -916,7 +920,11 @@ const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book':
   });
 };
 
-const loadMapFromSpaceIdToSpaceIdRoute = async ({ 'from-space': startSpaceId, 'to-space': endSpaceId }, mapInfo) => {
+const loadMapFromSpaceIdToSpaceIdRoute = async ({ 'from-space': startSpaceId, 'to-space': endSpaceId, reversed }, mapInfo) => {
+  const tempStart = startSpaceId
+  const isReversed = reversed === 'true' ? true : null
+  startSpaceId = isReversed ? endSpaceId : startSpaceId
+  endSpaceId = isReversed ? tempStart : endSpaceId
   const [startSpaceIdData, endSpaceIdData] = await Promise.all([
     api.request({
       endPoint: `space/${startSpaceId}`
