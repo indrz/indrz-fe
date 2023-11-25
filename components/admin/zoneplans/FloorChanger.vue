@@ -1,5 +1,5 @@
 <template>
-  <v-list dense class="floor-changer-list">
+  <v-list dense class="floor-changer-list" id="floor-list">
     <v-list-item
       v-for="floor in floors"
       :key="floor.id"
@@ -31,7 +31,7 @@ export default {
       try {
         const floors = await fetchFloors();
         this.floors = floors;
-        this.selectDefaultFloor();
+        this.$nextTick(() => { this.selectDefaultFloor(); })
       } catch (error) {
         // Handle error appropriately
       }
@@ -44,8 +44,11 @@ export default {
     selectDefaultFloor () {
       const defaultFloor = 0.0
       // const defaultFloor = this.floors.find(floor => floor.floor_num === 0.0);
-      if (defaultFloor) {
-        this.selectFloor(defaultFloor.floor_num);
+      const list = document.getElementById('floor-list');
+      if (this.floors) {
+        const floorIndex = this.floors.findIndex(floor => floor.floor_num === defaultFloor)
+        list.scrollTo({ top: (35 * floorIndex), behavior: 'smooth' });
+        this.selectFloor(defaultFloor);
       }
     }
   }
