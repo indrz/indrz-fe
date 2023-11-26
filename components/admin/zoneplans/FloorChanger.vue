@@ -1,5 +1,5 @@
 <template>
-  <v-list dense class="floor-changer-list" id="floor-list">
+  <v-list id="floor-list" dense class="floor-changer-list">
     <v-list-item
       v-for="floor in floors"
       :key="floor.id"
@@ -13,7 +13,7 @@
   </v-list>
 </template>
 <script>
-import { fetchFloors } from '@/components/admin/zoneplans/api'
+import { fetchFloors } from '@/util/adminApi'
 
 export default {
   name: 'FloorChanger',
@@ -23,14 +23,16 @@ export default {
       currentFloorNum: 0.0
     };
   },
-  mounted () {
+  created () {
     this.fetchFloorsWrapper();
   },
   methods: {
     async fetchFloorsWrapper () {
+      // fetch floors
       try {
         const floors = await fetchFloors();
         this.floors = floors;
+        // after floors are fetch & assigned, select default floor with scroll to function
         this.$nextTick(() => { this.selectDefaultFloor(); })
       } catch (error) {
         // Handle error appropriately
@@ -43,10 +45,11 @@ export default {
     },
     selectDefaultFloor () {
       const defaultFloor = 0.0
-      // const defaultFloor = this.floors.find(floor => floor.floor_num === 0.0);
       const list = document.getElementById('floor-list');
       if (this.floors) {
+        // Find Default Floor
         const floorIndex = this.floors.findIndex(floor => floor.floor_num === defaultFloor)
+        // Scroll To Default Floor On Page Load
         list.scrollTo({ top: (35 * floorIndex), behavior: 'smooth' });
         this.selectFloor(defaultFloor);
       }

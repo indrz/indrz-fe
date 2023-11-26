@@ -23,7 +23,7 @@
 import ZoneplanLayerPanel from '@/components/admin/zoneplans/ZoneplanLayerPanel';
 import BaseMap from '@/components/BaseMap';
 import FloorChanger from '@/components/admin/zoneplans/FloorChanger';
-import { fetchOrgcodeData } from '@/components/admin/zoneplans/api';
+import { fetchOrgcodeData } from '@/util/adminApi';
 
 export default {
   name: 'Zoneplans',

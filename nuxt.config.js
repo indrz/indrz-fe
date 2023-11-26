@@ -8,6 +8,10 @@ export default {
   /*
   ** Headers of the page
   */
+  env: {
+    BASE_API_URL: process.env.BASE_API_URL,
+    TOKEN: process.env.TOKEN
+  },
   head: {
     titleTemplate: process.env.TITLE || '',
     title: process.env.TITLE || '',

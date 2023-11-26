@@ -30,7 +30,7 @@ import { defaults as defaultControls } from 'ol/control';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
-import { greyBmapat } from '~/components/admin/zoneplans/mapLayers';
+import { greyBmapat } from '~/util/mapLayers';
 
 export default {
   name: 'BaseMap',
