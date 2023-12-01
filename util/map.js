@@ -681,7 +681,6 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query.q && query.q.length > 3) {
     let response = null;
 
-    // Boris: Bellow code should be removed ?! Results in 404 forever
     if (query.q !== 'coords') {
       response = await searchThroughAPI(query.q, env.SHARE_SPACE_URL);
     }
