@@ -680,10 +680,15 @@ const loadMapWithParams = async (mapInfo, query) => {
   }
   if (query.q && query.q.length > 3) {
     let response = null;
-
-    // Boris: Bellow code should be removed ?! Results in 404 forever
     if (query.q !== 'coords') {
       response = await searchThroughAPI(query.q, env.SHARE_SPACE_URL);
+      // Following IF Condition should be removed once TU Wien is consolidated with AAU Campusplan
+      if (response.type === 'Feature' && env.BASE_URL === 'https://tuw-maps.tuwien.ac.at') {
+        response = {
+          type: 'FeatureCollection',
+          features: [response]
+        }
+      }
     }
 
     const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
