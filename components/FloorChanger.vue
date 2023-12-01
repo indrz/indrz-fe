@@ -47,6 +47,9 @@ export default {
       setSelection: null
     };
   },
+  mounted () {
+    this.$bus.$on('searchResponse', this.handleSearchQuery)
+  },
 
   computed: {
     ...mapState({
@@ -74,6 +77,15 @@ export default {
   },
 
   methods: {
+    handleSearchQuery (queryData) {
+      if (queryData.features && queryData.features.length && queryData.features[0].properties) {
+        const floorNum = queryData.features[0].properties.floor_num;
+        if (typeof floorNum === 'number' && !isNaN(floorNum)) {
+          this.selectedFloor = floorNum
+          this.selectFloorWithCss(floorNum)
+        }
+      }
+    },
     onFloorClick (floor, isEvent) {
       const floorNum = env.LAYER_NAME_PREFIX + floor.floor_num;
       this.$emit('floorClick', floorNum);
