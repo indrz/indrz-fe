@@ -1,3 +1,4 @@
+import Vue from 'vue';
 import { defaults as defaultControls, Zoom, Attribution, ScaleLine } from 'ol/control.js';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
@@ -28,6 +29,8 @@ import config from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
 
 const { env } = config;
+// Declare new event $bus
+Vue.prototype.$bus = new Vue();
 const initializeMap = ({
   mapId, predefinedPopup, center, zoom
 }) => {
@@ -369,6 +372,8 @@ const searchThroughAPI = async (searchText, url = env.SEARCH_URL) => {
     const response = await api.request({
       url: searchUrl
     });
+    // Pass response data to FloorChanger.vue
+    Vue.prototype.$bus.$emit('searchResponse', response.data);
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -676,6 +681,7 @@ const loadMapWithParams = async (mapInfo, query) => {
   if (query.q && query.q.length > 3) {
     let response = null;
 
+    // Boris: Bellow code should be removed ?! Results in 404 forever
     if (query.q !== 'coords') {
       response = await searchThroughAPI(query.q, env.SHARE_SPACE_URL);
     }
