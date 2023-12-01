@@ -1,0 +1,11 @@
+import { Locator, Page } from '@playwright/test';
+
+export class MapComponent {
+  private page: Page;
+  private map: Locator;
+
+  constructor(page: Page) {
+    this.page = page;
+    this.map = this.page.getByTestId('map');
+  }
+}

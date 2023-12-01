@@ -3,16 +3,16 @@
     <div>
       <v-row no-gutters>
         <v-col :cols="2" class="pa-2">
-          <v-app-bar-nav-icon @click.stop="onNavbarClick" />
+          <v-app-bar-nav-icon data-test="closeLeftPaneBtn" @click.stop="onNavbarClick" />
         </v-col>
         <v-col :cols="8" align-self="center">
-          <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
+          <img id="tu-logo" data-test="leftPaneLogo" :src="logo.file" alt="logo" class="left-bar-logo">
         </v-col>
       </v-row>
     </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
-        <v-expansion-panel-header class="sidebar-expansion-header">
+        <v-expansion-panel-header class="sidebar-expansion-header" :data-test="menuItem.type+'Heading'">
           {{ menuItem.title }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -22,6 +22,7 @@
             :initial-poi-cat-id="initialPoiCatId"
             :initial-poi-id="initialPoiId"
             :search-result="searchResult"
+            :data-test="menuItem.type+'Content'"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
@@ -43,9 +44,10 @@
         <v-list-item
           v-for="(item, i) in menuButtons"
           :key="i"
+          :data-test="item.type+'Btn'"
           @click.stop="onMenuBUttonClick(item)"
         >
-          <v-list-item-icon>
+          <v-list-item-icon :data-test="item.type+'Item'">
             <v-icon>mdi-{{ item.icon }}</v-icon>
           </v-list-item-icon>
 

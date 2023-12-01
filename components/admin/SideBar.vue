@@ -4,6 +4,7 @@
     fixed
     app
     clipped
+    data-test="sideBar"
   >
     <v-list dense>
       <v-list-item-group

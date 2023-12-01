@@ -75,3 +75,14 @@ nginx, S3, GCP cloud storage, Netlify, you name it.
 1. ```bash
    yarn docker-run
    ```
+
+
+## Playwright Setup
+1. Install Playwright Browsers
+  ```bash
+  yarn playwright install 
+  ``` 
+2. Run playwright UI tests
+  ```bash
+  yarn run pw:test
+  ```
