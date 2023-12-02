@@ -80,7 +80,7 @@ nginx, S3, GCP cloud storage, Netlify, you name it.
 ## Playwright Setup
 1. Install Playwright Browsers
   ```bash
-  yarn playwright install 
+  yarn create playwright
   ``` 
 2. Run playwright UI tests
   ```bash
