@@ -13,7 +13,7 @@ export type DirectionSearch = {
 
 export class DirectionsComponent {
   private page: Page;
-
+  directionsPane: Locator;
   private barrierFreeCheckbox: Locator;
   private toSearch: Locator;
   private fromSearch: Locator;
@@ -21,7 +21,7 @@ export class DirectionsComponent {
 
   constructor(page: Page) {
     this.page = page;
-
+    this.directionsPane = this.page.getByTestId('directionsPane');
     this.barrierFreeCheckbox = this.page.getByTestId('barrierFreeCheckbox');
     this.toSearch = this.page.getByTestId('toSearch').locator('input').first();
     this.fromSearch = this.page

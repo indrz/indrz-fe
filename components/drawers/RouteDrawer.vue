@@ -7,6 +7,7 @@
     :style="{ width: '410px', height: drawerHeight + 'px' }"
     fixed
     app
+    data-test="directionsPane"
     @transitionend="onTransitionEnd"
   >
     <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />

@@ -91,7 +91,7 @@
           </v-icon>
         </template>
         <template v-slot:append-outer>
-          <v-icon v-if="showRoute && !search?.length" color="blue darken-2" @click.stop="onRouteButtonClick">
+          <v-icon v-if="showRoute && !search?.length" data-test="directionsShortcutBtn" color="blue darken-2" @click.stop="onRouteButtonClick">
             mdi-directions
           </v-icon>
           <v-icon v-else :color="activeClearColor" @click.stop="onClearClick">
