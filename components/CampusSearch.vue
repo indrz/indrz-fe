@@ -35,7 +35,7 @@
             </v-icon>
           </template>
           <template v-slot:item="{ item }">
-            <v-list-item-icon style="margin-right: 16px">
+            <v-list-item-icon data-test="searchResult" style="margin-right: 16px">
               <v-img
                 :src="getIconUrl(item.src_icon)"
                 contain

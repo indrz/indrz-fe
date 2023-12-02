@@ -6,6 +6,7 @@
     bottom
     :style="{ width: '410px', height: drawerHeight + 'px' }"
     fixed
+    data-test="poiLeftPane"
     app
     @transitionend="onTransitionEnd"
   >
@@ -101,7 +102,7 @@
                         />
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title class="text-h6 primary--text" v-text="searchTitle" />
+                        <v-list-item-title data-test="searchTitle" class="text-h6 primary--text" v-text="searchTitle" />
                       </v-list-item-content>
                     </v-list-item>
                   </v-list>
@@ -138,7 +139,7 @@
                         <span>{{ data.city }}</span>
                       </v-list-item>
                     </template>
-                    <v-list-item v-if="data.room_code">
+                    <v-list-item v-if="data.room_code" data-test="roomCode">
                       <span>{{ locale.labelRoomCode }}</span>
                       <span>{{ data.room_code }}</span>
                     </v-list-item>

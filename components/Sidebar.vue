@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div data-test="sideBar">
     <div>
       <v-row no-gutters>
         <v-col :cols="2" class="pa-2">

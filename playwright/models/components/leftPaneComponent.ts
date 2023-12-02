@@ -14,7 +14,7 @@ export class LeftPaneComponent {
     this.campusLocationsHeading = this.page.getByTestId(
       'CampusLocationsHeading'
     );
-    this.directionsItem = this.page.getByTestId('DirectionsItem');
+    this.directionsItem = this.page.getByTestId('directionsItem');
   }
 
   async closeLeftPane() {

@@ -4,7 +4,7 @@
     fixed
     app
     clipped
-    data-test="sideBar"
+    data-test="sideBarAdmin"
   >
     <v-list dense>
       <v-list-item-group

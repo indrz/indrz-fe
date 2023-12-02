@@ -1,8 +1,8 @@
-import { Locator, Page } from '@playwright/test';
+import { Locator, Page, expect } from '@playwright/test';
 
 export class MapComponent {
   private page: Page;
-  private map: Locator;
+  map: Locator;
 
   constructor(page: Page) {
     this.page = page;

@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from '@playwright/test';
 import { LeftPaneComponent } from '../components/leftPaneComponent';
-import { MapComponent } from '../components/map';
+import { MapComponent } from '../components/mapComponent';
 
 export class HomePage {
   private page: Page;
@@ -21,5 +21,6 @@ export class HomePage {
 
   async clickToggleLeftPane() {
     await this.toggleLeftPaneBtn.click();
+    await this.page.waitForTimeout(1000);
   }
 }
