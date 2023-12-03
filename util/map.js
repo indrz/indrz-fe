@@ -745,8 +745,9 @@ const loadMapWithParams = async (mapInfo, query) => {
 };
 
 // TODO add reversed parameter
-const loadMapFromXyToXyRoute = ({ 'from-xy': startXyQuery, 'to-xy': endXyQuery }, mapInfo) => {
+const loadMapFromXyToXyRoute = ({ 'from-xy': startXyQuery, 'to-xy': endXyQuery, reversed }, mapInfo) => {
   const startXy = startXyQuery.split(',');
+  const isReversed = reversed === 'true' ? true : null
   const startCoords = [startXy[0], startXy[1]];
   const startFloor = startXy[2];
   const endXy = endXyQuery.split(',');
@@ -754,7 +755,7 @@ const loadMapFromXyToXyRoute = ({ 'from-xy': startXyQuery, 'to-xy': endXyQuery }
   const endFloor = endXy[2];
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: {
       coords: startCoords,
       name: startCoords,
@@ -762,7 +763,7 @@ const loadMapFromXyToXyRoute = ({ 'from-xy': startXyQuery, 'to-xy': endXyQuery }
     }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: {
       coords: endCoords,
       name: endCoords,
@@ -771,9 +772,9 @@ const loadMapFromXyToXyRoute = ({ 'from-xy': startXyQuery, 'to-xy': endXyQuery }
   });
 };
 
-const loadMapFromPoiToPoiRoute = async ({ 'from-poi': startPoiId, 'to-poi': endPoiId }, mapInfo) => {
+const loadMapFromPoiToPoiRoute = async ({ 'from-poi': startPoiId, 'to-poi': endPoiId, reversed }, mapInfo) => {
   mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
-
+  const isReversed = reversed === 'true' ? true : null
   const [startPoiData, endPoiData] = await Promise.all([
     api.request({
       endPoint: `poi/${startPoiId}`
@@ -783,16 +784,17 @@ const loadMapFromPoiToPoiRoute = async ({ 'from-poi': startPoiId, 'to-poi': endP
     })
   ]);
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...startPoiData?.data?.properties, poiId: startPoiId, floor: startPoiData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
   });
 };
 
-const loadMapFromPoiToCoords = async ({ 'from-poi': startPoiId, 'to-xy': endXyQuery }, mapInfo) => {
+const loadMapFromPoiToCoords = async ({ 'from-poi': startPoiId, 'to-xy': endXyQuery, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
   const endXy = endXyQuery.split(',');
   const endCoords = [endXy[0], endXy[1]];
   const endFloor = endXy[2];
@@ -802,11 +804,11 @@ const loadMapFromPoiToCoords = async ({ 'from-poi': startPoiId, 'to-xy': endXyQu
   })
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: {
       coords: endCoords,
       name: endCoords,
@@ -815,7 +817,8 @@ const loadMapFromPoiToCoords = async ({ 'from-poi': startPoiId, 'to-xy': endXyQu
   });
 };
 
-const loadMapFromBookToCoords = async ({ 'from-book': book, 'to-xy': endXyQuery }, mapInfo) => {
+const loadMapFromBookToCoords = async ({ 'from-book': book, 'to-xy': endXyQuery, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
   const endXy = endXyQuery.split(',');
   const endCoords = [endXy[0], endXy[1]];
   const endFloor = endXy[2];
@@ -825,11 +828,11 @@ const loadMapFromBookToCoords = async ({ 'from-book': book, 'to-xy': endXyQuery 
   })
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: {
       coords: endCoords,
       name: endCoords,
@@ -838,7 +841,8 @@ const loadMapFromBookToCoords = async ({ 'from-book': book, 'to-xy': endXyQuery 
   });
 };
 
-const loadMapFromSpaceToCoords = async ({ 'from-space': spaceId, 'to-xy': endXyQuery }, mapInfo) => {
+const loadMapFromSpaceToCoords = async ({ 'from-space': spaceId, 'to-xy': endXyQuery, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
   const endXy = endXyQuery.split(',');
   const endCoords = [endXy[0], endXy[1]];
   const endFloor = endXy[2];
@@ -847,11 +851,11 @@ const loadMapFromSpaceToCoords = async ({ 'from-space': spaceId, 'to-xy': endXyQ
     endPoint: `space/${spaceId}`
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...spaceData?.data?.properties, spaceid: spaceId, floor: spaceData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: {
       coords: endCoords,
       name: endCoords,
@@ -860,7 +864,8 @@ const loadMapFromSpaceToCoords = async ({ 'from-space': spaceId, 'to-xy': endXyQ
   });
 };
 
-const loadMapFromPoiToBook = async ({ 'from-poi': startPoiId, 'to-book': book }, mapInfo) => {
+const loadMapFromPoiToBook = async ({ 'from-poi': startPoiId, 'to-book': book, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
   const [poiData, bookData] = await Promise.all([
     api.request({
       endPoint: `poi/${startPoiId}`
@@ -871,16 +876,17 @@ const loadMapFromPoiToBook = async ({ 'from-poi': startPoiId, 'to-book': book },
   ]);
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
   });
   bookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
   });
 };
 
-const loadMapFromBookToBook = async ({ 'from-book': fromBook, 'to-book': toBook }, mapInfo) => {
+const loadMapFromBookToBook = async ({ 'from-book': fromBook, 'to-book': toBook, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
   const [fromBookData, toBookData] = await Promise.all([
     api.request({
       endPoint: `search/${fromBook}`
@@ -891,16 +897,17 @@ const loadMapFromBookToBook = async ({ 'from-book': fromBook, 'to-book': toBook 
   ]);
 
   fromBookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...fromBookData.data.features[0].properties, coords: fromBookData.data.features[0].geometry.coordinates }
   });
   toBookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: { ...toBookData.data.features[0].properties, coords: toBookData.data.features[0].geometry.coordinates }
   });
 };
 
-const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book': book }, mapInfo) => {
+const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book': book, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
   const [startSpaceIdData, endBookData] = await Promise.all([
     api.request({
       endPoint: `space/${startSpaceId}`
@@ -911,16 +918,17 @@ const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book':
   ]);
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: { ...endBookData?.data?.features[0]?.properties, coords: endBookData.data.features[0].geometry.coordinates }
   });
 };
 
-const loadMapFromSpaceIdToSpaceIdRoute = async ({ 'from-space': startSpaceId, 'to-space': endSpaceId }, mapInfo) => {
+const loadMapFromSpaceIdToSpaceIdRoute = async ({ 'from-space': startSpaceId, 'to-space': endSpaceId, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
   const [startSpaceIdData, endSpaceIdData] = await Promise.all([
     api.request({
       endPoint: `space/${startSpaceId}`
@@ -931,16 +939,17 @@ const loadMapFromSpaceIdToSpaceIdRoute = async ({ 'from-space': startSpaceId, 't
   ]);
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: { ...endSpaceIdData?.data?.properties, spaceid: endSpaceId, floor: endSpaceIdData?.data?.properties?.floor_num }
   });
 };
 
-const loadMapFromSpaceIdToPoiIdRoute = async ({ 'from-space': startSpaceId, 'to-poi': endPoiId }, mapInfo) => {
+const loadMapFromSpaceIdToPoiIdRoute = async ({ 'from-space': startSpaceId, 'to-poi': endPoiId, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true'
   const [startSpaceIdData, endPoiData] = await Promise.all([
     api.request({
       endPoint: `space/${startSpaceId}`
@@ -950,11 +959,11 @@ const loadMapFromSpaceIdToPoiIdRoute = async ({ 'from-space': startSpaceId, 'to-
     })
   ]);
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
   });
 };
