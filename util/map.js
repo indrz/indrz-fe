@@ -680,7 +680,6 @@ const loadMapWithParams = async (mapInfo, query) => {
   }
   if (query.q && query.q.length > 3) {
     let response = null;
-
     if (query.q !== 'coords') {
       response = await searchThroughAPI(query.q, env.SHARE_SPACE_URL);
     }
