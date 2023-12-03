@@ -35,7 +35,7 @@
             </v-icon>
           </template>
           <template v-slot:item="{ item }">
-            <v-list-item-icon style="margin-right: 16px">
+            <v-list-item-icon data-test="searchResult" style="margin-right: 16px">
               <v-img
                 :src="getIconUrl(item.src_icon)"
                 contain
@@ -91,7 +91,7 @@
           </v-icon>
         </template>
         <template v-slot:append-outer>
-          <v-icon v-if="showRoute && !search?.length" color="blue darken-2" @click.stop="onRouteButtonClick">
+          <v-icon v-if="showRoute && !search?.length" data-test="directionsShortcutBtn" color="blue darken-2" @click.stop="onRouteButtonClick">
             mdi-directions
           </v-icon>
           <v-icon v-else :color="activeClearColor" @click.stop="onClearClick">

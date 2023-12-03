@@ -7,6 +7,7 @@
     :style="{ width: '410px', height: drawerHeight + 'px' }"
     fixed
     app
+    data-test="directionsPane"
     @transitionend="onTransitionEnd"
   >
     <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
@@ -33,6 +34,7 @@
                   :route-label="locale.startRouteLabel"
                   icon="mdi-flag"
                   route-type="from"
+                  data-test="fromSearch"
                   @selectSearhResult="onSearchSelect"
                   @clearClicked="onClearSearchField('from')"
                 />
@@ -44,6 +46,7 @@
                   :route-label="locale.endRouteLabel"
                   icon="mdi-flag-checkered"
                   route-type="to"
+                  data-test="toSearch"
                   @selectSearhResult="onSearchSelect"
                   @clearClicked="onClearSearchField('to')"
                 />
@@ -51,7 +54,7 @@
             </v-list>
             <v-list class="list-label-value">
               <v-list-item>
-                <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" @change="onBarrierFreeChange" />
+                <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" data-test="barrierFreeCheckbox" @change="onBarrierFreeChange" />
               </v-list-item>
             </v-list>
           </div>
@@ -112,6 +115,7 @@
                   color="blue-grey"
                   class="white--text"
                   small
+                  data-test="goButton"
                   @click="onGoButtonClick"
                 >
                   <v-icon left dark>

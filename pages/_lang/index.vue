@@ -63,6 +63,7 @@
       </v-navigation-drawer>
     </div>
     <v-toolbar
+      data-test="searchToolbar"
       v-show="!shouldShowPoiDrawer"
       :max-width="toolbarWidth"
       dense
@@ -70,9 +71,10 @@
       floating
       class="ma-2"
     >
-      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" @click.stop="drawer = !drawer;" />
-      <v-expand-transition>
+      <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" data-test="leftPaneToggleBtn" @click.stop="drawer = !drawer;" />
+      <v-expand-transition >
         <campus-search
+        data-test="searchInput"
           ref="searchComp"
           show-route
           @selectSearhResult="onSearchSelect"
@@ -82,6 +84,7 @@
       </v-expand-transition>
     </v-toolbar>
     <indrz-map
+      data-test="map"
       ref="map"
       @selectFloor="onFloorSelect"
       @clearSearch="onClearSearch"
