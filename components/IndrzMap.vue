@@ -210,6 +210,7 @@ export default {
           searchUrl: env.SEARCH_URL,
           layerNamePrefix: env.LAYER_NAME_PREFIX
         });
+
       this.searchLayer = result.searchLayer;
       this.$emit('open-poi-drawer', {
         feature: properties
@@ -218,9 +219,8 @@ export default {
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);
       const selectedItem = await MapUtil.loadMapWithParams(this, query);
-
       this.$emit('open-poi-drawer', {
-        feature: selectedItem?.properties
+        feature: selectedItem.properties ? selectedItem.properties : selectedItem
       })
     },
     openIndrzPopup (properties, coordinate, feature) {
