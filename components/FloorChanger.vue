@@ -47,9 +47,6 @@ export default {
       setSelection: null
     };
   },
-  mounted () {
-    this.$bus.$on('searchResponse', this.handleSearchQuery)
-  },
 
   computed: {
     ...mapState({
@@ -74,6 +71,10 @@ export default {
         this.selectFloorWithCss(this.setSelection);
       }
     }
+  },
+
+  mounted () {
+    this.$bus.$on('searchResponse', this.handleSearchQuery)
   },
 
   methods: {
