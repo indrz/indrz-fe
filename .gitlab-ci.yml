@@ -35,9 +35,17 @@ ui-test-job: # This job runs in the test stage.
   image: mcr.microsoft.com/playwright:v1.40.0-jammy
   script:
     - cat $DEV_ENV_FILE > .env
+    - ls -a
     - yarn install
     - yarn playwright install
     - yarn pw:test
+  artifacts:
+    paths: #assuming deafult playwright artifacts paths 
+      - ./playwright-report/
+      - ./Screenshot/
+    when: always
+    expire_in: 4 days  #artifacts will purged after 4 days of test run
+
 
 code_quality:
   stage: test
