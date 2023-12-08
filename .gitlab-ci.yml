@@ -22,7 +22,6 @@ build-job: # This job runs in the build stage, which runs first.
   script:
     - echo "creating .env file..."
     - cat $DEV_ENV_FILE > .env
-    - ls -a
     - echo "Installing dependencies..."
     - yarn install
     - echo "Dependencies installed."
@@ -35,8 +34,6 @@ ui-test-job: # This job runs in the test stage.
   image: mcr.microsoft.com/playwright:v1.40.0-jammy
   script:
     - cat $DEV_ENV_FILE > .env
-    # - ls -a
-    # - yarn install
     - yarn playwright install
     - yarn pw:test
   artifacts:
