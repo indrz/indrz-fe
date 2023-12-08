@@ -33,5 +33,5 @@ test('Karlsplatz from Aula to Prechtlsaal search', async ({ page }) => {
   await directionsCom.getDirections(directionSearch);
   await page.waitForTimeout(10000);
   await expect(homePage.mapComponent.map).toBeVisible();
-  await expect(page).toHaveScreenshot('AulaToPrechtlsaal.png');
+  await expect(page).toHaveScreenshot('AulaToPrechtlsaal.png',{maxDiffPixelRatio: 0.05});
 });

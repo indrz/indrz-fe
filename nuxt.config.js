@@ -21,7 +21,6 @@ export default {
     ]
   },
   target: 'static',
-  devtools: true,
   /*
   ** Customize the progress-bar color
   */

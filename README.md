@@ -86,3 +86,4 @@ nginx, S3, GCP cloud storage, Netlify, you name it.
   ```bash
   yarn run pw:test
   ```
+3. Optional: Install Playwright VS Code extension for test debugging and trace viewer
