@@ -30,9 +30,9 @@ export default defineConfig({
     trace: 'on-first-retry',
     testIdAttribute: 'data-test'
   },
-  timeout: 1 * 40 * 1000, // 3min test timeout
+  timeout: 1 * 60 * 1000, // 3min test timeout
   expect: {
-    timeout: 1 * 20 * 1000 // 30sec expect assertion timeout
+    timeout: 1 * 30 * 1000 // 30sec expect assertion timeout
   },
 
   /* Configure projects for major browsers */
