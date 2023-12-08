@@ -29,7 +29,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     testIdAttribute: 'data-test',
-    video: 'on-first-retry'
+    // video: 'on-first-retry'
 
   },
   timeout: 3 * 60 * 1000, // 3min test timeout
@@ -44,15 +44,15 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] }
     },
 
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] }
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] }
+    },
 
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] }
-    // }
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] }
+    }
 
     // /* Test against mobile viewports. */
     // {
