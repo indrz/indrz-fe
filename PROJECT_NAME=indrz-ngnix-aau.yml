@@ -1,0 +1,51 @@
+PROJECT_NAME=indrz-ngnix-aau
+ENV_TYPE=dev
+TIMEZONE=Europe/Vienna
+SSL_CERTIFICATES_PATH=/etc/ssl
+WEB_FOLDER=/var/www
+ENV=dev
+
+BASE_URL=https://tuw-maps.tuwien.ac.at
+BASE_API_URL=https://tuw-maps.tuwien.ac.at/api/v1/
+BASE_WMS_URL=https://tuw-maps.tuwien.ac.at/geoserver/wms
+SEARCH_URL=https://tuw-maps.tuwien.ac.at/api/v1/search
+SHARE_SPACE_URL=https://tuw-maps.tuwien.ac.at/api/v1/share/space
+HOME_PAGE_URL=https://www.tuwien.at
+
+DEFAULT_CENTER_XY=[1589723,5879830]
+DEFAULT_START_ZOOM=15
+
+MOBILE_START_CENTER_XY=[1587956,5879663]
+MOBILE_START_ZOOM=16
+
+DEFAULT_START_FLOOR=1
+
+TOKEN='Token a6e744b52ce4515e30602ac8de7337ee36262ea7'
+LAYER_NAME_PREFIX=floor_
+GEO_SERVER_LAYER_PREFIX=indrz:
+
+TITLE='AAU Campusplan'
+PDF_TITLE='AAU Campusplan'
+
+NEAREST_METRO_POIID=27
+NEAREST_DEFI_POIID=71
+NEAREST_ENTRANCE_POIID=13
+
+#optional sentry error logging
+#SENTRY_DSN='https://yourSentryUniqueUrlGoesHere'
+
+# --Style configuration-- #
+
+FONT_FAMILY=Roboto
+FONT_SIZE=16
+ICON_SET=mdi
+LOGO_FILE=/images/icon.png
+LOGO_PWA_HOME_256=/images/uni-home-logo-256px.png
+LOGO_PWA_HOME_512=/images/uni-home-logo-512px.png
+LOGO_ENABLED=true
+FAVICON_ICON=/images/default_poi_image.png
+DEFAULT_POI_IMAGE=/images/default_poi_image.png
+
+# --playwright configuration-- #
+TEST_BASE_URL=http://localhost:3000/
+TEST_BASE_API_URL=http://localhost:3000/
