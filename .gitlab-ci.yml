@@ -22,7 +22,10 @@ build-job: # This job runs in the build stage, which runs first.
   stage: build
   script:
     - echo "creating .env file..."
+    - ls -a
     - cat $DEV_ENV_FILE > .env
+    - ls -a
+    - cat .env
     - cat .env
     - echo "-------"
     - ls -a
