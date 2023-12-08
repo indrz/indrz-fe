@@ -32,9 +32,9 @@ export default defineConfig({
     // video: 'on-first-retry'
 
   },
-  timeout: 3 * 60 * 1000, // 3min test timeout
+  timeout: 1 * 60 * 1000, // 3min test timeout
   expect: {
-    timeout: 1 * 30 * 1000 // 30sec expect assertion timeout
+    timeout: 1 * 15 * 1000 // 30sec expect assertion timeout
   },
 
   /* Configure projects for major browsers */
