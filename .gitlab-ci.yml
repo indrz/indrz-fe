@@ -17,24 +17,25 @@ stages: # List of stages for jobs, and their order of execution
   - deploy
   - trigger_downstream_merge_requests
 
-
 build-job: # This job runs in the build stage, which runs first.
   stage: build
   script:
     - echo "creating .env file..."
     - cat $DEV_ENV_FILE > .env
     - cat .env
-    - echo "Installing dependencies..."
-    - yarn install
-    - echo "Dependencies installed."
-    - echo "Building the code..."
-    - yarn build
-    - echo "Build complete."
+    # - ls -a
+    # - echo "Installing dependencies..."
+    # - yarn install
+    # - echo "Dependencies installed."
+    # - echo "Building the code..."
+    # - yarn build
+    # - echo "Build complete."
 
 ui-test-job: # This job runs in the test stage.
   stage: test # It only starts when the job in the build stage completes successfully.
   image: mcr.microsoft.com/playwright:v1.40.0-jammy
   script:
+    - ls -a
     - yarn install
     - yarn playwright install
     - yarn pw:test
