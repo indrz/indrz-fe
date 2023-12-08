@@ -18,7 +18,7 @@
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore . --fix",
     "docker-build": "docker build -f devops/docker/node/Dockerfile -t indrz-frontend .",
     "docker-run": "docker run -it -p 3000:3000 indrz-frontend",
-    "pw:test": "playwright test"
+    "pw:test": "playwright test --ui"
   },
   "dependencies": {
     "@nuxtjs/axios": "5.13.6",
