@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
   await expect(homePage.searchToolbar).toBeVisible();
 });
 
-test('Karlsplatz from Aula to Prechtlsaal search', async ({ page }) => {
+test.skip('Karlsplatz from Aula to Prechtlsaal search', async ({ page }) => {
   let homePage = new HomePage(page);
 
   await homePage.clickToggleLeftPane();

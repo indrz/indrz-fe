@@ -35,8 +35,8 @@ ui-test-job: # This job runs in the test stage.
   image: mcr.microsoft.com/playwright:v1.40.0-jammy
   script:
     - cat $DEV_ENV_FILE > .env
-    - ls -a
-    - yarn install
+    # - ls -a
+    # - yarn install
     - yarn playwright install
     - yarn pw:test
   artifacts:
