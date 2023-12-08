@@ -1,20 +1,56 @@
 include:
   - template: Code-Quality.gitlab-ci.yml
 
-stages:
+# Official framework image. Look for the different tagged releases at:
+# https://hub.docker.com/r/library/node/tags/
+image: node:latest
+
+# This folder is cached between builds
+# https://docs.gitlab.com/ee/ci/yaml/index.html#cache
+cache:
+  paths:
+    - node_modules/
+
+stages: # List of stages for jobs, and their order of execution
+  - build
   - test
+  - deploy
   - trigger_downstream_merge_requests
+
+
+build-job: # This job runs in the build stage, which runs first.
+  stage: build
+  script:
+    - echo "creating .env file..."
+    - cat $DEV_ENV_FILE > .env
+    - cat .env
+    - echo "-------"
+    - ls -a
+    - echo "Installing dependencies..."
+    - yarn install
+    - echo "Dependencies installed."
+    - echo "Building the code..."
+    - yarn build
+    - echo "Build complete."
+
+ui-test-job: # This job runs in the test stage.
+  stage: test # It only starts when the job in the build stage completes successfully.
+  image: mcr.microsoft.com/playwright:v1.40.0-jammy
+  script:
+    - yarn install
+    - yarn playwright install
+    - yarn pw:test
+
+code_quality:
+  stage: test
+  artifacts:
+    paths: [gl-code-quality-report.json]
 
 variables:
   SOURCE_BRANCH: "main"  # Branch in the source repository
   TARGET_BRANCH: "main"  # Branch in the downstream repository
   DOWNSTREAM_PROJECT_IDS: "43484495,23077745,23077517"  # aau, tu, wu project ids
   SOURCE_PROJECT_ID: 14108617  # ID of indrz/indrz-frontend repo the source repository
-
-code_quality:
-  stage: test
-  artifacts:
-    paths: [gl-code-quality-report.json]
 
 trigger_downstream_merge_requests:
   stage: trigger_downstream_merge_requests
