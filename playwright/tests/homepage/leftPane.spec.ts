@@ -17,7 +17,6 @@ test('Toggle left side pane', async ({ page }) => {
 test('Open directions pane using directions shortcut button', async ({ page }) => {
   let homePage = new HomePage(page);
   await homePage.clickDirectionsShortcut();
-
   let directionsComponent = new DirectionsComponent(page);
   await expect(directionsComponent.directionsPane).toBeVisible();
 });
