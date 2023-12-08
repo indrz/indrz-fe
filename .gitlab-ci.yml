@@ -14,7 +14,6 @@ cache:
 stages: # List of stages for jobs, and their order of execution
   - build
   - test
-  - deploy
   - trigger_downstream_merge_requests
 
 build-job: # This job runs in the build stage, which runs first.
