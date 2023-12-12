@@ -316,9 +316,11 @@ const getDirections = async ({
     default:
       break;
   }
-
-  geoJsonUrl += `&reversed=${reversed}&type=${routeType}`;
-
+  if (reversed) {
+    console.log('adding reversed')
+    geoJsonUrl += `&reversed=${reversed}`
+  }
+  geoJsonUrl += `&type=${routeType}`;
   const source = new SourceVector();
   let floorNum = '';
 
@@ -384,8 +386,10 @@ const getDirections = async ({
             break;
         }
       }
-
-      routeUrl += `&reversed=${reversed}&type=${routeType}`;
+      if (reversed) {
+        routeUrl += `&reversed=${reversed}`
+      }
+      routeUrl += `&type=${routeType}`;
 
       if (typeof (features[0]) !== 'undefined') {
         floorNum = features[0].getProperties().floor;
@@ -512,7 +516,6 @@ const addMarkers = (map, routeFeatures, routeInfo) => {
   }
 
   let mid = false;
-
   if (routeInfo) {
     if (routeInfo.hasOwnProperty('route_markers')) {
       const ll = routeInfo.route_markers;
