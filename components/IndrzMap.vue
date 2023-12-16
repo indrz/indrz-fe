@@ -66,6 +66,12 @@ export default {
     Terms,
     UserGeoLocation
   },
+  props: {
+    routeDrawer: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       mapId: 'mapContainer',
@@ -149,7 +155,6 @@ export default {
     this.$root.$on('popupRouteClick', this.onPopupRouteClick);
     this.$root.$on('closeInfoPopup', this.closeIndrzPopup);
   },
-
   methods: {
     loadLayers (floors) {
       this.floors = floors;
@@ -233,6 +238,9 @@ export default {
         this.routeFromValTemp, this.activeFloorNum, this.popup,
         properties, coordinate, feature, null, env.LAYER_NAME_PREFIX
       );
+      if (this.routeDrawer) {
+        this.$nextTick(() => { this.$bus.$emit('goTo', { properties: properties, coordinates: coordinate }) })
+      }
     },
     closeIndrzPopup (fromEvent) {
       MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
@@ -405,7 +413,9 @@ export default {
       }
     },
     setGlobalRoute (selectedItem) {
-      this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
+      if (selectedItem.routeType) {
+        this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
+      }
     },
     async routeGo (routeType = 0) {
       const routeResult = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {

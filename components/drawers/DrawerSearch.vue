@@ -22,7 +22,7 @@
           v-show="!isSmallScreen || shouldShow"
           ref="searchComp"
           :should-search="shouldSearch"
-          @selectSearhResult="onSearchSelect"
+          @selectSearchResult="onSearchSelect"
           @showSearch="shouldShow = true"
           @clearClicked="onClearClick"
         />

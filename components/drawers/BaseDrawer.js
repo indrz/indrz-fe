@@ -69,7 +69,7 @@ export default {
   methods: {
     setHeight () {
       const height = this.$parent.$el.clientHeight;
-      this.drawerHeight = this.isMobile ? height / 2 : height;
+      this.drawerHeight = this.isMobile ? height / 3 : height;
     },
     onTransitionEnd () {
       this.$refs.drawer.$el.style.transition = ''
