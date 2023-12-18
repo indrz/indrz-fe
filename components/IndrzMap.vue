@@ -187,12 +187,10 @@ export default {
       return floorName;
     },
     async onSearchSelect (selection) {
-      console.log('searchSelect')
-      console.log(JSON.stringify(selection))
-      /*  if (!selection || !selection.data) {
+      if (!selection || !selection.data) {
         this.closeIndrzPopup();
         return;
-      } */
+      }
       const selectedItem = selection.data;
       const { properties } = selectedItem;
       if (!properties.floor_name) {
