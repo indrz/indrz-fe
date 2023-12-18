@@ -25,7 +25,7 @@
     <div v-if="isMobile" class="draggable-handle" @mousedown="startDrag" @touchstart="startDrag" />
     <div class="ma-2">
       <v-container justify="center" class="pa-0" style="margin-top: 20px; max-width: 410px">
-        <v-row class="ma-0" justify="center">
+        <v-row class="ma-0 relative route-navigation-functions" justify="center">
           <v-chip>{{ locale.routeLabel }}</v-chip>
           <v-btn icon @click="$emit('on-close')">
             <v-icon>mdi-close</v-icon>
@@ -405,5 +405,11 @@ export default {
   left: 10px;
   display: block;
   margin: 5px auto;
+}
+@media(max-width:767.98px) {
+  .route-navigation-functions {
+    position:relative;
+    bottom: -10px;
+  }
 }
 </style>

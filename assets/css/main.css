@@ -85,4 +85,10 @@ li {
   margin-top: 20px;
 }
 
+@media (max-width: 767.98px) {
+  .v-main {
+    padding: 0 !important;
+  }
+}
+
 /*# sourceMappingURL=main.css.map */

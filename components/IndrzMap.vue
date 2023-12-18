@@ -54,7 +54,6 @@ import Terms from './Terms';
 import Help from './Help';
 import UserGeoLocation from './UserGeoLocation';
 import QRCode from './QRCode';
-
 const { env } = config;
 
 export default {
@@ -188,10 +187,12 @@ export default {
       return floorName;
     },
     async onSearchSelect (selection) {
-      if (!selection || !selection.data) {
+      console.log('searchSelect')
+      console.log(JSON.stringify(selection))
+      /*  if (!selection || !selection.data) {
         this.closeIndrzPopup();
         return;
-      }
+      } */
       const selectedItem = selection.data;
       const { properties } = selectedItem;
       if (!properties.floor_name) {
@@ -225,7 +226,7 @@ export default {
       const query = queryString.parse(searchString || location.search);
       const selectedItem = await MapUtil.loadMapWithParams(this, query);
       this.$emit('open-poi-drawer', {
-        feature: selectedItem.properties ? selectedItem.properties : selectedItem
+        feature: selectedItem && selectedItem.properties ? selectedItem.properties : selectedItem
       })
     },
     openIndrzPopup (properties, coordinate, feature) {
@@ -238,9 +239,16 @@ export default {
         this.routeFromValTemp, this.activeFloorNum, this.popup,
         properties, coordinate, feature, null, env.LAYER_NAME_PREFIX
       );
-      if (this.routeDrawer) {
-        this.$nextTick(() => { this.$bus.$emit('goTo', { properties: properties, coordinates: coordinate }) })
-      }
+      this.objCenterCoords = properties.centerGeometry ? properties.centerGeometry.coordinates : coordinate;
+      const featureCenter = !this.routeDrawer
+        ? { data: { type: 'Feature', id: properties.id, properties: properties, geometry: { coordinates: this.objCenterCoords, type: 'MultiPolygon' } } }
+        : { type: 'Feature', id: properties.id, ...{ properties, geometry: { coordinates: this.coordinates, type: 'MultiPolygon' } } }
+      if (!this.routeDrawer) {
+        this.map.getView().animate({
+          center: coordinate,
+          duration: 2000
+        });
+      } else { this.$nextTick(() => { this.$bus.$emit('goTo', featureCenter) }) }
     },
     closeIndrzPopup (fromEvent) {
       MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);

@@ -204,10 +204,13 @@ export default {
       this.openedPanels = openedPanels
     })
     this.$bus.$on('goTo', (feature) => {
+      /*      const featureCenter = feature
+      featureCenter.type = 'Feature'
+      this.onSearchSelect(featureCenter) */
       const data = feature.properties
       this.onPopupRouteClick({ data: data })
       const data2 = { id: feature.properties.id, properties: feature.properties, geometry: { coordinates: feature.coordinates } }
-      this.map.setGlobalRoute(data2);
+      this.map.setGlobalRoute(data2)
     })
   },
   methods: {

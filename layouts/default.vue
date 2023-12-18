@@ -1,16 +1,18 @@
 <template>
   <v-app>
-    <div class="box">
-      <div :id="headerId" class="box-row header">
-        <!-- Any code below will show up on Header -->
+    <v-main>
+      <div class="box">
+        <div :id="headerId" class="box-row header">
+          <!-- Any code below will show up on Header -->
+        </div>
+        <v-container class="box-row content">
+          <nuxt />
+        </v-container>
+        <div :id="footerId" class="box-row footer">
+          <!-- Any code below will show up on Footer -->
+        </div>
       </div>
-      <v-container class="box-row content">
-        <nuxt />
-      </v-container>
-      <div :id="footerId" class="box-row footer">
-        <!-- Any code below will show up on Footer -->
-      </div>
-    </div>
+    </v-main>
   </v-app>
 </template>
 
