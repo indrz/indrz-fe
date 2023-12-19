@@ -242,10 +242,22 @@ export default {
         ? { data: { type: 'Feature', id: properties.id, properties: properties, geometry: { coordinates: this.objCenterCoords, type: 'MultiPolygon' } } }
         : { type: 'Feature', id: properties.id, ...{ properties, geometry: { coordinates: this.coordinates, type: 'MultiPolygon' } } }
       if (!this.routeDrawer) {
-        this.map.getView().animate({
-          center: coordinate,
-          duration: 2000
-        });
+        const elm = document.querySelector('.v-navigation-drawer--fixed');
+        const drawerHeight = elm.offsetHeight;
+        const pixel = this.map.getPixelFromCoordinate(coordinate);
+        pixel[1] += drawerHeight / 2
+        const newCoordinate = this.map.getCoordinateFromPixel(pixel);
+        if (this.isMobile) {
+          this.map.getView().animate({
+            duration: 2000,
+            center: newCoordinate
+          });
+        } else {
+          this.map.getView().animate({
+            center: coordinate,
+            duration: 2000
+          });
+        }
       } else { this.$nextTick(() => { this.$bus.$emit('goTo', featureCenter) }) }
     },
     closeIndrzPopup (fromEvent) {

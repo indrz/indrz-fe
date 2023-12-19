@@ -433,6 +433,7 @@ export default {
         this.onRouteClick('from')
         // this.$emit('open-route-drawer');
       } else if (index === 3) {
+        this.$root.$emit('closeInfoPopup');
         this.$emit('hide-poi-drawer')
       }
     },
