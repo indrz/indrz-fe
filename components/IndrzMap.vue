@@ -245,12 +245,12 @@ export default {
         const elm = document.querySelector('.v-navigation-drawer--fixed');
         const drawerHeight = elm.offsetHeight;
         const pixel = this.map.getPixelFromCoordinate(coordinate);
-        pixel[1] += drawerHeight / 2
-        const newCoordinate = this.map.getCoordinateFromPixel(pixel);
+        pixel[1] += (drawerHeight - 70) / 2
+        const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
         if (this.isMobile) {
           this.map.getView().animate({
             duration: 2000,
-            center: newCoordinate
+            center: mobileCoordinate
           });
         } else {
           this.map.getView().animate({

@@ -6,7 +6,7 @@
       :drawer="mainDrawer"
       :search-title="searchTitle"
       class="mt-4"
-      style="max-width:70vw;"
+      id="drawer-search"
       @update:drawer="mainDrawer = $event"
       @hide-poi-drawer="onHidePoiDrawer()"
     />
@@ -513,5 +513,16 @@ export default {
 
   .v-window-item {
     width: 100%;
+  }
+  #drawer-search{
+    max-width:70vw;
+    @media(max-width:767.98px){
+      position:fixed;
+      width:70vw;
+      z-index:5;
+      padding-top:0;
+      margin-top:0 !important;
+      top:10px;
+    }
   }
 </style>

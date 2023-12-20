@@ -1,3 +1,5 @@
+// noinspection JSAnnotator
+
 import Vue from 'vue';
 import { defaults as defaultControls, Zoom, Attribution, ScaleLine } from 'ol/control.js';
 import Group from 'ol/layer/Group';
@@ -466,7 +468,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       routeFromValTemp, activeFloorNum, popup,
       featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
     );
-    zoomer(map.getView(), centerCoOrd, zoomLevel);
+    zoomer(map.getView(), centerCoOrd, zoomLevel, map);
     /*
      // the following code may need later use for space
       space_id = response.features[0].properties.space_id;
@@ -520,13 +522,26 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     selectedItem
   };
 };
-
-const zoomer = (view, coord, zoomLevel) => {
-  view.animate({
-    center: coord,
-    duration: 2000,
-    zoom: zoomLevel
-  });
+const zoomer = (view, coord, zoomLevel, map) => {
+  const elm = document.querySelector('.v-navigation-drawer--open');
+  const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+  if (map && screenWidth < 768 && elm) {
+    const drawerHeight = elm.offsetHeight;
+    const pixel = map.getPixelFromCoordinate(coord);
+    pixel[1] += (drawerHeight - 70) / 2
+    const mobileCoordinate = map.getCoordinateFromPixel(pixel);
+    view.animate({
+      center: mobileCoordinate,
+      duration: 2000,
+      zoom: zoomLevel
+    });
+  } else {
+    view.animate({
+      center: coord,
+      duration: 2000,
+      zoom: zoomLevel
+    });
+  }
 };
 
 const activateLayer = (layerName, switchableLayers, map) => {
