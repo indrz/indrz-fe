@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer
+  <!--  <v-navigation-drawer
     ref="drawer"
     v-model="shouldShowDrawer"
     class="resizable"
@@ -9,11 +9,23 @@
     app
     data-test="directionsPane"
     @transitionend="onTransitionEnd"
+  >-->
+  <v-navigation-drawer
+    ref="drawer"
+    v-model="shouldShowDrawer"
+    class="resizable"
+    bottom
+    :style="{ width: isMobile ? '100%' : '410px', height: drawerHeight + 'px', top: 'auto', bottom: 0, position:'fixed' }"
+    app
+    fixed
+    :permanent="shouldShowDrawer"
+    data-test="directionsPane"
+    @transitionend="onTransitionEnd"
   >
-    <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
-    <div style="ma-2">
+    <div v-if="isMobile" class="draggable-handle" @mousedown="startDrag" @touchstart="startDrag" />
+    <div class="ma-2">
       <v-container justify="center" class="pa-0" style="margin-top: 20px; max-width: 410px">
-        <v-row class="ma-0" justify="center">
+        <v-row class="ma-0 relative route-navigation-functions" justify="center">
           <v-chip>{{ locale.routeLabel }}</v-chip>
           <v-btn icon @click="$emit('on-close')">
             <v-icon>mdi-close</v-icon>
@@ -35,7 +47,7 @@
                   icon="mdi-flag"
                   route-type="from"
                   data-test="fromSearch"
-                  @selectSearhResult="onSearchSelect"
+                  @selectSearchResult="onSearchSelect"
                   @clearClicked="onClearSearchField('from')"
                 />
               </v-list-item>
@@ -47,7 +59,7 @@
                   icon="mdi-flag-checkered"
                   route-type="to"
                   data-test="toSearch"
-                  @selectSearhResult="onSearchSelect"
+                  @selectSearchResult="onSearchSelect"
                   @clearClicked="onClearSearchField('to')"
                 />
               </v-list-item>
@@ -247,8 +259,8 @@ export default {
         properties.coords = currentSelection.data.geometry.coordinates;
       }
       this[selectedItem.routeType + 'Route'] = currentSelection.data;
-      this.$emit('setGlobalRoute', selectedItem);
 
+      this.$emit('setGlobalRoute', selectedItem);
       if (this.fromRoute && this.toRoute) {
         this.onGoButtonClick();
       }
@@ -297,7 +309,7 @@ export default {
     },
     setRoute (routeInfo) {
       const routeData = { ...routeInfo.data, ...this.getInputFieldDisplayName() };
-
+      const path = routeInfo.path && routeInfo.path !== undefined ? routeInfo.path : this.fromRoute ? 'to' : 'from'
       if (!routeData.name && routeData.room_code) {
         routeData.name = routeData.room_code;
       }
@@ -309,7 +321,7 @@ export default {
         type: 'Feature',
         geometry: {}
       };
-      const field = this.$refs[routeInfo.path + 'Route'];
+      const field = this.$refs[path + 'Route'];
       if (!field) {
         return;
       }
@@ -326,10 +338,11 @@ export default {
       field.apiResponse = [data];
       field.searchResult = [model];
       field.model = model;
-      this[routeInfo.path + 'Route'] = data;
+
+      this[path + 'Route'] = data;
       this.$emit('setGlobalRoute', {
         data,
-        routeType: routeInfo.path
+        routeType: path
       });
 
       setTimeout(() => {
@@ -392,5 +405,11 @@ export default {
   left: 10px;
   display: block;
   margin: 5px auto;
+}
+@media(max-width:767.98px) {
+  .route-navigation-functions {
+    position:relative;
+    bottom: -10px;
+  }
 }
 </style>

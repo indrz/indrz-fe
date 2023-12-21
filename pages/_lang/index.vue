@@ -63,8 +63,8 @@
       </v-navigation-drawer>
     </div>
     <v-toolbar
-      data-test="searchToolbar"
       v-show="!shouldShowPoiDrawer"
+      data-test="searchToolbar"
       :max-width="toolbarWidth"
       dense
       rounded
@@ -72,20 +72,21 @@
       class="ma-2"
     >
       <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" data-test="leftPaneToggleBtn" @click.stop="drawer = !drawer;" />
-      <v-expand-transition >
+      <v-expand-transition>
         <campus-search
-        data-test="searchInput"
           ref="searchComp"
+          data-test="searchInput"
           show-route
-          @selectSearhResult="onSearchSelect"
+          @selectSearchResult="onSearchSelect"
           @showSearch="onShowSearch"
           @open-route-drawer="onOpenRouteDrawer(true)"
         />
       </v-expand-transition>
     </v-toolbar>
     <indrz-map
-      data-test="map"
       ref="map"
+      data-test="map"
+      :route-drawer="routeDrawer"
       @selectFloor="onFloorSelect"
       @clearSearch="onClearSearch"
       @popupRouteClick="onPopupRouteClick"
@@ -172,12 +173,8 @@ export default {
       set () {
       }
     },
-    shouldShowRouteDrawer: {
-      get () {
-        return this.routeDrawer && !this.poiDrawer && !this.drawer;
-      },
-      set () {
-      }
+    shouldShowRouteDrawer () {
+      return this.routeDrawer && !this.poiDrawer && !this.drawer
     }
   },
 
@@ -205,6 +202,15 @@ export default {
     this.$root.$on('clearRoute', this.onClearRoute);
     this.$root.$on('update-opened-panels', (openedPanels) => {
       this.openedPanels = openedPanels
+    })
+    this.$bus.$on('goTo', (feature) => {
+      /*      const featureCenter = feature
+      featureCenter.type = 'Feature'
+      this.onSearchSelect(featureCenter) */
+      const data = feature.properties
+      this.onPopupRouteClick({ data: data })
+      const data2 = { id: feature.properties.id, properties: feature.properties, geometry: { coordinates: feature.coordinates } }
+      this.map.setGlobalRoute(data2)
     })
   },
   methods: {
@@ -241,7 +247,7 @@ export default {
     onPopupRouteClick (routeInfo) {
       this.onOpenRouteDrawer()
       setTimeout(() => {
-        routeInfo?.path && this.$root.$emit('setRoute', routeInfo);
+        /* routeInfo?.path && */this.$root.$emit('setRoute', routeInfo);
       }, 500);
     },
     onOpenPoiTree (poiCatId, isPoiId = false) {

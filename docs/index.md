@@ -109,4 +109,15 @@ new Vue({
 i18n.locale = 'en'
 ```
 
+## Share of URLs
+
+### Share Map
+Share map button is powerful as it allows you to share the settings of the map. For example you can share a link to a specific floor, a specific POI Category or a specific POI. Here is an example of a link to the map with a specific floor.
+
+https://campusplan.aau.at/?centerx=1588061.7168227567&centery=5879658.282165392&zlevel=18&floor=2
+
+### Share POI Categories and POIs
+You can share a link to a specific POI Category or a specific POI. Here is an example of a link to the POI Category.
+https://campusplan.aau.at/?centerx=1587973.8459852657&centery=5879604.876992969&zlevel=20&floor=3&poi-cat-id=83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99
+
 

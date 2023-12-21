@@ -285,7 +285,7 @@ export default {
         data = this.apiResponse.find(({ properties }) => properties.id === selection.id);
       }
 
-      this.$emit('selectSearhResult', {
+      this.$emit('selectSearchResult', {
         data: data,
         routeType: this.routeType
       });

@@ -1,6 +1,5 @@
 
 .draggable-handle {
-  position: absolute;
   top: 0;
   left: 0;
   right: 0;
@@ -8,9 +7,9 @@
   cursor: ns-resize;
   border-top: 1px solid #a9a9a9;
   border-bottom: 1px solid #ccc;
-  cursor: ns-resize;
-  position: relative; 
+  position: absolute;
   background-color: #8d8d8d;
+  z-index:999;
 }
 
 .draggable-handle::before {
@@ -23,7 +22,6 @@
   font-weight: bold;
   color: #fff;
 }
-
 .resizable.v-navigation-drawer--is-mobile {
   max-height: 100% !important;
 }

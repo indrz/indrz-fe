@@ -33,8 +33,6 @@ const openIndrzPopup = (
   objCenterCoords, routeToValTemp, routeFromValTemp,
   activeFloorNum, popup, properties, coordinate, feature, offsetArray) => {
   const floorName = properties.floor_name;
-  const popupContent = document.getElementById('popup-content');
-
   for (const member in globalPopupInfo) {
     globalPopupInfo[member] = null;
   }
@@ -170,19 +168,6 @@ const openIndrzPopup = (
   } else {
     roomCode = properties.room_code;
   }
-
-  popupContent.innerHTML = '<h4 style="user-select: text;">' + titlePopup + '</h4>';
-  popupContent.innerHTML += '<div><p>';
-  if (properties.html_content) {
-    popupContent.innerHTML += `
-      <div id="html_content">
-      ${properties.html_content}
-      </div>
-    `;
-  }
-  const tb = '<table id="popupTable" style="user-select: text;"></table>';
-  popupContent.innerHTML += tb;
-
   const labelRoomCode = translate.t('label_room_code');
   const labelFloorName = translate.t('label_floor_name');
   const labelBuildingName = translate.t('label_building_name');
@@ -231,9 +216,6 @@ const openIndrzPopup = (
     addPoiTableRow('X', properties.xy[0].toFixed(3), 'popup_xy_x');
     addPoiTableRow('Y', properties.xy[1].toFixed(3), 'popup_xy_Y');
   }
-
-  popupContent.innerHTML += '</p></div>';
-
   globalPopupInfo.name = titlePopup;
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorNum;
@@ -287,21 +269,9 @@ const getBuildingLetter = (p) => {
 };
 
 const addPoiTableRow = (label, value, idname) => {
-  const table = document.getElementById('popupTable');
-
   if (idname === 'popupHomepage') {
     value = '<a target="_blank" href="' + value + '">' + value + '</a>';
   }
-
-  const row = table.insertRow(-1);
-  const cell1 = row.insertCell(0);
-  const cell2 = row.insertCell(1);
-
-  cell1.innerHTML = label + ': ';
-  cell2.innerHTML = value;
-
-  cell1.setAttribute('class', 'no-wrap');
-  cell2.setAttribute('id', idname);
 };
 
 const getRoomInfo = (floor, layers, layerNamePrefix) => {
@@ -475,7 +445,6 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
   feature = features[0];
   let coordinate = mapInfo.map.getCoordinateFromPixel(pixel);
   const properties = feature ? feature.getProperties() : null;
-
   if (feature) {
     const featureType = feature.getGeometry().getType().toString();
 

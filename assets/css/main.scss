@@ -75,3 +75,9 @@ li {
 .mt-20 {
   margin-top: 20px;
 }
+
+.v-main{
+  @media(max-width:767.98px){
+    padding:0 !important;
+  }
+}
