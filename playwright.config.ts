@@ -1,10 +1,10 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-require('dotenv').config();
+require('dotenv').config()
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -30,11 +30,14 @@ export default defineConfig({
     trace: 'on-first-retry',
     testIdAttribute: 'data-test',
     // video: 'on-first-retry'
-
+    extraHTTPHeaders: {
+      Accept: 'application/json',
+      Authorization: process.env.TOKEN
+    }
   },
   timeout: 1 * 60 * 1000, // 3min test timeout
   expect: {
-    timeout: 1 * 15 * 1000 // 30sec expect assertion timeout
+    timeout: 1 * 30 * 1000 // 30sec expect assertion timeout
   },
 
   /* Configure projects for major browsers */
@@ -81,4 +84,4 @@ export default defineConfig({
     url: 'http://localhost:3000/',
     reuseExistingServer: !process.env.CI
   }
-});
+})
