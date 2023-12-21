@@ -32,7 +32,7 @@ export default defineConfig({
     // video: 'on-first-retry'
     extraHTTPHeaders: {
       Accept: 'application/json',
-      Authorization: 'Token 449dacbbc14522dc7c0888e7fdf31a3bdc677bf3'
+      Authorization: process.env.TOKEN
     }
   },
   timeout: 1 * 60 * 1000, // 3min test timeout
