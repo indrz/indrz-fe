@@ -54,6 +54,7 @@ import Terms from './Terms';
 import Help from './Help';
 import UserGeoLocation from './UserGeoLocation';
 import QRCode from './QRCode';
+
 const { env } = config;
 
 export default {
@@ -282,9 +283,9 @@ export default {
       }
       shareOverlay.show();
     },
-    loadSinglePoi (poiId) {
+    loadSinglePoi (poiId, zlevel) {
       POIHandler
-        .showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
+        .showSinglePoi(poiId, this.globalPopupInfo, zlevel, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
         .then(({ layer, feature }) => {
           this.searchLayer = layer;
           this.$emit('open-poi-drawer', {
@@ -431,9 +432,7 @@ export default {
       }
     },
     setGlobalRoute (selectedItem) {
-      if (selectedItem.routeType) {
-        this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
-      }
+      this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo (routeType = 0) {
       const routeResult = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {

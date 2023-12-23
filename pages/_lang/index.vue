@@ -57,7 +57,6 @@
           @clearRoute="onClearRoute"
           @shareClick="onShareClick"
           @poiLoad="onPoiLoad"
-          @loadSinglePoi="loadSinglePoi"
           @hideSidebar="drawer = false"
         />
       </v-navigation-drawer>
@@ -253,7 +252,6 @@ export default {
     onOpenPoiTree (poiCatId, isPoiId = false) {
       this.drawer = true;
       this.openedPanels = [1];
-
       if (isPoiId) {
         this.initialPoiId = poiCatId;
       } else {

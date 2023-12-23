@@ -29,7 +29,6 @@
             @clearRoute="onClearRoute"
             @shareClick="onShareClick"
             @poiLoad="addPoi"
-            @loadSinglePoi="loadSinglePoi"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -225,9 +224,6 @@ export default {
     },
     addPoi (data) {
       this.$emit('poiLoad', data);
-    },
-    loadSinglePoi (poiId) {
-      this.$emit('loadSinglePoi', poiId);
     },
     onNavbarClick () {
       this.$emit('hideSidebar');
