@@ -149,6 +149,16 @@ export default {
         return false;
       }
     },
+    drawer: {
+      type: Boolean,
+      default: false
+    },
+    selected: {
+      type: Object,
+      default: function () {
+        return {};
+      }
+    },
     showRoute: {
       type: Boolean,
       default: function () {
@@ -213,7 +223,27 @@ export default {
       this.shouldSearch && (this.model?.name !== text) && this.term$.next(text);
     }
   },
-
+  created () {
+    if (this.selected && this.selected.name && this.drawer) {
+      const properties = this.selected;
+      const code = properties.room_code
+      console.log('created selected')
+      const data = {
+        ...properties,
+        ...{
+          floorNum: properties.floor_num,
+          roomCode: properties.room_code,
+          building: properties.building,
+          src_icon: properties.src_icon || properties.icon,
+          code,
+          id: properties.id
+        }
+      };
+      this.search = this.getSearchTitle(data)
+      this.searchResult = [data]
+      this.model = this.selected;
+    }
+  },
   mounted () {
     this
       .term$
@@ -311,13 +341,13 @@ export default {
     },
     onLoadSearchQuery (query) {
       this.$emit('showSearch');
-      setTimeout(() => {
+      /*      setTimeout(() => {
         const searchField = this.$refs.searchField;
 
         this.search = query;
         searchField.focus();
         searchField.activateMenu();
-      }, 1000);
+      }, 1000); */
     },
     getIconUrl (iconName) {
       if (!iconName) {
@@ -332,7 +362,7 @@ export default {
     },
     getSearchTitle (data) {
       // return name_*locale if available, name otherwise
-      return data[`name_${this.$i18n.locale}`] || data.name
+      return data[`name_${this.$i18n.locale}`] || data.name || this.selected.name
     }
   }
 };

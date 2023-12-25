@@ -287,7 +287,7 @@ export default {
       this.$refs.fromRoute.clearSearch();
       this.fromRoute = null;
       this.toRoute = null;
-      this.$refs.toRoute.clearSearch('');
+      if (this.$refs.toRoute) { this.$refs.toRoute.clearSearch(''); }
       this.setRouteError(null);
       this.$root.$emit('clearRoute')
     },

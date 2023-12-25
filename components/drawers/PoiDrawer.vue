@@ -1,6 +1,6 @@
 <template>
   <div>
-    <drawer-search
+<!--    <drawer-search
       v-if="isMobile"
       :map="baseMap"
       :drawer="mainDrawer"
@@ -9,7 +9,7 @@
       id="drawer-search"
       @update:drawer="mainDrawer = $event"
       @hide-poi-drawer="onHidePoiDrawer()"
-    />
+    />-->
     <!--    <v-navigation-drawer
       ref="drawer"
       v-model="shouldShowDrawer"
@@ -61,7 +61,7 @@
                 v-if="!isMobile"
                 :map="baseMap"
                 :drawer="mainDrawer"
-                :search-title="searchTitle"
+                :selected="data"
                 class="mt-4"
                 @update:drawer="mainDrawer = $event"
                 @hide-poi-drawer="onHidePoiDrawer()"

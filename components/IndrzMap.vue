@@ -232,6 +232,8 @@ export default {
       this.$emit('open-poi-drawer', {
         feature: properties
       })
+      this.$bus.$emit('setSearch', properties)
+      this.$root.$emit('')
       !this.isSmallScreen && MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
@@ -246,6 +248,7 @@ export default {
         const elm = document.querySelector('.v-navigation-drawer--fixed');
         const drawerHeight = elm.offsetHeight;
         const pixel = this.map.getPixelFromCoordinate(coordinate);
+        console.log(`drawerHeight:${drawerHeight}`)
         pixel[1] += (drawerHeight - 70) / 2
         const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
         if (this.isMobile) {
