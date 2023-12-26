@@ -210,7 +210,6 @@ export default {
       featureCenter.type = 'Feature'
       this.onSearchSelect(featureCenter) */
       const data = feature.properties
-      console.log('goTo $bus')
       this.onPopupRouteClick({ data: data })
       const data2 = { id: feature.properties.id, properties: feature.properties, geometry: { coordinates: feature.coordinates } }
       this.map.setGlobalRoute(data2)
@@ -290,10 +289,8 @@ export default {
       this.showSearch = true;
     },
     onOpenPoiDrawer (model) {
-      console.log('openPoiDrawer')
       const { feature } = model
       if (feature && !feature.name) {
-        console.log('updating_name')
         feature.name = feature.room_code
       }
       console.log(feature)

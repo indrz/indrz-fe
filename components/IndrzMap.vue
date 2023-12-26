@@ -225,12 +225,12 @@ export default {
         ? { data: { type: 'Feature', id: properties.id, properties: properties, geometry: { coordinates: this.objCenterCoords, type: 'MultiPolygon' } } }
         : { type: 'Feature', id: properties.id, ...{ properties, geometry: { coordinates: this.coordinates, type: 'MultiPolygon' } } }
       if (!this.routeDrawer) {
-        const elm = document.querySelector('.v-navigation-drawer--open');
-        const drawerHeight = elm.offsetHeight;
-        const pixel = this.map.getPixelFromCoordinate(coordinate);
-        pixel[1] += drawerHeight / 6;
-        const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
         if (this.isMobile) {
+          const elm = document.querySelector('.v-navigation-drawer--open');
+          const drawerHeight = elm.offsetHeight;
+          const pixel = this.map.getPixelFromCoordinate(coordinate);
+          pixel[1] += drawerHeight / 6;
+          const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
           this.map.getView().animate({
             duration: 2000,
             center: mobileCoordinate

@@ -317,7 +317,6 @@ const getDirections = async ({
       break;
   }
   if (reversed) {
-    console.log('adding reversed')
     geoJsonUrl += `&reversed=${reversed}`
   }
   geoJsonUrl += `&type=${routeType}`;

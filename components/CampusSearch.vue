@@ -241,7 +241,6 @@ export default {
     if (this.selected && this.selected.name && this.drawer) {
       const properties = this.selected;
       const code = properties.room_code
-      console.log('created selected')
       const data = {
         ...properties,
         ...{
