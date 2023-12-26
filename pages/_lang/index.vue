@@ -210,6 +210,7 @@ export default {
       featureCenter.type = 'Feature'
       this.onSearchSelect(featureCenter) */
       const data = feature.properties
+      console.log('goTo $bus')
       this.onPopupRouteClick({ data: data })
       const data2 = { id: feature.properties.id, properties: feature.properties, geometry: { coordinates: feature.coordinates } }
       this.map.setGlobalRoute(data2)
@@ -289,14 +290,19 @@ export default {
       this.showSearch = true;
     },
     onOpenPoiDrawer (model) {
+      console.log('openPoiDrawer')
       const { feature } = model
-      this.poiDrawerData = { name_en: '', name: '' }
+      if (feature && !feature.name) {
+        console.log('updating_name')
+        feature.name = feature.room_code
+      }
+      console.log(feature)
+      this.poiDrawerData = feature || { name_en: '', name: '' }
       this.$nextTick(() => {
         this.poiDrawer = !!feature;
         if (this.poiDrawer) {
           this.drawer = false;
           this.routeDrawer = false;
-          this.poiDrawerData = feature;
           this.poiDrawerData.floorNum = feature.floor_num;
           const field = this.$refs.searchComp;
           this.$bus.$emit('setSearch', feature)
@@ -305,11 +311,10 @@ export default {
               field.stopSearch = true;
               field.searchResult = [feature];
               field.model = feature;
-              field.search = this.poiDrawerData.name;
+              field.search = this.poiDrawerData.room_code || this.poiDrawerData.short_name || this.poiDrawerData.name || this.poiDrawerData.building_name;
               setTimeout(() => {
                 field.stopSearch = false;
               }, 1000);
-              console.log(field)
             }
           } else {
             this.updateKey++;

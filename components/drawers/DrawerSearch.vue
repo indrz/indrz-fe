@@ -22,7 +22,7 @@
           v-show="!isSmallScreen || shouldShow"
           ref="searchComp"
           :key="`search-comp-${updateKey}`"
-          :selected="selected"
+          :selected="search"
           :drawer="true"
           :should-search="shouldSearch"
           @selectSearchResult="onSearchSelect"
@@ -36,6 +36,7 @@
 
 <script>
 import CampusSearch from '@/components/CampusSearch'
+import MapHandler from '~/util/mapHandler';
 
 export default {
   name: 'DrawerSearch',
@@ -61,8 +62,17 @@ export default {
     return {
       shouldShow: false,
       shouldSearch: true,
+      search: this.selected,
       updateKey: 1
     };
+  },
+  mounted () {
+    const temp = this.selected
+    if (!temp.name) {
+      temp.name = this.selected.room_code;
+      this.search = temp
+      this.updateKey++;
+    }
   },
   computed: {
     isSmallScreen () {
@@ -98,7 +108,8 @@ export default {
           id: properties.id
         }
       };
-      this.searchField.search = data.name;
+      this.searchField.search = MapHandler.getTitle(data, this.$i18n.locale)
+      this.updateKey++;
       setTimeout(() => {
         this.shouldSearch = true;
       }, 1000)

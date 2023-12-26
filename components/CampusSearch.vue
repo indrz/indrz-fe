@@ -4,6 +4,7 @@
       <div>
         <v-autocomplete
           ref="searchField"
+          :key="`search-route-bar-${updateKey}`"
           v-model="model"
           :items="searchResult"
           :loading="isLoading"
@@ -68,6 +69,7 @@
     <template v-else>
       <v-autocomplete
         ref="searchField"
+        :key="`search-bar-${updateKey}`"
         v-model="model"
         :items="searchResult"
         :loading="isLoading"
@@ -140,6 +142,7 @@
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import api from '../util/api';
+import MapHandler from '~/util/mapHandler';
 
 export default {
   props: {
@@ -192,6 +195,7 @@ export default {
   },
   data () {
     return {
+      updateKey: 1,
       searchLabel: this.$t('search_our_campus'),
       minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
       noResultText: this.$t('no_result_found'),
@@ -221,6 +225,16 @@ export default {
         this.isPristine = true;
       }
       this.shouldSearch && (this.model?.name !== text) && this.term$.next(text);
+      if (text && typeof text !== 'string' && this.selected) {
+        const temp = text
+        if (!text.name) {
+          temp.name = text.room_code
+        }
+        this.searchResult = [temp]
+        this.model = temp
+        this.search = temp.room_code
+        this.updateKey++;
+      }
     }
   },
   created () {
@@ -239,9 +253,9 @@ export default {
           id: properties.id
         }
       };
-      this.search = this.getSearchTitle(data)
+      this.search = MapHandler.getTitle(data, this.$i18n.locale)
       this.searchResult = [data]
-      this.model = this.selected;
+      this.model = data
     }
   },
   mounted () {
@@ -271,7 +285,6 @@ export default {
 
     this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
-
   methods: {
     apiSearch (response) {
       if (!response || !response.data) {

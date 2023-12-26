@@ -220,6 +220,28 @@ export default {
       this.$emit('open-poi-drawer', {
         feature: properties
       })
+      const coordinate = this.objCenterCoords;
+      const featureCenter = !this.routeDrawer
+        ? { data: { type: 'Feature', id: properties.id, properties: properties, geometry: { coordinates: this.objCenterCoords, type: 'MultiPolygon' } } }
+        : { type: 'Feature', id: properties.id, ...{ properties, geometry: { coordinates: this.coordinates, type: 'MultiPolygon' } } }
+      if (!this.routeDrawer) {
+        const elm = document.querySelector('.v-navigation-drawer--open');
+        const drawerHeight = elm.offsetHeight;
+        const pixel = this.map.getPixelFromCoordinate(coordinate);
+        pixel[1] += drawerHeight / 6;
+        const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
+        if (this.isMobile) {
+          this.map.getView().animate({
+            duration: 2000,
+            center: mobileCoordinate
+          });
+        } else {
+          this.map.getView().animate({
+            center: coordinate,
+            duration: 2000
+          });
+        }
+      } else { this.$nextTick(() => { this.$bus.$emit('goTo', featureCenter) }) }
     },
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);
@@ -248,7 +270,6 @@ export default {
         const elm = document.querySelector('.v-navigation-drawer--fixed');
         const drawerHeight = elm.offsetHeight;
         const pixel = this.map.getPixelFromCoordinate(coordinate);
-        console.log(`drawerHeight:${drawerHeight}`)
         pixel[1] += (drawerHeight - 70) / 2
         const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
         if (this.isMobile) {
