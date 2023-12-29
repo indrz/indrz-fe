@@ -222,10 +222,14 @@ export default {
     },
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);
-      const selectedItem = await MapUtil.loadMapWithParams(this, query);
-      this.$emit('open-poi-drawer', {
-        feature: selectedItem && selectedItem.properties ? selectedItem.properties : selectedItem
-      })
+      if (searchString || location.search) {
+        const selectedItem = await MapUtil.loadMapWithParams(this, query);
+        if (selectedItem) {
+          this.$emit('open-poi-drawer', {
+            feature: selectedItem.properties ? selectedItem.properties : selectedItem
+          })
+        }
+      }
     },
     openIndrzPopup (properties, coordinate, feature) {
       this.$emit('open-poi-drawer', {
@@ -282,9 +286,9 @@ export default {
       }
       shareOverlay.show();
     },
-    loadSinglePoi (poiId) {
+    loadSinglePoi (poiId, zlevel) {
       POIHandler
-        .showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
+        .showSinglePoi(poiId, this.globalPopupInfo, zlevel, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
         .then(({ layer, feature }) => {
           this.searchLayer = layer;
           this.$emit('open-poi-drawer', {

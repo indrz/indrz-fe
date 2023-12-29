@@ -725,6 +725,7 @@ const loadMapWithParams = async (mapInfo, query) => {
     mapInfo.$emit('openPoiTree', query['poi-cat-id']);
   }
   if (query['poi-id']) {
+    mapInfo.loadSinglePoi(query['poi-id'], zoomLevel)
     mapInfo.$emit('openPoiTree', query['poi-id'], true);
   }
   if (query['from-xy'] && query['to-xy']) {
