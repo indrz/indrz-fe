@@ -54,6 +54,7 @@ import Terms from './Terms';
 import Help from './Help';
 import UserGeoLocation from './UserGeoLocation';
 import QRCode from './QRCode';
+
 const { env } = config;
 
 export default {
@@ -219,22 +220,42 @@ export default {
       this.$emit('open-poi-drawer', {
         feature: properties
       })
+      const coordinate = this.objCenterCoords;
+      const featureCenter = !this.routeDrawer
+        ? { data: { type: 'Feature', id: properties.id, properties: properties, geometry: { coordinates: this.objCenterCoords, type: 'MultiPolygon' } } }
+        : { type: 'Feature', id: properties.id, ...{ properties, geometry: { coordinates: this.coordinates, type: 'MultiPolygon' } } }
+      if (!this.routeDrawer) {
+        if (this.isMobile) {
+          const elm = document.querySelector('.v-navigation-drawer--open');
+          const drawerHeight = elm.offsetHeight;
+          const pixel = this.map.getPixelFromCoordinate(coordinate);
+          pixel[1] += drawerHeight / 6;
+          const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
+          this.map.getView().animate({
+            duration: 2000,
+            center: mobileCoordinate
+          });
+        } else {
+          this.map.getView().animate({
+            center: coordinate,
+            duration: 2000
+          });
+        }
+      } else { this.$nextTick(() => { this.$bus.$emit('goTo', featureCenter) }) }
     },
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);
-      if (searchString || location.search) {
-        const selectedItem = await MapUtil.loadMapWithParams(this, query);
-        if (selectedItem) {
-          this.$emit('open-poi-drawer', {
-            feature: selectedItem.properties ? selectedItem.properties : selectedItem
-          })
-        }
-      }
+      const selectedItem = await MapUtil.loadMapWithParams(this, query);
+      this.$emit('open-poi-drawer', {
+        feature: selectedItem && selectedItem.properties ? selectedItem.properties : selectedItem
+      })
     },
     openIndrzPopup (properties, coordinate, feature) {
       this.$emit('open-poi-drawer', {
         feature: properties
       })
+      this.$bus.$emit('setSearch', properties)
+      this.$root.$emit('')
       !this.isSmallScreen && MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
         this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
@@ -435,9 +456,7 @@ export default {
       }
     },
     setGlobalRoute (selectedItem) {
-      if (selectedItem.routeType) {
-        this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
-      }
+      this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
     async routeGo (routeType = 0) {
       const routeResult = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {

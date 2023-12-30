@@ -8,6 +8,7 @@
   >
     <template v-if="shouldShowPoiDrawer">
       <poi-drawer
+        :key="`poi-drawer-${updateKey}`"
         :show="shouldShowPoiDrawer"
         :data="poiDrawerData"
         :base-map="currentMap"
@@ -38,12 +39,12 @@
         v-model="drawer"
         class="resizable"
         bottom
-        :style="isMobile ? { width: '275px', height: drawerHeight + 'px' } : {width: '275px'}"
+        :style="isSmallScreen ? { width: '275px', height: drawerHeight + 'px' } : {width: '275px'}"
         fixed
         app
         @transitionend="onTransitionEnd"
       >
-        <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
+        <div v-if="isSmallScreen" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
         <sidebar
           ref="sideBar"
           :menu-items="items"
@@ -62,7 +63,7 @@
       </v-navigation-drawer>
     </div>
     <v-toolbar
-      v-show="!shouldShowPoiDrawer"
+      v-if="!shouldShowPoiDrawer || isSmallScreen"
       data-test="searchToolbar"
       :max-width="toolbarWidth"
       dense
@@ -73,6 +74,7 @@
       <v-app-bar-nav-icon v-if="!isSmallScreen || !showSearch" data-test="leftPaneToggleBtn" @click.stop="drawer = !drawer;" />
       <v-expand-transition>
         <campus-search
+          id="searchComp"
           ref="searchComp"
           data-test="searchInput"
           show-route
@@ -125,6 +127,7 @@ export default {
   mixins: [BaseDrawer],
   data () {
     return {
+      updateKey: 1,
       clipped: false,
       drawer: false,
       poiDrawer: false,
@@ -241,7 +244,7 @@ export default {
       this.map.routeGo(routeType);
     },
     onClearSearch () {
-      this.$refs.searchComp.clearSearch();
+      if (this.$refs.searchComp) { this.$refs.searchComp.clearSearch(); }
     },
     onPopupRouteClick (routeInfo) {
       this.onOpenRouteDrawer()
@@ -285,14 +288,34 @@ export default {
     onShowSearch () {
       this.showSearch = true;
     },
-    onOpenPoiDrawer ({ feature }) {
-      this.poiDrawerData = { name_en: '', name: '' }
+    onOpenPoiDrawer (model) {
+      const { feature } = model
+      if (feature && !feature.name) {
+        feature.name = feature.room_code
+      }
+      console.log(feature)
+      this.poiDrawerData = feature || { name_en: '', name: '' }
       this.$nextTick(() => {
         this.poiDrawer = !!feature;
         if (this.poiDrawer) {
           this.drawer = false;
           this.routeDrawer = false;
-          this.poiDrawerData = feature;
+          this.poiDrawerData.floorNum = feature.floor_num;
+          const field = this.$refs.searchComp;
+          this.$bus.$emit('setSearch', feature)
+          if (this.isMobile) {
+            if (field) {
+              field.stopSearch = true;
+              field.searchResult = [feature];
+              field.model = feature;
+              field.search = this.poiDrawerData.room_code || this.poiDrawerData.short_name || this.poiDrawerData.name || this.poiDrawerData.building_name;
+              setTimeout(() => {
+                field.stopSearch = false;
+              }, 1000);
+            }
+          } else {
+            this.updateKey++;
+          }
         }
       })
     },

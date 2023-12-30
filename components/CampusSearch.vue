@@ -4,6 +4,7 @@
       <div>
         <v-autocomplete
           ref="searchField"
+          :key="`search-route-bar-${updateKey}`"
           v-model="model"
           :items="searchResult"
           :loading="isLoading"
@@ -68,6 +69,7 @@
     <template v-else>
       <v-autocomplete
         ref="searchField"
+        :key="`search-bar-${updateKey}`"
         v-model="model"
         :items="searchResult"
         :loading="isLoading"
@@ -140,6 +142,7 @@
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import api from '../util/api';
+import MapHandler from '~/util/mapHandler';
 
 export default {
   props: {
@@ -147,6 +150,16 @@ export default {
       type: Boolean,
       default: function () {
         return false;
+      }
+    },
+    drawer: {
+      type: Boolean,
+      default: false
+    },
+    selected: {
+      type: Object,
+      default: function () {
+        return {};
       }
     },
     showRoute: {
@@ -182,6 +195,7 @@ export default {
   },
   data () {
     return {
+      updateKey: 1,
       searchLabel: this.$t('search_our_campus'),
       minSearchCharacterLengthMessage: this.$t('min_search_character_length_message'),
       noResultText: this.$t('no_result_found'),
@@ -211,9 +225,38 @@ export default {
         this.isPristine = true;
       }
       this.shouldSearch && (this.model?.name !== text) && this.term$.next(text);
+      if (text && typeof text !== 'string' && this.selected) {
+        const temp = text
+        if (!text.name) {
+          temp.name = text.room_code
+        }
+        this.searchResult = [temp]
+        this.model = temp
+        this.search = temp.room_code
+        this.updateKey++;
+      }
     }
   },
-
+  created () {
+    if (this.selected && this.selected.name && this.drawer) {
+      const properties = this.selected;
+      const code = properties.room_code
+      const data = {
+        ...properties,
+        ...{
+          floorNum: properties.floor_num,
+          roomCode: properties.room_code,
+          building: properties.building,
+          src_icon: properties.src_icon || properties.icon,
+          code,
+          id: properties.id
+        }
+      };
+      this.search = MapHandler.getTitle(data, this.$i18n.locale)
+      this.searchResult = [data]
+      this.model = data
+    }
+  },
   mounted () {
     this
       .term$
@@ -241,7 +284,6 @@ export default {
 
     this.$root.$on('load-search-query', this.onLoadSearchQuery);
   },
-
   methods: {
     apiSearch (response) {
       if (!response || !response.data) {
@@ -311,13 +353,13 @@ export default {
     },
     onLoadSearchQuery (query) {
       this.$emit('showSearch');
-      setTimeout(() => {
+      /*      setTimeout(() => {
         const searchField = this.$refs.searchField;
 
         this.search = query;
         searchField.focus();
         searchField.activateMenu();
-      }, 1000);
+      }, 1000); */
     },
     getIconUrl (iconName) {
       if (!iconName) {
@@ -332,7 +374,7 @@ export default {
     },
     getSearchTitle (data) {
       // return name_*locale if available, name otherwise
-      return data[`name_${this.$i18n.locale}`] || data.name
+      return data[`name_${this.$i18n.locale}`] || data.name || this.selected.name
     }
   }
 };

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <drawer-search
+    <!--    <drawer-search
       v-if="isMobile"
       :map="baseMap"
       :drawer="mainDrawer"
@@ -9,7 +9,7 @@
       id="drawer-search"
       @update:drawer="mainDrawer = $event"
       @hide-poi-drawer="onHidePoiDrawer()"
-    />
+    />-->
     <!--    <v-navigation-drawer
       ref="drawer"
       v-model="shouldShowDrawer"
@@ -59,9 +59,10 @@
               </template>
               <drawer-search
                 v-if="!isMobile"
+                :key="`drawer-search-${updateKey}`"
                 :map="baseMap"
                 :drawer="mainDrawer"
-                :search-title="searchTitle"
+                :selected="data"
                 class="mt-4"
                 @update:drawer="mainDrawer = $event"
                 @hide-poi-drawer="onHidePoiDrawer()"
@@ -310,6 +311,7 @@ export default {
   mixins: [BaseDrawer],
   data () {
     return {
+      updateKey: 1,
       poiImages: false,
       showGallery: false,
       galleryImageIndex: 0,
@@ -402,9 +404,13 @@ export default {
     }
   },
   watch: {
-    data () {
-      this.poiImages = false;
-      this.activeTabIndex = 1;
+    data: {
+      deep: true,
+      handler (val) {
+        this.poiImages = false;
+        this.activeTabIndex = 1;
+        this.updateKey++;
+      }
     }
   },
   methods: {

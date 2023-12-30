@@ -27,12 +27,12 @@
       <v-container justify="center" class="pa-0" style="margin-top: 20px; max-width: 410px">
         <v-row class="ma-0 relative route-navigation-functions" justify="center">
           <v-chip>{{ locale.routeLabel }}</v-chip>
-          <v-btn icon @click="$emit('on-close')">
+          <v-btn icon @click="clearDirections">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-row>
         <v-row>
-          <v-col :cols="8" align-self="center">
+          <v-col :cols="12" align-self="center">
             <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
           </v-col>
         </v-row>
@@ -242,6 +242,13 @@ export default {
   },
 
   methods: {
+    clearDirections () {
+      this.$root.$emit('clearSearch')
+      this.$root.$emit('closeInfoPopup')
+      this.$emit('hide-poi-drawer')
+      this.$root.$emit('clearRoute')
+      this.$emit('on-close')
+    },
     onSearchSelect (selectedItem) {
       if (!selectedItem || !selectedItem.data) {
         return;
@@ -280,7 +287,7 @@ export default {
       this.$refs.fromRoute.clearSearch();
       this.fromRoute = null;
       this.toRoute = null;
-      this.$refs.toRoute.clearSearch('');
+      if (this.$refs.toRoute) { this.$refs.toRoute.clearSearch(''); }
       this.setRouteError(null);
       this.$root.$emit('clearRoute')
     },

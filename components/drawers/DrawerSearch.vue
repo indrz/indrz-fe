@@ -21,6 +21,9 @@
         <campus-search
           v-show="!isSmallScreen || shouldShow"
           ref="searchComp"
+          :key="`search-comp-${updateKey}`"
+          :selected="search"
+          :drawer="true"
           :should-search="shouldSearch"
           @selectSearchResult="onSearchSelect"
           @showSearch="shouldShow = true"
@@ -33,6 +36,7 @@
 
 <script>
 import CampusSearch from '@/components/CampusSearch'
+import MapHandler from '~/util/mapHandler';
 
 export default {
   name: 'DrawerSearch',
@@ -50,18 +54,25 @@ export default {
       type: Object,
       required: true
     },
-    searchTitle: {
-      type: String,
-      default () {
-        return ''
-      }
+    selected: {
+      type: Object
     }
   },
   data () {
     return {
       shouldShow: false,
-      shouldSearch: true
+      shouldSearch: true,
+      search: this.selected,
+      updateKey: 1
     };
+  },
+  mounted () {
+    const temp = this.selected
+    if (!temp.name) {
+      temp.name = this.selected.room_code;
+      this.search = temp
+      this.updateKey++;
+    }
   },
   computed: {
     isSmallScreen () {
@@ -83,9 +94,22 @@ export default {
     }
   },
   watch: {
-    searchTitle (title) {
+    selected (properties) {
       this.shouldSearch = false;
-      this.searchField.search = title;
+      const code = properties.room_code;
+      const data = {
+        ...properties,
+        ...{
+          floorNum: properties.floor_num,
+          roomCode: properties.room_code,
+          building: properties.building,
+          src_icon: properties.src_icon || properties.icon,
+          code,
+          id: properties.id
+        }
+      };
+      this.searchField.search = MapHandler.getTitle(data, this.$i18n.locale)
+      this.updateKey++;
       setTimeout(() => {
         this.shouldSearch = true;
       }, 1000)
