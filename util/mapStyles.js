@@ -4,7 +4,7 @@ import Icon from 'ol/style/Icon';
 
 const routeMarkerCStyle = new Style({
   image: new Icon({
-    src: '/media/poi_icons/route_marker_C.png',
+    src: '/images/icons/routing/flag.png',
     anchor: [0.5, 1]
   }),
   zIndex: 6
@@ -12,37 +12,61 @@ const routeMarkerCStyle = new Style({
 
 const faCircleSolidStyle = new Style({
   image: new Icon({
-    src: '/media/poi_icons/flag.png',
-    anchor: [0.5, 1]
+    src: '/images/icons/routing/flag-blue.png',
+    anchor: [0.5, 1],
+    scale: 0.7
   }),
   zIndex: 6
 });
 
 const faFlagCheckeredStyle = new Style({
   image: new Icon({
-    src: '/media/poi_icons/flag-checkered.png',
-    anchor: [0.5, 1]
+    src: '/images/icons/routing/flag-checkered-blue.png',
+    anchor: [0.5, 1],
+    scale: 0.7
   }),
   zIndex: 6
 });
 
-const routeActiveStyle = new Style({
+const routeActiveStyleFront = new Style({
   stroke: new Stroke({
-    color: '#ba4682',
-    width: 4
+    color: '#158afc',
+    width: 8
   }),
   zIndex: 6
 });
 
-const routeInactiveStyle = new Style({
+const routeActiveStyleBackground = new Style({
   stroke: new Stroke({
-    color: '#ba4682',
-    width: 2,
-    lineDash: [0.1, 5],
+    color: '#ffffff',
+    width: 9,
     opacity: 0.5
   }),
   zIndex: 6
 });
+
+const routeActiveStyle = [routeActiveStyleBackground, routeActiveStyleFront];
+
+const routeInactiveStyleBackground = new Style({
+  stroke: new Stroke({
+    color: '#ecf7ff',
+    width: 8,
+    opacity: 0.4
+  }),
+  zIndex: 6
+});
+
+const routeInactiveStyleForeground = new Style({
+  stroke: new Stroke({
+    color: '#1f9ffc',
+    width: 4,
+    lineDash: [1, 10],
+    opacity: 0.2
+  }),
+  zIndex: 6
+});
+
+const routeInactiveStyle = [routeInactiveStyleBackground, routeInactiveStyleForeground];
 
 const createPoiStyle = (poiIconName, active) => {
   const icon = `${poiIconName}`;

@@ -1,13 +1,20 @@
 import colors from 'vuetify/es5/util/colors';
+const fs = require('fs')
+const packageJson = fs.readFileSync('./package.json')
+const appVersion = JSON.parse(packageJson).version || '1.0.0';
 
 export default {
-  mode: 'spa',
+  ssr: false,
   /*
   ** Headers of the page
   */
+  env: {
+    BASE_API_URL: process.env.BASE_API_URL,
+    TOKEN: process.env.TOKEN
+  },
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    titleTemplate: process.env.TITLE || '',
+    title: process.env.TITLE || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -32,6 +39,7 @@ export default {
     '@/assets/css/main.scss',
     '@/assets/css/ol.scss',
     '@/assets/css/popup.scss',
+    '@/assets/css/draggable_drawer.scss',
     '@/assets/custom_css/floor_changer.scss'
   ],
   /*
@@ -70,20 +78,55 @@ export default {
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
-  publicRuntimeConfig: {
+  env: {
+    APP_VERSION: appVersion,
     BASE_URL: process.env.BASE_URL,
     BASE_API_URL: process.env.BASE_API_URL,
     BASE_WMS_URL: process.env.BASE_WMS_URL,
     SEARCH_URL: process.env.SEARCH_URL,
+    SHARE_SPACE_URL: process.env.SHARE_SPACE_URL,
     HOME_PAGE_URL: process.env.HOME_PAGE_URL,
     DEFAULT_CENTER_XY: process.env.DEFAULT_CENTER_XY,
+    MOBILE_START_CENTER_XY: process.env.MOBILE_START_CENTER_XY,
     LAYER_NAME_PREFIX: process.env.LAYER_NAME_PREFIX,
     GEO_SERVER_LAYER_PREFIX: process.env.GEO_SERVER_LAYER_PREFIX,
     DEFAULT_START_FLOOR: process.env.DEFAULT_START_FLOOR,
     DEFAULT_START_ZOOM: process.env.DEFAULT_START_ZOOM,
+    MOBILE_START_ZOOM: process.env.MOBILE_START_ZOOM,
+    TITLE: process.env.TITLE,
+    PDF_TITLE: process.env.PDF_TITLE,
     TOKEN: process.env.TOKEN,
     LOGO_FILE: process.env.LOGO_FILE,
-    LOGO_ENABLED: process.env.LOGO_ENABLED
+    LOGO_ENABLED: process.env.LOGO_ENABLED,
+    NEAREST_METRO_POIID: process.env.NEAREST_METRO_POIID,
+    NEAREST_DEFI_POIID: process.env.NEAREST_DEFI_POIID,
+    NEAREST_ENTRANCE_POIID: process.env.NEAREST_ENTRANCE_POIID,
+    DEFAULT_POI_IMAGE: process.env.DEFAULT_POI_IMAGE
+  },
+  publicRuntimeConfig: {
+    APP_VERSION: appVersion,
+    BASE_URL: process.env.BASE_URL,
+    BASE_API_URL: process.env.BASE_API_URL,
+    BASE_WMS_URL: process.env.BASE_WMS_URL,
+    SEARCH_URL: process.env.SEARCH_URL,
+    SHARE_SPACE_URL: process.env.SHARE_SPACE_URL,
+    HOME_PAGE_URL: process.env.HOME_PAGE_URL,
+    DEFAULT_CENTER_XY: process.env.DEFAULT_CENTER_XY,
+    MOBILE_START_CENTER_XY: process.env.MOBILE_START_CENTER_XY,
+    LAYER_NAME_PREFIX: process.env.LAYER_NAME_PREFIX,
+    GEO_SERVER_LAYER_PREFIX: process.env.GEO_SERVER_LAYER_PREFIX,
+    DEFAULT_START_FLOOR: process.env.DEFAULT_START_FLOOR,
+    DEFAULT_START_ZOOM: process.env.DEFAULT_START_ZOOM,
+    MOBILE_START_ZOOM: process.env.MOBILE_START_ZOOM,
+    TITLE: process.env.TITLE,
+    PDF_TITLE: process.env.PDF_TITLE,
+    TOKEN: process.env.TOKEN,
+    LOGO_FILE: process.env.LOGO_FILE,
+    LOGO_ENABLED: process.env.LOGO_ENABLED,
+    NEAREST_METRO_POIID: process.env.NEAREST_METRO_POIID,
+    NEAREST_DEFI_POIID: process.env.NEAREST_DEFI_POIID,
+    NEAREST_ENTRANCE_POIID: process.env.NEAREST_ENTRANCE_POIID,
+    DEFAULT_POI_IMAGE: process.env.DEFAULT_POI_IMAGE
   },
   privateRuntimeConfig: {
     TOKEN: process.env.TOKEN

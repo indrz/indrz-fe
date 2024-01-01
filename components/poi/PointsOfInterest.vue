@@ -8,8 +8,8 @@
       />
     </div>
     <v-treeview
-      ref="poi"
       v-if="!loading"
+      ref="poi"
       v-model="tree"
       :multiple-active="multi"
       :items="poiData"
@@ -21,16 +21,15 @@
       dense
       style="overflow: auto; width: auto;"
     >
-      <template slot="label" slot-scope="{ item }">
-        <span @click="onTreeClick(item)" style="white-space: normal">
+      <template v-slot:label="{ item }">
+        <span style="white-space: normal" @click="onTreeClick(item)">
           {{ item['name_' + $i18n.locale] }}
         </span>
       </template>
       <template v-slot:prepend="{ item, active }">
         <div @click="onTreeClick(item)">
           <img v-if="active" :src="item.icon" style="height:25px;">
-          <!-- <img v-if="active" src="/media/poi_icons/other_pin.png" style="height:25px;"> -->
-          <img v-else src="/media/poi_icons/other_pin_grey.png" style="height:25px;">
+          <img v-else :src="setInactiveName(item.icon)" style="height:25px;">
         </div>
       </template>
     </v-treeview>
@@ -45,9 +44,9 @@ export default {
   name: 'PointsOfInterest',
   props: {
     initialPoiCatId: {
-      type: Number,
+      type: Array,
       default: function () {
-        return null;
+        return [];
       }
     },
     initialPoiId: {
@@ -140,11 +139,12 @@ export default {
     ...mapActions({
       loadPOI: 'poi/LOAD_POI'
     }),
+
     async loadDataToPoiTree () {
       await this.loadPOI();
       if (this.initialPoiCatId) {
         setTimeout(() => {
-          this.loadInitialPOICategory();
+          this.initialPoiCatId.forEach(catId => this.loadInitialPOICategory(catId));
         }, 1000)
       } else if (this.initialPoiId) {
         setTimeout(() => {
@@ -153,8 +153,15 @@ export default {
       }
       this.loading = false;
     },
-    loadInitialPOICategory () {
-      const foundData = this.findNode(Number(this.initialPoiCatId));
+    setInactiveName (name) {
+      const splitName = name.split('/');
+      const oldName = splitName.pop();
+      const newName = 'Inactive_' + oldName;
+      splitName.push(newName)
+      return splitName.join('/')
+    },
+    loadInitialPOICategory (catId) {
+      const foundData = this.findNode(catId);
 
       if (!foundData) {
         this.loading = false;
@@ -169,7 +176,7 @@ export default {
         });
       }
 
-      treeComp.updateOpen(this.initialPoiCatId, true);
+      treeComp.updateOpen(catId, true);
 
       if (foundData?.data?.children) {
         foundData.data.children.forEach((child) => {
@@ -178,16 +185,18 @@ export default {
         });
       }
 
-      treeComp.updateActive(this.initialPoiCatId, true);
-      treeComp.updateSelected(this.initialPoiCatId, true);
+      treeComp.updateActive(catId, true);
+      treeComp.updateSelected(catId, true);
       this.onTreeClick(foundData, true)
     },
+
     onTreeClick (node, forceSelect = false) {
       const treeComp = this.$refs.poi;
       const handler = node.children ? this.onTreeParentNodeClick : this.onLeafNodeClick;
 
       handler(node, treeComp, forceSelect);
     },
+
     onLeafNodeClick (node, treeComp, forceSelect = false) {
       node = node?.data ? node.data : node;
       const shouldAdd = (!forceSelect ? !treeComp.selectedCache.has(node.id) : forceSelect);
@@ -204,6 +213,7 @@ export default {
       this.$emit('selectPoiCategory', shouldAdd ? this.currentPoi[0] : null);
       treeComp.emitSelected();
     },
+
     onTreeParentNodeClick (node, treeComp) {
       if (!treeComp.nodes[node.id].parent) {
         this.expandCollapseNode(node.id, treeComp);
@@ -221,14 +231,17 @@ export default {
 
       treeComp.emitActive();
     },
+
     expandCollapseNode (nodeId, treeComp) {
       const isOpened = treeComp.nodes[nodeId].isOpen;
       treeComp.updateOpen(nodeId, !isOpened);
       treeComp.emitOpen();
     },
+
     onLocationClick (location) {
       this.$emit('locationClick', location.centroid);
     },
+
     removeAllSelections (treeComp) {
       treeComp.selectedCache.forEach((nodeId) => {
         treeComp.updateSelected(nodeId, false);

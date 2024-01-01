@@ -23,7 +23,7 @@ export const actions = {
     const response = await api.request({
       endPoint: 'buildings/'
     });
-    commit('SET_BUILDINGS', response?.data?.results || []);
+    commit('SET_BUILDINGS', response?.data?.results?.features || []);
   },
   async LOAD_FLOORS ({ state, commit, getters }, buildingId) {
     if (!buildingId) {
@@ -50,10 +50,14 @@ export const getters = {
   },
   getBuildingName: state => (id) => {
     let name = '';
-    const building = state.buildings.find(building => building.id === id);
+    try {
+      const building = state.buildings.find(building => building.id === id);
 
-    if (building) {
-      name = building.building_name;
+      if (building) {
+        name = building.properties.building_name;
+      }
+    } catch (err) {
+      console.log(err);
     }
     return name || id;
   },

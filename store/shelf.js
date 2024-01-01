@@ -94,7 +94,7 @@ export const actions = {
 
   async DELETE_SHELF ({ state, commit, dispatch }, data) {
     const response = await api.postRequest({
-      endPoint: `${bookShelfEndpoint}${data.id}`,
+      endPoint: `${bookShelfEndpoint}${data.id}/`,
       method: 'DELETE',
       data: {}
     });

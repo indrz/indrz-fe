@@ -15,7 +15,7 @@
         dense
         class="elevation-1"
         loading-text="Loading... Please wait"
-        hide-default-footer
+        items-per-page="-1"
       >
         <template v-slot:top>
           <v-toolbar flat>
@@ -33,10 +33,7 @@
             </v-btn>
           </v-toolbar>
         </template>
-        <template v-slot:item.building_floor="{item}">
-          {{ getFloorName(item.building_floor) }}
-        </template>
-        <template v-slot:item.actions="{ item }">
+        <template v-slot:[`item.actions`]="{ item }">
           <v-icon
             @click="editShelfData(item)"
             small
@@ -70,7 +67,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import AddEditShelfData from '@/components/admin/shelves/AddEditShelfData';
 
@@ -80,7 +77,7 @@ export default {
   props: {
     height: {
       type: Number,
-      default: 285
+      default: 600
     }
   },
   data () {
@@ -90,6 +87,7 @@ export default {
       shelfDataAddEditDialog: false,
       showConfirmDeleteShelfData: false,
       selected: [],
+      pagination: {},
       headers: [
         {
           text: 'External Id',
@@ -97,13 +95,6 @@ export default {
           sortable: false,
           value: 'external_id',
           width: 90
-        },
-        {
-          text: 'Floor',
-          align: 'right',
-          filterable: false,
-          sortable: false,
-          value: 'building_floor'
         },
         {
           text: 'System From',
@@ -145,7 +136,6 @@ export default {
       defaultItem: {
         bookshelf_id: null,
         external_id: null,
-        floor: null,
         id: null,
         measure_from: null,
         measure_to: null,
@@ -174,16 +164,8 @@ export default {
         }
         return 'No book shelf selected';
       },
-      floors: state => state.floor.floors,
-      buildings: state => state.building.buildings,
       selectedShelf: state => state.shelf.selectedShelf,
       selectedShelfData: state => state.shelf.selectedShelfData
-    }),
-    ...mapGetters({
-      getFloorName: 'building/getFloorName',
-      firstBuilding: 'building/firstBuilding',
-      firstFloor: 'building/firstFloor'
-
     }),
     shelfDataFormTitle () {
       return this.shelfDataEditedIndex === -1 ? 'New Shelf Data' : 'Edit Shelf Data';
@@ -203,13 +185,13 @@ export default {
     onShelfDataClick (data) {
       this.setSelectedShelfData(data);
     },
-
+    onShelfClick (shelf) {
+      this.setSelectedShelf(shelf);
+    },
     addShelfData () {
-      const { building, building_floor: buildingFloor, id: bookshelf } = this.selectedShelf;
+      const { id: bookshelf } = this.selectedShelf;
 
       this.shelfDataEditedItem = Object.assign({
-        building,
-        building_floor: buildingFloor,
         bookshelf
       });
 
@@ -233,10 +215,6 @@ export default {
 
     shelfDataAddEditDialogClose () {
       this.shelfDataAddEditDialog = false;
-      /* setTimeout(() => {
-        this.shelfDataEditedItem = Object.assign({}, this.defaultItem);
-        this.shelfDataEditedIndex = -1;
-      }, 300); */
     }
   }
 };

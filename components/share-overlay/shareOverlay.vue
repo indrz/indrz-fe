@@ -126,7 +126,7 @@ export default {
           url: catParsedUrl.url,
           query: {
             ...catParsedUrl.query,
-            'poi-cat-id': node.roots[0]
+            'poi-cat-id': node.data.id
           }
         });
       } else {
@@ -453,62 +453,6 @@ export default {
   #sharePoiCatPopup {
     background-color: #ff4344;
   }
-
-  .ol-popup {
-    position: absolute;
-    background-color: white;
-    -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
-    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
-    padding: 15px;
-    border-radius: 0px;
-    border: 1px solid #cccccc;
-    bottom: 12px;
-    left: -50px;
-    min-width: 220px;
-    z-index: 1;
-  }
-
-  .ol-popup:after, .ol-popup:before {
-    top: 100%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .ol-popup:after {
-    border-top-color: white;
-    border-width: 10px;
-    left: 48px;
-    margin-left: -10px;
-  }
-
-  .ol-popup:before {
-    border-top-color: #cccccc;
-    border-width: 11px;
-    left: 48px;
-    margin-left: -11px;
-  }
-
-  .ol-popup-closer {
-    text-decoration: none;
-    position: absolute;
-    top: 2px;
-    right: 8px;
-  }
-
-  .ol-popup-closer:after {
-    content: "X";
-  }
-
-  .ol-zoom {
-    top: .2em;
-    left: .5em;
-    border-radius: 0;
-  }
-
   .ol-zoom .ol-zoom-in {
     border-radius: 0;
   }

@@ -9,6 +9,9 @@
       :options.sync="pagination"
       :loading="loading"
       :height="height"
+      :footer-props="{
+        'items-per-page-options': [25, 50, 100]
+      }"
       @click:row="onShelfClick"
       dense
       item-key="id"
@@ -43,13 +46,13 @@
           </v-btn>
         </v-toolbar>
       </template>
-      <template v-slot:item.building="{item}">
+      <template v-slot:[`item.building`]="{item}">
         {{ getBuildingName(item.building) }}
       </template>
-      <template v-slot:item.building_floor="{item}">
+      <template v-slot:[`item.building_floor`]="{item}">
         {{ getFloorName(item.building_floor) }}
       </template>
-      <template v-slot:item.actions="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-icon
           @click="onBookShelfDrawClick(item)"
           class="mr-1"
@@ -110,7 +113,7 @@ export default {
   props: {
     height: {
       type: Number,
-      default: 285
+      default: 600
     }
   },
   data () {

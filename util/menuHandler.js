@@ -6,11 +6,11 @@ import config from '~/util/indrzConfig';
 
 const { env } = config;
 
-const handleZoomToHome = (mapInfo, center) => {
+const handleZoomToHome = (mapInfo, center, zoom) => {
   mapInfo.view.animate({
     center,
     duration: 2000,
-    zoom: 15
+    zoom
   });
 };
 
@@ -93,7 +93,7 @@ const handlePdf = (mapInfo) => {
 
   pdf.setFont('Arial');
   pdf.setFontSize(22);
-  pdf.text('Campus', titleXPos, titleYPos);
+  pdf.text(env.PDF_TITLE, titleXPos, titleYPos);
   pdf.setFontSize(12);
   pdf.text('Stockwerk:  ' + floorName, (maxWidth / 2) - 25, titleYPos + 10);
   pdf.text(today, pdfLeftMargin, maxHeight);
@@ -105,7 +105,8 @@ const handlePdf = (mapInfo) => {
 };
 
 const handleShare = (mapInfo) => {
-  const url = MapHandler.updateUrl('map', mapInfo.map, mapInfo.globalPopupInfo, mapInfo.globalRouteInfo, mapInfo.globalSearchInfo, mapInfo.activeFloorNum);
+  const url = MapHandler.updateUrl('map', mapInfo, mapInfo.globalPopupInfo, mapInfo.globalRouteInfo, mapInfo.globalSearchInfo, mapInfo.activeFloorNum);
+
   const shareOverlay = mapInfo.$refs.shareOverlay;
   if (typeof url === 'object' && url.type === 'poi') {
     shareOverlay.setPoiShareLink(url);

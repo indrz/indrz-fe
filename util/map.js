@@ -1,3 +1,6 @@
+// noinspection JSAnnotator
+
+import Vue from 'vue';
 import { defaults as defaultControls, Zoom, Attribution, ScaleLine } from 'ol/control.js';
 import Group from 'ol/layer/Group';
 import ImageLayer from 'ol/layer/Image';
@@ -28,10 +31,14 @@ import config from '~/util/indrzConfig'
 import POIHandler from '~/util/POIHandler';
 
 const { env } = config;
-const initializeMap = (mapId) => {
+// Declare new event $bus
+Vue.prototype.$bus = new Vue();
+const initializeMap = ({
+  mapId, predefinedPopup, center, zoom
+}) => {
   const view = new View({
-    center: getStartCenter(),
-    zoom: getStartZoom(),
+    center,
+    zoom,
     maxZoom: 23
   });
 
@@ -55,7 +62,7 @@ const initializeMap = (mapId) => {
     layers: layers.layerGroups
   });
 
-  const popup = new Overlay({
+  const popup = predefinedPopup || new Overlay({
     element: document.getElementById('indrz-popup'),
     autoPan: true,
     autoPanAnimation: {
@@ -361,12 +368,21 @@ const styleFunction = (feature, resolution) => {
   }
 };
 
-const searchThroughAPI = async (searchText) => {
-  const searchUrl = `${env.SEARCH_URL}/${searchText}`;
-  const response = await api.request({
-    url: searchUrl
-  });
-  return response.data;
+const searchThroughAPI = async (searchText, url = env.SEARCH_URL) => {
+  const searchUrl = `${url}/${searchText}`;
+  try {
+    const response = await api.request({
+      url: searchUrl
+    });
+    // Pass response data to FloorChanger.vue
+    Vue.prototype.$bus.$emit('searchResponse', response.data);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+    }
+  }
 };
 
 const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, searchString, zoomLevel,
@@ -391,8 +407,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
   searchSource.addFeatures(featuresSearch);
 
   searchSource.forEachFeature(function (feature) {
-    const requestedLocale = 'en';
-    const featureName = feature.get('name');
+    const featureName = feature.get('name_' + currentLocale);
     const featureExtent = feature.getGeometry().getExtent();
     const featureCenter = getCenter(featureExtent);
     let att = searchString;
@@ -402,10 +417,10 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       att = featureName;
     }
     const fullName = att;
-    const featureNameGet = 'category_' + requestedLocale;
+    const featureNameGet = 'category_' + currentLocale;
     const floor = feature.get('floor_name') ? feature.get('floor_name').toLowerCase() : '';
     const roomCat = feature.get(featureNameGet);
-    const roomCode = feature.get('roomcode');
+    const roomCode = feature.get('room_code');
     let someThing = '';
 
     if (att !== roomCode) {
@@ -453,7 +468,7 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
       routeFromValTemp, activeFloorNum, popup,
       featuresSearch[0].getProperties(), centerCoOrd, featuresSearch[0]
     );
-    zoomer(map.getView(), centerCoOrd, zoomLevel);
+    zoomer(map.getView(), centerCoOrd, zoomLevel, map);
     /*
      // the following code may need later use for space
       space_id = response.features[0].properties.space_id;
@@ -487,7 +502,6 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     zIndex: 999
   });
   map.getLayers().push(searchLayer);
-  window.location.href = '#map';
 
   /*
   $('html,body').animate({
@@ -508,13 +522,26 @@ const searchIndrz = async (map, layers, globalPopupInfo, searchLayer, campusId, 
     selectedItem
   };
 };
-
-const zoomer = (view, coord, zoomLevel) => {
-  view.animate({
-    center: coord,
-    duration: 2000,
-    zoom: zoomLevel
-  });
+const zoomer = (view, coord, zoomLevel, map) => {
+  const elm = document.querySelector('.v-navigation-drawer--open');
+  const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+  if (map && screenWidth < 768 && elm) {
+    const drawerHeight = elm.offsetHeight;
+    const pixel = map.getPixelFromCoordinate(coord);
+    pixel[1] += (drawerHeight - 70) / 2
+    const mobileCoordinate = map.getCoordinateFromPixel(pixel);
+    view.animate({
+      center: mobileCoordinate,
+      duration: 2000,
+      zoom: zoomLevel
+    });
+  } else {
+    view.animate({
+      center: coord,
+      duration: 2000,
+      zoom: zoomLevel
+    });
+  }
 };
 
 const activateLayer = (layerName, switchableLayers, map) => {
@@ -597,9 +624,6 @@ const getLayers = () => {
   }
 }
 
-const getStartCenter = () => env.DEFAULT_CENTER_XY;
-const getStartZoom = (zoom = 15) => env.DEFAULT_START_ZOOM;
-
 const getMapControls = () => {
   const attributionControl = new Attribution({
     collapsible: false
@@ -670,15 +694,23 @@ const loadMapWithParams = async (mapInfo, query) => {
     return;
   }
   if (query.q && query.q.length > 3) {
-    const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
-      mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.currentLocale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
-      mapInfo.routeFromValTemp, mapInfo.activeFloorNum, mapInfo.popup);
+    let response = null;
+    if (query.q !== 'coords') {
+      response = await searchThroughAPI(query.q, env.SHARE_SPACE_URL);
+    }
 
-    mapInfo.$root.$emit('load-search-query', query.q);
+    const result = await searchIndrz(mapInfo.map, mapInfo.layers, mapInfo.globalPopupInfo, mapInfo.searchLayer, campusId, query.q, zoomLevel,
+      mapInfo.popUpHomePage, mapInfo.currentPOIID, mapInfo.$i18n.locale, mapInfo.objCenterCoords, mapInfo.routeToValTemp,
+      mapInfo.routeFromValTemp, mapInfo.activeFloorNum, mapInfo.popup, response);
+
+    if (!response) {
+      mapInfo.$root.$emit('load-search-query', query.q);
+    }
 
     if (result.floorNum) {
       const foundFloor = mapInfo.floors.find(floor => floor.floor_num === result.floorNum);
       if (foundFloor) {
+        mapInfo.activeFloorNum = env.LAYER_NAME_PREFIX + foundFloor.floor_num;
         mapInfo.$emit('selectFloor', foundFloor.floor_num);
       }
     }
@@ -686,26 +718,52 @@ const loadMapWithParams = async (mapInfo, query) => {
       mapInfo.globalSearchInfo.selectedItem = result.selectedItem;
     }
     mapInfo.searchLayer = result.searchLayer;
+
+    return result?.selectedItem || response?.properties;
   }
   if (query['poi-cat-id']) {
     mapInfo.$emit('openPoiTree', query['poi-cat-id']);
   }
   if (query['poi-id']) {
+    mapInfo.loadSinglePoi(query['poi-id'], zoomLevel)
     mapInfo.$emit('openPoiTree', query['poi-id'], true);
   }
-  if (query['start-xy'] && query['end-xy']) {
-    loadMapFromXyToXyRoute(query['start-xy'], query['end-xy'], mapInfo);
+  if (query['from-xy'] && query['to-xy']) {
+    loadMapFromXyToXyRoute(query, mapInfo);
   }
-  if (query['start-poi-id'] && query['end-poi-id']) {
-    loadMapFromPoiToPoiRoute(query['start-poi-id'], query['end-poi-id'], mapInfo);
+  if (query['from-poi'] && query['to-poi']) {
+    loadMapFromPoiToPoiRoute(query, mapInfo);
   }
-  if (query['start-spaceid'] && query['end-spaceid']) {
-    loadMapFromSpaceIdToSpaceIdRoute(query['start-spaceid'], query['end-spaceid'], mapInfo);
+  if (query['from-poi'] && query['to-xy']) {
+    loadMapFromPoiToCoords(query, mapInfo);
+  }
+  if (query['from-space'] && query['to-space']) {
+    loadMapFromSpaceIdToSpaceIdRoute(query, mapInfo);
+  }
+  if (query['from-space'] && query['to-book']) {
+    loadMapFromSpaceIdToBook(query, mapInfo);
+  }
+  if (query['from-space'] && query['to-poi']) {
+    loadMapFromSpaceIdToPoiIdRoute(query, mapInfo);
+  }
+  if (query['from-poi'] && query['to-book']) {
+    loadMapFromPoiToBook(query, mapInfo);
+  }
+  if (query['from-book'] && query['to-xy']) {
+    loadMapFromBookToCoords(query, mapInfo);
+  }
+  if (query['from-book'] && query['to-book']) {
+    loadMapFromBookToBook(query, mapInfo);
+  }
+  if (query['from-space'] && query['to-xy']) {
+    loadMapFromSpaceToCoords(query, mapInfo);
   }
 };
 
-const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
+// TODO add reversed parameter
+const loadMapFromXyToXyRoute = ({ 'from-xy': startXyQuery, 'to-xy': endXyQuery, reversed }, mapInfo) => {
   const startXy = startXyQuery.split(',');
+  const isReversed = reversed === 'true' ? true : null
   const startCoords = [startXy[0], startXy[1]];
   const startFloor = startXy[2];
   const endXy = endXyQuery.split(',');
@@ -713,66 +771,228 @@ const loadMapFromXyToXyRoute = (startXyQuery, endXyQuery, mapInfo) => {
   const endFloor = endXy[2];
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
+    path: isReversed ? 'to' : 'from',
     data: {
       coords: startCoords,
-      name: 'XY Location',
-      floor_num: startFloor
+      name: startCoords,
+      floor: startFloor
     }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: {
       coords: endCoords,
-      name: 'XY Location',
+      name: endCoords,
+      floor: endFloor
+    }
+  });
+};
+
+const loadMapFromPoiToPoiRoute = async ({ 'from-poi': startPoiId, 'to-poi': endPoiId, reversed }, mapInfo) => {
+  mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
+  const isReversed = reversed === 'true' ? true : null
+  const [startPoiData, endPoiData] = await Promise.all([
+    api.request({
+      endPoint: `poi/${startPoiId}`
+    }),
+    api.request({
+      endPoint: `poi/${endPoiId}`
+    })
+  ]);
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'to' : 'from',
+    data: { ...startPoiData?.data?.properties, poiId: startPoiId, floor: startPoiData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
+  });
+};
+
+const loadMapFromPoiToCoords = async ({ 'from-poi': startPoiId, 'to-xy': endXyQuery, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  const poiData = await api.request({
+    endPoint: `poi/${startPoiId}`
+  })
+
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'to' : 'from',
+    data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
+    data: {
+      coords: endCoords,
+      name: endCoords,
       floor_num: endFloor
     }
   });
 };
 
-const loadMapFromPoiToPoiRoute = (startPoiId, endPoiId, mapInfo) => {
-  mapInfo.$emit('openPoiToPoiRoute', startPoiId, endPoiId);
+const loadMapFromBookToCoords = async ({ 'from-book': book, 'to-xy': endXyQuery, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  const bookData = await api.request({
+    endPoint: `search/${book}`
+  })
 
   mapInfo.$emit('popupRouteClick', {
-    path: 'from',
-    data: {
-      poiId: startPoiId,
-      name: startPoiId
-    }
+    path: isReversed ? 'to' : 'from',
+    data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'from' : 'to',
     data: {
-      poiId: endPoiId,
-      name: endPoiId
+      coords: endCoords,
+      name: endCoords,
+      floor_num: endFloor
     }
   });
 };
 
-const loadMapFromSpaceIdToSpaceIdRoute = (startSpaceId, endSpaceId, mapInfo) => {
-  mapInfo.$emit('popupRouteClick', {
-    path: 'from',
-    data: {
-      spaceid: startSpaceId,
-      name: startSpaceId
-    }
+const loadMapFromSpaceToCoords = async ({ 'from-space': spaceId, 'to-xy': endXyQuery, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
+  const endXy = endXyQuery.split(',');
+  const endCoords = [endXy[0], endXy[1]];
+  const endFloor = endXy[2];
+
+  const spaceData = await api.request({
+    endPoint: `space/${spaceId}`
   });
   mapInfo.$emit('popupRouteClick', {
-    path: 'to',
+    path: isReversed ? 'to' : 'from',
+    data: { ...spaceData?.data?.properties, spaceid: spaceId, floor: spaceData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
     data: {
-      spaceid: endSpaceId,
-      name: endSpaceId
+      coords: endCoords,
+      name: endCoords,
+      floor_num: endFloor
     }
+  });
+};
+
+const loadMapFromPoiToBook = async ({ 'from-poi': startPoiId, 'to-book': book, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
+  const [poiData, bookData] = await Promise.all([
+    api.request({
+      endPoint: `poi/${startPoiId}`
+    }),
+    api.request({
+      endPoint: `search/${book}`
+    })
+  ]);
+
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'to' : 'from',
+    data: { ...poiData?.data?.properties, poiId: startPoiId, floor: poiData?.data?.properties?.floor_num }
+  });
+  bookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
+    data: { ...bookData.data.features[0].properties, coords: bookData.data.features[0].geometry.coordinates }
+  });
+};
+
+const loadMapFromBookToBook = async ({ 'from-book': fromBook, 'to-book': toBook, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
+  const [fromBookData, toBookData] = await Promise.all([
+    api.request({
+      endPoint: `search/${fromBook}`
+    }),
+    api.request({
+      endPoint: `search/${toBook}`
+    })
+  ]);
+
+  fromBookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'to' : 'from',
+    data: { ...fromBookData.data.features[0].properties, coords: fromBookData.data.features[0].geometry.coordinates }
+  });
+  toBookData?.data?.features?.length && mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
+    data: { ...toBookData.data.features[0].properties, coords: toBookData.data.features[0].geometry.coordinates }
+  });
+};
+
+const loadMapFromSpaceIdToBook = async ({ 'from-space': startSpaceId, 'to-book': book, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
+  const [startSpaceIdData, endBookData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `search/${book}`
+    })
+  ]);
+
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'to' : 'from',
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
+    data: { ...endBookData?.data?.features[0]?.properties, coords: endBookData.data.features[0].geometry.coordinates }
+  });
+};
+
+const loadMapFromSpaceIdToSpaceIdRoute = async ({ 'from-space': startSpaceId, 'to-space': endSpaceId, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true' ? true : null
+  const [startSpaceIdData, endSpaceIdData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `space/${endSpaceId}`
+    })
+  ]);
+
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'to' : 'from',
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
+    data: { ...endSpaceIdData?.data?.properties, spaceid: endSpaceId, floor: endSpaceIdData?.data?.properties?.floor_num }
+  });
+};
+
+const loadMapFromSpaceIdToPoiIdRoute = async ({ 'from-space': startSpaceId, 'to-poi': endPoiId, reversed }, mapInfo) => {
+  const isReversed = reversed === 'true'
+  const [startSpaceIdData, endPoiData] = await Promise.all([
+    api.request({
+      endPoint: `space/${startSpaceId}`
+    }),
+    api.request({
+      endPoint: `poi/${endPoiId}`
+    })
+  ]);
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'to' : 'from',
+    data: { ...startSpaceIdData?.data?.properties, spaceid: startSpaceId, floor: startSpaceIdData?.data?.properties?.floor_num }
+  });
+  mapInfo.$emit('popupRouteClick', {
+    path: isReversed ? 'from' : 'to',
+    data: { ...endPoiData?.data?.properties, poiId: endPoiId, floor: endPoiData?.data?.properties?.floor_num }
   });
 };
 
 const getRouteDescriptionListItem = (label, value) => {
-  const listStartTemplate = `<li class="list-group-item"><span class="font-weight-medium">`;
-  const listEndTemplate = `</span></li>`;
+  const listStartTemplate = '<li class="list-group-item"><span class="font-weight-medium">';
+  const listEndTemplate = '</span></li>';
 
-  return value ? `${listStartTemplate}
+  return value
+    ? `${listStartTemplate}
                     ${label ? (label + ': ') : ''}${value}
-                  ${listEndTemplate}` : '';
+                  ${listEndTemplate}`
+    : '';
 };
 
 const createMapCanvas = (map) => {
@@ -811,8 +1031,6 @@ const createMapCanvas = (map) => {
 
 export default {
   initializeMap,
-  getStartCenter,
-  getStartZoom,
   getMapControls,
   getWmsLayers,
   getLayers,

@@ -5,12 +5,11 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         color="rgba(0,60,136,0.5)"
         min-width="95px"
         class="pa-2"
         small
-        dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -35,22 +34,30 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            @click="onDeletePoiClick"
             color="error darken-1"
             text
+            @click="onDeletePoiClick"
           >
             Yes
           </v-btn>
           <v-btn
-            @click="deleteConfirm = false"
             color="blue darken-1"
             text
+            @click="deleteConfirm = false"
           >
             Cancel
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <attributes-overlay
+      ref="attributesOverlay"
+      @closeClick="closeAttributePopup"
+      @saveClick="saveAttributes"
+      @uploadImage="uploadPoiImage"
+      @deleteClick="deleteAttribute"
+      @poiImageDeleteClick="poiImageDeleteClick"
+    />
   </div>
 </template>
 
@@ -61,9 +68,12 @@ import { Vector as VectorSource } from 'ol/source';
 import { Style, Icon } from 'ol/style';
 import { Draw, Modify, Snap, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
+import Overlay from 'ol/Overlay';
 import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
+import AttributesOverlay from './AttributesOverlay.vue'
+import api from '@/util/api'
 import config from '~/util/indrzConfig';
 import MapUtil from '~/util/map';
 import 'ol/ol.css';
@@ -71,7 +81,10 @@ import 'ol/ol.css';
 const { env } = config;
 
 export default {
-  name: 'Map',
+  name: 'PoiMap',
+  components: {
+    AttributesOverlay
+  },
   props: {
     selectedPoiCategory: {
       type: Object,
@@ -114,6 +127,15 @@ export default {
     ...mapState({
       floors: state => state.floor.floors
     }),
+    isMobile () {
+      return this.$vuetify.breakpoint.mobile;
+    },
+    defaultCenter () {
+      return this.isMobile ? env.MOBILE_START_CENTER_XY : env.DEFAULT_CENTER_XY
+    },
+    defaultZoom () {
+      return this.isMobile ? env.MOBILE_START_ZOOM : env.DEFAULT_START_ZOOM;
+    },
     env () {
       return {
         homePageUrl: env.HOME_PAGE_URL,
@@ -123,34 +145,38 @@ export default {
         baseWmsUrl: env.BASE_WMS_URL,
         geoServerLayerPrefix: env.GEO_SERVER_LAYER_PREFIX,
         layerNamePrefix: env.LAYER_NAME_PREFIX,
-        center: env.DEFAULT_CENTER_XY
+        center: this.defaultCenter
       };
     }
   },
   async mounted () {
     await this.loadFloors();
     this.initializeMap();
-    this.initializeEventHandlers();
   },
   methods: {
     ...mapActions({
       loadFloors: 'floor/LOAD_FLOORS'
     }),
-    initializeEventHandlers () {
-      this.$root.$on('addPoiClick', this.addInteractions);
-      this.$root.$on('editPoiClick', () => {
-        this.currentMode = this.mode.edit;
-      });
-      this.$root.$on('deletePoiClick', this.enableDeletePoi);
-      this.$root.$on('cancelPoiClick', this.removeInteraction);
-    },
     initializeMap () {
-      const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId, this.env.center);
+      this.popup = new Overlay({
+        element: document.getElementById('attributes-overlay'),
+        autoPan: true,
+        autoPanAnimation: {
+          duration: 250
+        },
+        zIndex: 5,
+        name: 'attributesPopup'
+      });
+      const { view, map, layers } = MapUtil.initializeMap({
+        mapId: this.mapId,
+        predefinedPopup: this.popup,
+        center: this.defaultCenter,
+        zoom: this.defaultZoom
+      });
 
       this.view = view;
       this.map = map;
       this.layers = layers;
-      this.popup = popup;
 
       this.map.on('singleclick', this.onMapClick, this);
       window.onresize = () => {
@@ -173,6 +199,15 @@ export default {
       this.layers.switchableLayers = this.wmsLayerInfo.layers;
       this.map.addLayer(this.wmsLayerInfo.layerGroup);
     },
+    addPoiClick () {
+      this.addInteractions();
+    },
+    editPoiClick () {
+      this.currentMode = this.mode.edit;
+    },
+    deletePoiClick () {
+      this.enableDeletePoi();
+    },
     onMapClick (evt) {
       const pixel = evt.pixel;
       let feature = this.map.getFeaturesAtPixel(pixel);
@@ -186,6 +221,15 @@ export default {
       if (feature) {
         const featureType = feature.getGeometry().getType().toString();
 
+        if (featureType === 'Point') {
+          const newPoint = this.newPois.find(poi => poi.olUid === feature.ol_uid)
+
+          if (newPoint) {
+            const coordinate = JSON.parse(newPoint.geom).coordinates[0];
+            this.openAttributesPopup(newPoint, coordinate);
+          }
+        }
+
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
             this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
@@ -194,7 +238,7 @@ export default {
               onActiveLayer = false;
             }
 
-            feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/images/selected.png', onActiveLayer));
+            feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/media/poi_icons/selected_pin.png', onActiveLayer));
             this.selectedPoi = feature;
             if (this.currentMode && this.currentMode === this.mode.remove) {
               this.removePois.push(this.selectedPoi);
@@ -203,6 +247,7 @@ export default {
               this.editInteraction();
             } else {
               this.clearPreviousSelection();
+              this.openAttributesPopup(feature.getProperties(), feature.getGeometry().getCoordinates()[0], feature);
             }
           }
         }
@@ -266,7 +311,7 @@ export default {
       this.currentMode = this.mode.remove;
     },
     onDeletePoiClick () {
-      this.$root.$emit('deletePoi');
+      this.$root.$emit('deletePois');
       this.deleteConfirm = false;
     },
     editInteraction () {
@@ -284,7 +329,7 @@ export default {
           anchorXUnits: 'fraction',
           anchorYUnits: 'pixels',
           opacity: 1,
-          src: '/media/poi_icons/selected_pin.png'
+          src: '/images/selected.png'
         })
       });
 
@@ -361,14 +406,16 @@ export default {
         this.$emit('updatePoiCoord', this.currentEditingPoi);
       }
     },
-    removeInteraction () {
+    removeInteraction (all = false) {
       this.map.removeInteraction(this.draw);
       this.map.removeInteraction(this.snap);
       this.map.removeInteraction(this.translate);
-      if (this.vectorInteractionLayer) {
-        this.map.removeLayer(this.vectorInteractionLayer);
+
+      if (all) {
+        this.vectorInteractionLayer && this.map.removeLayer(this.vectorInteractionLayer);
+        this.clearEditingVectorLayer();
+        this.closeAttributePopup()
       }
-      this.clearEditingVectorLayer();
 
       if (this.draw) {
         this.draw.un('drawend', this.onDrawEnd);
@@ -411,6 +458,8 @@ export default {
         return;
       }
       const coordinate = drawEvent.feature.getGeometry().getCoordinates();
+      const mapLayers = this.map.getLayers().getArray().slice();
+
       const data = {
         floor: 1,
         name: this.selectedPoiCategory.name,
@@ -432,9 +481,13 @@ export default {
               name: 'EPSG:3857'
             }
           }
-        })
+        }),
+        olUid: drawEvent.feature.ol_uid,
+        layerOlUid: mapLayers[mapLayers.length - 1].ol_uid
       };
       this.newPois.push(data);
+      this.removeInteraction();
+      this.openAttributesPopup(data, coordinate)
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
       this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
@@ -477,6 +530,97 @@ export default {
           src: icon
         })
       });
+    },
+    closeAttributePopup () {
+      this.popup.setPosition(undefined)
+    },
+    saveAttributes (attributes) {
+      const { feature, data, imageFile } = attributes;
+
+      if (attributes.feature) {
+        // we can remove the imageFile here
+        this.$emit('saveEditPoi', feature, data)
+      } else {
+        this.$emit('saveAddPoi', data, imageFile, (poiId, file) => {
+          this.uploadPoiImage({ poiId, imageFile: file })
+        })
+      }
+    },
+    async uploadPoiImage ({ poiId, imageFile }) {
+      try {
+        await api.postRequest({
+          endPoint: 'poi/images/',
+          method: 'POST',
+          data: {
+            poi: poiId,
+            image: imageFile,
+            sort_order: '1',
+            is_default: 'true',
+            alt_text: 'super image'
+          }
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+        await this.refreshImageList(poiId);
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Image upload failed');
+      }
+    },
+    deleteAttribute (attributes) {
+      if (attributes.feature) {
+        this.$emit('deletePoi', attributes.feature)
+      } else {
+        const mapLayers = this.map.getLayers().getArray().slice();
+        this.newPois = this.newPois.filter(poi => poi.olUid !== attributes.data.olUid);
+
+        mapLayers.forEach((layer) => {
+          if (layer.ol_uid === attributes.data.layerOlUid) {
+            this.map.removeLayer(layer);
+          }
+        });
+      }
+      this.closeAttributePopup();
+    },
+    async poiImageDeleteClick ({ id, feature }) {
+      try {
+        await api.postRequest({
+          endPoint: `poi/images/${id}`,
+          method: 'DELETE',
+          data: {}
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+
+        await this.refreshImageList(feature.getId());
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Image delete failed');
+      }
+    },
+    openAttributesPopup (data, coordinate, feature) {
+      const images = feature ? feature.getProperties().images : [];
+      this.$refs.attributesOverlay.setData({ ...data, images }, feature);
+      this.popup.setPosition(coordinate);
+      this.popup.setOffset([0, -40]);
+    },
+    getPoi (poiId) {
+      try {
+        return api.request({
+          endPoint: `poi/${poiId}`
+        }, {
+          baseApiUrl: process.env.BASE_API_URL,
+          token: process.env.TOKEN
+        });
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Fetch poi failed');
+      }
+    },
+    async refreshImageList (poiId) {
+      const response = await this.getPoi(poiId);
+      const images = response?.data?.properties?.images;
+
+      this.$refs.attributesOverlay?.setImages(images);
     }
   }
 };

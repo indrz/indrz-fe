@@ -17,8 +17,8 @@
             <div class="d-flex flex-no-wrap justify-space-between">
               <div>
                 <v-card-title
-                  v-text="item.title"
                   class="text-h5"
+                  v-text="item.title"
                 />
 
                 <v-card-subtitle v-text="item.artist" />
@@ -26,32 +26,42 @@
                 <v-card-actions>
                   <v-btn
                     v-if="item.title === 'Bookway'"
-                    @click="goToBookway"
                     class="ml-2 mt-3"
                     outlined
                     rounded
                     small
+                    @click="goToBookway"
                   >
                     {{ item.buttonName }}
                   </v-btn>
 
                   <v-btn
                     v-if="item.title === 'Event Manager'"
-                    @click="goToEventManager"
                     class="ml-2 mt-5"
                     outlined
                     rounded
                     small
+                    @click="goToEventManager"
                   >
                     {{ item.buttonName }}
                   </v-btn>
                   <v-btn
                     v-if="item.title === 'POI Manager'"
+                    rounded
+                    class="ml-2 mt-5"
+                    outlined
+                    small
                     @click="goToPoiEditor"
+                  >
+                    {{ item.buttonName }}
+                  </v-btn>
+                  <v-btn
+                    v-if="item.title === 'Zoneplan'"
                     class="ml-2 mt-5"
                     outlined
                     rounded
                     small
+                    @click="goToZoneplanManager"
                   >
                     {{ item.buttonName }}
                   </v-btn>
@@ -93,6 +103,13 @@ export default {
         buttonName: 'START BOOKWAY MANAGER'
       },
       {
+        color: '#34b0d5',
+        src: 'https://cdn.vuetifyjs.com/images/cards/sunshine.jpg',
+        title: 'Zoneplan',
+        artist: 'Organization Zoneplans',
+        buttonName: 'OPEN Zoneplans'
+      },
+      {
         color: '#952175',
         src: 'https://cdn.vuetifyjs.com/images/cards/halcyon.png',
         title: 'Event Manager',
@@ -111,6 +128,9 @@ export default {
     },
     goToBookway () {
       this.$router.push('/admin/shelves');
+    },
+    goToZoneplanManager () {
+      this.$router.push('/admin/zoneplans');
     }
   }
 

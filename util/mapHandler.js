@@ -33,14 +33,26 @@ const openIndrzPopup = (
   objCenterCoords, routeToValTemp, routeFromValTemp,
   activeFloorNum, popup, properties, coordinate, feature, offsetArray) => {
   const floorName = properties.floor_name;
-  const popupContent = document.getElementById('popup-content');
-
   for (const member in globalPopupInfo) {
     globalPopupInfo[member] = null;
   }
 
   feature = (typeof feature !== 'undefined' && feature !== null) ? feature : -1;
   offsetArray = (typeof offsetArray !== 'undefined' && offsetArray !== null) ? offsetArray : [0, 0];
+
+  if (properties.src === 'wms_campus') {
+    globalPopupInfo.name = properties.name;
+    globalPopupInfo.buildingAdress = properties.description;
+  }
+
+  if (properties.hasOwnProperty('street')) {
+    globalPopupInfo.src = 'wms_building';
+    globalPopupInfo.name = properties.name;
+    globalPopupInfo.buildingName = properties.building_name;
+    globalPopupInfo.buildingCity = properties.city;
+    globalPopupInfo.buildingPlz = properties.postal_code;
+    globalPopupInfo.buildingAdress = properties.street;
+  }
 
   if (properties.hasOwnProperty('poiId')) {
     globalPopupInfo.src = 'poi';
@@ -83,7 +95,9 @@ const openIndrzPopup = (
   }
   if (properties.hasOwnProperty('room_code')) {
     globalPopupInfo.wmsInfo = properties.room_code;
-    properties.roomcode = properties.room_code;
+  }
+  if (properties.hasOwnProperty('roomcode')) {
+    globalPopupInfo.wmsInfo = properties.roomcode;
   }
   if (properties.hasOwnProperty('poiId')) {
     currentPOIID = properties.poiId;
@@ -146,29 +160,14 @@ const openIndrzPopup = (
   } else if (properties.hasOwnProperty('short_name')) {
     properties.name = properties.short_name;
   }
-  if (properties.hasOwnProperty('room_code')) {
-    properties.roomcode = properties.room_code;
-  }
-  titlePopup = getTitle(properties);
+
+  titlePopup = getTitle(properties, currentLocale);
 
   if (typeof properties.label !== 'undefined') {
-    roomCode = properties.roomcode;
+    roomCode = properties.room_code;
   } else {
-    roomCode = properties.roomcode;
+    roomCode = properties.room_code;
   }
-
-  popupContent.innerHTML = '<h4 style="user-select: text;">' + titlePopup + '</h4>';
-  popupContent.innerHTML += '<div><p>';
-  if (properties.html_content) {
-    popupContent.innerHTML += `
-      <div id="html_content">
-      ${properties.html_content}
-      </div>
-    `;
-  }
-  const tb = '<table id="popupTable" style="user-select: text;"></table>';
-  popupContent.innerHTML += tb;
-
   const labelRoomCode = translate.t('label_room_code');
   const labelFloorName = translate.t('label_floor_name');
   const labelBuildingName = translate.t('label_building_name');
@@ -176,9 +175,24 @@ const openIndrzPopup = (
   const labelPoiName = translate.t('label_nearest_entrance');
   const labelRoomId = translate.t('label_room_id');
   const labelCapacity = translate.t('label_capacity');
+  const labelBuidingAdress = translate.t('label_building_adress');
+  const labelBuildingCode = translate.t('label_building_code');
+  const labelBuidingPlz = translate.t('label_building_plz');
+  const labelBuildingCity = translate.t('label_building_city');
 
-  if (properties.roomcode) {
-    addPoiTableRow(labelRoomCode, properties.roomcode, 'popup_room_code');
+  if (properties.src === 'wms_campus') {
+    addPoiTableRow(labelBuidingAdress, properties.description, 'popup_building_adress');
+  }
+
+  if (properties.street) {
+    addPoiTableRow(labelBuidingAdress, properties.street, 'popup_building_adress');
+    addPoiTableRow(labelBuildingCode, properties.name, 'popup_building_code');
+    addPoiTableRow(labelBuidingPlz, properties.postal_code, 'popup_building_plz');
+    addPoiTableRow(labelBuildingCity, properties.city, 'popup_building_city');
+  }
+
+  if (properties.room_code) {
+    addPoiTableRow(labelRoomCode, properties.room_code, 'popup_room_code');
   }
   if (floorName && !properties.xy) {
     addPoiTableRow(labelFloorName, floorName, 'popup_floor_name');
@@ -202,20 +216,23 @@ const openIndrzPopup = (
     addPoiTableRow('X', properties.xy[0].toFixed(3), 'popup_xy_x');
     addPoiTableRow('Y', properties.xy[1].toFixed(3), 'popup_xy_Y');
   }
-
-  popupContent.innerHTML += '</p></div>';
-
-  globalPopupInfo.name = properties.xy ? translate.t('xy_location') : titlePopup;
+  globalPopupInfo.name = titlePopup;
   globalPopupInfo.coords = objCenterCoords;
   globalPopupInfo.floor = activeFloorNum;
-  globalPopupInfo.roomcode = roomCode;
+  globalPopupInfo.room_code = roomCode;
   globalPopupInfo.floor_num = properties.floor_num;
 
   popup.setPosition(coordinate);
   popup.setOffset(offsetArray);
 };
 
-const getTitle = (properties) => {
+const getTitle = (properties, locale = 'en') => {
+  if (properties.street) {
+    return properties.building_name;
+  }
+  if (properties['name_' + locale]) {
+    return properties['name_' + locale];
+  }
   if (properties.name) {
     return properties.name;
   }
@@ -252,21 +269,9 @@ const getBuildingLetter = (p) => {
 };
 
 const addPoiTableRow = (label, value, idname) => {
-  const table = document.getElementById('popupTable');
-
   if (idname === 'popupHomepage') {
     value = '<a target="_blank" href="' + value + '">' + value + '</a>';
   }
-
-  const row = table.insertRow(-1);
-  const cell1 = row.insertCell(0);
-  const cell2 = row.insertCell(1);
-
-  cell1.innerHTML = label + ': ';
-  cell2.innerHTML = value;
-
-  cell1.setAttribute('class', 'no-wrap');
-  cell2.setAttribute('id', idname);
 };
 
 const getRoomInfo = (floor, layers, layerNamePrefix) => {
@@ -281,7 +286,7 @@ const getRoomInfo = (floor, layers, layerNamePrefix) => {
   return newel;
 };
 
-const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum, isRouteShare) => {
+const handleShareClick = (mapInfo, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum, isRouteShare) => {
   let param = '';
 
   if (isRouteShare) {
@@ -290,6 +295,8 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
     param = 'bookId';
   } else if (globalPopupInfo.poiCatId) {
     param = 'poiCatId';
+  } else if (globalPopupInfo.src === 'wms_building') {
+    param = 'wmsBuilding';
   } else if (globalSearchInfo.searchText) {
     param = 'search';
   } else if (globalPopupInfo.src === 'wms') {
@@ -297,10 +304,11 @@ const handleShareClick = (map, globalPopupInfo, globalRouteInfo, globalSearchInf
   } else if (globalPopupInfo.name === 'XY Location') {
     param = 'xy';
   }
-  return updateUrl(param, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
+  return updateUrl(param, mapInfo, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum);
 };
 
-const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+const updateUrl = (mode, mapInfo, globalPopupInfo, globalRouteInfo, globalSearchInfo, activeFloorNum) => {
+  const { map } = mapInfo;
   const currentExtent2 = map.getView().calculateExtent(map.getSize());
   const currentZoom2 = map.getView().getZoom();
   const centerCrd = map.getView().getCenter();
@@ -313,51 +321,70 @@ const updateUrl = (mode, map, globalPopupInfo, globalRouteInfo, globalSearchInfo
 
   const data = {};
 
-  if (mode === 'route') {
-    if (globalRouteInfo.routeUrl) {
-      url = globalRouteInfo.routeUrl;
-    } else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
-      url = globalRouteInfo.routeUrl;
-    } else if (globalPopupInfo.poiId === 'undefined' && globalPopupInfo.poiId === '' && globalPopupInfo.poiId !== 'noid') {
-      url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
-    } else {
-      url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
-    }
-  } else if (mode === 'search') {
-    if (globalPopupInfo.hasOwnProperty('external_id')) {
-      if (globalPopupInfo.external_id === globalPopupInfo.name) {
-        url = '?q=' + globalPopupInfo.external_id;
+  switch (mode) {
+    case 'route':
+      if (globalRouteInfo.routeUrl) {
+        url = globalRouteInfo.routeUrl;
+      } else if ((globalRouteInfo.startPoiId !== 'noid' && globalRouteInfo.endPoiId !== 'noid') || globalPopupInfo.poiId !== 'noid') {
+        url = globalRouteInfo.routeUrl;
+      } else if (globalPopupInfo.poiId === 'undefined' && globalPopupInfo.poiId === '' && globalPopupInfo.poiId !== 'noid') {
+        url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
+      } else {
+        url = '?startstr=' + globalRouteInfo.startName + '&endstr=' + globalRouteInfo.endName;
+      }
+      break;
+    case 'search':
+      if (globalPopupInfo.hasOwnProperty('external_id')) {
+        if (globalPopupInfo.external_id === globalPopupInfo.name) {
+          url = '?q=' + globalPopupInfo.external_id;
+        } else {
+          url = '?q=' + globalPopupInfo.name;
+        }
+      }
+      if (globalSearchInfo.searchText) {
+        url = '?q=' + globalSearchInfo.searchText;
       } else {
         url = '?q=' + globalPopupInfo.name;
       }
-    }
-    if (globalSearchInfo.searchText) {
-      url = '?q=' + globalSearchInfo.searchText;
-    } else {
-      url = '?q=' + globalPopupInfo.name;
-    }
-  } else if (mode === 'map') {
-    const floorNum = activeFloorNum.includes(env.LAYER_NAME_PREFIX) ? activeFloorNum.split(env.LAYER_NAME_PREFIX)[1] : activeFloorNum;
-    url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + floorNum;
-  } else if (mode === 'bookId') {
-    url = hostUrl + globalRouteInfo.routeUrl;
-  } else if (mode === 'poiCatId') {
-    url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
+      break;
+    case 'map':
+      const floorNum = activeFloorNum.includes(env.LAYER_NAME_PREFIX) ? activeFloorNum.split(env.LAYER_NAME_PREFIX)[1] : activeFloorNum;
+      url = '?centerx=' + centerX2 + '&centery=' + centerY2 + '&zlevel=' + currentZoom2 + '&floor=' + floorNum;
 
-    const poiId = globalPopupInfo.poiId || globalSearchInfo?.selectedItem?.id;
-    const singlePoiUrl = `${location.origin}?poi-id=${poiId}&floor=${globalPopupInfo.floor_num}`;
+      if (mapInfo.selectedPoiCatIds.length) {
+        url = `${url}&poi-cat-id=${mapInfo.selectedPoiCatIds.join(',')}`
+      }
+      break;
+    case 'bookId':
+      url = hostUrl + globalRouteInfo.routeUrl;
+      break;
+    case 'poiCatId':
+      url = location.origin + '?' + globalPopupInfo.poiCatShareUrl;
 
-    return {
-      type: 'poi',
-      singlePoiUrl,
-      poiCatUrl: url
-    };
-  } else if (mode === 'wmsInfo') {
-    url = hostUrl + '?q=' + globalPopupInfo.wmsInfo;
-  } else if (mode === 'xy') {
-    url = `${hostUrl}?q=coords&x=${globalPopupInfo.coords[0]}&y=${globalPopupInfo.coords[1]}`
-  } else {
-    url = location.href;
+      const poiId = globalPopupInfo.poiId || globalSearchInfo?.selectedItem?.id;
+      const singlePoiUrl = `${location.origin}?poi-id=${poiId}&floor=${globalPopupInfo.floor_num}`;
+
+      return {
+        type: 'poi',
+        singlePoiUrl,
+        poiCatUrl: url
+      };
+    case 'wmsBuilding':
+      url = hostUrl + '?q=' + globalPopupInfo.name;
+      break;
+    case 'wmsInfo':
+      if (globalPopupInfo.room_code) {
+        url = hostUrl + '?q=' + globalPopupInfo.room_code;
+      } else {
+        url = hostUrl + '?q=' + globalPopupInfo.wmsInfo;
+      }
+      break;
+    case 'xy':
+      url = `${hostUrl}?q=coords&x=${globalPopupInfo.coords[0]}&y=${globalPopupInfo.coords[1]}`
+      break;
+    default:
+      url = location.href;
+      break;
   }
 
   data.extent = currentExtent2;
@@ -418,7 +445,6 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
   feature = features[0];
   let coordinate = mapInfo.map.getCoordinateFromPixel(pixel);
   const properties = feature ? feature.getProperties() : null;
-
   if (feature) {
     const featureType = feature.getGeometry().getType().toString();
 
@@ -467,7 +493,34 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
         const dataProperties = {};
 
         if (listFeatures.length > 0) {
-          listFeatures.forEach(function (feature) {
+          listFeatures.some(function (feature) {
+            if (feature.id.startsWith('campus')) {
+              const centroidSource = new Vector({
+                features: (new GeoJSON()).readFeatures(feature)
+              });
+              const centroidCoords = getCenter(centroidSource.getExtent());
+              if (!dataProperties.properties) {
+                dataProperties.properties = {};
+              }
+              dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
+              dataProperties.centroid = centroidCoords;
+              dataProperties.properties.src = 'wms_campus';
+              return dataProperties;
+            }
+
+            if (feature.properties.hasOwnProperty('street')) {
+              const centroidSource = new Vector({
+                features: (new GeoJSON()).readFeatures(feature)
+              });
+              const centroidCoords = getCenter(centroidSource.getExtent());
+              if (!dataProperties.properties) {
+                dataProperties.properties = {};
+              }
+              dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
+              dataProperties.centroid = centroidCoords;
+              dataProperties.properties.src = 'wms_building';
+              return dataProperties;
+            }
             if (feature.properties.hasOwnProperty('space_type_id')) {
               if (feature.properties.hasOwnProperty('room_code') || feature.properties.hasOwnProperty('roomcode')) {
                 const centroidSource = new Vector({
@@ -479,23 +532,30 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
                 }
                 dataProperties.properties = { ...dataProperties.properties, ...feature.properties };
                 dataProperties.centroid = centroidCoords;
+                dataProperties.properties.src = 'wms';
+                return dataProperties;
               }
             }
+            return false;
           });
-          dataProperties.properties.src = 'wms';
+
           mapInfo.globalSearchInfo = {
             selectedItem: { type: 'Feature', properties: dataProperties.properties },
             searchText: dataProperties.properties?.room_code
           };
           mapInfo.openIndrzPopup(dataProperties.properties, dataProperties.centroid, featuresWms)
         } else {
-          const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
+          mapInfo.globalSearchInfo = {};
+          mapInfo.closeIndrzPopup(true);
+          // Commented out the xy functionality issue #290
+          /* const floor = mapInfo.floors.find(floor => (env.LAYER_NAME_PREFIX + floor.floor_num) === mapInfo.activeFloorNum);
 
+          mapInfo.globalSearchInfo = {};
           mapInfo.openIndrzPopup({
             xy: coordinate,
             floor_num: floor?.floor_num,
             floor_name: floor?.short_name
-          }, coordinate, null)
+          }, coordinate, null) */
         }
       });
     }

@@ -1,106 +1,8 @@
 <template>
-  <div id="indrz-popup" :style="{'min-width': popupWidth}" title="indrz info" class="ol-popup indrz-popup">
-    <a id="popup-closer" @click.stop="onPopupCloseClick" href="#" class="ol-popup-closer" />
-    <div id="popup-content" />
-    <div id="popup-links">
-      <v-row no-gutters>
-        <v-col>
-          <v-btn @click.stop="onRouteClick('from')" text color="wu" small>
-            <v-icon left>
-              mdi-map-marker
-            </v-icon> {{ locale.routeFromHereText }}
-          </v-btn>
-        </v-col>
-      </v-row>
-      <v-row no-gutters>
-        <v-col>
-          <v-btn @click.stop="onRouteClick('to')" text color="wu" small>
-            <v-icon left>
-              mdi-map-marker
-            </v-icon> {{ locale.routeToHereText }}
-          </v-btn>
-        </v-col>
-      </v-row>
-    </div>
-    <div class="mt-5">
-      <v-row no-gutters align="center" justify="left">
-        <div>
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                @click.stop="onEntranceButtonClick"
-                tile
-                small
-                dark
-                color="wu"
-              >
-                <v-icon left>
-                  mdi-routes
-                </v-icon>
-                {{ locale.entranceButtonText }}
-              </v-btn>
-            </template>
-            <span>{{ locale.entranceButtonTip }}</span>
-          </v-tooltip>
-        </div>
-        <div class="ml-1">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                v-on="on"
-                @click.stop="onMetroButtonClick"
-                small
-                tile
-                dark
-                color="wu"
-              >
-                <v-icon left>
-                  mdi-routes
-                </v-icon>
-                {{ locale.metroButtonText }}
-              </v-btn>
-            </template>
-            <span>{{ locale.metroButtonTip }}</span>
-          </v-tooltip>
-        </div>
-        <div :class="{'ml-1': !multiRowButton, 'mt-1': multiRowButton}">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                @click.stop="onDefiButtonClick"
-                v-on="on"
-                color="wu"
-                tile
-                dark
-                small
-              >
-                <v-icon>mdi-heart-flash</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ locale.defiButtonTip }}</span>
-          </v-tooltip>
-        </div>
-        <div :class="{'ml-1': true, 'mt-1': multiRowButton}">
-          <v-tooltip top>
-            <template v-slot:activator="{ on }">
-              <v-btn
-                @click.stop="onShareButtonClick"
-                v-on="on"
-                color="wu"
-                tile
-                dark
-                small
-              >
-                <v-icon>mdi-share-variant</v-icon>
-              </v-btn>
-            </template>
-            <span>{{ locale.shareButtonTip }}</span>
-          </v-tooltip>
-        </div>
-      </v-row>
-    </div>
+  <div id="indrz-popup" :style="{'min-width': popupSize.width}" scrollable title="indrz info" class="ol-popup indrz-popup">
+    <img  src="/images/selected-large.png" />
   </div>
+
 </template>
 
 <script>
@@ -121,11 +23,26 @@ export default {
     }
   },
   computed: {
-    popupWidth () {
-      return this.$vuetify.breakpoint.xs ? '270px' : '354px';
+    popupSize () {
+      const size = {
+        width: '354px',
+        height: '366px'
+      };
+
+      switch (this.$vuetify.breakpoint.name) {
+        case 'xs':
+          size.width = '150px';
+          size.height = '162px';
+          break;
+        case 'sm':
+          size.width = '270px';
+          size.height = '282px';
+          break;
+      }
+      return size;
     },
     multiRowButton () {
-      return !!this.$vuetify.breakpoint.xs;
+      return !!this.$vuetify.breakpoint.smAndDown;
     }
   },
   methods: {
@@ -139,11 +56,11 @@ export default {
       this.$emit('popupRouteClick', path);
     },
     onEntranceButtonClick () {
-      this.$emit('popupRouteClick', 'to');
+      this.$emit('popupRouteClick', 'from');
       this.$emit('popupEntranceButtonClick');
     },
     onMetroButtonClick () {
-      this.$emit('popupRouteClick', 'to');
+      this.$emit('popupRouteClick', 'from');
       this.$emit('popupMetroButtonClick');
     },
     onDefiButtonClick () {
@@ -155,4 +72,15 @@ export default {
 </script>
 
 <style scoped>
+  .xs-popup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+  #indrz-popup{
+    position: absolute;
+    bottom: 0;
+    left: -20px;
+    z-index: 1;
+  }
 </style>

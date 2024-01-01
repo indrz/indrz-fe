@@ -171,13 +171,15 @@ const showSinglePoi = async (poiId, globalPopupInfo, zlevel, map, popup, activeF
   globalPopupInfo.poiId = poiId;
   globalPopupInfo.poiCatId = properties.category;
   globalPopupInfo.poiCatShareUrl = '?poi-cat-id=' + properties.category;
-
   MapHandler.openIndrzPopup(globalPopupInfo, null, poiId, 'en', null,
     null, null, activeFloorNum, popup, properties, centerCoord,
     null, offSetPos, layerNamePrefix);
   MapUtil.zoomer(map.getView(), centerCoord, zlevel);
 
-  return poiLayer;
+  return {
+    layer: poiLayer,
+    feature: properties
+  };
 };
 
 const setPoiFeatureVisibility = (map, activeFloorNum, layerNamePrefix) => {

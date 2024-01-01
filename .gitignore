@@ -33,6 +33,7 @@ bower_components
 
 # Compiled binary addons (https://nodejs.org/api/addons.html)
 build/Release
+dist/
 
 # Dependency directories
 node_modules/
@@ -96,3 +97,11 @@ local-WU.env
 production-tu.env
 production-wu.env
 yarn.lock
+
+static
+
+.env*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

@@ -1,18 +1,18 @@
 <template>
-  <div>
+  <div data-test="sideBar">
     <div>
-      <v-row no-gutters>
+      <v-row class="sidebar-start" no-gutters>
         <v-col :cols="2" class="pa-2">
-          <v-app-bar-nav-icon @click.stop="onNavbarClick" />
+          <v-app-bar-nav-icon data-test="closeLeftPaneBtn" @click.stop="onNavbarClick" />
         </v-col>
         <v-col :cols="8" align-self="center">
-          <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
+          <img id="tu-logo" data-test="leftPaneLogo" :src="logo.file" alt="logo" class="left-bar-logo">
         </v-col>
       </v-row>
     </div>
     <v-expansion-panels v-model="expanded" multiple>
       <v-expansion-panel v-for="menuItem in menuItems" :key="menuItem.title">
-        <v-expansion-panel-header class="sidebar-expansion-header">
+        <v-expansion-panel-header class="sidebar-expansion-header" :data-test="menuItem.type+'Heading'">
           {{ menuItem.title }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
@@ -22,13 +22,13 @@
             :initial-poi-cat-id="initialPoiCatId"
             :initial-poi-id="initialPoiId"
             :search-result="searchResult"
+            :data-test="menuItem.type+'Content'"
             @locationClick="onLocationClick"
             @setGlobalRoute="onSetGlobalRoute"
             @routeGo="onRouteGo"
             @clearRoute="onClearRoute"
             @shareClick="onShareClick"
             @poiLoad="addPoi"
-            @loadSinglePoi="loadSinglePoi"
           />
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -43,9 +43,10 @@
         <v-list-item
           v-for="(item, i) in menuButtons"
           :key="i"
+          :data-test="item.type+'Btn'"
           @click.stop="onMenuBUttonClick(item)"
         >
-          <v-list-item-icon>
+          <v-list-item-icon :data-test="item.type+'Item'">
             <v-icon>mdi-{{ item.icon }}</v-icon>
           </v-list-item-icon>
 
@@ -56,8 +57,11 @@
       </v-list-item-group>
     </v-list>
     <div>
-      <p class="font-weight-regular caption" style="padding: 8px 16px">
+      <p class="font-weight-regular caption" style="padding: 8px 16px 0px">
         Powered by <a href="https://indrz.com/#contact" target="_blank">indrz.com</a>
+      </p>
+      <p class="font-weight-regular caption" style="padding: 0px 16px">
+        Version: {{ appVersion }}
       </p>
     </div>
   </div>
@@ -66,7 +70,6 @@
 <script>
 import config from '../util/indrzConfig';
 import CampusLocations from './CampusLocations';
-import Route from './Route';
 import SearchResult from './SearchResult';
 import PointsOfInterest from './poi/PointsOfInterest';
 
@@ -76,7 +79,6 @@ export default {
   name: 'SideBar',
   components: {
     CampusLocations,
-    Route,
     PointsOfInterest,
     SearchResult
   },
@@ -88,9 +90,9 @@ export default {
       }
     },
     initialPoiCatId: {
-      type: Number,
+      type: Array,
       default: function () {
-        return null;
+        return [];
       }
     },
     initialPoiId: {
@@ -104,7 +106,6 @@ export default {
     return {
       locale: {
         campusLocations: this.$t('campus_locations'),
-        route: this.$t('route'),
         searchResult: this.$t('search_result'),
         pointsOfInterest: this.$t('points_of_interest'),
         zooToHome: this.$t('zoom_to_home'),
@@ -113,9 +114,9 @@ export default {
         pdf: this.$t('pdf'),
         helpLegendInfos: this.$t('help_legend_infos'),
         aboutTermsConditions: this.$t('about_terms_conditions'),
-        scanQRShowMyLocation: this.$t('scan_qr_show_my_location')
+        scanQRShowMyLocation: this.$t('scan_qr_show_my_location'),
+        directions: this.$t('route')
       },
-      expanded: [],
       searchResult: []
     };
   },
@@ -134,10 +135,6 @@ export default {
           title: this.locale.campusLocations
         },
         {
-          type: 'Route',
-          title: this.locale.route
-        },
-        {
           type: 'PointsOfInterest',
           title: this.locale.pointsOfInterest
         }
@@ -151,6 +148,11 @@ export default {
     },
     menuButtons () {
       return [
+        {
+          icon: 'directions',
+          type: 'directions',
+          text: this.locale.directions
+        },
         {
           icon: 'home',
           type: 'zoom-home',
@@ -187,12 +189,17 @@ export default {
           text: this.locale.scanQRShowMyLocation
         }
       ];
-    }
-  },
-
-  watch: {
-    openedPanels (value) {
-      this.expanded = value;
+    },
+    appVersion () {
+      return env.APP_VERSION
+    },
+    expanded: {
+      get () {
+        return this.openedPanels;
+      },
+      set (value) {
+        this.$root.$emit('update-opened-panels', value)
+      }
     }
   },
 
@@ -206,8 +213,8 @@ export default {
     onSetGlobalRoute (value) {
       this.$emit('setGlobalRoute', value);
     },
-    onRouteGo () {
-      this.$emit('routeGo');
+    onRouteGo (routeType) {
+      this.$emit('routeGo', routeType);
     },
     onShareClick () {
       this.$emit('shareClick');
@@ -215,14 +222,8 @@ export default {
     onClearRoute () {
       this.$emit('clearRoute');
     },
-    setRoute (routeInfo) {
-      this.$refs.Route[0].setRoute(routeInfo);
-    },
     addPoi (data) {
       this.$emit('poiLoad', data);
-    },
-    loadSinglePoi (poiId) {
-      this.$emit('loadSinglePoi', poiId);
     },
     onNavbarClick () {
       this.$emit('hideSidebar');
@@ -239,18 +240,6 @@ export default {
     vertical-align: middle;
     display: block;
     margin: 5px auto;
-  }
-  /*
-  Style for Route Room to Room
-   */
-  .route-room-to-room {
-    margin-right: 10px;
-    ::v-deep .v-label {
-      /*
-      font-family: "Roboto", sans-serif;
-      font-size: .8125rem !important;
-      */
-    }
   }
   /*
   Style for Tree
@@ -278,5 +267,10 @@ export default {
     font-family: "Roboto", sans-serif;
     font-size: 0.9375rem !important;
     */
+  }
+  @media(max-width:767.98px) {
+    .sidebar-start {
+    margin-top:20px;
+    }
   }
 </style>

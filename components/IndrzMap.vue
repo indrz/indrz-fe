@@ -5,11 +5,10 @@
     <div id="id-map-switcher-widget">
       <v-btn
         id="id-map-switcher"
-        @click="onMapSwitchClick"
         min-width="95px"
         class="pa-2 map-switcher"
         small
-        dark
+        @click="onMapSwitchClick"
       >
         {{ isSatelliteMap ? "Satellite" : "Map" }}
       </v-btn>
@@ -67,6 +66,12 @@ export default {
     Terms,
     UserGeoLocation
   },
+  props: {
+    routeDrawer: {
+      type: Boolean,
+      default: false
+    }
+  },
   data () {
     return {
       mapId: 'mapContainer',
@@ -86,7 +91,7 @@ export default {
       objCenterCoords: '',
       popUpHomePage: '',
       currentPOIID: 0,
-      currentLocale: 'en',
+      selectedPoiCatIds: [],
       routeToValTemp: '',
       routeFromValTemp: '',
       hostUrl: window.location.href,
@@ -105,6 +110,15 @@ export default {
     },
     homePageUrl () {
       return env.HOME_PAGE_URL
+    },
+    isMobile () {
+      return this.$vuetify.breakpoint.mobile;
+    },
+    defaultCenter () {
+      return this.isMobile ? env.MOBILE_START_CENTER_XY : env.DEFAULT_CENTER_XY
+    },
+    defaultZoom () {
+      return this.isMobile ? env.MOBILE_START_ZOOM : env.DEFAULT_START_ZOOM;
     }
   },
 
@@ -112,7 +126,11 @@ export default {
     const query = queryString.parse(location.search);
     this.showHideHeaderFooter(query);
 
-    const { view, map, layers, popup } = MapUtil.initializeMap(this.mapId);
+    const { view, map, layers, popup } = MapUtil.initializeMap({
+      mapId: this.mapId,
+      center: this.defaultCenter,
+      zoom: this.defaultZoom
+    });
 
     this.view = view;
     this.map = map;
@@ -129,8 +147,14 @@ export default {
     this.map.on('moveend', (e) => {
       this.$root.$emit('map-moved', e.map.getView().getCenter());
     });
-  },
 
+    this.$root.$on('popupEntranceButtonClick', this.onPopupEntranceButtonClick);
+    this.$root.$on('popupMetroButtonClick', this.onPopupMetroButtonClick);
+    this.$root.$on('popupDefiButtonClick', this.onPopupDefiButtonClick);
+    this.$root.$on('shareClick', this.onShareButtonClick);
+    this.$root.$on('popupRouteClick', this.onPopupRouteClick);
+    this.$root.$on('closeInfoPopup', this.closeIndrzPopup);
+  },
   methods: {
     loadLayers (floors) {
       this.floors = floors;
@@ -178,7 +202,7 @@ export default {
       this.$emit('selectFloor', properties.floor_num);
 
       const campusId = selectedItem.properties.building;
-      const searchText = properties.name;
+      const searchText = properties?.room_code || properties.name;
       const zoomLevel = 20;
 
       this.globalSearchInfo.selectedItem = selectedItem;
@@ -186,24 +210,80 @@ export default {
       this.objCenterCoords = properties.centerGeometry ? properties.centerGeometry.coordinates : selectedItem.geometry.coordinates;
 
       const result = await MapUtil.searchIndrz(this.map, this.layers, this.globalPopupInfo, this.searchLayer, campusId, searchText, zoomLevel,
-        this.popUpHomePage, this.currentPOIID, this.currentLocale, this.objCenterCoords, this.routeToValTemp,
+        this.popUpHomePage, this.currentPOIID, this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorNum, this.popup, selectedItem, {
           searchUrl: env.SEARCH_URL,
           layerNamePrefix: env.LAYER_NAME_PREFIX
         });
+
       this.searchLayer = result.searchLayer;
+      this.$emit('open-poi-drawer', {
+        feature: properties
+      })
+      const coordinate = this.objCenterCoords;
+      const featureCenter = !this.routeDrawer
+        ? { data: { type: 'Feature', id: properties.id, properties: properties, geometry: { coordinates: this.objCenterCoords, type: 'MultiPolygon' } } }
+        : { type: 'Feature', id: properties.id, ...{ properties, geometry: { coordinates: this.coordinates, type: 'MultiPolygon' } } }
+      if (!this.routeDrawer) {
+        if (this.isMobile) {
+          const elm = document.querySelector('.v-navigation-drawer--open');
+          const drawerHeight = elm.offsetHeight;
+          const pixel = this.map.getPixelFromCoordinate(coordinate);
+          pixel[1] += drawerHeight / 6;
+          const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
+          this.map.getView().animate({
+            duration: 2000,
+            center: mobileCoordinate
+          });
+        } else {
+          this.map.getView().animate({
+            center: coordinate,
+            duration: 2000
+          });
+        }
+      } else { this.$nextTick(() => { this.$bus.$emit('goTo', featureCenter) }) }
     },
     async loadMapWithParams (searchString) {
       const query = queryString.parse(searchString || location.search);
-      await MapUtil.loadMapWithParams(this, query);
+      const selectedItem = await MapUtil.loadMapWithParams(this, query);
+      this.$emit('open-poi-drawer', {
+        feature: selectedItem && selectedItem.properties ? selectedItem.properties : selectedItem
+      })
     },
     openIndrzPopup (properties, coordinate, feature) {
-      MapHandler.openIndrzPopup(
+      this.$emit('open-poi-drawer', {
+        feature: properties
+      })
+      this.$bus.$emit('setSearch', properties)
+      this.$root.$emit('')
+      !this.isSmallScreen && MapHandler.openIndrzPopup(
         this.globalPopupInfo, this.popUpHomePage, this.currentPOIID,
-        this.currentLocale, this.objCenterCoords, this.routeToValTemp,
+        this.$i18n.locale, this.objCenterCoords, this.routeToValTemp,
         this.routeFromValTemp, this.activeFloorNum, this.popup,
         properties, coordinate, feature, null, env.LAYER_NAME_PREFIX
       );
+      this.objCenterCoords = properties.centerGeometry ? properties.centerGeometry.coordinates : coordinate;
+      const featureCenter = !this.routeDrawer
+        ? { data: { type: 'Feature', id: properties.id, properties: properties, geometry: { coordinates: this.objCenterCoords, type: 'MultiPolygon' } } }
+        : { type: 'Feature', id: properties.id, ...{ properties, geometry: { coordinates: this.coordinates, type: 'MultiPolygon' } } }
+      if (!this.routeDrawer) {
+        const elm = document.querySelector('.v-navigation-drawer--fixed');
+        const drawerHeight = elm.offsetHeight;
+        const pixel = this.map.getPixelFromCoordinate(coordinate);
+        pixel[1] += (drawerHeight - 70) / 2
+        const mobileCoordinate = this.map.getCoordinateFromPixel(pixel);
+        if (this.isMobile) {
+          this.map.getView().animate({
+            duration: 2000,
+            center: mobileCoordinate
+          });
+        } else {
+          this.map.getView().animate({
+            center: coordinate,
+            duration: 2000
+          });
+        }
+      } else { this.$nextTick(() => { this.$bus.$emit('goTo', featureCenter) }) }
     },
     closeIndrzPopup (fromEvent) {
       MapHandler.closeIndrzPopup(this.popup, this.globalPopupInfo);
@@ -214,10 +294,11 @@ export default {
       if (fromEvent) {
         this.$emit('clearSearch');
       }
+      this.$emit('open-poi-drawer', {})
     },
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
-      const url = MapHandler.handleShareClick(this.map, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum, isRouteShare);
+      const url = MapHandler.handleShareClick(this, this.globalPopupInfo, this.globalRouteInfo, this.globalSearchInfo, this.activeFloorNum, isRouteShare);
 
       if (typeof url === 'object' && url.type === 'poi') {
         shareOverlay.setPoiShareLink(url);
@@ -226,11 +307,14 @@ export default {
       }
       shareOverlay.show();
     },
-    loadSinglePoi (poiId) {
+    loadSinglePoi (poiId, zlevel) {
       POIHandler
-        .showSinglePoi(poiId, this.globalPopupInfo, 18, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
-        .then((layer) => {
+        .showSinglePoi(poiId, this.globalPopupInfo, zlevel, this.map, this.popup, this.activeFloorNum, env.LAYER_NAME_PREFIX)
+        .then(({ layer, feature }) => {
           this.searchLayer = layer;
+          this.$emit('open-poi-drawer', {
+            feature
+          })
         });
     },
     loadPoiToPoiroute (startPoiId, endPoiId) {
@@ -238,6 +322,18 @@ export default {
         .addPoisToMap([startPoiId, endPoiId], this.map, this.activeFloorNum, 'RouteFromPoiToPoi')
     },
     onPoiLoad ({ removedItems, newItems, oldItems }) {
+      if (newItems) {
+        newItems.forEach((itemToAdd) => {
+          const index = this.selectedPoiCatIds.indexOf(itemToAdd.id);
+          index === -1 && this.selectedPoiCatIds.push(itemToAdd.id);
+        })
+      }
+      if (removedItems) {
+        removedItems.forEach((itemToRemvoe) => {
+          const index = this.selectedPoiCatIds.indexOf(itemToRemvoe.id);
+          index > -1 && this.selectedPoiCatIds.splice(index, 1);
+        });
+      }
       MapHandler.handlePoiLoad(this.map, this.activeFloorNum, { removedItems, newItems, oldItems }, {
         baseApiUrl: env.BASE_API_URL,
         token: env.TOKEN,
@@ -258,6 +354,9 @@ export default {
 
       if (this.globalSearchInfo.selectedItem) {
         data = this.globalSearchInfo.selectedItem.properties;
+        if (data.shelfId) {
+          data.coords = this.globalSearchInfo.selectedItem.geometry.coordinates;
+        }
       } else {
         data = this.globalPopupInfo;
       }
@@ -284,8 +383,11 @@ export default {
     },
     onMenuButtonClick (type) {
       switch (type) {
+        case 'directions':
+          this.$emit('open-route-drawer');
+          break;
         case 'zoom-home':
-          menuHandler.handleZoomToHome(this, env.DEFAULT_CENTER_XY);
+          menuHandler.handleZoomToHome(this, this.defaultCenter, this.defaultZoom);
           break;
         case 'download':
           menuHandler.handleDownLoad(this);
@@ -328,40 +430,51 @@ export default {
 
       if (nearestEntrance) {
         this.$emit('popupRouteClick', {
-          path: 'from',
-          data: nearestEntrance?.data
+          path: 'to',
+          data: nearestEntrance
         });
       }
     },
     async onPopupMetroButtonClick () {
       const nearestMetro = await this.routeHandler.getNearestMetro(this.globalPopupInfo);
 
-      if (nearestMetro && nearestMetro.data) {
+      if (nearestMetro) {
         this.$emit('popupRouteClick', {
-          path: 'from',
-          data: nearestMetro.data
+          path: 'to',
+          data: nearestMetro
         });
       }
     },
     async onPopupDefiButtonClick () {
       const nearestDefi = await this.routeHandler.getNearestDefi(this.globalPopupInfo);
 
-      if (nearestDefi && nearestDefi.data) {
+      if (nearestDefi) {
         this.$emit('popupRouteClick', {
           path: 'to',
-          data: nearestDefi.data
+          data: nearestDefi
         });
       }
     },
     setGlobalRoute (selectedItem) {
       this.globalRouteInfo[selectedItem.routeType] = selectedItem.data;
     },
-    async routeGo () {
-      this.globalRouteInfo.routeUrl = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, 0, {
+    async routeGo (routeType = 0) {
+      const routeResult = await this.routeHandler.routeGo(this, this.layers, this.globalRouteInfo, routeType, {
         baseApiUrl: env.BASE_API_URL,
         layerNamePrefix: env.LAYER_NAME_PREFIX,
-        token: env.TOKEN
+        token: env.TOKEN,
+        locale: this.$i18n.locale
       });
+      const { noRouteFound, error, routeUrl } = routeResult
+
+      if (noRouteFound) {
+        this.$root.$emit('noRouteFound', true);
+      } else if (error) {
+        this.$root.$emit('routeError', error)
+      } else {
+        this.globalRouteInfo.routeUrl = routeUrl;
+        this.$root.$emit('setRouteInfo', routeResult);
+      }
     },
     clearRouteData () {
       this.routeHandler.clearRouteData(this.map, true);
