@@ -43,6 +43,7 @@
         fixed
         app
         @transitionend="onTransitionEnd"
+        stateless
       >
         <div v-if="isSmallScreen" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
         <sidebar

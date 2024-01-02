@@ -30,6 +30,7 @@
       app
       fixed
       :permanent="shouldShowDrawer"
+      stateless
       data-test="poiLeftPane"
     >
       <div v-if="isMobile" class="draggable-handle" @mousedown="startDrag" @touchstart="startDrag" />
