@@ -21,6 +21,7 @@
     :permanent="shouldShowDrawer"
     data-test="directionsPane"
     @transitionend="onTransitionEnd"
+    stateless
   >
     <div v-if="isMobile" class="draggable-handle" @mousedown="startDrag" @touchstart="startDrag" />
     <div class="ma-2">

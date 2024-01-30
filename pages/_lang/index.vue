@@ -33,35 +33,36 @@
       @routeGo="onRouteGo"
     />
 
-    <div v-show="drawer">
+    <template v-if="drawer">
       <v-navigation-drawer
-        ref="drawer"
-        v-model="drawer"
-        class="resizable"
-        bottom
-        :style="isSmallScreen ? { width: '275px', height: drawerHeight + 'px' } : {width: '275px'}"
-        fixed
-        app
-        @transitionend="onTransitionEnd"
+          ref="drawer"
+          v-model="drawer"
+          class="resizable"
+          bottom
+          :style="isMobile ? { width: '275px', height: shouldShowDrawer ? drawerHeight + 'px' : '422px' } : {width: '275px'}"
+          fixed
+          app
+          @transitionend="onTransitionEnd"
       >
-        <div v-if="isSmallScreen" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
+        <div v-if="isMobile" class="draggable-handle" style="mb-2" @mousedown="startDrag" @touchstart="startDrag" />
         <sidebar
-          ref="sideBar"
-          :menu-items="items"
-          :opened-panels="openedPanels"
-          :initial-poi-cat-id="initialPoiCatId"
-          :initial-poi-id="initialPoiId"
-          @menuButtonClick="onMenuButtonClick"
-          @locationClick="onLocationClick"
-          @setGlobalRoute="onSetGlobalRoute"
-          @routeGo="onRouteGo"
-          @clearRoute="onClearRoute"
-          @shareClick="onShareClick"
-          @poiLoad="onPoiLoad"
-          @hideSidebar="drawer = false"
+            ref="sideBar"
+            :menu-items="items"
+            :opened-panels="openedPanels"
+            :initial-poi-cat-id="initialPoiCatId"
+            :initial-poi-id="initialPoiId"
+            @menuButtonClick="onMenuButtonClick"
+            @locationClick="onLocationClick"
+            @setGlobalRoute="onSetGlobalRoute"
+            @routeGo="onRouteGo"
+            @clearRoute="onClearRoute"
+            @shareClick="onShareClick"
+            @poiLoad="onPoiLoad"
+            @loadSinglePoi="loadSinglePoi"
+            @hideSidebar="drawer = false"
         />
       </v-navigation-drawer>
-    </div>
+    </template>
     <v-toolbar
       v-if="!shouldShowPoiDrawer || isSmallScreen"
       data-test="searchToolbar"
