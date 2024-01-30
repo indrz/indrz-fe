@@ -56,5 +56,6 @@
   "label_building_plz": "Plz",
   "label_building_adress": "Adresse",
   "pdf_title": "Universität Plan",
-  "poi_pictures": "Bilder"
+  "poi_pictures": "Bilder",
+  "label_external_id": "ID"
 }

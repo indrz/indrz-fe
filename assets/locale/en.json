@@ -56,5 +56,6 @@
   "label_building_plz": "Postal Code",
   "label_building_adress": "Adress",
   "pdf_title": "University Plan",
-  "poi_pictures": "Pictures"
+  "poi_pictures": "Pictures",
+  "label_external_id": "ID"
 }

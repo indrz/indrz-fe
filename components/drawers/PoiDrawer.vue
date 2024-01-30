@@ -220,6 +220,10 @@
                           <span>{{ data.xy[1].toFixed(3) }}</span>
                         </v-list-item>
                       </template>
+                      <v-list-item v-if="data.external_id">
+                        <span>{{ locale.labelExternalId }}</span>
+                        <span>{{ data.external_id }}</span>
+                      </v-list-item>
                     </v-list>
                   </div>
                 </div>
