@@ -61,7 +61,7 @@ const openIndrzPopup = (
   if (properties.hasOwnProperty('category')) {
     globalPopupInfo.src = 'poi';
     globalPopupInfo.poiCatId = properties.category;
-    offsetArray[1] = -44;
+    offsetArray[1] = 0;
   }
   if (properties.hasOwnProperty('spaceid')) {
     globalPopupInfo.spaceid = properties.spaceid;

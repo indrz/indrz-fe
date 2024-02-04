@@ -165,7 +165,7 @@ const addPoisToMap = async (poiIds, map, activeFloorNum, layerName = '') => {
 };
 
 const showSinglePoi = async (poiId, globalPopupInfo, zlevel, map, popup, activeFloorNum, layerNamePrefix) => {
-  const offSetPos = [0, -44];
+  const offSetPos = [0, 0];
   const { poiLayer, properties, centerCoord } = await addPoisToMap(poiId, map, activeFloorNum);
 
   globalPopupInfo.poiId = poiId;
