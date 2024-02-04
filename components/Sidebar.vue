@@ -1,7 +1,7 @@
 <template>
   <div data-test="sideBar">
     <div>
-      <v-row class="sidebar-start" no-gutters>
+      <v-row class="sidebar-start mt-5 mt-lg-0" no-gutters>
         <v-col :cols="2" class="pa-2">
           <v-app-bar-nav-icon data-test="closeLeftPaneBtn" @click.stop="onNavbarClick" />
         </v-col>
@@ -232,7 +232,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   .left-bar-logo {
     width: auto;
     height: 40px;
@@ -272,5 +272,8 @@ export default {
     .sidebar-start {
     margin-top:20px;
     }
+  }
+  .v-overlay{
+    z-index:0 !important;
   }
 </style>
