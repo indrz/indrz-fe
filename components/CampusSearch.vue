@@ -122,6 +122,14 @@
         <template v-slot:item="{ item }">
           <v-list-item-icon style="margin-right: 16px">
             <v-img
+              v-if="item.icon"
+              :src="item.icon"
+              contain
+              max-height="24"
+              max-width="24"
+            />
+            <v-img
+              v-else
               :src="getIconUrl(item.src_icon)"
               contain
               max-height="24"

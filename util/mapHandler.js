@@ -557,6 +557,8 @@ const handleMapClick = (mapInfo, evt, layerNamePrefix) => {
             floor_name: floor?.short_name
           }, coordinate, null) */
         }
+      }).catch((error) => {
+        console.error('wms error geoserver', error);
       });
     }
   }

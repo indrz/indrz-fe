@@ -119,7 +119,7 @@
                             :src="data.icon"
                           />
                           <v-img
-                            v-if="data.src_icon"
+                            v-else
                             :src="getIconUrl(data.src_icon)"
                             contain
                             max-height="24"
