@@ -14,13 +14,16 @@
 </template>
 <script>
 import { fetchFloors } from '@/util/adminApi'
+import config from '~/util/indrzConfig';
+
+const { env } = config;
 
 export default {
   name: 'FloorChanger',
   data () {
     return {
       floors: [],
-      currentFloorNum: 0.0
+      currentFloorNum: env.DEFAULT_START_FLOOR
     };
   },
   created () {
@@ -44,7 +47,7 @@ export default {
       this.$emit('floor-selected', floorNum);
     },
     selectDefaultFloor () {
-      const defaultFloor = 0.0
+      const defaultFloor = env.DEFAULT_START_FLOOR
       const list = document.getElementById('floor-list');
       if (this.floors) {
         // Find Default Floor

@@ -30,14 +30,17 @@ import { defaults as defaultControls } from 'ol/control';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
+import config from '~/util/indrzConfig';
 import { greyBmapat } from '~/util/mapLayers';
+
+const { env } = config;
 
 export default {
   name: 'BaseMap',
   data () {
     return {
       map: null,
-      center: [1822279.3104, 6139940.224],
+      center: env.DEFAULT_CENTER_XY,
       zoom: 18,
       layers: {},
       activeLayers: [],

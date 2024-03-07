@@ -3,7 +3,10 @@
 </template>
 
 <script>
+import config from '~/util/indrzConfig';
 import BaseMap from '~/components/BaseMap.vue';
+
+const { env } = config;
 
 export default {
   name: 'ZoneplanMap',
@@ -13,7 +16,7 @@ export default {
   data () {
     return {
       map: null,
-      center: [1822279.3104, 6139940.224], // Adjust center as needed
+      center: env.DEFAULT_CENTER_XY, // Adjust center as needed
       zoom: 18
     };
   },

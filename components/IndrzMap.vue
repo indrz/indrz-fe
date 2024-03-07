@@ -279,6 +279,7 @@ export default {
         this.$emit('clearSearch');
       }
       this.$emit('open-poi-drawer', {})
+      this.$emit('open-poi-drawer', {})
     },
     onShareButtonClick (isRouteShare) {
       const shareOverlay = this.$refs.shareOverlay;
