@@ -31,28 +31,24 @@
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
-    <v-list-group
-      no-action
-      prepend-icon="mdi-file-table-box-outline"
-    >
+    <v-list-group no-action prepend-icon="mdi-office-building">
       <template v-slot:activator>
         <v-list-item-content>
-          <v-list-item-title>Usage Types</v-list-item-title>
+          <v-list-item-title>MainuseItems</v-list-item-title>
         </v-list-item-content>
       </template>
 
-      <v-list-item
-        v-for="([title, icon, iconColor], i) in spaceTypes"
-        :key="i"
-        link
-        dense
-      >
+      <v-list-item v-for="mainuse in mainuseCategories" :key="mainuse.id" link dense>
         <v-list-item-action>
-          <v-checkbox />
+          <v-checkbox :value="mainuse.active" @change="toggleMainUseLayer(mainuse)" />
         </v-list-item-action>
-        <v-list-item-title v-text="title" />
+        <!-- Wrap the title and subtitle in v-list-item-content -->
+        <v-list-item-content>
+          <v-list-item-title v-text="mainuse.name" />
+        </v-list-item-content>
+
         <v-list-item-icon>
-          <v-icon :color="iconColor" v-text="icon" />
+          <v-icon :color="mainuse.color" v-text="mainuse.icon" />
         </v-list-item-icon>
       </v-list-item>
     </v-list-group>
@@ -61,25 +57,32 @@
 
 <script>
 // Import fetch organization codes function
-import { fetchOrganizationCodes } from '@/util/adminApi'
+import { fetchOrganizationCodes, fetchMainuseCategories } from '@/util/adminApi'
 // Import space types from static json array
 import spaceTypes from '@/static/data/space-types.json'
 export default {
   data: () => ({
     organizations: [],
+    mainuseCategories: [],
     spaceTypes: spaceTypes
   }),
 
   // Fetch organization codes when component is created
   async created () {
     const organizations = await fetchOrganizationCodes();
+    const mainuseCategories = await fetchMainuseCategories();
     this.organizations = organizations;
+    this.mainuseCategories = mainuseCategories;
   },
   mounted () { },
   methods: {
     toggleLayer (layer) {
       layer.active = !layer.active;
       this.$emit('layer-toggled', { name: layer.name, orgcode: layer.orgcode, active: layer.active, color: layer.color });
+    },
+    toggleMainUseLayer (layer) {
+      layer.active = !layer.active;
+      this.$emit('layer-mainuse-toggled', { name: layer.name, active: layer.active, color: layer.color });
     }
   }
 
