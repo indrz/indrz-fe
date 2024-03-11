@@ -30,17 +30,14 @@ import { defaults as defaultControls } from 'ol/control';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
-import config from '~/util/indrzConfig';
 import { greyBmapat } from '~/util/mapLayers';
-
-const { env } = config;
 
 export default {
   name: 'BaseMap',
   data () {
     return {
       map: null,
-      center: env.DEFAULT_CENTER_XY,
+      center: [1822139.88, 6139957.53],
       zoom: 18,
       layers: {},
       activeLayers: [],
@@ -72,6 +69,7 @@ export default {
         controls: defaultControls().extend([mousePositionControl]),
         target: 'map',
         layers: [
+          // greyBmapat, myMapLayer
           greyBmapat
         ],
         view: new View({
@@ -112,7 +110,8 @@ export default {
 
         if (selected) {
           this.featureProperties = [
-            { key: 'OrgCode', value: selected.get('orgcode') },
+            { key: 'Code', value: selected.get('orgcode') },
+            { key: 'Organization', value: selected.get('name') },
             { key: 'Main Use', value: selected.get('mainuse') },
             { key: 'Room Code', value: selected.get('room_code') }
           ];

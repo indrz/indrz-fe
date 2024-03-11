@@ -13,8 +13,8 @@
   </v-list>
 </template>
 <script>
+import config from '@/util/indrzConfig'
 import { fetchFloors } from '@/util/adminApi'
-import config from '~/util/indrzConfig';
 
 const { env } = config;
 
