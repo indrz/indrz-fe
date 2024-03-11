@@ -107,8 +107,6 @@ export default {
       }
     },
     onFloorSelected (floorNum) {
-      console.log("current floor's number is: ", floorNum);
-      console.log('active layers are: ', this.activeLayers);
       this.currentFloorNum = floorNum;
       this.refreshLayers(fetchOrgcodeData, layerInfo => layerInfo.orgcode);
       this.refreshLayers(fetchMainUseData, layerInfo => layerInfo.name);
