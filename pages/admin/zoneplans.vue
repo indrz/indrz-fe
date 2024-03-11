@@ -39,8 +39,7 @@ export default {
       currentFloorNum: 0.0
     };
   },
-  mounted () {
-  },
+  mounted () {},
   methods: {
     async handleLayerToggle (layerInfo) {
       const baseMapComponent = this.$refs.baseMap;
@@ -86,13 +85,17 @@ export default {
         this.activeLayers = this.activeLayers.filter(layer => layer.name !== layerInfo.name);
       }
     },
-    async refreshLayersForNewFloor () {
+    async refreshLayers (fetchData, getParam) {
+      // fetchData is the name of the function used to fetch data from the server
+      // we pass the layerInfo to the function to get the data
+      // getParam is the function to get the parameter from the layerInfo orgcode property or name property
       const baseMapComponent = this.$refs.baseMap;
       this.activeLayers.forEach(layer => baseMapComponent.removeLayer(layer.name));
 
       for (const layerInfo of this.activeLayers) {
         try {
-          const layerData = await fetchOrgcodeData(layerInfo.orgcode, this.currentFloorNum);
+          const param = getParam(layerInfo);
+          const layerData = await fetchData(param, this.currentFloorNum);
           if (layerData) {
             baseMapComponent.addLayer(layerInfo.name, layerInfo.color, layerData);
           } else {
@@ -107,7 +110,8 @@ export default {
       console.log("current floor's number is: ", floorNum);
       console.log('active layers are: ', this.activeLayers);
       this.currentFloorNum = floorNum;
-      this.refreshLayersForNewFloor();
+      this.refreshLayers(fetchOrgcodeData, layerInfo => layerInfo.orgcode);
+      this.refreshLayers(fetchMainUseData, layerInfo => layerInfo.name);
     }
   }
 };
