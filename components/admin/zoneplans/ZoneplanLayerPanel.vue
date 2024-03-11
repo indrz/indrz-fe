@@ -58,13 +58,11 @@
 <script>
 // Import fetch organization codes function
 import { fetchOrganizationCodes, fetchMainuseCategories } from '@/util/adminApi'
-// Import space types from static json array
-import spaceTypes from '@/static/data/space-types.json'
+
 export default {
   data: () => ({
     organizations: [],
-    mainuseCategories: [],
-    spaceTypes: spaceTypes
+    mainuseCategories: []
   }),
 
   // Fetch organization codes when component is created
