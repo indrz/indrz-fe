@@ -43,3 +43,29 @@ export const fetchOrganizationCodes = async () => {
     throw error; // Re-throw to handle it in the component
   }
 }
+
+export const fetchMainuseCategories = async () => {
+  try {
+    const response = await axiosInstance.get('/mainuse');
+    const geofc = response.data;
+    if (geofc.features !== null) { return geofc } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching mainUse data:', error);
+    throw error; // Re-throw to handle it in the component
+  }
+}
+
+export const fetchMainUseData = async (mainUse, floorNum) => {
+  try {
+    const response = await axiosInstance.get(`mainuse/${mainUse}/?floor_num=${floorNum}`);
+    const geofc = response.data;
+    if (geofc.features !== null) { return geofc } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching mainUse data:', error);
+    throw error; // Re-throw to handle it in the component
+  }
+};
