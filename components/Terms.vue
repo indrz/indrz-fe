@@ -1,14 +1,15 @@
 <template>
   <v-dialog
     v-model="dialog"
+    scrollable
     max-width="700"
   >
     <v-card>
-      <v-card-title class="headline" />
+      <v-card-title class="text-h4">
+        Allgemeine Hinweise
+      </v-card-title>
+      <v-divider />
       <v-card-text>
-        <h1>Allgemeine Hinweise</h1>
-        <p />
-
         <div>
           <p>
             INDRZ-maps bietet eine
@@ -316,6 +317,17 @@
           </p>
         </div>
       </v-card-text>
+      <v-divider />
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          color="blue darken-1"
+          text
+          @click="dialog = false"
+        >
+          Close
+        </v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -323,7 +335,6 @@
 <script>
 export default {
   name: 'Terms',
-
   props: {
     show: {
       type: Boolean,
@@ -333,9 +344,7 @@ export default {
     }
   },
   data () {
-    return {
-      contact: this.$t('contact')
-    };
+    return {};
   },
   computed: {
     dialog: {
