@@ -1,28 +1,28 @@
-# Dockerfile
-FROM node:18.12.1-alpine
+# Use Node.js LTS (Long Term Support) image
+FROM node:18.20.5-alpine AS base
 
-# create destination directory
-RUN mkdir -p /app
+# Create app directory
 WORKDIR /app
 
-# update and install dependency
-RUN apk update && apk upgrade
-RUN apk add git
+# Copy package files
+COPY package*.json ./
 
-# copy the app, note .dockerignore
-COPY . /app/
-# Install the dependencies
-RUN yarn install
+# Install dependencies
+RUN npm install
+RUN npm install --save-dev @babel/plugin-proposal-private-property-in-object
 
-RUN yarn install --save-dev @babel/plugin-proposal-private-property-in-object
+# Run
+FROM base
 
-RUN yarn run build
+COPY --from=base /app/node_modules /app/node_modules
 
+# Expose the development port
 EXPOSE 3000
 
-ENV NUXT_HOST=0.0.0.0
-ENV NUXT_PORT=3000
-# Set the NODE_OPTIONS environment variable
+# Set host to allow external connections
+ENV HOST=0.0.0.0
+ENV PORT=3000
 ENV NODE_OPTIONS="--openssl-legacy-provider"
 
-CMD [ "npm", "start" ]
+# Start development server
+CMD ["npm", "run", "dev"]
