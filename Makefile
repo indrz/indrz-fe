@@ -1,9 +1,8 @@
 SHELL=/bin/bash
 PWD ?= pwd_unknown
-PROJECT_NAME=indrz-backend-wu
+PROJECT_NAME=indrz
 COMPOSE_IGNORE_ORPHANS=True
-DOCKER_IMAGE=indrz_web
-BACKEND_NET=indrz-backend-wu_indrz-net
+BACKEND_NET=indrz-net
 
 # cnf ?= indrz/settings/.env
 # include $(cnf)
@@ -16,32 +15,8 @@ help: ## This help.
 
 .DEFAULT_GOAL := help
 
-build-web: ## Build indrz_web Docker Image
-	docker build -t indrz/web:latest . -f devops/docker/nginx/Dockerfile
+build-nginx-dev: ## Build indrz_web Docker Image
+	docker build -t indrz-os/nginx_dev:latest -f devops/docker/local/nginx/Dockerfile .
 
-run: ## Run Front-end (production-ready)
-	@docker run -d 	\
-		-p 80:80 -p 443:443 \
-		-v indrz-backend-wu_indrz-static:/opt/data/static \
-		-v indrz-backend-wu_indrz-media:/opt/data/media \
-		--network ${BACKEND_NET} \
-		--name ${DOCKER_IMAGE} \
-		--restart always \
-		indrz/web:latest
-
-
-pull: ## Pull source code from Git
-	git pull
-
-# deploy: pull migrate collectstatic run ## Update and deploy Indrz application
-# 	docker restart indrz
-
-generate-dist: ## generate dist folder ie compiled version of Frontend
-	git rm -r dist
-	rm -rf dist
-	yarn run generate
-	git add dist
-	git commit -m "updated dist" dist
-
-stop: ## Stop Indrz Docker project
-	docker stop ${DOCKER_IMAGE} && docker rm ${DOCKER_IMAGE}
+build-fe-dev: ## Build indrz_web Docker Image
+	docker build --progress plain --no-cache -t indrz-os/frontend_dev -f devops/docker/local/frontend/Dockerfile .
