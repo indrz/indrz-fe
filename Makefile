@@ -15,8 +15,5 @@ help: ## This help.
 
 .DEFAULT_GOAL := help
 
-build-nginx-dev: ## Build indrz_web Docker Image
-	docker build -t indrz-os/nginx_dev:latest -f devops/docker/local/nginx/Dockerfile .
-
 build-fe-dev: ## Build indrz_web Docker Image
 	docker build --progress plain --no-cache -t indrz-os/frontend_dev -f devops/docker/local/frontend/Dockerfile .
