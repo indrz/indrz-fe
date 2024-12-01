@@ -98,8 +98,6 @@ production-tu.env
 production-wu.env
 yarn.lock
 
-static
-
 
 /test-results/
 /playwright-report/
