@@ -61,7 +61,7 @@ const routeInactiveStyleForeground = new Style({
     color: '#1f9ffc',
     width: 4,
     lineDash: [1, 10],
-    opacity: 0.2
+    opacity: 0.1
   }),
   zIndex: 6
 });
@@ -77,7 +77,7 @@ const createPoiStyle = (poiIconName, active) => {
       anchor: [0.5, 46],
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
-      opacity: 0.2,
+      opacity: 0.1,
       src: icon
     }))
   });
@@ -118,7 +118,7 @@ const setPoiStyleOnLayerSwitch = (iconName, visible) => {
       anchor: [0.5, 46],
       anchorXUnits: 'fraction',
       anchorYUnits: 'pixels',
-      opacity: 0.4,
+      opacity: 0.1,
       src: icon
     }))
   });

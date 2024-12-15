@@ -68,7 +68,6 @@ import { Vector as VectorSource } from 'ol/source';
 import { Style, Icon } from 'ol/style';
 import { Draw, Modify, Snap, Translate } from 'ol/interaction';
 import { Point } from 'ol/geom';
-import Overlay from 'ol/Overlay';
 import { Feature, Collection } from 'ol';
 import POIHandler from '../../../util/POIHandler';
 import MapStyles from '../../../util/mapStyles';
@@ -158,18 +157,8 @@ export default {
       loadFloors: 'floor/LOAD_FLOORS'
     }),
     initializeMap () {
-      this.popup = new Overlay({
-        element: document.getElementById('attributes-overlay'),
-        autoPan: true,
-        autoPanAnimation: {
-          duration: 250
-        },
-        zIndex: 5,
-        name: 'attributesPopup'
-      });
       const { view, map, layers } = MapUtil.initializeMap({
         mapId: this.mapId,
-        predefinedPopup: this.popup,
         center: this.defaultCenter,
         zoom: this.defaultZoom
       });
@@ -213,23 +202,30 @@ export default {
       let feature = this.map.getFeaturesAtPixel(pixel);
       const features = [];
 
+      // only return features on the active floor
       this.map.forEachFeatureAtPixel(pixel, function (feature, layer) {
-        features.push(feature);
-      });
+        if (feature && feature.getProperties()?.floor_num === this.activeFloor?.floor_num) {
+          features.push(feature);
+        }
+      }.bind(this));
       feature = features[0];
-
       if (feature) {
         const featureType = feature.getGeometry().getType().toString();
 
         if (featureType === 'Point') {
-          const newPoint = this.newPois.find(poi => poi.olUid === feature.ol_uid)
+          const newPoint = this.newPois.find(poi => poi.olUid === feature.ol_uid);
 
           if (newPoint) {
-            const coordinate = JSON.parse(newPoint.geom).coordinates[0];
-            this.openAttributesPopup(newPoint, coordinate);
+            const featureFloorNum = feature.getProperties().floor_num;
+            if (featureFloorNum === this.activeFloor.floor_num) {
+              const coordinate = JSON.parse(newPoint.geom).coordinates[0];
+              if (!this.$refs.attributesOverlay.isVisible) {
+                this.openAttributesPopup(newPoint, coordinate);
+              }
+            }
           }
         }
-
+        // only allow selection of POIs on the active floor
         if (featureType === 'MultiPolygon' || featureType === 'MultiPoint') {
           if (featureType === 'MultiPoint') {
             this.activeFloorNum = env.LAYER_NAME_PREFIX + this.activeFloor.floor_num;
@@ -238,16 +234,20 @@ export default {
               onActiveLayer = false;
             }
 
-            feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/media/poi_icons/selected_pin.png', onActiveLayer));
-            this.selectedPoi = feature;
-            if (this.currentMode && this.currentMode === this.mode.remove) {
-              this.removePois.push(this.selectedPoi);
-            } else if (this.currentMode && this.currentMode === this.mode.edit) {
-              this.editPois.push(this.selectedPoi);
-              this.editInteraction();
-            } else {
-              this.clearPreviousSelection();
-              this.openAttributesPopup(feature.getProperties(), feature.getGeometry().getCoordinates()[0], feature);
+            if (onActiveLayer) { // Only proceed if on active layer
+              feature.setStyle(MapStyles.setPoiStyleOnLayerSwitch('/media/poi_icons/selected_pin.png', onActiveLayer));
+              this.selectedPoi = feature;
+              if (this.currentMode && this.currentMode === this.mode.remove) {
+                this.removePois.push(this.selectedPoi);
+              } else if (this.currentMode && this.currentMode === this.mode.edit) {
+                this.editPois.push(this.selectedPoi);
+                this.editInteraction();
+              } else {
+                this.clearPreviousSelection();
+                if (!this.$refs.attributesOverlay.isVisible) {
+                  this.openAttributesPopup(feature.getProperties(), feature.getGeometry().getCoordinates()[0], feature);
+                }
+              }
             }
           }
         }
@@ -532,18 +532,46 @@ export default {
       });
     },
     closeAttributePopup () {
-      this.popup.setPosition(undefined)
+      this.$refs.attributesOverlay.onCloseClick();
     },
     saveAttributes (attributes) {
-      const { feature, data, imageFile } = attributes;
-
+      const { feature, data, imageFiles } = attributes;
       if (attributes.feature) {
-        // we can remove the imageFile here
+        // Editing existing POI
         this.$emit('saveEditPoi', feature, data)
       } else {
-        this.$emit('saveAddPoi', data, imageFile, (poiId, file) => {
-          this.uploadPoiImage({ poiId, imageFile: file })
+        // New POI - handle both single and multiple images the same way
+        const files = Array.isArray(imageFiles) ? imageFiles : (imageFiles ? [imageFiles] : []);
+        this.$emit('saveAddPoi', data, files, (poiId, files) => {
+          if (files && files.length > 0) {
+            this.uploadMultiplePoiImages({ poiId, imageFiles: files })
+          }
         })
+      }
+    },
+    async uploadMultiplePoiImages ({ poiId, imageFiles }) {
+      try {
+        const uploadPromises = imageFiles.map((file, index) => {
+          return api.postRequest({
+            endPoint: 'poi/images/',
+            method: 'POST',
+            data: {
+              poi: poiId,
+              image: file,
+              sort_order: (index + 1).toString(),
+              is_default: index === 0 ? 'true' : 'false',
+              alt_text: `Image ${index + 1}`
+            }
+          }, {
+            baseApiUrl: process.env.BASE_API_URL,
+            token: process.env.TOKEN
+          });
+        });
+
+        await Promise.all(uploadPromises);
+        await this.refreshImageList(poiId);
+      } catch (e) {
+        this.$store.commit('SET_SNACKBAR', e?.message || 'Image upload failed');
       }
     },
     async uploadPoiImage ({ poiId, imageFile }) {
@@ -601,8 +629,7 @@ export default {
     openAttributesPopup (data, coordinate, feature) {
       const images = feature ? feature.getProperties().images : [];
       this.$refs.attributesOverlay.setData({ ...data, images }, feature);
-      this.popup.setPosition(coordinate);
-      this.popup.setOffset([0, -40]);
+      this.$refs.attributesOverlay.show();
     },
     getPoi (poiId) {
       try {

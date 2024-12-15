@@ -22,13 +22,13 @@
           <v-container>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.external_id" :rules="requiredRule" label="External Id" />
+                <v-text-field v-model="localShelf.external_id" :rules="requiredRule" label="External Id" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-text-field
-                  v-model="currentShelf.geom"
+                  v-model="localShelf.geom"
                   @click:append-outer="onGeomButtonClick"
                   label="Geometry"
                   clear-icon="mdi-close-circle"
@@ -39,28 +39,28 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.left_from_label" label="Left From Label" />
+                <v-text-field v-model="localShelf.left_from_label" label="Left From Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.left_to_label" label="Left To Label" />
+                <v-text-field v-model="localShelf.left_to_label" label="Left To Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.right_from_label" label="Right From Label" />
+                <v-text-field v-model="localShelf.right_from_label" label="Right From Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.right_to_label" label="Right To Label" />
+                <v-text-field v-model="localShelf.right_to_label" label="Right To Label" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-select
-                  v-model="currentShelf.building"
+                  v-model="localShelf.building"
                   :items="buildings"
                   item-text="building_name"
                   item-value="id"
@@ -71,7 +71,7 @@
             <v-row no-gutters>
               <v-col>
                 <v-select
-                  v-model="currentShelf.building_floor"
+                  v-model="localShelf.building_floor"
                   :items="floors"
                   :rules="requiredRule"
                   item-text="short_name"
@@ -82,28 +82,28 @@
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.length" type="number" min="0" step="0.01" label="Length in m" />
+                <v-text-field v-model="localShelf.length" type="number" min="0" step="0.01" label="Length in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.width" type="number" min="0" step="0.01" label="Width in m" />
+                <v-text-field v-model="localShelf.width" type="number" min="0" step="0.01" label="Width in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.depth" type="number" min="0" step="0.01" label="Depth in m" />
+                <v-text-field v-model="localShelf.depth" type="number" min="0" step="0.01" label="Depth in m" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
-                <v-text-field v-model="currentShelf.rotation" type="number" step="1" label="Rotation angle" />
+                <v-text-field v-model="localShelf.rotation" type="number" step="1" label="Rotation angle" />
               </v-col>
             </v-row>
             <v-row no-gutters>
               <v-col>
                 <v-select
-                  v-model="currentShelf.double_sided"
+                  v-model="localShelf.double_sided"
                   :items="doubleSidedItems"
                   item-text="text"
                   item-value="value"
@@ -183,7 +183,8 @@ export default {
       ],
       requiredRule: [
         v => !!v || 'This field is required.'
-      ]
+      ],
+      localShelf: { ...this.currentShelf }
     };
   },
   computed: {
@@ -213,9 +214,9 @@ export default {
       this.$emit('close');
     },
     setGeometry ({ coordinates, floor }) {
-      this.currentShelf.geom = getGeomFromCoordinates(coordinates);
+      this.localShelf.geom = getGeomFromCoordinates(coordinates);
       if (floor) {
-        this.currentShelf.building_floor = floor.id;
+        this.localShelf.building_floor = floor.id;
       }
     },
     bookShelfDrawDialogClose () {
@@ -227,9 +228,10 @@ export default {
       }
       this.loading = true;
 
-      await this.saveShelf(this.currentShelf);
+      await this.saveShelf(this.localShelf);
 
       this.loading = false;
+      this.$emit('update:currentShelf', this.localShelf);
       this.close();
     }
   }
