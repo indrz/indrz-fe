@@ -287,6 +287,7 @@
               lazy-src="`${defaultPoiImage}`"
               class="gallery-thumb"
               @click="onGalleryImageClick(index)"
+              style="margin: 5px;"
             />
           </v-row>
         </v-container>
