@@ -57,5 +57,7 @@
   "label_building_adress": "Adresse",
   "pdf_title": "Universität Plan",
   "poi_pictures": "Bilder",
-  "label_external_id": "ID"
+  "label_external_id": "ID",
+  "label_directions_only_routes_on_campus_supported": "Es werden nur Routen auf/zwischen Campus-Standorten, innerhalb oder zu/von Gebäuden unterstützt.",
+  "label_directions_routing_barrierfree_limitations": "Barrierefreiheit ist nur in den Innenbereichen gewährleistet."
 }

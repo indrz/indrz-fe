@@ -57,5 +57,7 @@
   "label_building_adress": "Adress",
   "pdf_title": "University Plan",
   "poi_pictures": "Pictures",
-  "label_external_id": "ID"
+  "label_external_id": "ID",
+  "label_directions_only_routes_on_campus_supported": "Only routes on/between campus locations, within or to/from buildings are supported.",
+  "label_directions_routing_barrierfree_limitations": "Barrier free refers only to paths within the buildings."
 }
