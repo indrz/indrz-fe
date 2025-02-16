@@ -32,11 +32,9 @@
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-row>
-        <v-row>
-          <v-col :cols="12" align-self="center">
-            <img id="tu-logo" :src="logo.file" alt="logo" class="left-bar-logo">
-          </v-col>
-        </v-row>
+        <v-alert type="info" color="grey lighten-2" class="mt-3" style="color: #898989;">
+        {{ $t('label_directions_only_routes_on_campus_supported') }}
+        </v-alert>
         <div class="row justify-left ml-5">
           <div class="panel-section-items">
             <v-list class="list-label-value" style="height: 120px;">
@@ -69,7 +67,11 @@
               <v-list-item>
                 <v-checkbox v-model="barrierFree" :label="locale.barrierFreeLabel" data-test="barrierFreeCheckbox" @change="onBarrierFreeChange" />
               </v-list-item>
+              <v-list-item>
+                <div class="mt-3">{{ $t('label_directions_routing_barrierfree_limitations') }}</div>
+              </v-list-item>
             </v-list>
+
           </div>
         </div>
         <v-divider v-if="routeInfo" class="mt-5 mb-5" />

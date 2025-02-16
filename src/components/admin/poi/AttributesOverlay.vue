@@ -1,139 +1,144 @@
 <template>
-  <div id="attributes-overlay" :style="{'min-width': popupSize.width}" scrollable class="ol-popup indrz-popup">
-    <div>
-      <v-card flat>
-        <v-toolbar
+  <v-dialog
+    v-model="isVisible"
+    :width="dialogWidth"
+    :style="{'min-width': popupSize.width}"
+    persistent
+  >
+    <v-card flat>
+      <v-toolbar
+        dense
+        flat
+        height="24"
+      >
+        <v-spacer />
+        <v-btn icon @click="onCloseClick">
+          <v-icon>mdi-window-close</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text class="pa-0">
+        <v-form
+          ref="form"
+          v-model="valid"
           dense
-          flat
-          height="24"
+          lazy-validation
         >
-          <!--div class="headline">
-            {{ title }}
-          </div> -->
-          <v-spacer />
-          <v-btn icon @click="onCloseClick">
-            <v-icon>
-              mdi-window-close
-            </v-icon>
-          </v-btn>
-        </v-toolbar>
-        <v-card-text class="pa-0">
-          <v-form
-            ref="form"
-            v-model="valid"
-            dense
-            lazy-validation
-          >
-            <v-container class="pa-0">
-              <v-row no-gutters>
-                <v-col>
-                  <v-text-field v-model="data.name" :rules="requiredRule" label="name" />
-                  <v-text-field v-model="data.name_en" label="name-en" />
-                  <v-text-field v-model="data.name_de" label="name-de" />
-                  <v-textarea
-                    v-model="data.html_content"
-                    label="HTML Content"
-                    rows="3"
-                    no-resize
-                    row-height="25"
-                  />
-                  <v-checkbox
-                    v-model="data.enabled"
-                    label="enabled"
-                    hide-details
-                    dense
-                  />
-                  <v-file-input
-                    ref="uploadImage"
-                    v-model="imageFile"
-                    accept="image/*"
-                    label="Click here to upload Image"
-                    show-size
-                    :rules="imageUploadRules"
-                    prepend-icon=""
-                    append-icon="mdi-plus"
-                    :disabled="isLoading"
-                    @change="onImageUpload"
-                    @click:append="selectFile"
-                  />
-                  <v-list
-                    dense
-                    style="max-height: 120px"
-                    class="overflow-y-auto"
-                  >
-                    <div v-for="(image) in data.images" :key="image.id">
-                      <!-- <v-divider
-                        v-if="index !== 0"
-                        :key="`${index}-divider`"
-                      /> -->
-                      <v-list-item
-                        class="pl-0"
-                      >
+          <v-container class="pa-0">
+            <v-row no-gutters>
+              <v-col>
+                <v-text-field v-model="data.name" :rules="requiredRule" label="name" />
+                <v-text-field v-model="data.name_en" label="name-en" />
+                <v-text-field v-model="data.name_de" label="name-de" />
+                <v-textarea
+                  v-model="data.html_content"
+                  label="HTML Content"
+                  rows="3"
+                  no-resize
+                  row-height="25"
+                />
+                <v-checkbox
+                  v-model="data.enabled"
+                  label="enabled"
+                  hide-details
+                  dense
+                />
+                <v-file-input
+                  ref="uploadImage"
+                  v-model="imageFile"
+                  multiple
+                  accept="image/*"
+                  label="Click here to upload Image"
+                  show-size
+                  :rules="imageUploadRules"
+                  prepend-icon=""
+                  append-icon="mdi-plus"
+                  :disabled="isLoading"
+                  @change="onImageUpload"
+                  @click:append="selectFile"
+                />
+                <div v-if="!feature && imageFiles.length" class="pending-images">
+                  <v-list dense style="max-height: 120px" class="overflow-y-auto">
+                    <div v-for="(file, index) in imageFiles" :key="index">
+                      <v-list-item class="pl-0">
                         <v-alert
-                          color="success"
+                          color="info"
                           class="white--text text-center pa-1 ma-0"
                           width="100%"
-                          v-text="imageName(image)"
+                          v-text="file.name"
                         />
-
                         <v-list-item-action>
-                          <v-btn icon x-small @click="onPoiImageDeleteClick(image.id)">
-                            <v-icon color="error darken-1">
-                              mdi-delete
-                            </v-icon>
+                          <v-btn icon x-small @click="removeSelectedImage(index)">
+                            <v-icon color="error darken-1">mdi-delete</v-icon>
                           </v-btn>
                         </v-list-item-action>
                       </v-list-item>
                     </div>
                   </v-list>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-form>
-        </v-card-text>
-        <v-divider class="mt-5" />
-        <v-card-actions>
-          <v-btn color="blue darken-1" text @click="onCloseClick">
-            Cancel
-          </v-btn>
-          <v-btn
-            :disabled="!valid"
-            color="blue darken-1"
-            text
-            @click="onSaveClick"
-          >
-            <v-icon left>
-              mdi-content-save
-            </v-icon>
-            Save
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            color="error darken-1"
-            text
-            @click="onDeletePoiClick"
-          >
-            <v-icon left>
-              mdi-delete
-            </v-icon>
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-      <confirm-dialog
-        :show="showConfirmPoiImageDelete"
-        :busy="isLoading"
-        @cancelClick="showConfirmPoiImageDelete = false"
-        @confirmClick="deletePoiImage"
-      />
-      <confirm-dialog
-        :show="showConfirmPoiDelete"
-        :busy="isLoading"
-        @cancelClick="showConfirmPoiDelete = false"
-        @confirmClick="deletePoi"
-      />
-    </div>
-  </div>
+                </div>
+                <v-list
+                  dense
+                  style="max-height: 120px"
+                  class="overflow-y-auto"
+                >
+                  <div v-for="(image) in data.images" :key="image.id">
+                    <v-list-item class="pl-0">
+                      <v-alert
+                        color="success"
+                        class="white--text text-center pa-1 ma-0"
+                        width="100%"
+                        v-text="imageName(image)"
+                      />
+                      <v-list-item-action>
+                        <v-btn icon x-small @click="onPoiImageDeleteClick(image.id)">
+                          <v-icon color="error darken-1">mdi-delete</v-icon>
+                        </v-btn>
+                      </v-list-item-action>
+                    </v-list-item>
+                  </div>
+                </v-list>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-form>
+      </v-card-text>
+      <v-divider class="mt-5" />
+      <v-card-actions>
+        <v-btn color="blue darken-1" text @click="onCloseClick">
+          Cancel
+        </v-btn>
+        <v-btn
+          :disabled="!valid"
+          color="blue darken-1"
+          text
+          @click="onSaveClick"
+        >
+          <v-icon left>mdi-content-save</v-icon>
+          Save
+        </v-btn>
+        <v-spacer />
+        <v-btn
+          color="error darken-1"
+          text
+          @click="onDeletePoiClick"
+        >
+          <v-icon left>mdi-delete</v-icon>
+          Delete
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    <confirm-dialog
+      :show="showConfirmPoiImageDelete"
+      :busy="isLoading"
+      @cancelClick="showConfirmPoiImageDelete = false"
+      @confirmClick="deletePoiImage"
+    />
+    <confirm-dialog
+      :show="showConfirmPoiDelete"
+      :busy="isLoading"
+      @cancelClick="showConfirmPoiDelete = false"
+      @confirmClick="deletePoi"
+    />
+  </v-dialog>
 </template>
 
 <script>
@@ -144,41 +149,45 @@ export default {
   components: {
     ConfirmDialog
   },
-  props: {
-  },
   data () {
     return {
+      isVisible: false,
+      dialogWidth: 354,
       valid: true,
       requiredRule: [
         v => (v && v.trim().length > 0) || 'This field is required.'
       ],
       imageUploadRules: [
-        value => !value || value.size < (20 * 1024000) || 'Image size should be less than 20 MB!'
+        (value) => {
+          if (!value) {
+            return true;
+          }
+          // Handle array of files for multiple selection
+          if (Array.isArray(value)) {
+            return value.every(file => file.size < (20 * 1024000)) || 'Each image size should be less than 20 MB!';
+          }
+          // Handle single file
+          return value.size < (20 * 1024000) || 'Image size should be less than 20 MB!';
+        }
       ],
       isLoading: false,
       showConfirmPoiDelete: false,
       showConfirmPoiImageDelete: false,
       selectedPoiImageId: null,
       data: {
-        type: Object,
-        default: function () {
-          return {
-            name: '',
-            name_en: '',
-            name_de: '',
-            html_content: '',
-            enabled: true,
-            images: []
-          };
-        }
+        name: '',
+        name_en: '',
+        name_de: '',
+        html_content: '',
+        enabled: true,
+        images: []
       },
       imageFile: null,
-      feature: {
-        type: Object,
-        default: function () {
-          return null;
-        }
-      }
+      imageFiles: [],
+      pendingImages: [],
+      pendingUpload: false, // New flag to control upload timing
+      feature: null,
+      isNewlyCreated: false // Track if POI was just created
     }
   },
   computed: {
@@ -190,28 +199,58 @@ export default {
     }
   },
   methods: {
+    show () {
+      this.isVisible = true;
+      this.$nextTick(() => {
+        if (this.$refs.form) {
+          this.$refs.form.resetValidation();
+        }
+      });
+    },
+    hide () {
+      this.isVisible = false;
+    },
     onCloseClick () {
-      this.$emit('closeClick');
+      this.isVisible = false;
+      // this.$emit('closeClick');
     },
     onSaveClick () {
+      this.isNewlyCreated = !this.feature;
+      this.pendingUpload = true; // Only allow uploads after save
       this.$emit('saveClick', {
         data: this.data,
         feature: this.feature,
-        imageFile: this.imageFile
-      })
+        imageFiles: this.imageFiles
+      });
+      this.imageFiles = [];
     },
     onImageUpload () {
-      if (!this.imageFile) {
+      // Only allow upload if not in creation mode and not loading
+      if (!this.imageFile || this.isLoading || this.isNewlyCreated) {
         return;
       }
       if (this.feature) {
-        this.isLoading = true;
-        this.$emit('uploadImage', {
-          poiId: this.feature.getId(),
-          imageFile: this.imageFile
-        });
-        this.imageFile = null;
+        // For existing POIs, only upload if explicitly requested
+        if (this.pendingUpload) {
+          this.isLoading = true;
+          this.$emit('uploadImage', {
+            poiId: this.feature.getId(),
+            imageFile: this.imageFile
+          });
+          this.pendingUpload = false;
+        } else {
+          // Store for batch upload on save
+          this.imageFiles.push(this.imageFile);
+        }
+      } else if (Array.isArray(this.imageFile)) {
+        this.imageFiles.push(...this.imageFile);
+      } else {
+        this.imageFiles.push(this.imageFile);
       }
+      this.imageFile = null;
+    },
+    removeSelectedImage (index) {
+      this.imageFiles.splice(index, 1);
     },
     deletePoi () {
       this.isLoading = true;
@@ -237,12 +276,20 @@ export default {
     },
     setData (data, feature) {
       this.data = { ...data };
-      if (feature) {
-        this.feature = feature;
-      } else {
-        this.feature = null;
-      }
+      this.feature = feature || null;
       this.imageFile = null;
+      this.isLoading = false; // Reset loading state
+      this.imageFiles = []; // Reset pending uploads
+      this.isNewlyCreated = false; // reset flag
+      this.pendingUpload = false; // Reset upload flag
+      // Reset file input
+      if (this.$refs.uploadImage) {
+        this.$refs.uploadImage.reset();
+      }
+      // Reset validation
+      if (this.$refs.form) {
+        this.$refs.form.resetValidation();
+      }
     },
     setImages (images) {
       this.data.images = images || [];
@@ -267,10 +314,6 @@ export default {
 };
 </script>
 
-<style scoped>
-  .xs-popup {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start !important;
-  }
+<style>
+
 </style>
